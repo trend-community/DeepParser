@@ -1,0 +1,4 @@
+rule3words={[word] [word] [word]};
+rule4words={[word][word]
+	[word][word]};
+	
