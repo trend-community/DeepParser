@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.TreeSet;
 import java.util.Set;
 
-public class featureOntology {
+public class FeatureOntology {
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("Hello World!");
 		
-		featureOntology f = new featureOntology();
+		FeatureOntology f = new FeatureOntology();
 		
-		f.loadRules("src/featureOntology.txt");
+		f.loadRules("data/featureOntology.txt");
 		System.out.println("Features for ObjS:" + f.searchFeature("ObjS"));
 		
 		System.out.println(f);
@@ -24,7 +24,7 @@ public class featureOntology {
 	Set<OntologyRule> rules;
 
 	
-	public featureOntology(){
+	public FeatureOntology(){
 		rules = new TreeSet<OntologyRule>();
 	}
 

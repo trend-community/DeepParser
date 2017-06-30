@@ -20,6 +20,17 @@ public class Parser {
 		rules = new HashSet<RuleMatrix>();
 	}
 
+	public static void main(String[] args) throws IOException {
+		Parser p = new Parser();
+		
+		
+		p.ParseAndGenerateMatrix("data/rule.txt");
+	
+		
+		p.TestStrings("data/test.txt");
+					
+	}
+	
 
 	public void TestStrings(String testFileLocation) throws IOException {
 		// TODO Auto-generated method stub
