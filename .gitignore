@@ -1,0 +1,15 @@
+/target/
+mylogs.log
+.*
+!/.gitignore
+
+/mylogs.log.1
+/rawdata/
+/data/
+/temp/
+*.log
+*.pyc
+/folderinfo.db
+/brand_recall_long.txt
+/brand_recall_short.txt
+/brand_precision_short.txt
