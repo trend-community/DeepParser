@@ -20,7 +20,7 @@ SampleRule1a(Top >SampleRule1) = {......};  		// also a top priority rule, and i
 SampleRule2 = <......>;    							// a rule with unmarked priority, priority less than Top rules but greater than Bottom default rules 
 SampleRule3(>SampleRule2) = <<......>>;				// priority greater than SampleRule2 and otherwise it is unmarked between Top and Bottom
 SampleRule4 = {......};								// unmarked priority between Top and Bot (Bottom)
-SampleRule5(>SampleRule3|SampleRule4) = {......};  	// priority greater than SampleRule3 and SampleRule4 and otherwise unmarked between Top and Bottom
+SampleRule5(>SampleRule3 >SampleRule4) = {......};  	// priority greater than SampleRule3 and SampleRule4 and otherwise unmarked between Top and Bottom
 SampleRule6(Bot) = {......};						// a bottom (Bot) level default rule
 SampleRule6a(Bot >SampleRule6) = {......};		// a bottom level default rule, and its priority greater than the other bottom rule SampleRule6
 
