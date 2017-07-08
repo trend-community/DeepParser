@@ -4,7 +4,7 @@ import java.util.Set;
 public class OntologyRule implements Comparable<OntologyRule> {
 	static int MAXRULELENGTH=1000;
 	static int MAXFEATURENUM=5000;
-	static String featureList[] = new String[MAXFEATURENUM];
+	static String featureList[] = new String[MAXFEATURENUM];   
 	
 	//alias: Each alias can only have one root. 
 	private class Alias implements Comparable<Alias>{
