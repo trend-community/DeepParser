@@ -11,25 +11,31 @@ AliasDict = {}
 FeatureOntology = []
 
 
-def RemoveComment(line):
-    blocks = re.split("//", line)  # remove comment.
-    return blocks[0].strip()
+def SeparateComment(line):
+    blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
+    return blocks[0].strip(), " ".join(blocks[1:])
 
 
 class OntologyRule:
     def __init__(self):
         self.openWord = ''
+        self.Comment = ''
         self.openWordID = 0
         self.ancestors = set()
 
     def __str__(self):
-        output = "[" + self.openWord + "]: "
-        for i in self.ancestors:
-            output += FeatureList[i] +"; "
+        output = "[" + self.openWord + "]"
+        if self.ancestors:
+            output += ": "
+            for i in self.ancestors:
+                output += FeatureList[i] +"; "
+        if self.Comment:
+            output += "\t//" + self.Comment
         return output
 
     def SetRule(self, line):
-        code = RemoveComment(line)
+        code, comment = SeparateComment(line)
+        self.Comment = comment
         code = self.ProcessAlias(code)
         if len(code) == 0:
             return
@@ -74,7 +80,7 @@ class OntologyRule:
 def LoadFeatureSet(dictionaryLocation):
     with open(dictionaryLocation) as dictionary:
         for line in dictionary:
-            blocks = [x.strip() for x in re.split(":", RemoveComment(line)) if x]
+            blocks = [x.strip() for x, __ in re.split(":", SeparateComment(line)) if x]
             if len(blocks) <= 1:
                 continue            # there is no ":" sign
             featurestring = blocks[-1]   # the last block has features
@@ -90,7 +96,7 @@ def LoadFullFeatureList(featureListLocation):
     FeatureSet.clear()
     with open(featureListLocation) as dictionary:
         for line in dictionary:
-            feature = RemoveComment(line)
+            feature, __ = SeparateComment(line)
             if len(feature) == 0:
                 continue
             FeatureSet.add(feature)
@@ -108,7 +114,7 @@ def PrintFeatureOntology():
         print node
     print "\n\n***Alias***"
     for key in sorted(AliasDict):
-        print "[" + key + "]:" + FeatureList[AliasDict[key]] + "(" + str(AliasDict[key]) + ")"
+        print "[" + key + "]:" + FeatureList[AliasDict[key]]
 
 def LoadFeatureOntology(featureOncologyLocation):
     global FeatureOntology
