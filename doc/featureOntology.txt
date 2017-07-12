@@ -19,7 +19,7 @@ mXP <> 0
 ???   //POS: change name; apostrophe
 
 // Link Ontology: (also for Dad= Kid=; Note that Link ontology allows names same as features in Feature Ontoloy: e.g. R and X)
-/ Note that link names are also part of the FEATURE system which can be checked as features.  When a link is established, 
+// Note that link names are also part of the FEATURE system which can be checked as features.  When a link is established,
 // the system automatically set the corresponding features and when it is delinked, the system removes the related features.
 
 S,Subj,Arg,Kid // Subject
