@@ -31,19 +31,18 @@ class OntologyRule:
     def SetRule(self, line):
         code = RemoveComment(line)
         code = self.ProcessAlias(code)
-        code = code.strip()
         if len(code) == 0:
             return
-        features = re.split(",|;| ", code)
-        self.openWord = features[0].strip()
-        feature = features[0].strip()
+
+        features = [x.strip() for x in re.split(",|;| ", code) if x]
+        self.openWord = features[0]
+        feature = features[0]
         if feature not in FeatureDict:
             logging.error("Feature[" + feature + "] in file is not in FeatureDict!")
             return  # ignore.
         self.openWordID = FeatureDict[feature]
         if len(features) > 1:
             for feature in features[1:]:
-                feature = feature.strip()
                 if feature not in FeatureDict:
                     logging.error("Feature[" + feature + "] in file is not in FeatureDict!")
                 else:
@@ -52,13 +51,13 @@ class OntologyRule:
 
     @staticmethod
     def ProcessAlias( line):
-        blocks = re.split("=", line)
+        blocks = [x.strip() for x in re.split("=", line) if x]
         if len(blocks) <= 1:
             return line     # there is no "=" sign.
         #Now the last block has the real feature name and code
-        code = blocks[-1].strip()
+        code = blocks[-1]
         features = re.split(",|;| ", code)    # the first feature is the real one.
-        feature = features[0].strip()
+        feature = features[0]
         if feature not in FeatureDict:
             logging.error("Feature[" + feature + "] in file is not in FeatureDict (ProcessAlias)!")
             # FeatureList.append([feature])
@@ -67,7 +66,7 @@ class OntologyRule:
 
         featureID = FeatureDict[feature]
         for alias in blocks[:-1]:
-            AliasDict[alias.strip()] = featureID
+            AliasDict[alias] = featureID
 
         return code
 
@@ -75,11 +74,11 @@ class OntologyRule:
 def LoadFeatureSet(dictionaryLocation):
     with open(dictionaryLocation) as dictionary:
         for line in dictionary:
-            blocks = re.split(":", RemoveComment(line))
+            blocks = [x.strip() for x in re.split(":", RemoveComment(line)) if x]
             if len(blocks) <= 1:
                 continue            # there is no ":" sign
-            featurestring = blocks[-1].strip()   # the last block has features
-            features = featurestring.split(" ")
+            featurestring = blocks[-1]   # the last block has features
+            features = featurestring.split()    #separate by space
             for feature in features:
                 if re.match('^\'.*\'$', feature) or re.match('^/.*/$', feature):
                     continue
@@ -104,8 +103,12 @@ def PrintFeatureSet():
         print( feature )
 
 def PrintFeatureOntology():
+    print "\n\n***Ontology***"
     for node in sorted(FeatureOntology, key=operator.attrgetter('openWord')):
         print node
+    print "\n\n***Alias***"
+    for key in sorted(AliasDict):
+        print "[" + key + "]:" + FeatureList[AliasDict[key]] + "(" + str(AliasDict[key]) + ")"
 
 def LoadFeatureOntology(featureOncologyLocation):
     global FeatureOntology
@@ -122,8 +125,8 @@ if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     # LoadFeatureSet('../../fsa/Y/lexY.txt')
     # LoadFeatureSet('../../fsa/X/lexX.txt')
+    #PrintFeatureSet()
     LoadFullFeatureList('../doc/lexicon/featurelist.txt')
-    PrintFeatureSet()
 
     LoadFeatureOntology('../doc/featureOntology.txt')
     PrintFeatureOntology()
