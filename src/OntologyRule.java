@@ -136,7 +136,7 @@ public class OntologyRule implements Comparable<OntologyRule> {
 
 	
 	public String toString_Alias(){
-		String result = "[ALIAS]\n";
+		String result = "\n[ALIAS]\n";
 		for (Alias a : aliasList){
 			result += a.aliasName + "\t";
 			result += featureList[a.featureID] + "\n";

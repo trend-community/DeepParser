@@ -13,7 +13,8 @@ public class FeatureOntology {
 		
 		FeatureOntology f = new FeatureOntology();
 		
-		f.loadRules("data/featureOntology.txt");
+		//f.loadRules("data/featureOntology_test.txt");
+		f.loadRules("doc/featureOntology.txt");
 		System.out.println("Features for ObjS:" + f.searchFeature("ObjS"));
 		
 		System.out.println(f);

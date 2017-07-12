@@ -42,7 +42,7 @@ def Tokenize_mine(sentence):
 
         if (c.isalnum() and (not prevc.isalnum()) ) or (not c.isalnum() and not c.isspace()):
             StartToken = True
-            StartPosition = i;
+            StartPosition = i
         i += 1
 
     if StartToken:  #wrap up the last one
@@ -60,12 +60,13 @@ def DisplayDS():
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     target = "This is a 'bad_sentence', not a word. Don't classify it as a character."
+    target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
     print target
     Tokenize(target)
     print "\n\n NLTK tokenization:"
     DisplayDS()
 
-    print "\n\n Mine tokenization:"
+    print "\n\n My tokenization:"
     DS = []
     Tokenize_mine(target)
     DisplayDS()
