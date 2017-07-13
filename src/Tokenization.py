@@ -1,30 +1,28 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
 import logging
-import nltk     #TODO: remove this package in the future.
+#import nltk     #TODO: remove this package in the future.
 
 class EmptyBase(object): pass
-DS = []    # this present the whole data structure.
+#
+# def Tokenize(sentence):
+#     global DS
+#     tokens = nltk.word_tokenize(sentence)
+#
+#     for token in tokens:
+#         Element = EmptyBase()
+#         Element.word = token
+#         Element.position = 1
+#         DS.append(Element)
+
+
 
 def Tokenize(sentence):
-    global DS
-    tokens = nltk.word_tokenize(sentence)
-
-    for token in tokens:
-        Element = EmptyBase()
-        Element.word = token
-        Element.position = 1
-        DS.append(Element)
-
-
-
-def Tokenize_mine(sentence):
-    global DS
-
     StartToken = True
     StartPosition = 0
     #for i in range(1, len(sentence)):   #ignore the first one.
     i = 1
+    DS = []
     while i<len(sentence):
         c = sentence[i]
         prevc = sentence[i-1]
@@ -51,8 +49,9 @@ def Tokenize_mine(sentence):
         Element.position = StartPosition
         DS.append(Element)
 
+    return DS
 
-def DisplayDS():
+def DisplayDS(DS):
     for ds in DS:
         print "[word]:" + ds.word + "\t[position]:" + str(ds.position)
 
@@ -62,11 +61,10 @@ if __name__ == "__main__":
     target = "This is a 'bad_sentence', not a word. Don't classify it as a character."
     target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
     print target
-    Tokenize(target)
-    print "\n\n NLTK tokenization:"
-    DisplayDS()
+    # Tokenize(target)
+    # print "\n\n NLTK tokenization:"
+    # DisplayDS()
 
     print "\n\n My tokenization:"
-    DS = []
-    Tokenize_mine(target)
-    DisplayDS()
+    nodes = Tokenize(target)
+    DisplayDS(nodes)
