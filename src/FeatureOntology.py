@@ -5,6 +5,9 @@ import logging, re, operator
 
 class EmptyBase(object): pass
 
+newbase = EmptyBase(3)
+newbase2 = EmptyBase()
+
 _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
 _FeatureDict = {}   #this is populated from FeatureSet. for better searching
@@ -14,10 +17,10 @@ _LexiconList = []
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
-    return blocks[0].strip(), " ".join(blocks[1:])
+    return blocks[0], " ".join(blocks[1:])
 
 
-class OntologyRule:
+class OntologyNode:
     def __init__(self):
         self.openWord = ''
         self.Comment = ''
@@ -44,16 +47,10 @@ class OntologyRule:
         features = [x.strip() for x in re.split(",|;| ", code) if x]
         self.openWord = features[0]
         feature = features[0]
-        if feature not in _FeatureDict:
-            logging.error("Feature[" + feature + "] in file is not in _FeatureDict!")
-            return  # ignore.
-        self.openWordID = _FeatureDict[feature]
+        self.openWordID = GetFeatureID(feature)
         if len(features) > 1:
             for feature in features[1:]:
-                if feature not in _FeatureDict:
-                    logging.error("Feature[" + feature + "] in file is not in _FeatureDict!")
-                else:
-                    self.ancestors.add(_FeatureDict[feature])
+                self.ancestors.add(GetFeatureID(feature))
 
 
     @staticmethod
@@ -64,14 +61,9 @@ class OntologyRule:
         #Now the last block has the real feature name and code
         code = blocks[-1]
         features = re.split(",|;| ", code)    # the first feature is the real one.
-        feature = features[0]
-        if feature not in _FeatureDict:
-            logging.error("Feature[" + feature + "] in file is not in _FeatureDict (ProcessAlias)!")
-            # _FeatureList.append([feature])
-            # _FeatureSet.add({feature, len(_FeatureList)})
-            return code # ignore.
-
-        featureID = _FeatureDict[feature]
+        featureID = GetFeatureID(features[0])
+        if featureID == -1: #the feature in file is not in featureFullList
+            return code # ignore
         for alias in blocks[:-1]:
             _AliasDict[alias] = featureID
 
@@ -123,7 +115,7 @@ def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
     with open(featureOncologyLocation) as dictionary:
         for line in dictionary:
-            node = OntologyRule()
+            node = OntologyNode()
             node.SetRule(line)
             if node.openWord <> '':
                 _FeatureOntology.append(node)
@@ -139,7 +131,8 @@ def GetFeatureID(feature):
         return _AliasDict[feature]
     if feature in _FeatureDict:
         return _FeatureDict[feature]
-    return -1    # -1?
+    logging.warn("Searching for " + feature + " but it is not in featurefulllist.")
+    return -1    # -1? 0?
 def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
@@ -160,14 +153,29 @@ def LoadLexicon(lexiconLocation):
             node.features = set()
             features = blocks[1].split()
             for feature in features:
-                if re.match('^\'.*\'$', feature) or re.match('^/.*/$', feature):
-                    continue
-                node.features.add(_FeatureDict[feature])
+                if re.match('^\'.*\'$', feature):
+                    node.stem = feature.strip('\'')
+                elif re.match('^/.*/$', feature):
+                    node.norm = feature.strip('/')
+                else:
+                    node.features.add(GetFeatureID(feature))
             _LexiconList.append(node)
 
+
+#this can be more complicate: search for case-insensitive, _ed _ing _s...
 def SearchLexicon(word):
+    word = word.lower()
     for node in _LexiconList:
         if node.word == word:
+            return node
+
+    word_d = word.rstrip("d")
+    word_ed = word.rstrip("ed")
+    word_ing = word.rstrip("ing")
+    word_s = word.rstrip("s")
+    word_es = word.rstrip("es")
+    for node in _LexiconList:
+        if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
             return node
     return None
 
@@ -193,7 +201,11 @@ if __name__ == "__main__":
     #PrintFeatureSet()
 
     print SearchFeatureOntology(GetFeatureID("com"))
-    s = SearchLexicon("airline")
-    print s.features
-
-    print SearchFeatures("airline")
+    s = SearchLexicon("is")
+    if s:
+        print s.features
+    s = SearchLexicon("ised")
+    if s:
+        print s.features
+    print SearchFeatures("airliner")
+    print SearchFeatures("airliners")
