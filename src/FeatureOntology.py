@@ -5,8 +5,6 @@ import logging, re, operator
 
 class EmptyBase(object): pass
 
-newbase = EmptyBase(3)
-newbase2 = EmptyBase()
 
 _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
@@ -148,9 +146,17 @@ def LoadLexicon(lexiconLocation):
             if len(blocks) <> 2:
                 #logging.warn("line is not in [word]:[features] format:\n\t" + line)
                 continue
-            node = EmptyBase()
-            node.word = blocks[0]
-            node.features = set()
+
+            newNode = False
+            #node = SearchLexicon(blocks[0])
+            node = None
+            if not node:
+                newNode = True
+                node = EmptyBase()
+                node.word = blocks[0]
+                node.features = set()
+            else:
+                logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
                 if re.match('^\'.*\'$', feature):
@@ -159,10 +165,12 @@ def LoadLexicon(lexiconLocation):
                     node.norm = feature.strip('/')
                 else:
                     node.features.add(GetFeatureID(feature))
-            _LexiconList.append(node)
+            if newNode:
+                _LexiconList.append(node)
 
 
 #this can be more complicate: search for case-insensitive, _ed _ing _s...
+# TODO:need to speed up the search. bisect?
 def SearchLexicon(word):
     word = word.lower()
     for node in _LexiconList:
@@ -209,3 +217,5 @@ if __name__ == "__main__":
         print s.features
     print SearchFeatures("airliner")
     print SearchFeatures("airliners")
+    print "there are so many lexicons:%s" % len(_LexiconList)
+    print SearchFeatures("pretty")
