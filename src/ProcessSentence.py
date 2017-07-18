@@ -15,5 +15,5 @@ if __name__ == "__main__":
         output = "Node [" + node.word + "]:"
         for featureID in node.features:
             output += FeatureOntology.GetFeatureName(featureID) + ";"
-        print output
+        print(output)
 

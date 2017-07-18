@@ -1,5 +1,4 @@
-# coding: utf-8
-from __future__ import unicode_literals
+
 import logging, re
 #import Tokenization, FeatureOntology
 
@@ -26,7 +25,7 @@ class Rule:
         self.Origin = ruleString
         code, __ = SeparateComment(ruleString)
         blocks = [x.strip() for x in re.split("=", code)]
-        if len(blocks) <> 2:
+        if len(blocks) != 2:
             logging.info(" not separated by =")
             return
         self.RuleName = blocks[0]
@@ -124,8 +123,8 @@ if __name__ == "__main__":
     target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
     rule = Rule()
     rule.SetRule(target)
-    print rule.RuleContent
-    print rule.Tokens
+    print(rule.RuleContent)
+    print(rule.Tokens)
 
     target = """
 V_NN1_de_NN2_exception4 =
@@ -140,6 +139,6 @@ V_NN1_de_NN2_exception4 =
 """
     rule = Rule()
     rule.SetRule(target)
-    print rule.RuleContent
-    print rule.Tokens
+    print(rule.RuleContent)
+    print(rule.Tokens)
 

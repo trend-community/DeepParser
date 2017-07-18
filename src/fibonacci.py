@@ -25,7 +25,7 @@ def fib_recur_tail_helper(a, b, n):
 def coinChange(centsNeeded, coinValues):
    minCoins = [[0 for j in range(centsNeeded + 1)]
                for i in range(len(coinValues))]
-   minCoins[0] = range(centsNeeded + 1)
+   minCoins[0] = list(range(centsNeeded + 1))
 
    for i in range(1,len(coinValues)):
       for j in range(0, centsNeeded + 1):
@@ -54,17 +54,17 @@ def stringmatch(str1, str2):
 
 if __name__ == "__main__":
     #print fib_recursivive(50)
-    print fib_list(500)
-    print fib_recur_tail(500)
+    print(fib_list(500))
+    print(fib_recur_tail(500))
     # for i in range(1, 12):
     #     print fib_list(i)
     # for i in range(1, 12):
     #     print fib_recur_tail(i)
 
-    print coinChange(36, [1,10,25])
+    print(coinChange(36, [1,10,25]))
 
     str_1 = 'efk'
     str_2 = 'sefssefks'
     location = stringmatch(str_1, str_2)
-    print "location:%s" % location
-    print " found string: " + str_2[location-len(str_1): location]
+    print("location:%s" % location)
+    print(" found string: " + str_2[location-len(str_1): location])

@@ -53,19 +53,19 @@ def Tokenize(sentence):
 
 def DisplayDS(DS):
     for ds in DS:
-        print "[word]:" + ds.word + "\t[position]:" + str(ds.position)
+        print("[word]:" + ds.word + "\t[position]:" + str(ds.position))
 
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     target = "This is a 'bad_sentence', not a word. Don't classify it as a character."
     target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
-    print target
+    print(target)
     # Tokenize(target)
     # print "\n\n NLTK tokenization:"
     # DisplayDS()
 
-    print "\n\n My tokenization:"
+    print("\n\n My tokenization:")
     nodes = Tokenize(target)
     DisplayDS(nodes)
 

@@ -102,12 +102,12 @@ def PrintFeatureSet():
         print( feature )
 
 def PrintFeatureOntology():
-    print "\n\n***Ontology***"
+    print("\n\n***Ontology***")
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
-        print node
-    print "\n\n***Alias***"
+        print(node)
+    print("\n\n***Alias***")
     for key in sorted(_AliasDict):
-        print "[" + key + "]:" + _FeatureList[_AliasDict[key]]
+        print("[" + key + "]:" + _FeatureList[_AliasDict[key]])
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
@@ -115,7 +115,7 @@ def LoadFeatureOntology(featureOncologyLocation):
         for line in dictionary:
             node = OntologyNode()
             node.SetRule(line)
-            if node.openWord <> '':
+            if node.openWord != '':
                 _FeatureOntology.append(node)
 
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
@@ -143,7 +143,7 @@ def LoadLexicon(lexiconLocation):
         for line in dictionary:
             code, __ = SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
-            if len(blocks) <> 2:
+            if len(blocks) != 2:
                 #logging.warn("line is not in [word]:[features] format:\n\t" + line)
                 continue
 
@@ -208,14 +208,14 @@ if __name__ == "__main__":
     #PrintFeatureOntology()
     #PrintFeatureSet()
 
-    print SearchFeatureOntology(GetFeatureID("com"))
+    print(SearchFeatureOntology(GetFeatureID("com")))
     s = SearchLexicon("is")
     if s:
-        print s.features
+        print(s.features)
     s = SearchLexicon("ised")
     if s:
-        print s.features
-    print SearchFeatures("airliner")
-    print SearchFeatures("airliners")
-    print "there are so many lexicons:%s" % len(_LexiconList)
-    print SearchFeatures("pretty")
+        print(s.features)
+    print(SearchFeatures("airliner"))
+    print(SearchFeatures("airliners"))
+    print("there are so many lexicons:%s" % len(_LexiconList))
+    print(SearchFeatures("pretty"))
