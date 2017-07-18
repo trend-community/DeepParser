@@ -70,7 +70,7 @@ class OntologyNode:
 #Used to extract feature from dictionary, to create full feature list.
 #   not useful after full feature list is created.
 def LoadFeatureSet(dictionaryLocation):
-    with open(dictionaryLocation) as dictionary:
+    with open(dictionaryLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             code, __ = SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
@@ -87,7 +87,7 @@ def LoadFeatureSet(dictionaryLocation):
 def LoadFullFeatureList(featureListLocation):
     global _FeatureList, _FeatureDict
     _FeatureSet.clear()
-    with open(featureListLocation) as dictionary:
+    with open(featureListLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             feature, __ = SeparateComment(line)
             if len(feature) == 0:
@@ -111,7 +111,7 @@ def PrintFeatureOntology():
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
-    with open(featureOncologyLocation) as dictionary:
+    with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             node = OntologyNode()
             node.SetRule(line)
@@ -139,7 +139,7 @@ def GetFeatureName(featureID):
 
 def LoadLexicon(lexiconLocation):
     global _LexiconList
-    with open(lexiconLocation) as dictionary:
+    with open(lexiconLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             code, __ = SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
@@ -156,7 +156,7 @@ def LoadLexicon(lexiconLocation):
                 node.word = blocks[0]
                 node.features = set()
             else:
-                logging.debug("This word is repeated in lexicon: %s" % blocks[0])
+                print("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
                 if re.match('^\'.*\'$', feature):
@@ -176,15 +176,15 @@ def SearchLexicon(word):
     for node in _LexiconList:
         if node.word == word:
             return node
-
-    word_d = word.rstrip("d")
-    word_ed = word.rstrip("ed")
-    word_ing = word.rstrip("ing")
-    word_s = word.rstrip("s")
-    word_es = word.rstrip("es")
-    for node in _LexiconList:
-        if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
-            return node
+    #
+    # word_d = word.rstrip("d")
+    # word_ed = word.rstrip("ed")
+    # word_ing = word.rstrip("ing")
+    # word_s = word.rstrip("s")
+    # word_es = word.rstrip("es")
+    # for node in _LexiconList:
+    #     if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
+    #         return node
     return None
 
 def SearchFeatures(word):
@@ -197,7 +197,7 @@ def SearchFeatures(word):
             lexicon.features.update(ancestors)
     return lexicon.features
 
-LoadFullFeatureList('../../fsa/extra/FeatureList.txt')
+LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 LoadFeatureOntology('../doc/featureOntology.txt')
 LoadLexicon('../../fsa/Y/lexY.txt')
 
