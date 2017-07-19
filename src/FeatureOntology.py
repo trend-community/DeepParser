@@ -164,7 +164,11 @@ def LoadLexicon(lexiconLocation):
                 elif re.match('^/.*/$', feature):
                     node.norm = feature.strip('/')
                 else:
-                    node.features.add(GetFeatureID(feature))
+                    featureID =GetFeatureID(feature)
+                    node.features.add(featureID)
+                    # ancestors = SearchFeatureOntology(featureID)
+                    # if ancestors:
+                    #     node.features.update(ancestors)
             if newNode:
                 _LexiconList.append(node)
 
@@ -191,10 +195,6 @@ def SearchFeatures(word):
     lexicon = SearchLexicon(word)
     if lexicon is None:
         return {}   #return empty feature set
-    for feature in list(lexicon.features):
-        ancestors = SearchFeatureOntology(feature)
-        if ancestors:
-            lexicon.features.update(ancestors)
     return lexicon.features
 
 LoadFullFeatureList('../../fsa/extra/featurelist.txt')
