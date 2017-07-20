@@ -14,8 +14,6 @@ _AliasDict = {}
 _FeatureOntology = []
 _LexiconDict = {}
 
-class BisectRetVal():
-    LOWER, HIGHER, STOP = range(3)
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.

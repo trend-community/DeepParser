@@ -2,20 +2,26 @@ import logging
 import Tokenization, FeatureOntology
 import Rules
 
+
+# Logic: And/Or/Not
+def LogicMatch(wordrule, word):
+    
+    return False
+
 def TokenMatch(lextoken, ruletoken):
     if not lextoken:
         return False
     rule = ruletoken.word.strip("[").strip("]")
     if rule.startswith("\""):  #word  comparison
-        return rule.strip("\"") == lextoken.word.lower() #case insensitive
+        return LogicMatch(rule.strip("\""),lextoken.word.lower()) #case insensitive
     if rule.startswith("'"):
         if hasattr(lextoken, "stem"):    #stem comparison
-            return rule.strip("\"") == lextoken.stem
+            return LogicMatch(rule.strip("\""), lextoken.stem)
         else:
             return False
     if rule.startswith("/"):
         if hasattr(lextoken, "norm"):    #stem comparison
-            return rule.strip("/") == lextoken.norm
+            return LogicMatch(rule.strip("/"), lextoken.norm)
         else:
             return False
 

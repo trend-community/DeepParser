@@ -1,6 +1,7 @@
 
 import logging, re
 import Tokenization
+import unittest
 #import FeatureOntology
 
 _RuleList = []
@@ -58,6 +59,8 @@ class Rule:
                 node.word = node.word.rstrip("*")
                 node.repeat = [0, 3]
             repeatMatch = re.match("(.*)\*(\d)*$", node.word)
+            if not repeatMatch:
+                repeatMatch = re.match("(.*)(\d)+$", node.word)
             if repeatMatch:
                 node.word = repeatMatch[1]
                 repeatMax = 3           #default as 3
@@ -190,7 +193,21 @@ def LoadRules(RuleLocation):
 
 LoadRules("../data/rule.txt")
 
+class RuleTest(unittest.TestCase):
+    def test_Tokenization(self):
+        tokenlist = Tokenize("[a] [b]")
+        self.assertEquals(tokenlist[0].word, '[a]')
+    def test_SetRule_number(self):
+        r = Rule()
+        r.SetRule("[a]4 [b]* [c]*7 [d]?")
+        self.assertEquals(r.Tokens[0].repeat[1], 4)
+        self.assertEquals(r.Tokens[1].repeat[1], 3)
+        self.assertEquals(r.Tokens[2].repeat[1], 7)
+        self.assertEquals(r.Tokens[4].repeat[1], 1)
+        self.assertEquals(r.Tokens[4].repeat[0], 0)
+
 if __name__ == "__main__":
+    unittest.main()
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
     rule = Rule()
