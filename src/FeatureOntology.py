@@ -1,8 +1,9 @@
 #!/bin/python
 #read in rules, starting from dictionary (lexY.txt), then lexicon.
 #might want to remember line number for rules (excluding dictionary).
-import logging, re, operator
-
+import logging, re, operator, bisect
+from operator import attrgetter,itemgetter
+import collections
 class EmptyBase(object): pass
 
 
@@ -11,7 +12,10 @@ _FeatureList = []   #this is populated from FeatureSet. to have featureID.
 _FeatureDict = {}   #this is populated from FeatureSet. for better searching
 _AliasDict = {}
 _FeatureOntology = []
-_LexiconList = []
+_LexiconDict = {}
+
+class BisectRetVal():
+    LOWER, HIGHER, STOP = range(3)
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
@@ -138,7 +142,8 @@ def GetFeatureName(featureID):
         return None
 
 def LoadLexicon(lexiconLocation):
-    global _LexiconList
+    global _LexiconDict
+
     with open(lexiconLocation) as dictionary:
         for line in dictionary:
             code, __ = SeparateComment(line)
@@ -146,17 +151,16 @@ def LoadLexicon(lexiconLocation):
             if len(blocks) != 2:
                 #logging.warn("line is not in [word]:[features] format:\n\t" + line)
                 continue
-
             newNode = False
-            #node = SearchLexicon(blocks[0])
-            node = None
+            node = SearchLexicon(blocks[0])
+            #node = None
             if not node:
                 newNode = True
                 node = EmptyBase()
                 node.word = blocks[0]
                 node.features = set()
             else:
-                logging.debug("This word is repeated in lexicon: %s" % blocks[0])
+                print("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
                 if re.match('^\'.*\'$', feature):
@@ -166,25 +170,26 @@ def LoadLexicon(lexiconLocation):
                 else:
                     node.features.add(GetFeatureID(feature))
             if newNode:
-                _LexiconList.append(node)
+                _LexiconDict.update({node.word: node})
+
 
 
 #this can be more complicate: search for case-insensitive, _ed _ing _s...
 # TODO:need to speed up the search. bisect?
 def SearchLexicon(word):
     word = word.lower()
-    for node in _LexiconList:
-        if node.word == word:
-            return node
 
-    word_d = word.rstrip("d")
-    word_ed = word.rstrip("ed")
-    word_ing = word.rstrip("ing")
-    word_s = word.rstrip("s")
-    word_es = word.rstrip("es")
-    for node in _LexiconList:
-        if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
-            return node
+    if word in _LexiconDict.keys():
+        return _LexiconDict.get(word)
+
+    # word_d = word.rstrip("d")
+    # word_ed = word.rstrip("ed")
+    # word_ing = word.rstrip("ing")
+    # word_s = word.rstrip("s")
+    # word_es = word.rstrip("es")
+    # for node in _LexiconDict:
+    #     if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
+    #         return node
     return None
 
 def SearchFeatures(word):
@@ -197,16 +202,16 @@ def SearchFeatures(word):
             lexicon.features.update(ancestors)
     return lexicon.features
 
-LoadFullFeatureList('../../fsa/extra/FeatureList.txt')
+LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 LoadFeatureOntology('../doc/featureOntology.txt')
 LoadLexicon('../../fsa/Y/lexY.txt')
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    # LoadFeatureSet('../../fsa/Y/lexY.txt')
-    # LoadFeatureSet('../../fsa/X/lexX.txt')
-    #PrintFeatureOntology()
-    #PrintFeatureSet()
+    LoadFeatureSet('../../fsa/Y/lexY.txt')
+    LoadFeatureSet('../../fsa/X/lexX.txt')
+    PrintFeatureOntology()
+    PrintFeatureSet()
 
     print(SearchFeatureOntology(GetFeatureID("com")))
     s = SearchLexicon("is")
@@ -217,5 +222,5 @@ if __name__ == "__main__":
         print(s.features)
     print(SearchFeatures("airliner"))
     print(SearchFeatures("airliners"))
-    print("there are so many lexicons:%s" % len(_LexiconList))
+    print("there are so many lexicons:%s" % len(_LexiconDict))
     print(SearchFeatures("pretty"))
