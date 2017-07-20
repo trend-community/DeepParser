@@ -142,8 +142,9 @@ def GetFeatureName(featureID):
         return None
 
 def LoadLexicon(lexiconLocation):
+
     global _LexiconDict
-    with open(lexiconLocation, encoding="utf-8") as dictionary:
+    with open(lexiconLocation) as dictionary:
         for line in dictionary:
             code, __ = SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
@@ -184,13 +185,18 @@ def SearchLexicon(word):
     if word in _LexiconDict.keys():
         return _LexiconDict.get(word)
 
+
+    if word in _LexiconDict.keys():
+        return _LexiconDict.get(word)
+
+
     # word_d = word.rstrip("d")
     # word_ed = word.rstrip("ed")
     # word_ing = word.rstrip("ing")
     # word_s = word.rstrip("s")
     # word_es = word.rstrip("es")
 
-    # for node in _LexiconList:
+    # for node in _LexiconDict:
     #     if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
     #         return node
     return None
