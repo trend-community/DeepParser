@@ -1,12 +1,9 @@
 import logging
 import Tokenization, FeatureOntology
 import Rules
+from LogicOperation import LogicMatch
 
 
-# Logic: And/Or/Not
-def LogicMatch(wordrule, word):
-    
-    return False
 
 def TokenMatch(lextoken, ruletoken):
     if not lextoken:
@@ -64,7 +61,7 @@ def SearchMatchingRule(strtokens):
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    target = "a 'bad_sentence', not a word. Don't classify it as  characters. airline"
+    target = "a 'bad_sentence', being good a word. Don't classify it as  characters. airline"
     nodes = Tokenization.Tokenize(target)
     for node in nodes:
         node.lexicon = FeatureOntology.SearchLexicon(node.word)
@@ -77,4 +74,5 @@ if __name__ == "__main__":
             output += str(node.lexicon.__dict__) + ";"
         print(output)
 
+    print("\tStart matching rules!")
     SearchMatchingRule(nodes)

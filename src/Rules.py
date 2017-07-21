@@ -196,19 +196,26 @@ LoadRules("../data/rule.txt")
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
         tokenlist = Tokenize("[a] [b]")
-        self.assertEquals(tokenlist[0].word, '[a]')
+        self.assertEqual(tokenlist[0].word, '[a]')
     def test_SetRule_number(self):
         r = Rule()
-        r.SetRule("[a]4 [b]* [c]*7 [d]?")
-        self.assertEquals(r.Tokens[0].repeat[1], 4)
-        self.assertEquals(r.Tokens[1].repeat[1], 3)
-        self.assertEquals(r.Tokens[2].repeat[1], 7)
-        self.assertEquals(r.Tokens[4].repeat[1], 1)
-        self.assertEquals(r.Tokens[4].repeat[0], 0)
+        r.SetRule("a=[a]4 [b]* [c]*7 [d]?")
+        self.assertEqual(r.Tokens[0].repeat[1], 4)
+        self.assertEqual(r.Tokens[1].repeat[1], 3)
+        self.assertEqual(r.Tokens[2].repeat[1], 7)
+        self.assertEqual(r.Tokens[3].repeat[1], 1)
+        self.assertEqual(r.Tokens[3].repeat[0], 0)
+    def test_tokenspace(self):
+        r = Rule()
+        r.SetRule("b=[a b? c:d e]")
+        self.assertEqual(r.Tokens[0].word, '[a b? c]')
+        self.assertEqual(r.Tokens[0].action, 'd e')
+
+
 
 if __name__ == "__main__":
-    unittest.main()
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    unittest.main()
     target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
     rule = Rule()
     rule.SetRule(target)

@@ -17,7 +17,7 @@ _LexiconDict = {}
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
-    return blocks[0], " ".join(blocks[1:])
+    return blocks[0], "//".join(blocks[1:])
 
 
 class OntologyNode:
@@ -100,6 +100,7 @@ def LoadFullFeatureList(featureListLocation):
 
 
 def PrintFeatureSet():
+    print("\n\n***Feature Set***")
     for feature in sorted(_FeatureSet):
         print( feature )
 
@@ -131,7 +132,7 @@ def GetFeatureID(feature):
         return _AliasDict[feature]
     if feature in _FeatureDict:
         return _FeatureDict[feature]
-    logging.warn("Searching for " + feature + " but it is not in featurefulllist.")
+    logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
     return -1    # -1? 0?
 def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
@@ -140,9 +141,8 @@ def GetFeatureName(featureID):
         return None
 
 def LoadLexicon(lexiconLocation):
-
     global _LexiconDict
-    with open(lexiconLocation) as dictionary:
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             code, __ = SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
@@ -175,28 +175,29 @@ def LoadLexicon(lexiconLocation):
                 _LexiconDict.update({node.word: node})
 
 
-
 #this can be more complicate: search for case-insensitive, _ed _ing _s...
-# TODO:need to speed up the search. bisect?
 def SearchLexicon(word):
     word = word.lower()
     if word in _LexiconDict.keys():
         return _LexiconDict.get(word)
 
 
-    if word in _LexiconDict.keys():
-        return _LexiconDict.get(word)
+    word_ed = word.rstrip("ed")
+    if word_ed in _LexiconDict.keys():
+        return _LexiconDict.get(word_ed)
+    word_d = word.rstrip("d")
+    if word_d in _LexiconDict.keys():
+        return _LexiconDict.get(word_d)
+    word_ing = word.rstrip("ing")
+    if word_ing in _LexiconDict.keys():
+        return _LexiconDict.get(word_ing)
+    word_s = word.rstrip("s")
+    if word_s in _LexiconDict.keys():
+        return _LexiconDict.get(word_s)
+    word_es = word.rstrip("es")
+    if word_es in _LexiconDict.keys():
+        return _LexiconDict.get(word_es)
 
-
-    # word_d = word.rstrip("d")
-    # word_ed = word.rstrip("ed")
-    # word_ing = word.rstrip("ing")
-    # word_s = word.rstrip("s")
-    # word_es = word.rstrip("es")
-
-    # for node in _LexiconDict:
-    #     if node.word in [word_d, word_ed, word_ing, word_s, word_es]:
-    #         return node
     return None
 
 def SearchFeatures(word):
@@ -211,8 +212,8 @@ LoadLexicon('../../fsa/Y/lexY.txt')
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    LoadFeatureSet('../../fsa/Y/lexY.txt')
-    LoadFeatureSet('../../fsa/X/lexX.txt')
+    # LoadFeatureSet('../../fsa/Y/lexY.txt')
+    # LoadFeatureSet('../../fsa/X/lexX.txt')
     PrintFeatureOntology()
     PrintFeatureSet()
 
