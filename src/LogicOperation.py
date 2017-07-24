@@ -10,15 +10,18 @@ def LogicMatch(rule, word):
         Result = True
         for AndBlock in AndBlocks:
             Result = Result and LogicMatch(AndBlock, word)
-
     else:
-        Result = False
-        OrBlocks = [x.strip() for x in re.split("\|", rule)]
-        if len(OrBlocks) > 1:
-            for OrBlock in OrBlocks:
-                Result = Result or LogicMatch(OrBlock, word)
+        if rule[0] == "!":      #Not
+            Result = not LogicMatch(rule[1:], word)
+        else:
+            Result = False
+            OrBlocks = [x.strip() for x in re.split("\|", rule)]
+            if len(OrBlocks) > 1:
+                for OrBlock in OrBlocks:
+                    Result = Result or LogicMatch(OrBlock, word)
 
     return Result
+
 
 class RuleTest(unittest.TestCase):
     def test_LogitExact(self):
@@ -35,6 +38,16 @@ class RuleTest(unittest.TestCase):
         """Logic And/Or"""
         self.assertFalse(LogicMatch("a|b a", "b"))
         self.assertTrue(LogicMatch("a|b a", "a"))
+    def test_LogicNotOr(self):
+        """Logic And/Or"""
+        self.assertFalse(LogicMatch("!a|b|c", "b"))
+        self.assertTrue(LogicMatch("!a|b|c", "d"))
+        self.assertTrue(LogicMatch("!a b|c", "c"))
+        self.assertFalse(LogicMatch("!a b|c", "d"))
+        self.assertTrue(LogicMatch("a|b !b|c", "a"))
+        self.assertFalse(LogicMatch("a|b !b|c", "b"))
+        self.assertFalse(LogicMatch("a|b !b|c", "c"))
+        self.assertFalse(LogicMatch("a|b !b|c", "d"))
 
 
 if __name__ == "__main__":
