@@ -81,6 +81,11 @@ class Rule:
                 node.word = "[" + actionMatch[1] + "]"
                 node.action = actionMatch[2]
 
+            pointerMatch = re.match("^\^(.*?)\[(.*)\]$", node.word)
+            if pointerMatch:
+                node.word = "[" + pointerMatch[2] + "]"
+                node.pointer = pointerMatch[1]
+
     def __str__(self):
         output = "[ID]=" + str(self.ID)
         output += "\t[RuleName]=" + self.RuleName
@@ -89,6 +94,8 @@ class Rule:
         for token in self.Tokens:
             if token.StartTrunk:
                 output += "<"
+            if hasattr(token, 'pointer'):
+                output += "^" + token.pointer
             t = token.word
             if hasattr(token, 'action'):
                 t = t.replace("]", ":" + token.action + "]")
@@ -103,7 +110,7 @@ class Rule:
         return output
 
     def oneliner(self):
-        output = self.RuleName
+        output = "[" + str(self.ID) + "]" + self.RuleName
         if self.IsExpertLexicon:
             output += " :: {"
         else:
@@ -111,6 +118,8 @@ class Rule:
         for token in self.Tokens:
             if token.StartTrunk:
                 output += "<"
+            if hasattr(token, 'pointer'):
+                output += "^" + token.pointer
             t = token.word
             if hasattr(token, 'action'):
                 t = t.replace("]", ":" + token.action + "]")
@@ -119,7 +128,7 @@ class Rule:
                 output += "*" + str(token.repeat[1])
             if token.EndTrunk:
                 output += ">"
-            output += "~"
+            output += " "
         output += "};\n"
 
         return output
@@ -218,13 +227,13 @@ def _SearchToEnd(string):
 #   sometimes the line does not end with ; but it is still one rule.
 # if the line has { but not }, then this is not one rule, continue untile }; is found;
 # if the line end with "=", then continue;
-#  --- Reorganize it as:
+#  --- Reorganize it as: ---
 # If the line end with "=", then continue;
 # otherwise, find "{" and "}" in this line. if there is only "{" but not "}", then continue;
 #                  otherwise, conclude one line as a rule.
-# continue until };.
+# continue until };, or a blank line.
 def LoadRules(RuleLocation):
-    global _RuleList
+
     with open(RuleLocation, encoding="utf-8") as dictionary:
         RuleInMultiLines = False
         for line in dictionary:
@@ -241,18 +250,31 @@ def LoadRules(RuleLocation):
                     if line.find("{") >=0 and line.find("}") < 0:
                         RuleInMultiLines = True
             else:
+                if line.find("::") >= 0:
+                    #first line of this rule. wrap up the previous rule
+                    InsertRuleInList(rule)
+                    rule = ""
+
                 rule += " " + line
                 if line.find("};") >= 0 or line == "":
                     RuleInMultiLines = False
 
             if RuleInMultiLines == False:
-                node = Rule()
-                node.SetRule(rule)
-                if node.RuleName:
-                    if node.IsExpertLexicon:
-                        _ExpertLexicon.append(node)
-                    else:
-                        _RuleList.append(node)
+                InsertRuleInList(rule)
+                rule = ""
+
+        if rule:
+            InsertRuleInList(rule)
+
+def InsertRuleInList(string):
+    global _RuleList, _ExpertLexicon
+    node = Rule()
+    node.SetRule(string)
+    if node.RuleName:
+        if node.IsExpertLexicon:
+            _ExpertLexicon.append(node)
+        else:
+            _RuleList.append(node)
 
 
 def OutputRules():
@@ -261,7 +283,9 @@ def OutputRules():
     for rule in _ExpertLexicon:
         print(rule.oneliner())
 
+LoadRules("../../fsa/Y/1800VPy.xml")
 LoadRules("../../fsa/Y/900NPy.xml")
+#LoadRules("../data/rule.txt")
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -289,7 +313,12 @@ class RuleTest(unittest.TestCase):
         r.SetRule("""rule4words={[word] [word]
 	[word] [word]};""")
         self.assertEquals(r.oneliner(), "rule4words = {[word] [word] [word] [word] };\n")
-
+    def test_pointer(self):
+        r = Rule()
+        r.SetRule("rule={^[word] ^head[word]};")
+        self.assertEquals(r.Tokens[0].pointer, "")
+        self.assertEquals(r.Tokens[1].pointer, "head")
+        self.assertEquals(r.Tokens[1].word, "[word]")
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')

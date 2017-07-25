@@ -158,7 +158,7 @@ def LoadLexicon(lexiconLocation):
                 node.word = blocks[0]
                 node.features = set()
             else:
-                print("This word is repeated in lexicon: %s" % blocks[0])
+                logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
                 if re.match('^\'.*\'$', feature):

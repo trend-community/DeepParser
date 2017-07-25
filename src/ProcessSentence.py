@@ -45,12 +45,17 @@ def Match(strTokens, ruleTokens):
         maxValue =  space[len(ruleTokens)][j] if space[len(ruleTokens)][j]>maxValue else maxValue
 
     if maxValue>0:
-        print("Match!!!")
+        print("Match!!! %s"%maxValue)
         return True
     else:
         return False
 
 def SearchMatchingRule(strtokens):
+
+    for rule in Rules._ExpertLexicon:
+        result = Match(strtokens, rule.Tokens)
+        if result:
+            print(rule)
 
     for rule in Rules._RuleList:
         result = Match(strtokens, rule.Tokens)
@@ -58,10 +63,10 @@ def SearchMatchingRule(strtokens):
             print(rule)
 
 
-
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     target = "a 'bad_sentence', being good a word. Don't classify it as  characters. airline"
+    print(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:
         node.lexicon = FeatureOntology.SearchLexicon(node.word)
