@@ -1,7 +1,6 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
 import logging
-#import nltk     #TODO: remove this package in the future.
 
 class EmptyBase(object): pass
 #

@@ -1,9 +1,8 @@
 #!/bin/python
 #read in rules, starting from dictionary (lexY.txt), then lexicon.
 #might want to remember line number for rules (excluding dictionary).
-import logging, re, operator, bisect
-from operator import attrgetter,itemgetter
-import collections
+import logging, re, operator
+
 class EmptyBase(object): pass
 
 
@@ -206,9 +205,11 @@ def SearchFeatures(word):
         return {}   #return empty feature set
     return lexicon.features
 
-LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-LoadFeatureOntology('../doc/featureOntology.txt')
-LoadLexicon('../../fsa/Y/lexY.txt')
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
+LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
