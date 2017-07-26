@@ -1,14 +1,18 @@
 import logging
 import Tokenization, FeatureOntology
 import Rules
-from LogicOperation import LogicMatch
+from LogicOperation import LogicMatch, LogicMatchFeatures
 
-
+counterMatch = 0
 
 def TokenMatch(lextoken, ruletoken):
     if not lextoken:
         return False
+    global counterMatch
+    counterMatch += 1
     rule = ruletoken.word.strip("[").strip("]")
+    if not rule:    #"[]", not sure what that is.
+        return False
     if rule.startswith("\""):  #word  comparison
         return LogicMatch(rule.strip("\""),lextoken.word.lower()) #case insensitive
     if rule.startswith("'"):
@@ -23,12 +27,13 @@ def TokenMatch(lextoken, ruletoken):
             return False
 
     #compare feature
-    featureID = FeatureOntology.GetFeatureID(rule)
+    return LogicMatchFeatures(rule, lextoken.features)
+    # featureID = FeatureOntology.GetFeatureID(rule)
 
-    if featureID and featureID in lextoken.features:
-        return True
-    else:
-        return False
+    # if featureID and featureID in lextoken.features:
+    #     return True
+    # else:
+    #     return False
 
 def Match(strTokens, ruleTokens):
     space = [[0 for j in range(len(strTokens)+1)]
@@ -36,15 +41,20 @@ def Match(strTokens, ruleTokens):
              ]
 
     for i in range(1, len(ruleTokens)+1):
+        MatchOnce = False
         for j in range(1, len(strTokens)+1 ):
             if TokenMatch(strTokens[j-1].lexicon, ruleTokens[i-1]):
                 space[i][j] = 1+space[i-1][j-1]
+                MatchOnce = True
+        if not MatchOnce:   # at least match once.
+            return False    # otherwise, this rule does not fit for this string
 
     maxValue = 0
     for j in range(1, len(strTokens)+1):
         maxValue =  space[len(ruleTokens)][j] if space[len(ruleTokens)][j]>maxValue else maxValue
 
-    if maxValue>0:
+    if maxValue == len(ruleTokens):
+    #if maxValue > 0:
         print("Match!!! %s"%maxValue)
         return True
     else:
@@ -64,9 +74,11 @@ def SearchMatchingRule(strtokens):
 
 
 if __name__ == "__main__":
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     target = "a 'bad_sentence', being good a word. Don't classify it as  characters. airline"
-    print(target)
+    logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:
         node.lexicon = FeatureOntology.SearchLexicon(node.word)
@@ -79,5 +91,6 @@ if __name__ == "__main__":
             output += str(node.lexicon.__dict__) + ";"
         print(output)
 
-    print("\tStart matching rules!")
+    logging.warning("\tStart matching rules! counterMatch=%s"%counterMatch)
     SearchMatchingRule(nodes)
+    logging.warning("\tDone! counterMatch=%s"%counterMatch)

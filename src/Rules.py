@@ -6,11 +6,22 @@ import unittest
 
 _RuleList = []
 _ExpertLexicon = []
+_MacroList = []
+_MacroDict = {}     # not sure which one to use yet
 
-def SeparateComment(line):
+def _SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
     return blocks[0].strip(), " ".join(blocks[1:])
 
+def SeparateComment(multiline):
+    blocks = [x.strip() for x in re.split("\n", multiline) ]
+    content = ""
+    comment = ""
+    for block in blocks:
+        _content, _comment = _SeparateComment(block)
+        content += "\n" + _content
+        comment += " " + _comment
+    return content, comment
 
 class Rule:
     def __init__(self):
@@ -267,20 +278,25 @@ def LoadRules(RuleLocation):
             InsertRuleInList(rule)
 
 def InsertRuleInList(string):
-    global _RuleList, _ExpertLexicon
+    global _RuleList, _ExpertLexicon, _MacroDict
     node = Rule()
     node.SetRule(string)
     if node.RuleName:
-        if node.IsExpertLexicon:
-            _ExpertLexicon.append(node)
+        if node.RuleName.startswith("@"):
+            _MacroDict.update({node.RuleName: node})
         else:
-            _RuleList.append(node)
+            if node.IsExpertLexicon:
+                _ExpertLexicon.append(node)
+            else:
+                _RuleList.append(node)
 
 
 def OutputRules():
     for rule in _RuleList:
         print(rule.oneliner())
     for rule in _ExpertLexicon:
+        print(rule.oneliner())
+    for rule in _MacroDict.values():
         print(rule.oneliner())
 
 LoadRules("../../fsa/Y/1800VPy.xml")
@@ -312,7 +328,7 @@ class RuleTest(unittest.TestCase):
         r = Rule()
         r.SetRule("""rule4words={[word] [word]
 	[word] [word]};""")
-        self.assertEquals(r.oneliner(), "rule4words = {[word] [word] [word] [word] };\n")
+        self.assertEquals(r.oneliner(), "[1]rule4words = {[word] [word] [word] [word] };\n")
     def test_pointer(self):
         r = Rule()
         r.SetRule("rule={^[word] ^head[word]};")
@@ -320,9 +336,42 @@ class RuleTest(unittest.TestCase):
         self.assertEquals(r.Tokens[1].pointer, "head")
         self.assertEquals(r.Tokens[1].word, "[word]")
 
+    def test_which(self):
+        r = Rule()
+        r.SetRule("""
+        which:: 
+	^VWHSS advP? [F=which NP:^V2.O Wh] advP? ^V2[infinitive Kid=!O:^.ObjV]
+    ^VWHSS advP? [F=which NP:^V2.O Wh] [NP "!me|him|us|them":^V2.S] PP? R* ^V2[!passive Pred Kid=!Obj:^.ObjV]
+    ^VWHSS advP? [F=which NP:^V2.O Whh] R* ^V2[passive Pred Kid=!Obj:^.ObjV]
+	^[NP2 !pro] [R|PP]? ['\,':Done]? (IN+'which':^V.X) ^V[CL:^.ModS] 
+	^[NP2 !pro] [R|PP]? ['\,':Done]? [NP F=the:^V.S] (of+which:^V.X) [R|PP|DE]* ^V[CL:^.ModS] 
+//comment
+	^VWHSS advP? ['which+one':^V2.O Wh JS2] advP? ^V2[infinitive Kid=!O:^.ObjV]
+    ^VWHSS advP? ['which+one':^V2.O Wh JS2] [NP "!me|him|us|them":^V2.S] PP? R* ^V2[Pred !passive Kid=!Obj:^.ObjS]
+    ^VWHSS advP? ['which+one':^V2.O Wh JS2] R* ^V2[Pred passive Kid=!Obj:^.ObjS]
+//comment2
+	^VWHSS advP? ['which':^V2.O JS2] advP? ^V2[infinitive Kid=!O:^.ObjV]
+    ^VWHSS advP? ['which':^V2.O JS2] R* ^V2[passive Pred Kid=!Obj:^.ObjV]
+	^VWHSS advP? [F=which NP:^V2.O JS2] advP? ^V2[infinitive Kid=!O:^.ObjV]
+//comment3
+	^VWHSS advP? ['which':^V2.S JS2] R* ^V2[Pred !passive Kid=Obj|Cap:^ObjS CL]
+	^VWHSS advP? ['which+one':^V2.S JS2] R* ^V2[Pred !passive Kid=Obj|Cap:^ObjS]
+//comment
+	^VWHSS advP? [which+one:^V2.S JS2]　R*　^V2[Pred !passive Kid=Obj|Cap:^.ObjS]  
+	^VWHSS advP? [F=which NP:^V2.S JS2] R* ^V2[Pred !passive Kid=Obj|Cap:^.ObjsS]
+//commebt	
+    ^VWHSS advP? [which:^V2.S JS2] R* ^V2[Pred !passive:^.ObjS]
+    ^VWHSS advP? [which+one:^V2.S JS2]) R* ^V2[Pred !passive:^.ObjS]
+    ^VWHSS advP? [F=which NP:^V2.S JS2] R* ^V2[Pred !passive:^.ObjS]
+//asdfsdfa
+    ^VWHSS advP? [which:^V2.O JS2] R* [NP !me|him|us|them:^V2.S JS2] ^V2[Pred !passive !vi Kid=!Obj:^.ObjS]
+    ^VWHSS advP? [which+one:^V2.O JS2] R* [NP !me|him|us|them:^V2.S JS2] ^V2[Pred !passive !vi Kid=!Obj:^.ObjS]
+
+        """)
+        print(r)
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    #unittest.main()
+    unittest.main()
 
 
     OutputRules()
