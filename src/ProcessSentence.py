@@ -77,7 +77,7 @@ if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    target = "a 'bad_sentence', being good a word. Don't classify it as  characters. airline"
+    target = "Not understanding what's going on, he decided to leave."
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:

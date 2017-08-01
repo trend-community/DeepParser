@@ -1,6 +1,9 @@
 #!/bin/python
 #read in rules, starting from dictionary (lexY.txt), then lexicon.
 #might want to remember line number for rules (excluding dictionary).
+#usage: to output feature list, run:
+#       python Rules.py > features.txt
+
 import logging, re, operator
 
 class EmptyBase(object): pass
@@ -217,15 +220,3 @@ if __name__ == "__main__":
     # LoadFeatureSet('../../fsa/X/lexX.txt')
     PrintFeatureOntology()
     PrintFeatureSet()
-
-    print(SearchFeatureOntology(GetFeatureID("com")))
-    s = SearchLexicon("is")
-    if s:
-        print(s.features)
-    s = SearchLexicon("ised")
-    if s:
-        print(s.features)
-    print(SearchFeatures("airliner"))
-    print(SearchFeatures("airliners"))
-    print("there are so many lexicons:%s" % len(_LexiconDict))
-    print(SearchFeatures("pretty"))

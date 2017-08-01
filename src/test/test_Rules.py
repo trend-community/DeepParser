@@ -1,6 +1,7 @@
 
 import unittest
 from ..Rules import *
+from ..Rules import _RuleList
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -8,7 +9,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(tokenlist[0].word, '[a]')
     def test_SetRule_number(self):
         r = Rule()
-        r.SetRule("a=[a]4 [b]* [c]*7 [d]?")
+        r.SetRule("a==[a]4 [b]* [c]*7 [d]?")
         self.assertEqual(r.Tokens[0].repeat[1], 4)
         self.assertEqual(r.Tokens[1].repeat[1], 3)
         self.assertEqual(r.Tokens[2].repeat[1], 7)
@@ -16,21 +17,21 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(r.Tokens[3].repeat[0], 0)
     def test_tokenspace(self):
         r = Rule()
-        r.SetRule("b=[a b? c:d e]")
+        r.SetRule("b==[a b? c:d e]")
         self.assertEqual(r.Tokens[0].word, '[a b? c]')
         self.assertEqual(r.Tokens[0].action, 'd e')
     def test_Rule(self):
         r = Rule()
-        r.SetRule("""PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};""")
+        r.SetRule("""PassiveSimpleING == {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};""")
         self.assertEqual(r.Tokens[1].word, "[RB]")
     def test_twolines(self):
         r = Rule()
-        r.SetRule("""rule4words={[word] [word]
+        r.SetRule("""rule4words=={[word] [word]
 	[word] [word]};""")
-        self.assertEqual(r.oneliner()[-45:], "rule4words = {[word] [word] [word] [word] };\n")
+        self.assertEqual(r.oneliner()[-46:], "rule4words == {[word]_[word]_[word]_[word]_};\n")
     def test_pointer(self):
         r = Rule()
-        r.SetRule("rule={^[word] ^head[word]};")
+        r.SetRule("rule=={^[word] ^head[word]};")
         self.assertEqual(r.Tokens[0].pointer, "")
         self.assertEqual(r.Tokens[1].pointer, "head")
         self.assertEqual(r.Tokens[1].word, "[word]")
@@ -68,3 +69,20 @@ class RuleTest(unittest.TestCase):
 
         """)
         print(r)
+
+    # def test_Macro(self):
+    #     r = Rule()
+    #     r.SetRule("rule==@andC")
+    #     s = ProcessMacro("a @andC")
+    #     self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
+    #
+    #     s = ProcessMacro("a @andC @andC")
+    #     self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"]) ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
+
+    def test_Expand(self):
+        r = Rule()
+        self.assertEqual(len(_RuleList), 0)
+        InsertRuleInList("abc==[NR] [PP]?")
+        self.assertEqual(len(_RuleList), 1)
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 2)

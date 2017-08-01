@@ -1,8 +1,13 @@
 
 import logging, re
 import Tokenization
+import copy
+#from RuleMacro import ProcessMacro
 
 #import FeatureOntology
+#usage: to output rules list, run:
+#       python Rules.py > rules.txt
+
 
 _RuleList = []
 _ExpertLexicon = []
@@ -11,8 +16,13 @@ _MacroDict = {}     # not sure which one to use yet
 _ruleCounter = 0
 
 def _SeparateComment(line):
-    blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
-    return blocks[0].strip(), " ".join(blocks[1:])
+    blocks = [x.strip() for x in re.split("//", line) if x ]   # remove comment.
+    if not blocks:
+        return "", ""
+    comment = ""
+    if len(blocks) > 1:
+        comment = " ".join(blocks[1:])
+    return blocks[0], comment
 
 def SeparateComment(multiline):
     blocks = [x.strip() for x in re.split("\n", multiline) ]
@@ -20,8 +30,10 @@ def SeparateComment(multiline):
     comment = ""
     for block in blocks:
         _content, _comment = _SeparateComment(block)
-        content += "\n" + _content
-        comment += " " + _comment
+        if _content:
+            content += "\n" + _content
+        if _comment:
+            comment += " " + _comment
     return content, comment
 
 class Rule:
@@ -36,22 +48,24 @@ class Rule:
         self.MatchString = ''
         self.Actions = {}
         self.IsExpertLexicon = False
+        self.comment = ''
 
     def SetRule(self, ruleString, ID=1):
         self.Origin = ruleString
-        code, __ = SeparateComment(ruleString)
-        blocks = [x.strip() for x in re.split("=", code)]
-        if len(blocks) != 2:
-            logging.info(" not separated by =")
-            blocks = [x.strip() for x in re.split("::", code)]
-            if  len(blocks) == 2:
-                self.IsExpertLexicon = True
-            else:
+        code, self.comment = SeparateComment(ruleString)
+        blocks = [x.strip() for x in re.split("::", code)]
+        if len(blocks) == 2:
+            self.IsExpertLexicon = True
+        else:
+            logging.debug(" not separated by :: ")
+            blocks = [x.strip() for x in re.split("==", code)]
+            if  len(blocks) != 2:
                 return
         if ID != 1:
             self.ID = ID
         self.RuleName = blocks[0]
         self.RuleContent = blocks[1]
+        self.RuleContent = ProcessMacro(self.RuleContent)
         try:
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -102,34 +116,27 @@ class Rule:
                 node.pointer = pointerMatch[1]
 
     def __str__(self):
-        output = "[ID]=" + str(self.ID)
-        output += "\t[RuleName]=" + self.RuleName
-        output += "\t[Origin Content]=\n" + self.RuleContent
-        output += "\n\t[Compiled Content]=\n{"
-        for token in self.Tokens:
-            if token.StartTrunk:
-                output += "<"
-            if hasattr(token, 'pointer'):
-                output += "^" + token.pointer
-            t = token.word
-            if hasattr(token, 'action'):
-                t = t.replace("]", ":" + token.action + "]")
-            output += t
-            if token.repeat != [1,1]:
-                output += "*" + str(token.repeat[1])
-            if token.EndTrunk:
-                output += ">"
-            output += " "
-        output += "};\n"
-
-        return output
+        return self.output("details")
 
     def oneliner(self):
-        output = "[" + str(self.ID) + "]" + self.RuleName
-        if self.IsExpertLexicon:
-            output += " :: {"
+        return self.output("concise")
+
+    # style: concise, or detail
+    def output(self, style="concise"):
+        output = "//ID:" + str(self.ID) + '\n'
+        if style == "concise" :
+            if self.comment:
+                output += "//" + self.comment + '\n'
+            if self.IsExpertLexicon:
+                output += self.RuleName + " :: {"
+            else:
+                output += self.RuleName + " == {"
         else:
-            output += " = {"
+            if self.comment:
+                output += "//" + self.comment + '\n'
+            output += "[RuleName]=" + self.RuleName + '\n'
+            output += "\t[Origin Content]=\n" + self.RuleContent + '\n'
+            output += "\t[Compiled Content]=\n{"
         for token in self.Tokens:
             if token.StartTrunk:
                 output += "<"
@@ -143,7 +150,7 @@ class Rule:
                 output += "*" + str(token.repeat[1])
             if token.EndTrunk:
                 output += ">"
-            output += " "
+            output += "_"
         output += "};\n"
 
         return output
@@ -214,7 +221,7 @@ def _SearchPair(string, tagpair):
         if string[i] == tagpair[0]:
             depth += 1
         i += 1
-    logging.error(" Can't find a pair tag!" + string)
+    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
     raise Exception(" Can't find a pair tag!" + string)
     return -1
 
@@ -237,6 +244,15 @@ def _SearchToEnd(string):
     return i
 
 
+def ProcessMacro(ruleContent):
+    macros = re.findall("@\w*", ruleContent)
+    for macro in macros:
+        if macro in _MacroDict:
+            ruleContent = ruleContent.replace(macro, _MacroDict[macro].RuleContent)
+        else:
+            logging.warning("This macro " + macro + " does not exist.")
+    return ruleContent
+
 # a rule is not necessary in one line.
 # if the line is end with ";", then this is one rule;
 #   sometimes the line does not end with ; but it is still one rule.
@@ -247,36 +263,24 @@ def _SearchToEnd(string):
 # otherwise, find "{" and "}" in this line. if there is only "{" but not "}", then continue;
 #                  otherwise, conclude one line as a rule.
 # continue until };, or a blank line.
+# -July 26, change to "==" or "::".
 def LoadRules(RuleLocation):
-
     with open(RuleLocation, encoding="utf-8") as dictionary:
-        RuleInMultiLines = False
+        rule = ""
         for line in dictionary:
-            line = line.strip()
+            commentLocation = line.find("//")
+            if commentLocation>=0:
+                line = line[:commentLocation]   #remove anything after //
 
-            if line.startswith("//"):
+            line = line.strip()
+            if not line:
                 continue
 
-            if RuleInMultiLines == False:
-                rule = line
-                if line.endswith("=") or line.endswith("::"):
-                    RuleInMultiLines = True
-                else:
-                    if line.find("{") >=0 and line.find("}") < 0:
-                        RuleInMultiLines = True
-            else:
-                if line.find("::") >= 0:
-                    #first line of this rule. wrap up the previous rule
+            if line.find("::")>=0 or line.find("==") >= 0:
+                if rule:
                     InsertRuleInList(rule)
                     rule = ""
-
-                rule += " " + line
-                if line.find("};") >= 0 or line == "":
-                    RuleInMultiLines = False
-
-            if RuleInMultiLines == False:
-                InsertRuleInList(rule)
-                rule = ""
+            rule += " " + line
 
         if rule:
             InsertRuleInList(rule)
@@ -294,20 +298,55 @@ def InsertRuleInList(string):
             else:
                 _RuleList.append(node)
 
+def ExpandRuleWildCard():
+    for rule in _RuleList:
+        Expand = False
+        #for token in rule.Tokens:
+        for tokenindex in range(len(rule.Tokens)):
+            token = rule.Tokens[tokenindex]
+            if token.repeat != [1, 1]:
+                for repeat_num in range(token.repeat[0], token.repeat[1]+1):
+                    newrule = Rule()
+                    newrule.Origin = rule.Origin
+                    newrule.comment = rule.comment
+                    newrule.IsExpertLexicon = rule.IsExpertLexicon
+                    newrule.RuleName = rule.RuleName+"_"+str(repeat_num)
+                    newrule.RuleContent = rule.RuleContent
+                    for tokenindex_pre in range(tokenindex):
+                        new_node = copy.copy(rule.Tokens[tokenindex_pre])
+                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                    for tokenindex_this in range(repeat_num):
+                        new_node = copy.copy(rule.Tokens[tokenindex])
+                        new_node.repeat = [1, 1]
+                        newrule.Tokens.append(new_node)
+                    for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
+                        new_node = copy.copy(rule.Tokens[tokenindex_post])
+                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                    _RuleList.append(newrule)
+                    Expand = True
+        if Expand:
+            _RuleList.remove(rule)
+                    
+
 
 def OutputRules():
+    print("//Rules")
     for rule in _RuleList:
-        print(rule.oneliner())
+        print(rule.output("details"))
+
+    print("Expert Lexicons")
     for rule in _ExpertLexicon:
-        print(rule.oneliner())
+        print(rule.output("details"))
+
+    print ("Macros")
     for rule in _MacroDict.values():
-        print(rule.oneliner())
+        print(rule.output("details"))
 
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
-LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
-LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
-#LoadRules("../data/rule.txt")
+#LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
+#LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
+#LoadRules(dir_path + "/../data/rule.txt")
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
