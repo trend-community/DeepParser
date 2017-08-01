@@ -110,15 +110,16 @@ def PrintFeatureOntology():
     print("//***Ontology***")
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
         print(node)
+        #TODO: sort         the         ancestors.
     print("//***Alias***")
     for key in sorted(_AliasDict):
-        print("[" + key + "]:" + _FeatureList[_AliasDict[key]])
+        print( key + "=" + _FeatureList[_AliasDict[key]])
 
 def PrintLexicon():
     print("//***Lexicon***")
     for node in _LexiconDict:
         print (node.word + ":" + node.ancestors)
-        #TODO: sort the ancestors. Remove repeat ancestors if in ontology.
+        #TODO: Remove repeat ancestors if in ontology.
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
