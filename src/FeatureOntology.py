@@ -4,7 +4,7 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import logging, re, operator
+import logging, re, operator, sys, os
 
 class EmptyBase(object): pass
 
@@ -15,7 +15,7 @@ _FeatureDict = {}   #this is populated from FeatureSet. for better searching
 _AliasDict = {}
 _FeatureOntology = []
 _LexiconDict = {}
-
+_CreateFeatureList = False
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
@@ -30,7 +30,7 @@ class OntologyNode:
         self.ancestors = set()
 
     def __str__(self):
-        output = "[" + self.openWord + "]"
+        output = self.openWord
         if self.ancestors:
             output += ": "
             for i in self.ancestors:
@@ -102,17 +102,23 @@ def LoadFullFeatureList(featureListLocation):
 
 
 def PrintFeatureSet():
-    print("\n\n***Feature Set***")
+    print("// ***Feature Set***")
     for feature in sorted(_FeatureSet):
         print( feature )
 
 def PrintFeatureOntology():
-    print("\n\n***Ontology***")
+    print("//***Ontology***")
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
         print(node)
-    print("\n\n***Alias***")
+    print("//***Alias***")
     for key in sorted(_AliasDict):
         print("[" + key + "]:" + _FeatureList[_AliasDict[key]])
+
+def PrintLexicon():
+    print("//***Lexicon***")
+    for node in _LexiconDict:
+        print (node.word + ":" + node.ancestors)
+        #TODO: sort the ancestors. Remove repeat ancestors if in ontology.
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
@@ -134,6 +140,8 @@ def GetFeatureID(feature):
         return _AliasDict[feature]
     if feature in _FeatureDict:
         return _FeatureDict[feature]
+    if _CreateFeatureList:
+        _FeatureSet.add(feature)
     logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
     return -1    # -1? 0?
 def GetFeatureName(featureID):
@@ -208,15 +216,29 @@ def SearchFeatures(word):
         return {}   #return empty feature set
     return lexicon.features
 
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
-LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
-LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
 
 if __name__ == "__main__":
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    # LoadFeatureSet('../../fsa/Y/lexY.txt')
-    # LoadFeatureSet('../../fsa/X/lexX.txt')
-    PrintFeatureOntology()
-    PrintFeatureSet()
+
+    if len(sys.argv) != 2:
+        print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology/CreateLexicon > outputfile.txt")
+        exit(0)
+    command = sys.argv[1]
+
+    if command == "CreateFeatureList":
+        _CreateFeatureList = True
+        LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+        PrintFeatureSet()
+
+    if command == "CreateFeatureOntology":
+        LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
+        LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+        PrintFeatureOntology()
+
+    if command == "CreateLexicon":
+        LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
+        LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+        LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
+        PrintLexicon()
+
