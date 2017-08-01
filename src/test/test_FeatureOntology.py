@@ -9,6 +9,11 @@ class FeatureTest(unittest.TestCase):
         s = SearchLexicon("is")
         if s:
             print(s.features)
+
+        for f in s.features:
+            print (GetFeatureName(f))
+
+    def test2(self):
         s = SearchLexicon("ised")
         if s:
             print(s.features)

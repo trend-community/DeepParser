@@ -34,7 +34,7 @@ class OntologyNode:
         if self.ancestors:
             output += ": "
             for i in self.ancestors:
-                output += _FeatureList[i] +"; "
+                output += GetFeatureName(i) +"; "
         if self.Comment:
             output += "\t//" + self.Comment
         return output
@@ -170,9 +170,9 @@ def LoadLexicon(lexiconLocation):
                 else:
                     featureID =GetFeatureID(feature)
                     node.features.add(featureID)
-                    # ancestors = SearchFeatureOntology(featureID)
-                    # if ancestors:
-                    #     node.features.update(ancestors)
+                    ancestors = SearchFeatureOntology(featureID)
+                    if ancestors:
+                        node.features.update(ancestors)
             if newNode:
                 _LexiconDict.update({node.word: node})
 

@@ -82,7 +82,13 @@ class RuleTest(unittest.TestCase):
     def test_Expand(self):
         r = Rule()
         self.assertEqual(len(_RuleList), 0)
-        InsertRuleInList("abc==[NR] [PP]?")
+        InsertRuleInList("aaa==[NR] [PP]?")
         self.assertEqual(len(_RuleList), 1)
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 2)
+        InsertRuleInList("bbb==[NR]? [PP]?")
+        self.assertEqual(len(_RuleList), 3)
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 6)
+
+        OutputRules()

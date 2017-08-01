@@ -57,9 +57,9 @@ class Rule:
         if len(blocks) == 2:
             self.IsExpertLexicon = True
         else:
-            logging.debug(" not separated by :: ")
             blocks = [x.strip() for x in re.split("==", code)]
             if  len(blocks) != 2:
+                logging.debug(" not separated by :: or == ")
                 return
         if ID != 1:
             self.ID = ID
@@ -299,6 +299,7 @@ def InsertRuleInList(string):
                 _RuleList.append(node)
 
 def ExpandRuleWildCard():
+    Modified = False
     for rule in _RuleList:
         Expand = False
         #for token in rule.Tokens:
@@ -324,8 +325,15 @@ def ExpandRuleWildCard():
                         newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                     _RuleList.append(newrule)
                     Expand = True
+            if Expand:
+                break
         if Expand:
             _RuleList.remove(rule)
+            Modified = True
+
+    if Modified:
+        logging.info("\tExpandRuleWildCard next level.")
+        ExpandRuleWildCard()    #recursive call itself to finish all.
                     
 
 
@@ -334,22 +342,28 @@ def OutputRules():
     for rule in _RuleList:
         print(rule.output("details"))
 
-    print("Expert Lexicons")
+    print("//Expert Lexicons")
     for rule in _ExpertLexicon:
         print(rule.output("details"))
 
-    print ("Macros")
+    print ("//Macros")
     for rule in _MacroDict.values():
         print(rule.output("details"))
 
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-#LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
-#LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
+    print("// End of Rules/Expert Lexicons/Macros")
+
+
 #LoadRules(dir_path + "/../data/rule.txt")
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
-
+    # import os
+    #
+    # dir_path = os.path.dirname(os.path.realpath(__file__))
+    # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
+    # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
+    LoadRules("../../fsa/Y/900NPy.xml")
+    LoadRules("../../fsa/Y/1800VPy.xml")
+    ExpandRuleWildCard()
     OutputRules()
