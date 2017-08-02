@@ -51,11 +51,9 @@ class OntologyNode:
         openWord = features[0]
         openWordID = GetFeatureID(openWord)
 
-        # if openWord == 'pro' or openWord == 'PRP':
-        #     print(openWord)
+
         TryOldNode = SearchFeatureOntology(openWordID)
         if TryOldNode:
-
             if len(features) > 1:
                 for feature in features[1:]:
                     TryOldNode.ancestors.add(GetFeatureID(feature))
@@ -78,8 +76,7 @@ class OntologyNode:
         code = blocks[-1]
         features = re.split(",|;| ", code)    # the first feature is the real one.
         realfeature = features[0]
-        if realfeature == 'pro' or realfeature == 'PRP':
-            print(realfeature)
+
         featureID = GetFeatureID(realfeature)
         if featureID == -1: #the feature in file is not in featureFullList
             logging.warning("The feature in file is not in feature list!" + realfeature + " in \n\t" + line)
@@ -90,12 +87,12 @@ class OntologyNode:
             realnode = OntologyNode()
             realnode.openWord = realfeature
             realnode.openWordID = featureID
+            _FeatureOntology.append(realnode)
 
         for alias in blocks[:-1]:
             aliasnode = SearchFeatureOntology(GetFeatureID(alias))
             if aliasnode:
-                for aliasfeatureid in aliasnode.ancestors:
-                    realnode.ancestors.add(aliasfeatureid)
+                realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
             _AliasDict[alias] = featureID
 

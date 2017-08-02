@@ -10,10 +10,17 @@ LoadLexicon(dir_path + '/../../../fsa/Y/lexY.txt')
 
 class FeatureTest(unittest.TestCase):
 
+    def test_alias(self):
+        dir_path1 = os.path.dirname(os.path.realpath(__file__))
+        # LoadFullFeatureList(dir_path1 + '/../../../fsa/extra/featurelist.txt')
+        # LoadFeatureOntology(dir_path1 + '/../../../fsa/extra/featureOntology_result.txt')
+        #PrintFeatureOntology()
+
     def test_ontology(self):
         print(SearchFeatureOntology(GetFeatureID("com")))
         print(SearchFeatureOntology(GetFeatureID("com")))
     def test_lexicon(self):
+        FoundSent = False
         print("i-myself")
         s = SearchLexicon("i_myself")
         if s:
@@ -23,8 +30,9 @@ class FeatureTest(unittest.TestCase):
             feature = GetFeatureName(f)
             print (feature)
             if feature == "sent":
-                self.assertTrue(True)
-        self.assertTrue(False)
+                print("Found sent!")
+                FoundSent = True
+        self.assertTrue(FoundSent)
 
     def test2(self):
         s = SearchLexicon("ised")
