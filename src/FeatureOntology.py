@@ -153,12 +153,14 @@ def PrintLexicon():
         features =  sorted(_LexiconDict.get(word).features)
         lexiconCopy = features.copy()
         for feature in features:
-            ancestors = SearchFeatureOntology(feature)
-            if ancestors:
-                c = ancestors.intersection(lexiconCopy)
-                if c:
-                    for a in c:
-                        lexiconCopy.remove(a)
+            nodes = SearchFeatureOntology(feature)
+            if nodes:
+                ancestors = nodes.ancestors
+                if ancestors:
+                    c = ancestors.intersection(lexiconCopy)
+                    if c:
+                        for a in c:
+                            lexiconCopy.remove(a)
         featureSorted = set()
         for feature in lexiconCopy:
             featureSorted.add(GetFeatureName(feature))
