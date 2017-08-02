@@ -32,7 +32,7 @@ class OntologyNode:
     def __str__(self):
         output = self.openWord
         if self.ancestors:
-            output += ": "
+            output += ", "
             self.ancestors = sorted(self.ancestors)
             for i in self.ancestors:
                 output += GetFeatureName(i) +"; "
@@ -147,9 +147,25 @@ def PrintFeatureOntology():
 
 def PrintLexicon():
     print("//***Lexicon***")
-    for node in _LexiconDict:
-        print (node.word + ":" + node.ancestors)
-        #TODO: Remove repeat ancestors if in ontology.
+    for word in _LexiconDict.keys():
+        print(word + ":", end=" ")
+        lexiconCopy = set()
+        features =  sorted(_LexiconDict.get(word).features)
+        lexiconCopy = features.copy()
+        for feature in features:
+            ancestors = SearchFeatureOntology(feature)
+            if ancestors:
+                c = ancestors.intersection(lexiconCopy)
+                if c:
+                    for a in c:
+                        lexiconCopy.remove(a)
+        featureSorted = set()
+        for feature in lexiconCopy:
+            featureSorted.add(GetFeatureName(feature))
+        featureSorted = sorted(featureSorted)
+        for feature in featureSorted:
+            print(feature, end=" ")
+        print("\n", end="")
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
@@ -275,7 +291,7 @@ if __name__ == "__main__":
 
     if command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
-        LoadFeatureOntology(dir_path + '/../../fsa/extra/featureOntology_result.txt')
+        LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintLexicon()
 
