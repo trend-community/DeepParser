@@ -33,6 +33,7 @@ class OntologyNode:
         output = self.openWord
         if self.ancestors:
             output += ": "
+            self.ancestors = sorted(self.ancestors)
             for i in self.ancestors:
                 output += GetFeatureName(i) +"; "
         if self.Comment:
@@ -53,6 +54,7 @@ class OntologyNode:
         if len(features) > 1:
             for feature in features[1:]:
                 self.ancestors.add(GetFeatureID(feature))
+
 
 
     @staticmethod
@@ -110,7 +112,6 @@ def PrintFeatureOntology():
     print("//***Ontology***")
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
         print(node)
-        #TODO: sort         the         ancestors.
     print("//***Alias***")
     for key in sorted(_AliasDict):
         print( key + "=" + _FeatureList[_AliasDict[key]])
@@ -143,7 +144,7 @@ def GetFeatureID(feature):
         return _FeatureDict[feature]
     if _CreateFeatureList:
         _FeatureSet.add(feature)
-    logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
+    # logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
     return -1    # -1? 0?
 def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
@@ -172,6 +173,8 @@ def LoadLexicon(lexiconLocation):
                 logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
+                if re.search(u'[\u4e00-\u9fff]',feature):
+                    continue
                 if re.match('^\'.*\'$', feature):
                     node.stem = feature.strip('\'')
                 elif re.match('^/.*/$', feature):
@@ -229,17 +232,19 @@ if __name__ == "__main__":
 
     if command == "CreateFeatureList":
         _CreateFeatureList = True
-        LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+        LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+        LoadLexicon(dir_path + '/../../fsa/X/lexX.txt')
+        LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintFeatureSet()
 
     if command == "CreateFeatureOntology":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
-        LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+        LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         PrintFeatureOntology()
 
     if command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
-        LoadFeatureOntology(dir_path + '/../doc/featureOntology.txt')
+        LoadFeatureOntology(dir_path + '/../../fsa/extra/featureOntology_result.txt')
         LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintLexicon()
 
