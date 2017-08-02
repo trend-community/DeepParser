@@ -26,7 +26,7 @@ class OntologyNode:
     def __init__(self):
         self.openWord = ''
         self.Comment = ''
-        self.openWordID = 0
+        self.openWordID = -1
         self.ancestors = set()
 
     def __str__(self):
@@ -48,14 +48,26 @@ class OntologyNode:
             return
 
         features = [x.strip() for x in re.split(",|;| ", code) if x]
-        self.openWord = features[0]
-        feature = features[0]
-        self.openWordID = GetFeatureID(feature)
-        if len(features) > 1:
-            for feature in features[1:]:
-                self.ancestors.add(GetFeatureID(feature))
+        openWord = features[0]
+        openWordID = GetFeatureID(openWord)
 
+        # if openWord == 'pro' or openWord == 'PRP':
+        #     print(openWord)
+        TryOldNode = SearchFeatureOntology(openWordID)
+        if TryOldNode:
 
+            if len(features) > 1:
+                for feature in features[1:]:
+                    TryOldNode.ancestors.add(GetFeatureID(feature))
+        else:
+            self.openWord = openWord
+            self.openWordID = openWordID
+
+            if len(features) > 1:
+                for feature in features[1:]:
+                    fid = GetFeatureID(feature)
+                    self.ancestors.add(fid)
+                    #self.ancestors = set(self.ancestors)
 
     @staticmethod
     def ProcessAlias( line):
@@ -65,10 +77,26 @@ class OntologyNode:
         #Now the last block has the real feature name and code
         code = blocks[-1]
         features = re.split(",|;| ", code)    # the first feature is the real one.
-        featureID = GetFeatureID(features[0])
+        realfeature = features[0]
+        if realfeature == 'pro' or realfeature == 'PRP':
+            print(realfeature)
+        featureID = GetFeatureID(realfeature)
         if featureID == -1: #the feature in file is not in featureFullList
+            logging.warning("The feature in file is not in feature list!" + realfeature + " in \n\t" + line)
             return code # ignore
+
+        realnode = SearchFeatureOntology(featureID)
+        if not realnode:
+            realnode = OntologyNode()
+            realnode.openWord = realfeature
+            realnode.openWordID = featureID
+
         for alias in blocks[:-1]:
+            aliasnode = SearchFeatureOntology(GetFeatureID(alias))
+            if aliasnode:
+                for aliasfeatureid in aliasnode.ancestors:
+                    realnode.ancestors.add(aliasfeatureid)
+                aliasnode.ancestors.clear()
             _AliasDict[alias] = featureID
 
         return code
@@ -111,7 +139,8 @@ def PrintFeatureSet():
 def PrintFeatureOntology():
     print("//***Ontology***")
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
-        print(node)
+        if node.ancestors:
+            print(node)
     print("//***Alias***")
     for key in sorted(_AliasDict):
         print( key + "=" + _FeatureList[_AliasDict[key]])
@@ -128,13 +157,13 @@ def LoadFeatureOntology(featureOncologyLocation):
         for line in dictionary:
             node = OntologyNode()
             node.SetRule(line)
-            if node.openWord != '':
+            if node.openWordID != -1:
                 _FeatureOntology.append(node)
 
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
     for node in _FeatureOntology:
         if node.openWordID == featureID:
-            return node.ancestors
+            return node
     return None
 
 def GetFeatureID(feature):
@@ -182,9 +211,11 @@ def LoadLexicon(lexiconLocation):
                 else:
                     featureID =GetFeatureID(feature)
                     node.features.add(featureID)
-                    ancestors = SearchFeatureOntology(featureID)
-                    if ancestors:
-                        node.features.update(ancestors)
+                    ontologynode = SearchFeatureOntology(featureID)
+                    if ontologynode:
+                        ancestors = ontologynode.ancestors
+                        if ancestors:
+                            node.features.update(ancestors)
             if newNode:
                 _LexiconDict.update({node.word: node})
 
