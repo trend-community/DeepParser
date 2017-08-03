@@ -28,6 +28,7 @@ _FeatureDict = {}   #this is populated from FeatureSet. for better searching
 _AliasDict = {}
 _FeatureOntology = []
 _LexiconDict = {}
+_CommentDict = {}
 _CreateFeatureList = False
 
 def SeparateComment(line):
@@ -157,7 +158,13 @@ def PrintFeatureOntology():
 
 def PrintLexicon():
     print("//***Lexicon***")
+    print(_CommentDict.get("firstCommentLine"))
+    oldWord = None
     for word in _LexiconDict.keys():
+        if oldWord in _CommentDict.keys():
+            print(_CommentDict[oldWord])
+            oldWord = word
+
         print(word + ":", end=" ")
         lexiconCopy = set()
         features =  sorted(_LexiconDict.get(word).features)
@@ -172,12 +179,31 @@ def PrintLexicon():
                         for a in c:
                             lexiconCopy.remove(a)
         featureSorted = set()
+        if not lexiconCopy:
+            print("Empty for " + word)
         for feature in lexiconCopy:
-            featureSorted.add(GetFeatureName(feature))
+            featureName = GetFeatureName(feature)
+            if featureName:
+                featureSorted.add(featureName)
+            else:
+                logging.warning("Can't find " + str(feature) + " for word " + word)
+
+
         featureSorted = sorted(featureSorted)
         for feature in featureSorted:
             print(feature, end=" ")
+
+        if  hasattr(_LexiconDict.get(word),"stem"):
+            print("'" + _LexiconDict.get(word).stem + "'", end=" ")
+
+        if hasattr(_LexiconDict.get(word), "norm"):
+            print("/" + _LexiconDict.get(word).norm + "/", end=" ")
+
+
+        if hasattr(_LexiconDict.get(word),"comment"):
+            print("     //"+_LexiconDict.get(word).comment, end=" ")
         print("\n", end="")
+        oldWord = word
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
@@ -211,9 +237,17 @@ def GetFeatureName(featureID):
 
 def LoadLexicon(lexiconLocation):
     global _LexiconDict
+    global _CommentDict
     with open(lexiconLocation, encoding='utf-8') as dictionary:
+        oldWord = "firstCommentLine"
         for line in dictionary:
-            code, __ = SeparateComment(line)
+            if line.startswith("//"):
+                if _CommentDict.get(oldWord):
+                    _CommentDict.update({oldWord:_CommentDict.get(oldWord)+line})
+                else:
+                    _CommentDict.update({oldWord: line})
+                continue
+            code, comment = SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
             if len(blocks) != 2:
                 #logging.warn("line is not in [word]:[features] format:\n\t" + line)
@@ -224,12 +258,13 @@ def LoadLexicon(lexiconLocation):
             if not node:
                 newNode = True
                 node = LexiconNode(blocks[0])
+                if comment:
+                    node.comment = comment
             else:
                 logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
-                if re.search(u'[\u4e00-\u9fff]',feature):
-                    continue
+
                 if re.match('^\'.*\'$', feature):
                     node.stem = feature.strip('\'')
                 elif re.match('^/.*/$', feature):
@@ -242,8 +277,12 @@ def LoadLexicon(lexiconLocation):
                         ancestors = ontologynode.ancestors
                         if ancestors:
                             node.features.update(ancestors)
+                if re.search(u'[\u4e00-\u9fff]',feature):
+                    node.stem = feature
+
             if newNode:
                 _LexiconDict.update({node.word: node})
+            oldWord = blocks[0]
 
 
 #this can be more complicate: search for case-insensitive, _ed _ing _s...
@@ -253,21 +292,21 @@ def SearchLexicon(word):
         return _LexiconDict.get(word)
 
 
-    word_ed = word.rstrip("ed")
-    if word_ed in _LexiconDict.keys():
-        return _LexiconDict.get(word_ed)
-    word_d = word.rstrip("d")
-    if word_d in _LexiconDict.keys():
-        return _LexiconDict.get(word_d)
-    word_ing = word.rstrip("ing")
-    if word_ing in _LexiconDict.keys():
-        return _LexiconDict.get(word_ing)
-    word_s = word.rstrip("s")
-    if word_s in _LexiconDict.keys():
-        return _LexiconDict.get(word_s)
-    word_es = word.rstrip("es")
-    if word_es in _LexiconDict.keys():
-        return _LexiconDict.get(word_es)
+    # word_ed = word.rstrip("ed")
+    # if word_ed in _LexiconDict.keys():
+    #     return _LexiconDict.get(word_ed)
+    # word_d = word.rstrip("d")
+    # if word_d in _LexiconDict.keys():
+    #     return _LexiconDict.get(word_d)
+    # word_ing = word.rstrip("ing")
+    # if word_ing in _LexiconDict.keys():
+    #     return _LexiconDict.get(word_ing)
+    # word_s = word.rstrip("s")
+    # if word_s in _LexiconDict.keys():
+    #     return _LexiconDict.get(word_s)
+    # word_es = word.rstrip("es")
+    # if word_es in _LexiconDict.keys():
+    #     return _LexiconDict.get(word_es)
 
     return None
 
@@ -290,8 +329,8 @@ if __name__ == "__main__":
     if command == "CreateFeatureList":
         _CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        LoadLexicon(dir_path + '/../../fsa/X/lexX.txt')
-        LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
+        # LoadLexicon(dir_path + '/../../fsa/X/lexX.txt')
+        # LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintFeatureSet()
 
     if command == "CreateFeatureOntology":
