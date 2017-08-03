@@ -18,21 +18,15 @@ def TokenMatch(strtoken, ruletoken):
     if not rule:  # "[]", not sure what that is.
         return False
     if rule.startswith("\""):  # word  comparison
-        return LogicMatch(rule.strip("\""), word)  # case insensitive
-    if rule.startswith("'"):
-        if strtoken.lexicon and hasattr(strtoken.lexicon, "stem"):  # stem comparison
-            return LogicMatch(rule.strip("\'"), strtoken.lexicon.stem)
-        else:
-            return LogicMatch(rule.strip("\'"), word)
-    if rule.startswith("/"):
-        if strtoken.lexicon and hasattr(strtoken.lexicon, "norm"):  # stem comparison
-            return LogicMatch(rule.strip("/"), strtoken.lexicon.norm)
-        else:
-            return LogicMatch(rule.strip("/"), word)
+        return LogicMatch(rule.strip("\""), strtoken, 'word')  # case insensitive
+    elif rule.startswith("'"):
+        return LogicMatch(rule.strip("\'"), strtoken, 'stem')
+    elif rule.startswith("/"):
+        return LogicMatch(rule.strip("/"), strtoken, 'norm')
 
     # compare feature
     if strtoken.lexicon:
-        return LogicMatchFeatures(rule, strtoken.lexicon.features)
+        return LogicMatchFeatures(rule, strtoken)
     else:
         return False
         # featureID = FeatureOntology.GetFeatureID(rule)
@@ -94,7 +88,7 @@ if __name__ == "__main__":
     #Rules.LoadRules("../../fsa/Y/test_rules.txt")
     Rules.ExpandRuleWildCard()
 
-    target = "you three come here"
+    target = "we all love iphone"
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:

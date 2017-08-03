@@ -7,13 +7,19 @@
 import logging, re, operator, sys, os
 
 class LexiconNode(object):
-    def __init__(self):
-        self.word = ''
+    def __init__(self, word=''):
+        self.word = word
+        self.stem = word
+        self.norm = word
         self.features = set()
     def __str__(self):
         output = self.word + ":"
         for feature in self.features:
-            output += GetFeatureName(feature) + ","
+            f = GetFeatureName(feature)
+            if f:
+                output += f + ","
+            else:
+                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return output
 
 _FeatureSet = set()
@@ -217,8 +223,7 @@ def LoadLexicon(lexiconLocation):
             #node = None
             if not node:
                 newNode = True
-                node = LexiconNode()
-                node.word = blocks[0]
+                node = LexiconNode(blocks[0])
             else:
                 logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
