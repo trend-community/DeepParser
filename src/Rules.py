@@ -105,15 +105,15 @@ class Rule:
                     repeatMax = int(repeatMatch[2])
                 node.repeat = [0, repeatMax]
 
-            actionMatch = re.match("^\[(.*):(.*)\]$", node.word)
-            if actionMatch:
-                node.word = "[" + actionMatch[1] + "]"
-                node.action = actionMatch[2]
-
             pointerMatch = re.match("^\^(.*?)\[(.*)\]$", node.word)
             if pointerMatch:
                 node.word = "[" + pointerMatch[2] + "]"
                 node.pointer = pointerMatch[1]
+
+            actionMatch = re.match("^\[(.*):(.*)\]$", node.word)
+            if actionMatch:
+                node.word = "[" + actionMatch[1] + "]"
+                node.action = actionMatch[2]
 
     def __str__(self):
         return self.output("details")
@@ -123,7 +123,8 @@ class Rule:
 
     # style: concise, or detail
     def output(self, style="concise"):
-        output = "//ID:" + str(self.ID) + '\n'
+        output = "//ID:" + str(self.ID)
+        output += "[Expert Lexicon]\n" if self.IsExpertLexicon else "[Rule]\n"
         if style == "concise" :
             if self.comment:
                 output += "//" + self.comment + '\n'
@@ -150,7 +151,7 @@ class Rule:
                 output += "*" + str(token.repeat[1])
             if token.EndTrunk:
                 output += ">"
-            output += "_"
+            output += " "
         output += "};\n"
 
         return output
@@ -291,11 +292,26 @@ def InsertRuleInList(string):
     node.SetRule(string)
     if node.RuleName:
         if node.RuleName.startswith("@"):
+            if node.RuleName in _MacroDict:
+                logging.warning("This rule name " + node.RuleName + " is already used for Macro " + _MacroDict[node.RuleName]
+                                + " \n but now you have: " + string + "\n\n")
+                return
             _MacroDict.update({node.RuleName: node})
         else:
             if node.IsExpertLexicon:
+                for n in _ExpertLexicon:
+                    if n.RuleName == node.RuleName:
+                        logging.warning("This rule name " + node.RuleName + " is already used for Expert Lexicon " + str(n)
+                                        + " \n but now you have: " + string + "\n\n")
+                        return
                 _ExpertLexicon.append(node)
             else:
+                for n in _RuleList:
+                    if n.RuleName == node.RuleName:
+                        logging.warning(
+                            "This rule name " + node.RuleName + " is already used for Rule " + str(n)
+                            + " \n but now you have: " + string + "\n\n")
+                        return
                 _RuleList.append(node)
 
 def ExpandRuleWildCard():
@@ -337,18 +353,18 @@ def ExpandRuleWildCard():
                     
 
 
-def OutputRules():
-    print("//Rules")
+def OutputRules(style="details"):
+    print("// ****Rules****")
     for rule in _RuleList:
-        print(rule.output("details"))
+        print(rule.output(style))
 
-    print("//Expert Lexicons")
+    print("// ****Expert Lexicons****")
     for rule in _ExpertLexicon:
-        print(rule.output("details"))
+        print(rule.output(style))
 
-    print ("//Macros")
+    print ("// ****Macros****")
     for rule in _MacroDict.values():
-        print(rule.output("details"))
+        print(rule.output(style))
 
     print("// End of Rules/Expert Lexicons/Macros")
 
@@ -366,4 +382,4 @@ if __name__ == "__main__":
     LoadRules("../../fsa/Y/900NPy.xml")
     LoadRules("../../fsa/Y/1800VPy.xml")
     ExpandRuleWildCard()
-    OutputRules()
+    OutputRules("concise")

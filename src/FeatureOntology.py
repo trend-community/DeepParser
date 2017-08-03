@@ -6,8 +6,15 @@
 
 import logging, re, operator, sys, os
 
-class EmptyBase(object): pass
-
+class LexiconNode(object):
+    def __init__(self):
+        self.word = ''
+        self.features = set()
+    def __str__(self):
+        output = self.word + ":"
+        for feature in self.features:
+            output += GetFeatureName(feature) + ","
+        return output
 
 _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
@@ -210,9 +217,8 @@ def LoadLexicon(lexiconLocation):
             #node = None
             if not node:
                 newNode = True
-                node = EmptyBase()
+                node = LexiconNode()
                 node.word = blocks[0]
-                node.features = set()
             else:
                 logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
