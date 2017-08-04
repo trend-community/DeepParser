@@ -21,6 +21,43 @@ class LexiconNode(object):
             else:
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return output
+    def entry(self):
+        output = self.word + ":"
+        lexiconCopy = set()
+        features = sorted(self.features)
+        lexiconCopy = features.copy()
+        for feature in features:
+            nodes = SearchFeatureOntology(feature)
+            if nodes:
+                ancestors = nodes.ancestors
+                if ancestors:
+                    c = ancestors.intersection(lexiconCopy)
+                    if c:
+                        for a in c:
+                            lexiconCopy.remove(a)
+        featureSorted = set()
+        for feature in lexiconCopy:
+            featureName = GetFeatureName(feature)
+            if featureName:
+                featureSorted.add(featureName)
+            else:
+                logging.warning("Can't find feature of " + self.word)
+
+        featureSorted = sorted(featureSorted)
+
+        for feature in featureSorted:
+            output += feature +" "
+
+        if self.stem != self.word:
+            output += "'" + self.stem + "' "
+
+        if self.norm != self.word:
+            output += "/" + self.norm + " / "
+
+        if hasattr(self, "comment"):
+            output += " //" + self.comment
+
+        return output
 
 _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
@@ -158,51 +195,16 @@ def PrintFeatureOntology():
 
 def PrintLexicon():
     print("//***Lexicon***")
-    print(_CommentDict.get("firstCommentLine"))
+    if _CommentDict.get("firstCommentLine"):
+        print(_CommentDict.get("firstCommentLine"))
     oldWord = None
     for word in _LexiconDict.keys():
         if oldWord in _CommentDict.keys():
-            print(_CommentDict[oldWord])
+            print(_CommentDict[oldWord],end="")
             oldWord = word
 
-        print(word + ":", end=" ")
-        lexiconCopy = set()
-        features =  sorted(_LexiconDict.get(word).features)
-        lexiconCopy = features.copy()
-        for feature in features:
-            nodes = SearchFeatureOntology(feature)
-            if nodes:
-                ancestors = nodes.ancestors
-                if ancestors:
-                    c = ancestors.intersection(lexiconCopy)
-                    if c:
-                        for a in c:
-                            lexiconCopy.remove(a)
-        featureSorted = set()
-        if not lexiconCopy:
-            print("Empty for " + word)
-        for feature in lexiconCopy:
-            featureName = GetFeatureName(feature)
-            if featureName:
-                featureSorted.add(featureName)
-            else:
-                logging.warning("Can't find " + str(feature) + " for word " + word)
-
-
-        featureSorted = sorted(featureSorted)
-        for feature in featureSorted:
-            print(feature, end=" ")
-
-        if  hasattr(_LexiconDict.get(word),"stem"):
-            print("'" + _LexiconDict.get(word).stem + "'", end=" ")
-
-        if hasattr(_LexiconDict.get(word), "norm"):
-            print("/" + _LexiconDict.get(word).norm + "/", end=" ")
-
-
-        if hasattr(_LexiconDict.get(word),"comment"):
-            print("     //"+_LexiconDict.get(word).comment, end=" ")
-        print("\n", end="")
+        output = _LexiconDict.get(word).entry()
+        print(output)
         oldWord = word
 
 def LoadFeatureOntology(featureOncologyLocation):
@@ -269,6 +271,9 @@ def LoadLexicon(lexiconLocation):
                     node.stem = feature.strip('\'')
                 elif re.match('^/.*/$', feature):
                     node.norm = feature.strip('/')
+                elif re.search(u'[\u4e00-\u9fff]', feature):
+                    node.stem = feature
+                    continue
                 else:
                     featureID =GetFeatureID(feature)
                     node.features.add(featureID)
@@ -277,8 +282,6 @@ def LoadLexicon(lexiconLocation):
                         ancestors = ontologynode.ancestors
                         if ancestors:
                             node.features.update(ancestors)
-                if re.search(u'[\u4e00-\u9fff]',feature):
-                    node.stem = feature
 
             if newNode:
                 _LexiconDict.update({node.word: node})
