@@ -1,7 +1,7 @@
 
 import unittest
-from ..Rules import *
-from ..Rules import _RuleList
+from Rules import *
+from Rules import _RuleList
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -28,7 +28,9 @@ class RuleTest(unittest.TestCase):
         r = Rule()
         r.SetRule("""rule4words=={[word] [word]
 	[word] [word]};""")
-        self.assertEqual(r.oneliner()[-46:], "rule4words == {[word]_[word]_[word]_[word]_};\n")
+        result = r.oneliner()[-46:] == "rule4words == {[word]_[word]_[word]_[word]_};\n" or \
+            r.oneliner()[-46:] == "rule4words == {[word] [word] [word] [word] };\n"
+        self.assertTrue(result)
     def test_pointer(self):
         r = Rule()
         r.SetRule("rule=={^[word] ^head[word]};")
@@ -92,3 +94,9 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(_RuleList), 6)
 
         OutputRules()
+
+    def test_adjacentbracket(self):
+        r = Rule()
+        r.SetRule("rule == [ab][cd]")
+        self.assertEqual(len(r.Tokens), 2)
+        self.assertEqual(r.Tokens[1].word, "[cd]")

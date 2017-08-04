@@ -151,7 +151,7 @@ class Rule:
                 output += "*" + str(token.repeat[1])
             if token.EndTrunk:
                 output += ">"
-            output += " "
+            output += "_"
         output += "};\n"
 
         return output
@@ -197,7 +197,7 @@ def Tokenize(RuleContent):
                     node = Tokenization.EmptyBase()
                     node.word = RuleContent[StartPosition:EndOfToken]
                     TokenList.append(node)
-                    i = EndOfToken
+                    i = EndOfToken-1
                     break
 
         i += 1
@@ -234,7 +234,7 @@ def _SearchToEnd(string):
         return 0
     i = 1
     while i<len(string):
-        if string[i] in SignsToIgnore:
+        if string[i] in SignsToIgnore or string[i] in "[(\"'":
             return i
         if string[i].isspace():
             return i
@@ -299,11 +299,13 @@ def InsertRuleInList(string):
             _MacroDict.update({node.RuleName: node})
         else:
             if node.IsExpertLexicon:
-                for n in _ExpertLexicon:
-                    if n.RuleName == node.RuleName:
-                        logging.warning("This rule name " + node.RuleName + " is already used for Expert Lexicon " + str(n)
-                                        + " \n but now you have: " + string + "\n\n")
-                        return
+                # It is known that the expert lexicons have multiple "rules" that have "or" relationship.
+                #    so no need to check this.
+                # for n in _ExpertLexicon:
+                #     if n.RuleName == node.RuleName:
+                #         logging.warning("This rule name " + node.RuleName + " is already used for Expert Lexicon " + str(n)
+                #                         + " \n but now you have: " + string + "\n\n")
+                #         return
                 _ExpertLexicon.append(node)
             else:
                 for n in _RuleList:
