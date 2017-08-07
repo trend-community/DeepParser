@@ -145,7 +145,8 @@ class OntologyNode:
             if aliasnode:
                 realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
-                _FeatureSet.remove(alias)
+                if alias in _FeatureSet:
+                    _FeatureSet.remove(alias)
             _AliasDict[alias] = featureID
 
         return code

@@ -110,10 +110,20 @@ class Rule:
                 node.word = "[" + pointerMatch[2] + "]"
                 node.pointer = pointerMatch[1]
 
+            pointerMatch = re.match("^\^(.*)$", node.word)
+            if pointerMatch:
+                node.word = "[" + pointerMatch[1] + "]"
+                node.pointer = ''
+
             actionMatch = re.match("^\[(.*):(.*)\]$", node.word)
             if actionMatch:
                 node.word = "[" + actionMatch[1] + "]"
                 node.action = actionMatch[2]
+
+            actionMatch = re.match("^\[(\d*) (.*)\]$", node.word)
+            if actionMatch:
+                node.word = "[" + actionMatch[2] + "]"
+                node.priority = int(actionMatch[1])
 
     def __str__(self):
         return self.output("details")
@@ -382,6 +392,6 @@ if __name__ == "__main__":
     # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
     LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/1800VPy.xml")
-    ExpandRuleWildCard()
+    #LoadRules("../../fsa/Y/1800VPy.xml")
+    #ExpandRuleWildCard()
     OutputRules("concise")

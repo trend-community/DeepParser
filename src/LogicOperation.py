@@ -3,7 +3,23 @@ import FeatureOntology
 
 #not, and, or
 #type: word/norm/stem
-def LogicMatch(rule, strtoken, matchtype="word"):
+def LogicMatch(rule, strtoken, matchtype="unknown"):
+
+    if not rule:  # "[]", not sure what that is.
+        return False
+    if rule.startswith("\""):  # word  comparison
+        rule = rule.strip("\"")
+        matchtype = "word"      # case insensitive
+    elif rule.startswith("'"):
+        rule = rule.strip("\'")
+        matchtype = "stem"      # case insensitive
+    elif rule.startswith("/"):
+        rule = rule.strip("/")
+        matchtype = "norm"      # case insensitive
+    elif strtoken.lexicon and matchtype == "unknown":
+        return LogicMatchFeatures(rule, strtoken)
+
+
     if not re.search('\|| |!', rule):
         if matchtype == "stem" and strtoken.lexicon:
             word = strtoken.lexicon.stem
@@ -11,7 +27,7 @@ def LogicMatch(rule, strtoken, matchtype="word"):
             word = strtoken.lexicon.norm
         else:
             word = strtoken.word
-        if rule == word:
+        if rule.lower() == word:
             return True
         else:
             return False
@@ -44,7 +60,7 @@ def LogicMatchFeatures(rule, strtoken):
             strtoken.lexicon.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
-            return LogicMatch(rule, strtoken)
+            return LogicMatch(rule, strtoken, "tried_feature")
         else:
             if featureID and featureID in strtoken.lexicon.features:
                 return True

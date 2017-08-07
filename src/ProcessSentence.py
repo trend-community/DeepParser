@@ -1,40 +1,32 @@
 import logging
 import Tokenization, FeatureOntology
 import Rules
-from LogicOperation import LogicMatch, LogicMatchFeatures
+from LogicOperation import LogicMatch #, LogicMatchFeatures
 
 counterMatch = 0
 
-
-def TokenMatch(strtoken, ruletoken):
-    if not strtoken:
-        return False
-    global counterMatch
-    word = strtoken.word.lower()
-    if strtoken.lexicon:
-        word = strtoken.lexicon.word.lower()
-    counterMatch += 1
-    rule = ruletoken.word.strip("[").strip("]")
-    if not rule:  # "[]", not sure what that is.
-        return False
-    if rule.startswith("\""):  # word  comparison
-        return LogicMatch(rule.strip("\""), strtoken, 'word')  # case insensitive
-    elif rule.startswith("'"):
-        return LogicMatch(rule.strip("\'"), strtoken, 'stem')
-    elif rule.startswith("/"):
-        return LogicMatch(rule.strip("/"), strtoken, 'norm')
-
-    # compare feature
-    if strtoken.lexicon:
-        return LogicMatchFeatures(rule, strtoken)
-    else:
-        return False
-        # featureID = FeatureOntology.GetFeatureID(rule)
-
-        # if featureID and featureID in lextoken.features:
-        #     return True
-        # else:
-        #     return False
+#
+# def TokenMatch(strtoken, ruletoken):
+#     if not strtoken:
+#         return False
+#     global counterMatch
+#     word = strtoken.word.lower()
+#     if strtoken.lexicon:
+#         word = strtoken.lexicon.word.lower()
+#     counterMatch += 1
+#     rule = ruletoken.word.strip("[").strip("]")
+#
+#     # compare feature
+#     if strtoken.lexicon:
+#         return LogicMatchFeatures(rule, strtoken)
+#     else:
+#         return False
+#         # featureID = FeatureOntology.GetFeatureID(rule)
+#
+#         # if featureID and featureID in lextoken.features:
+#         #     return True
+#         # else:
+#         #     return False
 
 
 def Match(strTokens, ruleTokens):
@@ -45,7 +37,7 @@ def Match(strTokens, ruleTokens):
     for i in range(1, len(ruleTokens) + 1):
         MatchOnce = False
         for j in range(1, len(strTokens) + 1):
-            if TokenMatch(strTokens[j - 1], ruleTokens[i - 1]):
+            if LogicMatch(ruleTokens[i - 1].word.strip("[").strip("]"), strTokens[j - 1]):
                 space[i][j] = 1 + space[i - 1][j - 1]
                 MatchOnce = True
         if not MatchOnce:  # at least match once.
@@ -88,7 +80,7 @@ if __name__ == "__main__":
     #Rules.LoadRules("../../fsa/Y/test_rules.txt")
     Rules.ExpandRuleWildCard()
 
-    target = "we all love iphone"
+    target = "there hardly exist real ghosts."
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:
