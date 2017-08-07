@@ -13,7 +13,7 @@ class LexiconNode(object):
         self.norm = word
         self.features = set()
     def __str__(self):
-        output = self.word + ":"
+        output = self.word + ": "
         for feature in self.features:
             f = GetFeatureName(feature)
             if f:
@@ -22,7 +22,7 @@ class LexiconNode(object):
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return output
     def entry(self):
-        output = self.word + ":"
+        output = self.word + ": "
         lexiconCopy = set()
         features = sorted(self.features)
         lexiconCopy = features.copy()
@@ -67,6 +67,7 @@ _FeatureOntology = []
 _LexiconDict = {}
 _CommentDict = {}
 _CreateFeatureList = False
+_MissingFeatureSet = set()
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
@@ -189,6 +190,12 @@ def PrintFeatureSet():
     for key in sorted(_AliasDict):
         print( key )
 
+def PrintMissingFeatureSet():
+    if _MissingFeatureSet:
+        print("//  ***Features that are not included in FullFeatureList***")
+        for feature in sorted(_MissingFeatureSet):
+            print(feature)
+
 def PrintFeatureOntology():
     print("//***Ontology***")
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
@@ -236,6 +243,7 @@ def GetFeatureID(feature):
         _FeatureSet.add(feature)
         return 1
     logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
+    _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
 def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
@@ -271,8 +279,8 @@ def LoadLexicon(lexiconLocation):
                 node = LexiconNode(blocks[0])
                 if comment:
                     node.comment = comment
-            else:
-                logging.debug("This word is repeated in lexicon: %s" % blocks[0])
+            # else:
+            #     logging.debug("This word is repeated in lexicon: %s" % blocks[0])
             features = blocks[1].split()
             for feature in features:
 
@@ -349,10 +357,12 @@ if __name__ == "__main__":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         PrintFeatureOntology()
+        PrintMissingFeatureSet()
 
     if command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintLexicon()
+        PrintMissingFeatureSet()
 
