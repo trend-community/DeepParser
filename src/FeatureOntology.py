@@ -145,6 +145,7 @@ class OntologyNode:
             if aliasnode:
                 realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
+                _FeatureSet.remove(alias)
             _AliasDict[alias] = featureID
 
         return code
@@ -183,6 +184,9 @@ def PrintFeatureSet():
     print("// ***Feature Set***")
     for feature in sorted(_FeatureSet):
         print( feature )
+    print("// ***Alias***")
+    for key in sorted(_AliasDict):
+        print( key )
 
 def PrintFeatureOntology():
     print("//***Ontology***")
@@ -229,13 +233,17 @@ def GetFeatureID(feature):
         return _FeatureDict[feature]
     if _CreateFeatureList:
         _FeatureSet.add(feature)
-    # logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
+        return 1
+    logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
     return -1    # -1? 0?
 def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
     else:
+        # logging.warning("Searching for " + str(featureID) + " but it is not in featurefulllist.")
+        # raise(Exception("error"))
         return None
+
 
 def LoadLexicon(lexiconLocation):
     global _LexiconDict
