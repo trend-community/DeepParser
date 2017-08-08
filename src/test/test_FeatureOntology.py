@@ -1,5 +1,5 @@
 import unittest
-from ..FeatureOntology import *
+from FeatureOntology import *
 #import .. import FeatureOntology
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -42,3 +42,8 @@ class FeatureTest(unittest.TestCase):
         print(SearchFeatures("airliners"))
         #print("there are so many lexicons:%s" % len(_LexiconDict))
         print(SearchFeatures("pretty"))
+
+    def test_alias(self):
+        node = OntologyNode()
+        rest = node.ProcessAlias("A=B=C, D, E, F")
+        self.assertEqual(rest, "A, D, E, F")

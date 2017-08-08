@@ -126,8 +126,7 @@ class OntologyNode:
             return line     # there is no "=" sign.
         #Now the last block has the real feature name and code
         code = blocks[-1]
-        features = re.split(",|;| ", code)    # the first feature is the real one.
-        realfeature = features[0]
+        realfeature = blocks[0]
 
         featureID = GetFeatureID(realfeature)
         if featureID == -1: #the feature in file is not in featureFullList
@@ -141,16 +140,21 @@ class OntologyNode:
             realnode.openWordID = featureID
             _FeatureOntology.append(realnode)
 
-        for alias in blocks[:-1]:
+        features = re.split(",|;| ", code)    # the first feature is the last alias.
+        lastalias = features[0]
+        for alias in blocks[1:-1] + [lastalias]:
             aliasnode = SearchFeatureOntology(GetFeatureID(alias))
             if aliasnode:
                 realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
+                #TODO: find all feature ontology nodes that have alias as ancestor
+                #   replace that as the realfeature (featureID)
                 if alias in _FeatureSet:
                     _FeatureSet.remove(alias)
             _AliasDict[alias] = featureID
 
-        return code
+
+        return code.replace(lastalias, realfeature )
 
 #Used to extract feature from dictionary, to create full feature list.
 #   not useful after full feature list is created.
@@ -302,6 +306,7 @@ def LoadLexicon(lexiconLocation):
 
             if newNode:
                 _LexiconDict.update({node.word: node})
+                #logging.debug(node.word)
             oldWord = blocks[0]
 
 

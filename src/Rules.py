@@ -7,7 +7,7 @@ import copy
 #import FeatureOntology
 #usage: to output rules list, run:
 #       python Rules.py > rules.txt
-
+from FeatureOntology import PrintMissingFeatureSet
 
 _RuleList = []
 _ExpertLexicon = []
@@ -87,6 +87,10 @@ class Rule:
                 node.EndTrunk = True
             else:
                 node.EndTrunk = False
+
+            if node.word.startswith("`"):
+                node.word = node.word.lstrip("`")
+                node.ReStartPoint = True
 
             node.repeat = [1,1]
             if node.word.endswith("?"):
@@ -391,7 +395,8 @@ if __name__ == "__main__":
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
-    LoadRules("../../fsa/Y/900NPy.xml")
-    #LoadRules("../../fsa/Y/1800VPy.xml")
+    #LoadRules("../../fsa/Y/900NPy.xml")
+    LoadRules("../../fsa/Y/1800VPy.xml")
     #ExpandRuleWildCard()
     OutputRules("concise")
+    PrintMissingFeatureSet()
