@@ -209,12 +209,16 @@ def PrintFeatureOntology():
     for key in sorted(_AliasDict):
         print( key + "=" + _FeatureList[_AliasDict[key]])
 
-def PrintLexicon():
+def PrintLexicon(flag):
     print("//***Lexicon***")
     if _CommentDict.get("firstCommentLine"):
         print(_CommentDict.get("firstCommentLine"))
     oldWord = None
-    for word in _LexiconDict.keys():
+    if flag:
+        s=sorted(_LexiconDict.keys())
+    else :
+        s=sorted(_LexiconDict.keys(),key=len)
+    for word in s:
         if oldWord in _CommentDict.keys():
             print(_CommentDict[oldWord],end="")
             oldWord = word
@@ -367,7 +371,12 @@ if __name__ == "__main__":
     if command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
-        PrintLexicon()
+        para = dir_path + '/../../fsa/Y/lexY.txt'
+        LoadLexicon(para)
+        if "lexX" in para:
+            flag = False
+        else:
+            flag = True
+        PrintLexicon(flag)
         PrintMissingFeatureSet()
 
