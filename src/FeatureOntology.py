@@ -128,6 +128,7 @@ class OntologyNode:
         #Now the last block has the real feature name and code
         code = blocks[-1]
         realfeature = blocks[0]
+        realfeatureId = GetFeatureID(realfeature)
 
         featureID = GetFeatureID(realfeature)
         if featureID == -1: #the feature in file is not in featureFullList
@@ -145,6 +146,7 @@ class OntologyNode:
         lastalias = features[0]
         for alias in blocks[1:-1] + [lastalias]:
             aliasnode = SearchFeatureOntology(GetFeatureID(alias))
+            aliasId = GetFeatureID(alias)
             if aliasnode:
                 realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
@@ -152,6 +154,12 @@ class OntologyNode:
                 #   replace that as the realfeature (featureID)
                 if alias in _FeatureSet:
                     _FeatureSet.remove(alias)
+
+            for node in _FeatureOntology:
+                if aliasId in node.ancestors:
+                    node.ancestors.remove(aliasId)
+                    node.ancestors.add(realfeatureId)
+
             _AliasDict[alias] = featureID
 
 
@@ -208,14 +216,18 @@ def PrintFeatureOntology():
             print(node)
     print("//***Alias***")
     for key in sorted(_AliasDict):
-        print( key + "=" + _FeatureList[_AliasDict[key]])
+        print( _FeatureList[_AliasDict[key]] + "=" + key )
 
-def PrintLexicon():
+def PrintLexicon(flag):
     print("//***Lexicon***")
     if _CommentDict.get("firstCommentLine"):
         print(_CommentDict.get("firstCommentLine"))
     oldWord = None
-    for word in _LexiconDict.keys():
+    if flag:
+        s=sorted(_LexiconDict.keys())
+    else :
+        s=sorted(_LexiconDict.keys(),key=len)
+    for word in s:
         if oldWord in _CommentDict.keys():
             print(_CommentDict[oldWord],end="")
             oldWord = word
@@ -371,7 +383,12 @@ if __name__ == "__main__":
     if command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
-        PrintLexicon()
+        para = dir_path + '/../../fsa/Y/lexY.txt'
+        LoadLexicon(para)
+        if "LexX" in para:
+            flag = False
+        else:
+            flag = True
+        PrintLexicon(flag)
         PrintMissingFeatureSet()
 
