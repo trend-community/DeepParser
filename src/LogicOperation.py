@@ -3,22 +3,27 @@ import FeatureOntology
 
 #not, and, or
 #type: word/norm/stem
+
+def CheckPrefix(word, matchtype):
+    if word.startswith("\""):  # word  comparison
+        word = word.strip("\"")
+        matchtype = "word"      # case insensitive
+    elif word.startswith("'"):
+        word = word.strip("\'")
+        matchtype = "stem"      # case insensitive
+    elif word.startswith("/"):
+        word = word.strip("/")
+        matchtype = "norm"      # case insensitive
+    return word, matchtype
+
 def LogicMatch(rule, strtoken, matchtype="unknown"):
 
     if not rule:  # "[]", not sure what that is.
         return False
-    if rule.startswith("\""):  # word  comparison
-        rule = rule.strip("\"")
-        matchtype = "word"      # case insensitive
-    elif rule.startswith("'"):
-        rule = rule.strip("\'")
-        matchtype = "stem"      # case insensitive
-    elif rule.startswith("/"):
-        rule = rule.strip("/")
-        matchtype = "norm"      # case insensitive
-    elif strtoken.lexicon and matchtype == "unknown":
-        return LogicMatchFeatures(rule, strtoken)
 
+    rule, matchtype = CheckPrefix(rule, matchtype)
+    if matchtype == "unknown":
+        return LogicMatchFeatures(rule, strtoken)
 
     if not re.search('\|| |!', rule):
         if matchtype == "stem" and strtoken.lexicon:
@@ -53,16 +58,20 @@ def LogicMatch(rule, strtoken, matchtype="unknown"):
 def LogicMatchFeatures(rule, strtoken):
 
     if not rule:
-        return False
+        return True # for the comparison of "[]", can match anything
+
+    rule, matchtype = CheckPrefix(rule, 'feature')
+    if matchtype != "feature":
+        return LogicMatch(rule, strtoken, matchtype)
 
     if not re.search('\|| |!', rule):
-        if -1 in strtoken.lexicon.features:
-            strtoken.lexicon.features.remove(-1)
+        if -1 in strtoken.features:
+            strtoken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
-            return LogicMatch(rule, strtoken, "tried_feature")
+            return LogicMatch(rule, strtoken, "stem")
         else:
-            if featureID and featureID in strtoken.lexicon.features:
+            if featureID and featureID in strtoken.features:
                 return True
             else:
                 return False

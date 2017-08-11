@@ -5,6 +5,7 @@
 #       python Rules.py > features.txt
 
 import logging, re, operator, sys, os
+from functools import lru_cache
 
 class LexiconNode(object):
     def __init__(self, word=''):
@@ -238,6 +239,7 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
             return node
     return None
 
+@lru_cache(maxsize=1000)
 def GetFeatureID(feature):
     if feature in _AliasDict:
         return _AliasDict[feature]
@@ -249,11 +251,13 @@ def GetFeatureID(feature):
     logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
+
+@lru_cache(maxsize=1000)
 def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
     else:
-        # logging.warning("Searching for " + str(featureID) + " but it is not in featurefulllist.")
+        logging.warning("Wrong to get Feature Name: Searching for " + str(featureID) + " but it is not in featurefulllist.")
         # raise(Exception("error"))
         return None
 

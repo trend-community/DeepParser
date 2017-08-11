@@ -70,22 +70,34 @@ def SearchMatchingRule(strtokens):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
 
-    Rules.LoadRules("../../fsa/Y/900NPy.xml")
-    Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    #Rules.LoadRules("../../fsa/Y/test_rules.txt")
+    Rules.LoadRules("../../fsa/Y/100y.txt")
+
+    Rules.LoadRules("../../fsa/Y/800VGy.txt")
+    # Rules.LoadRules("../../fsa/Y/900NPy.xml")
+    # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+    # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
-    target = "there hardly exist real ghosts."
+    Rules.ExpandParenthesis()
+    Rules.ExpandRuleWildCard()
+
+    target = "I am happy John will come"
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:
         node.lexicon = FeatureOntology.SearchLexicon(node.word)
-
+        node.features = set()
+        if node.lexicon:
+            node.features.update(node.lexicon.features)
+        else:
+            node.features.add(FeatureOntology.GetFeatureID('NNP'))
+    nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
+    nodes[0].features.add(FeatureOntology.GetFeatureID('JS2'))
     # default lexY.txt is already loaded. additional lexicons can be load here:
     # FeatureOntology.LoadLexicon("../../fsa/X/lexX.txt")
     for node in nodes:

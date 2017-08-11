@@ -7,17 +7,40 @@ class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
         tokenlist = Tokenize("[a] [b]")
         self.assertEqual(tokenlist[0].word, '[a]')
+        tokenlist = Tokenize("[JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]? ^V2[0 Ved:^.M] [AP:^.M]* @noun_mod [N !date:NP]>")
+        self.assertEqual(len(tokenlist), 7)
+
+    def test_Tokenization_or(self):
+        tokenlist = Tokenize("[a b c]|[d e f]")
+        self.assertEqual(len(tokenlist), 1)
+
+        tokenlist = Tokenize("""[a b c] 
+            | [d e f]""")
+        self.assertEqual(len(tokenlist), 1)
+
+    def test_T_parenthesis(self):
+        tokenlist = Tokenize(""" 	MD | "\'d|wil|mite|wanna|gotta" | ( ("do|does|did") 'have|seem|claim|appear|tend|want|wish|hope|desire|expect' "to" )""")
+        self.assertEqual(len(tokenlist), 1)
+
+
     def test_SetRule_number(self):
         r = Rule()
-        r.SetRule("a==[a]4 [b]* [c]*7 [d]?")
+        r.SetRule("a==   [0 a]4 [b]* [c]*7 [d]? [e]10 [f]*15 [g]12*16")
         self.assertEqual(r.Tokens[0].repeat[1], 4)
         self.assertEqual(r.Tokens[1].repeat[1], 3)
         self.assertEqual(r.Tokens[2].repeat[1], 7)
         self.assertEqual(r.Tokens[3].repeat[1], 1)
         self.assertEqual(r.Tokens[3].repeat[0], 0)
+
+        self.assertEqual(r.Tokens[4].repeat[1], 10)
+        self.assertEqual(r.Tokens[5].repeat[1], 15)
+
+        self.assertEqual(r.Tokens[6].repeat[1], 16)
+        self.assertEqual(r.Tokens[6].repeat[0], 12)
+
     def test_tokenspace(self):
         r = Rule()
-        r.SetRule("b==[a b? c:d e]")
+        r.SetRule("b==[0 a b? c:d e]")
         self.assertEqual(r.Tokens[0].word, '[a b? c]')
         self.assertEqual(r.Tokens[0].action, 'd e')
     def test_Rule(self):
@@ -70,16 +93,24 @@ class RuleTest(unittest.TestCase):
     ^VWHSS advP? [which+one:^V2.O JS2] R* [NP !me|him|us|them:^V2.S JS2] ^V2[Pred !passive !vi Kid=!Obj:^.ObjS]
 
         """)
-        print(r)
+        #print(r)
 
-    # def test_Macro(self):
-    #     r = Rule()
-    #     r.SetRule("rule==@andC")
-    #     s = ProcessMacro("a @andC")
-    #     self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
-    #
-    #     s = ProcessMacro("a @andC @andC")
-    #     self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"]) ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
+    def test_Macro(self):
+        InsertRuleInList("""@andC == ([0 "and|or|&amp;|as_well_as|\/|and\/or"])""")
+        s = ProcessMacro("a @andC")
+        self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
+
+        s = ProcessMacro("a @andC @andC")
+        self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"]) ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
+
+        InsertRuleInList("""#macro_with_parameter(1=$HAVE 2=$NEG, 3=$tm 4=$neg) ==
+         <$HAVE $NEG [RB:^.R]? [VBN|Ved:VG perfect $tm $neg ]>""")
+        s = ProcessMacro("""#macro_with_parameter(1=a 2=b, 3=c 4=d)""")
+        self.assertEqual(s, "<a b [RB:^.R]? [VBN|Ved:VG perfect c d ]>")
+
+        s = ProcessMacro("""#macro_with_parameter(1=a 2=NULL, 3=c 4)""")
+        self.assertEqual(s, "<a  [RB:^.R]? [VBN|Ved:VG perfect c  ]>")
+
 
     def test_Expand(self):
         r = Rule()
@@ -88,7 +119,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(_RuleList), 1)
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 2)
-        InsertRuleInList("bbb==[NR]? [PP]?")
+        InsertRuleInList("bbb==[JS]? [JM]?")
         self.assertEqual(len(_RuleList), 3)
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 6)
@@ -100,3 +131,100 @@ class RuleTest(unittest.TestCase):
         r.SetRule("rule == [ab][cd]")
         self.assertEqual(len(r.Tokens), 2)
         self.assertEqual(r.Tokens[1].word, "[cd]")
+
+    def test_parenthsis_complicate(self):
+        _RuleList.clear()
+        r = Rule()
+        r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]? ^V2[0 Ved:^.M] [AP:^.M]* @noun_mod [N !date:NP]>")
+        self.assertEqual(len(r.Tokens), 7)
+        if r.RuleName:
+            _RuleList.append(r)
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 16)
+        print("Before expand  parenthesis")
+        OutputRules()
+        ExpandParenthesis()
+        self.assertEqual(len(_RuleList), 16)
+        print("Before expand rule, after parenthesis")
+        OutputRules()
+
+        ExpandRuleWildCard()
+        print(" after expand rule again")
+        OutputRules()
+        self.assertEqual(len(_RuleList), 24)
+
+    def test_parenthsis(self):
+        _RuleList.clear()
+        r = Rule()
+        r.SetRule(
+            "rule_p ==  <([R:^V.R]? ^V[0 Ved:^.M] @andC)? ")
+        self.assertEqual(len(r.Tokens), 1)
+        if r.RuleName:
+            _RuleList.append(r)
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 2)
+        ExpandParenthesis()
+        print("Start rules after expand parenthesis")
+        OutputRules()
+        newr = _RuleList[1]
+        self.assertEqual(len(newr.Tokens), 3)
+        ExpandRuleWildCard()
+        print("Start rules after expand wild card again")
+        OutputRules()
+        self.assertEqual(len(_RuleList), 3)
+
+
+    def test_parenthsis_complicate_little(self):
+        _RuleList.clear()
+        r = Rule()
+        r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]>")
+        self.assertEqual(len(r.Tokens), 3)
+        if r.RuleName:
+            _RuleList.append(r)
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 2)
+        print("Before expand  parenthesis")
+        OutputRules()
+        ExpandParenthesis()
+        self.assertEqual(len(_RuleList), 2)
+        print("Before expand rule, after parenthesis")
+        OutputRules()
+
+        ExpandRuleWildCard()
+        print(" after expand rule again")
+        OutputRules()
+        self.assertEqual(len(_RuleList), 3)
+
+    def test_parenthsis_empty(self):
+        _RuleList.clear()
+        InsertRuleInList("""
+@yourC == 
+(
+	[PRPP:^.M] 
+	| (one:^.M POS)
+
+)
+""")
+
+        InsertRuleInList("DT_NN_VBG_NN2 == '!with' (/the/|'any|such|these|those'|@yourC) [AP:^.M]? [NN|NNP '!time|trouble|difficulty|problem|experience':^V.S2] ^V[0 Ving '!be|have|seem':^.M] [NNS !dur|date|measure:NP]> [!NN|NNS]")
+
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 2)
+        print("Before expand  parenthesis")
+        OutputRules()
+        ExpandParenthesis()
+        self.assertEqual(len(_RuleList), 2)
+        print("Before expand rule, after parenthesis")
+        OutputRules()
+
+        ExpandRuleWildCard()
+        print(" after expand rule again")
+        OutputRules()
+        self.assertEqual(len(_RuleList), 2)
+
+    def test_specialrule(self):
+
+        _RuleList.clear()
+        InsertRuleInList("""single_token_NP5 == <[proNN:NP]>""")
+        r = _RuleList[0]
+        self.assertEqual(r.Tokens[0].word, "[proNN]")

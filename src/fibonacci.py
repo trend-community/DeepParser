@@ -52,10 +52,21 @@ def stringmatch(str1, str2):
             return  j
     return -1
 
+
+from functools import lru_cache
+
+@lru_cache(maxsize=1000)
+def fibcache(n):
+    if n < 2:
+        return n
+    return fibcache(n-1) + fibcache(n-2)
+
+
 if __name__ == "__main__":
     #print fib_recursivive(50)
-    print(fib_list(500))
-    print(fib_recur_tail(500))
+    print(fib_list(300))
+    print(fib_recur_tail(300))
+    print (fibcache(300))
     # for i in range(1, 12):
     #     print fib_list(i)
     # for i in range(1, 12):

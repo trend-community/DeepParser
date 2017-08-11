@@ -1,5 +1,5 @@
 
-import logging, re
+import logging, re, os
 import Tokenization
 import copy
 #from RuleMacro import ProcessMacro
@@ -72,62 +72,7 @@ class Rule:
             logging.info("Failed to tokenize because: " + str(e))
             self.RuleName = ""
             return
-        self.ProcessTokens()
-
-    def ProcessTokens(self):
-        for node in self.Tokens:
-            #logging.info("\tnode word:" + node.word)
-            if node.word.startswith("<"):
-                node.word = node.word.lstrip("<")
-                node.StartTrunk = True
-            else:
-                node.StartTrunk = False
-            if node.word.endswith(">"):
-                node.word = node.word.rstrip(">")
-                node.EndTrunk = True
-            else:
-                node.EndTrunk = False
-
-            if node.word.startswith("`"):
-                node.word = node.word.lstrip("`")
-                node.ReStartPoint = True
-
-            node.repeat = [1,1]
-            if node.word.endswith("?"):
-                node.word = node.word.rstrip("?")
-                node.repeat = [0, 1]
-            if node.word.endswith("*"):
-                node.word = node.word.rstrip("*")
-                node.repeat = [0, 3]
-            repeatMatch = re.match("(.*)\*(\d)*$", node.word)
-            if not repeatMatch:
-                repeatMatch = re.match("(.*)(\d)+$", node.word)
-            if repeatMatch:
-                node.word = repeatMatch[1]
-                repeatMax = 3           #default as 3
-                if repeatMatch[2]:
-                    repeatMax = int(repeatMatch[2])
-                node.repeat = [0, repeatMax]
-
-            pointerMatch = re.match("^\^(.*?)\[(.*)\]$", node.word)
-            if pointerMatch:
-                node.word = "[" + pointerMatch[2] + "]"
-                node.pointer = pointerMatch[1]
-
-            pointerMatch = re.match("^\^(.*)$", node.word)
-            if pointerMatch:
-                node.word = "[" + pointerMatch[1] + "]"
-                node.pointer = ''
-
-            actionMatch = re.match("^\[(.*):(.*)\]$", node.word)
-            if actionMatch:
-                node.word = "[" + actionMatch[1] + "]"
-                node.action = actionMatch[2]
-
-            actionMatch = re.match("^\[(\d*) (.*)\]$", node.word)
-            if actionMatch:
-                node.word = "[" + actionMatch[2] + "]"
-                node.priority = int(actionMatch[1])
+        ProcessTokens(self.Tokens)
 
     def __str__(self):
         return self.output("details")
@@ -182,6 +127,11 @@ def Tokenize(RuleContent):
     i = 0
     TokenList = []
     StartToken = False
+
+    #Remove any whitespace around | sign, so it ismade as a word.
+    r = re.compile("\s*\|\s*", re.MULTILINE)
+    RuleContent = r.sub("|", RuleContent)
+
     while i < len(RuleContent):
         if RuleContent[i] in SignsToIgnore:
             i += 1
@@ -224,6 +174,70 @@ def Tokenize(RuleContent):
 
     return TokenList
 
+
+def ProcessTokens(Tokens):
+    for node in Tokens:
+        #logging.info("\tnode word:" + node.word)
+        if node.word.startswith("<"):
+            node.word = node.word.lstrip("<")
+            node.StartTrunk = True
+        else:
+            node.StartTrunk = False
+        if node.word.endswith(">"):
+            node.word = node.word.rstrip(">")
+            node.EndTrunk = True
+        else:
+            node.EndTrunk = False
+
+        if node.word.startswith("`"):
+            node.word = node.word.lstrip("`")
+            node.ReStartPoint = True
+
+        node.repeat = [1,1]
+        if node.word.endswith("?"):
+            node.word = node.word.rstrip("?")
+            node.repeat = [0, 1]
+        if node.word.endswith("*"):
+            node.word = node.word.rstrip("*")
+            node.repeat = [0, 3]
+
+        repeatMatch = re.match("(.*\D+)(\d+)\*(\d+)$", node.word)
+        if repeatMatch:
+            node.word = repeatMatch.group(1)
+            node.repeat = [int(repeatMatch.group(2)), int(repeatMatch.group(3))]
+
+        repeatMatch = re.match("(.+)\*(\d*)$", node.word)
+        if not repeatMatch:
+            repeatMatch = re.match("(.*\D+)(\d+)$", node.word)
+        if repeatMatch:
+            node.word = repeatMatch.group(1)
+            repeatMax = 3           #default as 3
+            if repeatMatch.group(2):
+                repeatMax = int(repeatMatch.group(2))
+            node.repeat = [0, repeatMax]
+
+        pointerMatch = re.match("\^(.*)\[(.+)\]$", node.word)
+        if pointerMatch:
+            node.word = "[" + pointerMatch.group(2) + "]"
+            node.pointer = pointerMatch.group(1)
+
+        pointerMatch = re.match("\^(.+)$", node.word)
+        if pointerMatch:
+            node.word = "[" + pointerMatch.group(1) + "]"
+            node.pointer = ''
+
+        actionMatch = re.match("^\[(.+):(.+)\]$", node.word)
+        # if not actionMatch:
+        #     actionMatch = re.match("^(.+):(.*)$", node.word)
+        if actionMatch:
+            node.word = "[" + actionMatch.group(1) + "]"
+            node.action = actionMatch.group(2)
+
+        actionMatch = re.match("^\[(\d+) (.+)\]$", node.word)
+        if actionMatch:
+            node.word = "[" + actionMatch.group(2) + "]"
+            node.priority = int(actionMatch.group(1))
+
 # return -1 if failed. Should throw error?
 def _SearchPair(string, tagpair):
     depth = 0
@@ -237,7 +251,7 @@ def _SearchPair(string, tagpair):
             depth += 1
         i += 1
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
+    #raise Exception(" Can't find a pair tag!" + string)
     return -1
 
 # The previous step already search up to the close tag.
@@ -248,7 +262,15 @@ def _SearchToEnd(string):
         return 0
     i = 1
     while i<len(string):
-        if string[i] in SignsToIgnore or string[i] in "[(\"'":
+        for pair in Pairs:
+            if string[i] == pair[0]:
+                if i>0 and string[i-1] == "|":
+                    endofpair = _SearchPair(string[i+1:], pair)
+                    if endofpair >= 0:
+                        i += endofpair +1 # TODO: verify to +1
+                    else:
+                        return 0   # error. stop the searching immediately.
+        if string[i] in SignsToIgnore:
             return i
         if string[i].isspace():
             return i
@@ -260,6 +282,25 @@ def _SearchToEnd(string):
 
 
 def ProcessMacro(ruleContent):
+    macros_with_parameters = re.findall("#\w*\(.+\)", ruleContent)
+    for macro in macros_with_parameters:
+        macroName = re.match("^(#.*)\(", macro)[0]
+        for MacroName in _MacroDict:
+            if MacroName.startswith(macroName):
+                MacroParameters = re.findall("(\d+)=(\$\w+)", MacroName)
+                macroParameters = re.findall("(\d+)=?(\w+)?", macro)
+                macroContent = _MacroDict[MacroName].RuleContent
+                for Parameter_Pair in MacroParameters:
+                    for parameter_pair in macroParameters:
+                        if Parameter_Pair[0] == parameter_pair[0]:
+                            if len(parameter_pair) == 1 or parameter_pair[1] == "NULL":
+                                ReplaceWith = ''
+                            else:
+                                ReplaceWith = parameter_pair[1]
+                            macroContent = macroContent.replace(Parameter_Pair[1], ReplaceWith)
+                ruleContent = ruleContent.replace(macro, macroContent)
+    #return ruleContent
+
     macros = re.findall("@\w*", ruleContent)
     for macro in macros:
         if macro in _MacroDict:
@@ -280,6 +321,13 @@ def ProcessMacro(ruleContent):
 # continue until };, or a blank line.
 # -July 26, change to "==" or "::".
 def LoadRules(RuleLocation):
+    RuleFileName = os.path.basename(RuleLocation)
+    try:
+        RuleFileID = int(re.findall('^\d+', RuleFileName)[0])
+    except IndexError:
+        logging.error("Rule Filename must start with a number!")
+        raise
+
     with open(RuleLocation, encoding="utf-8") as dictionary:
         rule = ""
         for line in dictionary:
@@ -293,19 +341,20 @@ def LoadRules(RuleLocation):
 
             if line.find("::")>=0 or line.find("==") >= 0:
                 if rule:
-                    InsertRuleInList(rule)
+                    InsertRuleInList(rule, RuleFileID)
                     rule = ""
             rule += " " + line
 
         if rule:
-            InsertRuleInList(rule)
+            InsertRuleInList(rule, RuleFileID)
 
-def InsertRuleInList(string):
+def InsertRuleInList(string, RuleFileID = 1):
     global _RuleList, _ExpertLexicon, _MacroDict
     node = Rule()
+    node.FileID = RuleFileID
     node.SetRule(string)
     if node.RuleName:
-        if node.RuleName.startswith("@"):
+        if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in _MacroDict:
                 logging.warning("This rule name " + node.RuleName + " is already used for Macro " + _MacroDict[node.RuleName]
                                 + " \n but now you have: " + string + "\n\n")
@@ -346,14 +395,12 @@ def ExpandRuleWildCard():
                     newrule.RuleName = rule.RuleName+"_"+str(repeat_num)
                     newrule.RuleContent = rule.RuleContent
                     for tokenindex_pre in range(tokenindex):
-                        new_node = copy.copy(rule.Tokens[tokenindex_pre])
                         newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
                     for tokenindex_this in range(repeat_num):
                         new_node = copy.copy(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
                         newrule.Tokens.append(new_node)
                     for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
-                        new_node = copy.copy(rule.Tokens[tokenindex_post])
                         newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                     _RuleList.append(newrule)
                     Expand = True
@@ -366,7 +413,51 @@ def ExpandRuleWildCard():
     if Modified:
         logging.info("\tExpandRuleWildCard next level.")
         ExpandRuleWildCard()    #recursive call itself to finish all.
-                    
+
+def ExpandParenthesis():
+    Modified = False
+    for rule in _RuleList:
+        Expand = False
+        for tokenindex in range(len(rule.Tokens)):
+            token = rule.Tokens[tokenindex]
+            if token.word.startswith("(") and token.word.endswith(")"):
+                logging.warning("Parenthesis:\n\t" + token.word)
+                subTokenlist = Tokenize(token.word[1:-1])
+                if not subTokenlist:
+                    print("empty parenthesis: " + token.word + " in " + str(rule))
+                    raise "empty parenthesis"
+                    #continue
+                ProcessTokens(subTokenlist)
+                if hasattr(token, "pointer"):
+                    subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartTrunk = token.StartTrunk
+                subTokenlist[-1].EndTrunk = token.EndTrunk
+
+                newrule = Rule()
+                newrule.Origin = rule.Origin
+                newrule.comment = rule.comment
+                newrule.IsExpertLexicon = rule.IsExpertLexicon
+                newrule.RuleName = rule.RuleName+"_p"+str(tokenindex)
+                newrule.RuleContent = rule.RuleContent
+                for tokenindex_pre in range(tokenindex):
+                    newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                for subtoken in subTokenlist:
+                    newrule.Tokens.append(subtoken)
+                for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
+                    newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                _RuleList.append(newrule)
+                Expand = True
+                break
+        if Expand:
+            _RuleList.remove(rule)
+            Modified = True
+
+    if Modified:
+        logging.info("\tExpandParenthesis next level.")
+        ExpandParenthesis()    #recursive call itself to finish all.
+
+
+
 
 
 def OutputRules(style="details"):
@@ -396,7 +487,13 @@ if __name__ == "__main__":
     # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
     #LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/1800VPy.xml")
-    #ExpandRuleWildCard()
-    OutputRules("concise")
+    #LoadRules("../../fsa/Y/800VGy.txt")
+
+    LoadRules("../../fsa/Y/1test_rules.txt")
+
+    ExpandRuleWildCard()
+    ExpandParenthesis()
+    ExpandRuleWildCard()
+
+    OutputRules("details")
     PrintMissingFeatureSet()
