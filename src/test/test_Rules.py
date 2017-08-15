@@ -297,3 +297,4 @@ class RuleTest(unittest.TestCase):
         ExpandOrBlock()
         self.assertEqual(len(_RuleList), 2)
         OutputRules()
+

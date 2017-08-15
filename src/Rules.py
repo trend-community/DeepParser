@@ -1,5 +1,5 @@
 
-import logging, re, os
+import logging, re, os, operator
 import Tokenization
 import copy
 #from RuleMacro import ProcessMacro
@@ -80,7 +80,8 @@ class Rule:
         try:
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
-            logging.info("Failed to tokenize because: " + str(e))
+            logging.error("Failed to tokenize because: " + str(e))
+            logging.error("Rulename is: " + self.RuleName)
             self.RuleName = ""
             return
         ProcessTokens(self.Tokens)
@@ -137,6 +138,8 @@ def RemoveExcessiveSpace(Content):
 
     r = re.compile("\s*>", re.MULTILINE)
     Content = r.sub(">", Content)
+
+    Content = Content.strip(";")
 
     return Content
 
@@ -312,7 +315,7 @@ def _SearchToEnd(string, Reverse=False):
                             i += endofpair +1 # TODO: verify to +1
                     else:
                         raise "Can't find a pair in _SearchToEnd()"
-                        return 0   # error. stop the searching immediately.
+                        #return -1   # error. stop the searching immediately.
         if string[i] in SignsToIgnore:
             return i-direction
         if string[i].isspace():
@@ -479,6 +482,8 @@ def ExpandRuleWildCard():
                         new_node = copy.copy(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
                         newrule.Tokens.append(new_node)
+                    if repeat_num == 0: # this token is removed. some features need to copy to others
+                        origin_node = rule.Tokens[tokenindex]
                     for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
                         newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                     _RuleList.append(newrule)
@@ -510,15 +515,16 @@ def ExpandParenthesis():
             if token.word.startswith("(") and token.word.endswith(")"):
                 #logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
                 subTokenlist = Tokenize(token.word[1:-1])
-                if not subTokenlist:
-                    print("empty parenthesis: " + token.word + " in " + str(rule))
-                    raise "empty parenthesis"
+#                if not subTokenlist:
+                    #logging.info("empty parenthesis: " + token.word + " in " + str(rule))
+                    #raise "empty parenthesis"
                     #continue
-                ProcessTokens(subTokenlist)
-                if hasattr(token, "pointer"):
-                    subTokenlist[0].pointer = token.pointer
-                subTokenlist[0].StartTrunk = token.StartTrunk
-                subTokenlist[-1].EndTrunk = token.EndTrunk
+                if subTokenlist:
+                    ProcessTokens(subTokenlist)
+                    if hasattr(token, "pointer"):
+                        subTokenlist[0].pointer = token.pointer
+                    subTokenlist[0].StartTrunk = token.StartTrunk
+                    subTokenlist[-1].EndTrunk = token.EndTrunk
 
                 newrule = Rule()
                 newrule.Origin = rule.Origin
@@ -554,26 +560,27 @@ def _ProcessOrBlock(Content, orIndex):
     start = orIndex
     end = orIndex
 
-    for pair in Pairs:
-        if Content[orIndex+1] == pair[0]:
-            end = end + 2 + _SearchPair(Content[orIndex+2:], pair)
-    if end == orIndex:  # the next character is not pair, so it is a normal word
-        end = end + 2 + _SearchToEnd_OrBlock(Content[orIndex+2:])
+    try:
+        for pair in Pairs:
+            if Content[orIndex+1] == pair[0]:
+                end = end + 2 + _SearchPair(Content[orIndex+2:], pair)
+        if end == orIndex:  # the next character is not pair, so it is a normal word
+            end = end + 2 + _SearchToEnd_OrBlock(Content[orIndex+2:])
 
-    for pair in Pairs:
-        if Content[orIndex-1] == pair[1]:
-            start = _SearchPair(Content[:orIndex-1], pair, Reverse=True)
-    if start == orIndex:  # the next character is not pair, so it is a normal word
-        start = _SearchToEnd_OrBlock(Content[:orIndex-1], Reverse=True)
-
-
-
+        for pair in Pairs:
+            if Content[orIndex-1] == pair[1]:
+                start = _SearchPair(Content[:orIndex-1], pair, Reverse=True)
+        if start == orIndex:  # the next character is not pair, so it is a normal word
+            start = _SearchToEnd_OrBlock(Content[:orIndex-1], Reverse=True)
+    except Exception as e:
+        logging.info("Failed to process or block because: " + str(e))
+        return None, None, None
     return Content[start:end+1], Content[start:orIndex], Content[orIndex+1:end+1]
+
 
 def ExpandOrBlock():
     Modified = False
     counter = 0
-    print("Before running, there are " + str(len(_RuleList)) + " in rulelist")
     for rule in _RuleList:
 
         Expand = False
@@ -585,10 +592,11 @@ def ExpandOrBlock():
                 if orIndex <= 0:
                     continue
 
-            counter += 1
-            print(counter)
-            
+            logging.info( " In ExpandOrBlock:" + rule.RuleName)
+
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
+            if originBlock is None:
+                continue    #failed to process. might be pair tag issue.
 
             #left:
             newrule = Rule()
@@ -623,6 +631,7 @@ def ExpandOrBlock():
             _RuleList.append(newrule)
 
             Expand = True
+            logging.warning("\tExpand is true, because of " + rule.RuleName)
             break
 
         if Expand:
@@ -636,7 +645,7 @@ def ExpandOrBlock():
 
 def OutputRules(style="details"):
     print("// ****Rules****")
-    for rule in _RuleList:
+    for rule in  sorted(_RuleList, key=operator.attrgetter('RuleName')):
         print(rule.output(style))
 
     print("// ****Expert Lexicons****")
@@ -649,8 +658,6 @@ def OutputRules(style="details"):
 
     print("// End of Rules/Expert Lexicons/Macros")
 
-
-#LoadRules(dir_path + "/../data/rule.txt")
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')

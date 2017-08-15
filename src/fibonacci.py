@@ -61,9 +61,19 @@ def fibcache(n):
         return n
     return fibcache(n-1) + fibcache(n-2)
 
+def listtest():
+    AList = []
+    AList.append(3)
+    AList.append(4)
+    for x in AList:
+        print("content in AList:" + str(x))
+        if x == 3:
+            AList.append(31)
+            AList.remove(x)
 
 if __name__ == "__main__":
     #print fib_recursivive(50)
+    listtest()
     print(fib_list(300))
     print(fib_recur_tail(300))
     print (fibcache(300))

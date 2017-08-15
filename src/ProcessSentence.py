@@ -78,7 +78,7 @@ if __name__ == "__main__":
     #Rules.LoadRules("../../fsa/Y/100y.txt")
 
     Rules.LoadRules("../../fsa/Y/800VGy.txt")
-    # Rules.LoadRules("../../fsa/Y/900NPy.xml")
+    Rules.LoadRules("../../fsa/Y/900NPy.xml")
     # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
     # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     Rules.ExpandParenthesis()
     Rules.ExpandRuleWildCard()
 
-    target = "I am happy John will come"
+    target = "it was put onto the chair arm.  "
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:
