@@ -217,7 +217,9 @@ def ProcessTokens(Tokens):
 
         if node.word.startswith("`"):
             node.word = node.word.lstrip("`")
-            node.ReStartPoint = True
+            node.RestartPoint = True
+        else:
+            node.RestartPoint = False
 
         node.repeat = [1,1]
         if node.word.endswith("?"):
@@ -242,7 +244,7 @@ def ProcessTokens(Tokens):
                 repeatMax = int(repeatMatch.group(2))
             node.repeat = [0, repeatMax]
 
-        pointerMatch = re.match("\^(.*)\[(.+)\]$", node.word)
+        pointerMatch = re.match("\^(\w*)\[(.+)\]$", node.word)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
@@ -253,16 +255,33 @@ def ProcessTokens(Tokens):
             node.pointer = ''
 
         actionMatch = re.match("^\[(.+):(.+)\]$", node.word)
-        # if not actionMatch:
-        #     actionMatch = re.match("^(.+):(.*)$", node.word)
         if actionMatch:
-            node.word = "[" + actionMatch.group(1) + "]"
-            node.action = actionMatch.group(2)
+            ActionIndex = FindLastColonWithoutSpecialCharacter(node.word)
+            if ActionIndex>0:
+                node.word = node.word[1:ActionIndex]
+                node.action = node.word[ActionIndex+1:-1]
 
-        actionMatch = re.match("^\[(\d+) (.+)\]$", node.word)
-        if actionMatch:
-            node.word = "[" + actionMatch.group(2) + "]"
-            node.priority = int(actionMatch.group(1))
+        priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
+        if priorityMatch:
+            node.word = "[" + priorityMatch.group(2) + "]"
+            node.priority = int(priorityMatch.group(1))
+
+# Avoid [(AS:action)|sjfa]
+#Good character in action:
+#     ^.M
+#Bad characters in action:
+#     )?':
+def FindLastColonWithoutSpecialCharacter(string):
+    index = len(string) - 1
+    while index>=0:
+        if string[index] == ":":
+            return index
+        if string[index].isalpha() or \
+            string[index] in "^. ":
+            index -=1
+        else:
+            return -1
+    return -1
 
 # return -1 if failed. Should throw error?
 def _SearchPair(string, tagpair, Reverse=False):
@@ -482,10 +501,31 @@ def ExpandRuleWildCard():
                         new_node = copy.copy(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
                         newrule.Tokens.append(new_node)
+                    NextIsStart = False
+                    NextIsRestart = False
+                    NextIsPointer = False
                     if repeat_num == 0: # this token is removed. some features need to copy to others
                         origin_node = rule.Tokens[tokenindex]
+                        if origin_node.StartTrunk:
+                            NextIsStart = True
+                        if origin_node.EndTrunk:
+                            lastToken = newrule.Tokens[-1]
+                            lastToken.EndTrunk = True
+                        if origin_node.RestartPoint:
+                            NextIsRestart = True
+                        if hasattr(origin_node, "pointer"):
+                            NextIsPointer = True
+                            NextPointer = origin_node.pointer
                     for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
-                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                        new_node = copy.copy(rule.Tokens[tokenindex_post])
+                        if tokenindex_post == tokenindex+1:
+                            if NextIsStart:
+                                new_node.StartTrunk = True
+                            if NextIsRestart:
+                                new_node.RestartPoint = True
+                            if NextIsPointer:
+                                new_node.pointer = NextPointer
+                        newrule.Tokens.append(new_node)
                     _RuleList.append(newrule)
                     Expand = True
             if Expand:
@@ -592,8 +632,6 @@ def ExpandOrBlock():
                 if orIndex <= 0:
                     continue
 
-            logging.info( " In ExpandOrBlock:" + rule.RuleName)
-
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
             if originBlock is None:
                 continue    #failed to process. might be pair tag issue.
@@ -645,14 +683,17 @@ def ExpandOrBlock():
 
 def OutputRules(style="details"):
     print("// ****Rules****")
+    print("// * size: " + str(len(_RuleList)) + " *" )
     for rule in  sorted(_RuleList, key=operator.attrgetter('RuleName')):
         print(rule.output(style))
 
     print("// ****Expert Lexicons****")
+    print("// * size: " + str(len(_ExpertLexicon)) + " *" )
     for rule in _ExpertLexicon:
         print(rule.output(style))
 
     print ("// ****Macros****")
+    print("// * size: " + str(len(_MacroDict)) + " *" )
     for rule in _MacroDict.values():
         print(rule.output(style))
 
