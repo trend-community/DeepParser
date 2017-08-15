@@ -15,6 +15,17 @@ _MacroList = []
 _MacroDict = {}     # not sure which one to use yet
 _ruleCounter = 0
 
+def ResetRules():
+    global _RuleList, _ExpertLexicon, _MacroList, _MacroDict, _ruleCounter
+
+
+    del _RuleList[:]
+    del _ExpertLexicon[:]
+    del _MacroList[:]
+    _MacroDict = {}  # not sure which one to use yet
+    _ruleCounter = 0
+
+
 def _SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) if x ]   # remove comment.
     if not blocks:
@@ -115,6 +126,20 @@ class Rule:
 
         return output
 
+
+def RemoveExcessiveSpace(Content):
+    #Remove any whitespace around | sign, so it ismade as a word.
+    r = re.compile("\s*\|\s*", re.MULTILINE)
+    Content = r.sub("|", Content)
+
+    r = re.compile("<\s*", re.MULTILINE)
+    Content = r.sub("<", Content)
+
+    r = re.compile("\s*>", re.MULTILINE)
+    Content = r.sub(">", Content)
+
+    return Content
+
 # Note: this tokenization is for tokenizing rule,
 #       which is different from tokenizing the normal language.
 # ignore { }
@@ -128,9 +153,7 @@ def Tokenize(RuleContent):
     TokenList = []
     StartToken = False
 
-    #Remove any whitespace around | sign, so it ismade as a word.
-    r = re.compile("\s*\|\s*", re.MULTILINE)
-    RuleContent = r.sub("|", RuleContent)
+    RuleContent = RemoveExcessiveSpace(RuleContent)
 
     while i < len(RuleContent):
         if RuleContent[i] in SignsToIgnore:
@@ -143,7 +166,7 @@ def Tokenize(RuleContent):
                 node = Tokenization.EmptyBase()
                 node.word = RuleContent[StartPosition:EndOfToken]
                 TokenList.append(node)
-                i = EndOfToken
+                #i = EndOfToken
                 if i == len(RuleContent):
                     break
         else:
@@ -157,11 +180,11 @@ def Tokenize(RuleContent):
                 end = _SearchPair(RuleContent[i+1:], pair)
                 if end >= 0:
                     StartToken = False
-                    EndOfToken = i+1+end + _SearchToEnd(RuleContent[i+1+end:])
+                    EndOfToken = i+2+end + _SearchToEnd(RuleContent[i+1+end+1:])
                     node = Tokenization.EmptyBase()
-                    node.word = RuleContent[StartPosition:EndOfToken]
+                    node.word = RuleContent[StartPosition:EndOfToken+1]
                     TokenList.append(node)
-                    i = EndOfToken-1
+                    i = EndOfToken
                     break
 
         i += 1
@@ -239,45 +262,101 @@ def ProcessTokens(Tokens):
             node.priority = int(actionMatch.group(1))
 
 # return -1 if failed. Should throw error?
-def _SearchPair(string, tagpair):
+def _SearchPair(string, tagpair, Reverse=False):
     depth = 0
-    i = 0
-    while i<len(string):
-        if string[i] == tagpair[1]:
+    if Reverse:
+        i = len(string)-1
+        currentTagIndex = 1
+        targetTagIndex = 0
+        direction = -1
+    else:
+        i = 0
+        currentTagIndex = 0
+        targetTagIndex = 1
+        direction = 1
+    while 0<=i<len(string):
+        if string[i] == tagpair[targetTagIndex]:
             depth -= 1
             if depth == -1: # found!
                 return i
-        if string[i] == tagpair[0]:
+        if string[i] == tagpair[currentTagIndex]:
             depth += 1
-        i += 1
+        i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    #raise Exception(" Can't find a pair tag!" + string)
+    raise Exception(" Can't find a pair tag!" + string)
     return -1
 
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
 #   close at a space, or starting of next token (TODO: next token? sure??).
-def _SearchToEnd(string):
+def _SearchToEnd(string, Reverse=False):
     if not string:      # if it is empty
         return 0
-    i = 1
-    while i<len(string):
+    if Reverse:
+        i = len(string)-1
+        targetTagIndex = 1
+        direction = -1
+    else:
+        i = 0
+        targetTagIndex = 0
+        direction = 1
+    while 0<=i<len(string):
         for pair in Pairs:
-            if string[i] == pair[0]:
+            if string[i] == pair[targetTagIndex]:
                 if i>0 and string[i-1] == "|":
-                    endofpair = _SearchPair(string[i+1:], pair)
+                    endofpair = _SearchPair(string[i+1:], pair, Reverse)
                     if endofpair >= 0:
-                        i += endofpair +1 # TODO: verify to +1
+                        if Reverse:
+                            i -= endofpair +1
+                        else:
+                            i += endofpair +1 # TODO: verify to +1
                     else:
+                        raise "Can't find a pair in _SearchToEnd()"
                         return 0   # error. stop the searching immediately.
         if string[i] in SignsToIgnore:
-            return i
+            return i-direction
         if string[i].isspace():
-            return i
+            return i-direction
         for pair in Pairs:
-            if string[i] == pair[0]:
-                return i
-        i += 1
+            if string[i] == pair[targetTagIndex]:
+                return i-direction
+        i += direction
+    return i
+
+
+# The previous step already search up to the close tag.
+#   Now the task is to search after the close tag up the the end of this token,
+#   close at a space, or starting of next token (TODO: next token? sure??).
+def _SearchToEnd_OrBlock(string, Reverse=False):
+    if not string:      # if it is empty
+        return 0
+    if Reverse:
+        i = len(string)-1
+        targetTagIndex = 1
+        direction = -1
+    else:
+        i = 0
+        targetTagIndex = 0
+        direction = 1
+    while 0<=i<len(string):
+        for pair in Pairs:
+            if string[i] == pair[targetTagIndex]:
+                if i>0 and string[i-1] == "|":
+                    endofpair = _SearchPair(string[i+1:], pair, Reverse)
+                    if endofpair >= 0:
+                        if Reverse:
+                            i -= endofpair +1
+                        else:
+                            i += endofpair +1
+                    else:
+                        raise "Can't find a pair in _SearchToEnd()"
+                        return 0   # error. stop the searching immediately.
+        if re.match("\W", string[i]):
+            return i-direction
+        for pair in Pairs:
+            if string[i] == pair[targetTagIndex]:
+                return i-direction
+        i += direction
     return i
 
 
@@ -414,6 +493,14 @@ def ExpandRuleWildCard():
         logging.info("\tExpandRuleWildCard next level.")
         ExpandRuleWildCard()    #recursive call itself to finish all.
 
+# def ExpandParenthesisAndOrBlock():
+#     Modified = _ExpandParenthesis()
+#     Modified = Modified or _ExpandOrBlock()
+#     if Modified:
+#         logging.info("ExpandParenthesisAndOrBlock to next level")
+#         ExpandParenthesisAndOrBlock()
+
+
 def ExpandParenthesis():
     Modified = False
     for rule in _RuleList:
@@ -421,7 +508,7 @@ def ExpandParenthesis():
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
             if token.word.startswith("(") and token.word.endswith(")"):
-                logging.warning("Parenthesis:\n\t" + token.word)
+                #logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
                 subTokenlist = Tokenize(token.word[1:-1])
                 if not subTokenlist:
                     print("empty parenthesis: " + token.word + " in " + str(rule))
@@ -452,12 +539,99 @@ def ExpandParenthesis():
             _RuleList.remove(rule)
             Modified = True
 
+    #return Modified
     if Modified:
         logging.info("\tExpandParenthesis next level.")
         ExpandParenthesis()    #recursive call itself to finish all.
 
 
+def _ProcessOrBlock(Content, orIndex):
+    if orIndex <= 0 or orIndex >= len(Content):
+        raise "Wrong orIndex:" + str(orIndex)
+    if Content[orIndex] != '|':
+        raise "Wrong orIndex for Content:" + Content[orIndex]
 
+    start = orIndex
+    end = orIndex
+
+    for pair in Pairs:
+        if Content[orIndex+1] == pair[0]:
+            end = end + 2 + _SearchPair(Content[orIndex+2:], pair)
+    if end == orIndex:  # the next character is not pair, so it is a normal word
+        end = end + 2 + _SearchToEnd_OrBlock(Content[orIndex+2:])
+
+    for pair in Pairs:
+        if Content[orIndex-1] == pair[1]:
+            start = _SearchPair(Content[:orIndex-1], pair, Reverse=True)
+    if start == orIndex:  # the next character is not pair, so it is a normal word
+        start = _SearchToEnd_OrBlock(Content[:orIndex-1], Reverse=True)
+
+
+
+    return Content[start:end+1], Content[start:orIndex], Content[orIndex+1:end+1]
+
+def ExpandOrBlock():
+    Modified = False
+    counter = 0
+    print("Before running, there are " + str(len(_RuleList)) + " in rulelist")
+    for rule in _RuleList:
+
+        Expand = False
+        for tokenindex in range(len(rule.Tokens)):
+            token = rule.Tokens[tokenindex]
+            orIndex = token.word.find(")|")+1
+            if orIndex <= 0:
+                orIndex = token.word.find("|(")
+                if orIndex <= 0:
+                    continue
+
+            counter += 1
+            print(counter)
+            
+            originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
+
+            #left:
+            newrule = Rule()
+            newrule.Origin = rule.Origin
+            newrule.comment = rule.comment
+            newrule.IsExpertLexicon = rule.IsExpertLexicon
+            newrule.RuleName = rule.RuleName+"_o"+str(tokenindex)
+            newrule.RuleContent = rule.RuleContent
+            for tokenindex_pre in range(tokenindex):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+            newtoken = copy.copy(rule.Tokens[tokenindex])
+            newtoken.word = newtoken.word.replace(originBlock, leftBlock)
+            newrule.Tokens.append(newtoken)
+            for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+            _RuleList.append(newrule)
+
+            # right:
+            newrule = Rule()
+            newrule.Origin = rule.Origin
+            newrule.comment = rule.comment
+            newrule.IsExpertLexicon = rule.IsExpertLexicon
+            newrule.RuleName = rule.RuleName + "_o" + str(tokenindex)
+            newrule.RuleContent = rule.RuleContent
+            for tokenindex_pre in range(tokenindex):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+            newtoken = copy.copy(rule.Tokens[tokenindex])
+            newtoken.word = newtoken.word.replace(originBlock, rightBlock)
+            newrule.Tokens.append(newtoken)
+            for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+            _RuleList.append(newrule)
+
+            Expand = True
+            break
+
+        if Expand:
+            _RuleList.remove(rule)
+            Modified = True
+
+    if Modified:
+        logging.info("\tExpandOrBlock next level.")
+        ExpandOrBlock()    #recursive call itself to finish all.
 
 
 def OutputRules(style="details"):
@@ -492,7 +666,10 @@ if __name__ == "__main__":
     LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
+    ExpandOrBlock()
     ExpandParenthesis()
+    ExpandRuleWildCard()
+
     ExpandRuleWildCard()
 
     OutputRules("details")

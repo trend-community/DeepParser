@@ -75,7 +75,7 @@ if __name__ == "__main__":
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
 
-    Rules.LoadRules("../../fsa/Y/100y.txt")
+    #Rules.LoadRules("../../fsa/Y/100y.txt")
 
     Rules.LoadRules("../../fsa/Y/800VGy.txt")
     # Rules.LoadRules("../../fsa/Y/900NPy.xml")
@@ -83,6 +83,7 @@ if __name__ == "__main__":
     # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
+    Rules.ExpandOrBlock()
     Rules.ExpandParenthesis()
     Rules.ExpandRuleWildCard()
 
