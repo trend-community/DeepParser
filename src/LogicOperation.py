@@ -16,22 +16,22 @@ def CheckPrefix(word, matchtype):
         matchtype = "norm"      # case insensitive
     return word, matchtype
 
-def LogicMatch(rule, strtoken, matchtype="unknown"):
+def LogicMatch(rule, strToken, matchtype="unknown"):
 
     if not rule:  # "[]", not sure what that is.
         return False
 
     rule, matchtype = CheckPrefix(rule, matchtype)
     if matchtype == "unknown":
-        return LogicMatchFeatures(rule, strtoken)
+        return LogicMatchFeatures(rule, strToken)
 
     if not re.search('\|| |!', rule):
-        if matchtype == "stem" and strtoken.lexicon:
-            word = strtoken.lexicon.stem
-        elif matchtype == "norm" and strtoken.lexicon:
-            word = strtoken.lexicon.norm
+        if matchtype == "stem" and strToken.lexicon:
+            word = strToken.lexicon.stem
+        elif matchtype == "norm" and strToken.lexicon:
+            word = strToken.lexicon.norm
         else:
-            word = strtoken.word
+            word = strToken.word
         if rule.lower() == word:
             return True
         else:
@@ -41,37 +41,37 @@ def LogicMatch(rule, strtoken, matchtype="unknown"):
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatch(AndBlock, strtoken, matchtype)
+            Result = Result and LogicMatch(AndBlock, strToken, matchtype)
     else:
         if rule[0] == "!":      #Not
-            Result = not LogicMatch(rule[1:], strtoken, matchtype)
+            Result = not LogicMatch(rule[1:], strToken, matchtype)
         else:
             Result = False
             OrBlocks = [x.strip() for x in re.split("\|", rule)]
             if len(OrBlocks) > 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatch(OrBlock, strtoken, matchtype)
+                    Result = Result or LogicMatch(OrBlock, strToken, matchtype)
 
     return Result
 
 
-def LogicMatchFeatures(rule, strtoken):
+def LogicMatchFeatures(rule, strToken):
 
     if not rule:
         return True # for the comparison of "[]", can match anything
 
     rule, matchtype = CheckPrefix(rule, 'feature')
     if matchtype != "feature":
-        return LogicMatch(rule, strtoken, matchtype)
+        return LogicMatch(rule, strToken, matchtype)
 
     if not re.search('\|| |!', rule):
-        if -1 in strtoken.features:
-            strtoken.features.remove(-1)
+        if -1 in strToken.features:
+            strToken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
-            return LogicMatch(rule, strtoken, "stem")
+            return LogicMatch(rule, strToken, "stem")
         else:
-            if featureID and featureID in strtoken.features:
+            if featureID and featureID in strToken.features:
                 return True
             else:
                 return False
@@ -80,15 +80,15 @@ def LogicMatchFeatures(rule, strtoken):
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatchFeatures(AndBlock, strtoken)
+            Result = Result and LogicMatchFeatures(AndBlock, strToken)
     else:
         if rule[0] == "!":      #Not
-            Result = not LogicMatchFeatures(rule[1:], strtoken)
+            Result = not LogicMatchFeatures(rule[1:], strToken)
         else:
             Result = False
             OrBlocks = [x.strip() for x in re.split("\|", rule)]
             if len(OrBlocks) > 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatchFeatures(OrBlock, strtoken)
+                    Result = Result or LogicMatchFeatures(OrBlock, strToken)
 
     return Result

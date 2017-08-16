@@ -27,6 +27,7 @@ class RuleTest(unittest.TestCase):
         r = Rule()
         r.SetRule("a==   [0 a]4 [b]* [c]*7 [d]? [e]10 [f]*15 [g]12*16")
         self.assertEqual(r.Tokens[0].repeat[1], 4)
+        self.assertEqual(r.Tokens[0].word, "[a]")
         self.assertEqual(r.Tokens[1].repeat[1], 3)
         self.assertEqual(r.Tokens[2].repeat[1], 7)
         self.assertEqual(r.Tokens[3].repeat[1], 1)
@@ -185,15 +186,15 @@ class RuleTest(unittest.TestCase):
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 2)
         print("Before expand  parenthesis")
-        OutputRules()
-        _ExpandParenthesis()
+        #OutputRules()
+        ExpandParenthesis()
         self.assertEqual(len(_RuleList), 2)
         print("Before expand rule, after parenthesis")
-        OutputRules()
+        #OutputRules()
 
         ExpandRuleWildCard()
         print(" after expand rule again")
-        OutputRules()
+        #OutputRules()
         self.assertEqual(len(_RuleList), 3)
 
     def test_parenthsis_empty(self):
@@ -212,15 +213,15 @@ class RuleTest(unittest.TestCase):
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 2)
         print("Before expand  parenthesis")
-        OutputRules()
+        #OutputRules()
         ExpandParenthesis()
         self.assertEqual(len(_RuleList), 2)
         print("Before expand rule, after parenthesis")
-        OutputRules()
+        #OutputRules()
 
         ExpandRuleWildCard()
         print(" after expand rule again")
-        OutputRules()
+        #OutputRules()
         self.assertEqual(len(_RuleList), 2)
 
     def test_specialrule(self):
@@ -239,7 +240,7 @@ class RuleTest(unittest.TestCase):
 
         ExpandOrBlock()
         #OutputRules()
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(_RuleList), 1)
         r = _RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
@@ -253,7 +254,7 @@ class RuleTest(unittest.TestCase):
 
         ExpandOrBlock()
         #OutputRules()
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(_RuleList), 1)
         r = _RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
@@ -296,5 +297,17 @@ class RuleTest(unittest.TestCase):
 
         ExpandOrBlock()
         self.assertEqual(len(_RuleList), 2)
+        #OutputRules()
+
+        ResetRules()
+        InsertRuleInList("""abc ==
+        <[DT|PDT|( [PRPP:^.M] | (one:^.M POS) ):^.M]  [NE:NP]>
+        """)
+        self.assertEqual(len(_RuleList), 1)
+
+        ExpandOrBlock()
         OutputRules()
+        self.assertEqual(len(_RuleList), 4)
+
+
 

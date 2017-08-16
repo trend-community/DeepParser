@@ -254,12 +254,12 @@ def ProcessTokens(Tokens):
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = ''
 
-        actionMatch = re.match("^\[(.+):(.+)\]$", node.word)
+        actionMatch = re.match("\[(.+):(.+)\]$", node.word)
         if actionMatch:
             ActionIndex = FindLastColonWithoutSpecialCharacter(node.word)
             if ActionIndex>0:
-                node.word = node.word[1:ActionIndex]
-                node.action = node.word[ActionIndex+1:-1]
+                node.action = node.word[ActionIndex + 1:-1]
+                node.word = "[" + node.word[1:ActionIndex] + "]"
 
         priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
         if priorityMatch:
@@ -268,18 +268,19 @@ def ProcessTokens(Tokens):
 
 # Avoid [(AS:action)|sjfa]
 #Good character in action:
-#     ^.M
+#     ^.M $
 #Bad characters in action:
 #     )?':
 def FindLastColonWithoutSpecialCharacter(string):
-    index = len(string) - 1
+    index = len(string) - 2
     while index>=0:
         if string[index] == ":":
             return index
-        if string[index].isalpha() or \
-            string[index] in "^. ":
+        if string[index].isalnum() or \
+            string[index] in "^. $,>":
             index -=1
         else:
+            logging.warning("not a ligit action: " + string[index] + " in " + string )
             return -1
     return -1
 
@@ -348,7 +349,7 @@ def _SearchToEnd(string, Reverse=False):
 
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
-#   close at a space, or starting of next token (TODO: next token? sure??).
+#   close at a space, or any non-alnum (\W)
 def _SearchToEnd_OrBlock(string, Reverse=False):
     if not string:      # if it is empty
         return 0
@@ -457,7 +458,7 @@ def InsertRuleInList(string, RuleFileID = 1):
     if node.RuleName:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in _MacroDict:
-                logging.warning("This rule name " + node.RuleName + " is already used for Macro " + _MacroDict[node.RuleName]
+                logging.warning("This macro name " + node.RuleName + " is already used for Macro " + str(_MacroDict[node.RuleName]) \
                                 + " \n but now you have: " + string + "\n\n")
                 return
             _MacroDict.update({node.RuleName: node})
@@ -477,7 +478,7 @@ def InsertRuleInList(string, RuleFileID = 1):
                         logging.warning(
                             "This rule name " + node.RuleName + " is already used for Rule " + str(n)
                             + " \n but now you have: " + string + "\n\n")
-                        return
+ #                       return
                 _RuleList.append(node)
 
 def ExpandRuleWildCard():
@@ -552,13 +553,12 @@ def ExpandParenthesis():
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
-            if token.word.startswith("(") and token.word.endswith(")"):
+            if (token.word.startswith("(") and token.word.endswith(")")) \
+                    or (token.word.startswith("[(") and token.word.endswith(")]")):
                 #logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
-                subTokenlist = Tokenize(token.word[1:-1])
-#                if not subTokenlist:
-                    #logging.info("empty parenthesis: " + token.word + " in " + str(rule))
-                    #raise "empty parenthesis"
-                    #continue
+                parenthesisIndex = token.word.find("(")
+                subTokenlist = Tokenize(token.word[parenthesisIndex+1:-parenthesisIndex-1])
+
                 if subTokenlist:
                     ProcessTokens(subTokenlist)
                     if hasattr(token, "pointer"):
@@ -634,6 +634,7 @@ def ExpandOrBlock():
 
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
             if originBlock is None:
+                logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
                 continue    #failed to process. might be pair tag issue.
 
             #left:
@@ -669,7 +670,7 @@ def ExpandOrBlock():
             _RuleList.append(newrule)
 
             Expand = True
-            logging.warning("\tExpand is true, because of " + rule.RuleName)
+            #logging.warning("\tExpand is true, because of " + rule.RuleName)
             break
 
         if Expand:
