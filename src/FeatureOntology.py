@@ -53,7 +53,7 @@ class LexiconNode(object):
             output += "'" + self.stem + "' "
 
         if self.norm != self.word:
-            output += "/" + self.norm + " / "
+            output += "/" + self.norm + "/ "
 
         if hasattr(self, "comment"):
             output += " //" + self.comment
