@@ -95,7 +95,15 @@ class Rule:
     # style: concise, or detail
     def output(self, style="concise"):
         output = "//ID:" + str(self.ID)
-        output += "[Expert Lexicon]\n" if self.IsExpertLexicon else "[Rule]\n"
+        if self.IsExpertLexicon:
+            output += "[Expert Lexicon]\n"
+        elif self.RuleName.startswith("@"):
+            output += "[Macro]\n"
+        elif self.RuleName.startswith("#"):
+            output += "[Macro with parameter]\n"
+        else:
+            output += "[Rule]\n"
+
         if style == "concise" :
             if self.comment:
                 output += "//" + self.comment + '\n'
@@ -116,13 +124,13 @@ class Rule:
                 output += "^" + token.pointer
             t = token.word
             if hasattr(token, 'action'):
-                t = t.replace("]", ":" + token.action + "]")
+                t = t.replace("]", "[ACTION]" + token.action + "]")
             output += t
             if token.repeat != [1,1]:
                 output += "*" + str(token.repeat[1])
             if token.EndTrunk:
                 output += ">"
-            output += "_"
+            output += "_"   # should be a space. use _ in dev mode.
         output += "};\n"
 
         return output
@@ -148,7 +156,7 @@ def RemoveExcessiveSpace(Content):
 # ignore { }
 # For " [ ( ， find the couple tag ) ] " as token. Otherwise,
 SignsToIgnore = "{};"
-Pairs = ['[]', '()', '""', '\'\'']
+Pairs = ['[]', '()', '""', '\'\'', '//']
 
 def Tokenize(RuleContent):
 
@@ -258,8 +266,16 @@ def ProcessTokens(Tokens):
         if actionMatch:
             ActionIndex = FindLastColonWithoutSpecialCharacter(node.word)
             if ActionIndex>0:
-                node.action = node.word[ActionIndex + 1:-1]
-                node.word = "[" + node.word[1:ActionIndex] + "]"
+                action = node.word[ActionIndex + 1:-1]
+                word_wo_action = "[" + node.word[1:ActionIndex] + "]"
+
+                if "(" not in word_wo_action and ":" in word_wo_action:
+                        orblocks = re.split("\]\|\[", node.word)
+                        new_word = "(" + "])|([".join(orblocks) + ")"
+                        node.word = new_word
+                else:
+                    node.action = action
+                    node.word = word_wo_action
 
         priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
         if priorityMatch:
@@ -280,7 +296,7 @@ def FindLastColonWithoutSpecialCharacter(string):
             string[index] in "^. $,>":
             index -=1
         else:
-            logging.warning("not a ligit action: " + string[index] + " in " + string )
+#            logging.warning("not a ligit action: " + string[index] + " in " + string )
             return -1
     return -1
 
@@ -539,25 +555,33 @@ def ExpandRuleWildCard():
         logging.info("\tExpandRuleWildCard next level.")
         ExpandRuleWildCard()    #recursive call itself to finish all.
 
-# def ExpandParenthesisAndOrBlock():
-#     Modified = _ExpandParenthesis()
-#     Modified = Modified or _ExpandOrBlock()
-#     if Modified:
-#         logging.info("ExpandParenthesisAndOrBlock to next level")
-#         ExpandParenthesisAndOrBlock()
+def ExpandParenthesisAndOrBlock():
+    Modified = _ExpandParenthesis()
+    Modified = _ExpandOrBlock() or Modified
+    if Modified:
+        logging.warning("ExpandParenthesisAndOrBlock to next level")
+        ExpandParenthesisAndOrBlock()
 
 
-def ExpandParenthesis():
+def _ExpandParenthesis():
     Modified = False
     for rule in _RuleList:
+        if len(rule.RuleName) > 400:
+            logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
+            continue
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
-            if (token.word.startswith("(") and token.word.endswith(")")) \
-                    or (token.word.startswith("[(") and token.word.endswith(")]")):
+            if (token.word.startswith("(") and len(token.word) == 2+_SearchPair(token.word[1:], ["(", ")"])) \
+                    or (token.word.startswith("[(") and len(token.word) == 4+_SearchPair(token.word[2:], ["(", ")"])):
                 #logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
                 parenthesisIndex = token.word.find("(")
-                subTokenlist = Tokenize(token.word[parenthesisIndex+1:-parenthesisIndex-1])
+                try:
+                    subTokenlist = Tokenize(token.word[parenthesisIndex+1:-parenthesisIndex-1])
+                except Exception as e:
+                    logging.error("Failed to tokenize because: " + str(e))
+                    logging.error("Rule name: " + rule.RuleName)
+                    continue
 
                 if subTokenlist:
                     ProcessTokens(subTokenlist)
@@ -580,15 +604,16 @@ def ExpandParenthesis():
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                 _RuleList.append(newrule)
                 Expand = True
+                logging.warning("\tExpand Parentheses is true, because of " + rule.RuleName)
                 break
         if Expand:
             _RuleList.remove(rule)
             Modified = True
 
-    #return Modified
-    if Modified:
-        logging.info("\tExpandParenthesis next level.")
-        ExpandParenthesis()    #recursive call itself to finish all.
+    return Modified
+    # if Modified:
+    #     logging.info("\tExpandParenthesis next level.")
+    #     ExpandParenthesis()    #recursive call itself to finish all.
 
 
 def _ProcessOrBlock(Content, orIndex):
@@ -618,11 +643,13 @@ def _ProcessOrBlock(Content, orIndex):
     return Content[start:end+1], Content[start:orIndex], Content[orIndex+1:end+1]
 
 
-def ExpandOrBlock():
+def _ExpandOrBlock():
     Modified = False
     counter = 0
     for rule in _RuleList:
-
+        if len(rule.RuleName) > 200:
+            logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
+            continue
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
@@ -646,9 +673,31 @@ def ExpandOrBlock():
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
-            newtoken = copy.copy(rule.Tokens[tokenindex])
-            newtoken.word = newtoken.word.replace(originBlock, leftBlock)
-            newrule.Tokens.append(newtoken)
+            #
+            # newtoken = copy.copy(rule.Tokens[tokenindex])
+            # newtoken.word = newtoken.word.replace(originBlock, leftBlock)
+            # newrule.Tokens.append(newtoken)
+
+            #Analyze the new word, might be a list of tokens.
+            try:
+                subTokenlist = Tokenize(token.word.replace(originBlock, leftBlock))
+            except Exception as e:
+                logging.error("Failed to tokenize because: " + str(e))
+                logging.error("when expanding or block:" + leftBlock + " for rule name: " + rule.RuleName)
+                continue
+            if subTokenlist:
+                ProcessTokens(subTokenlist)
+                if hasattr(token, "pointer"):
+                    subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartTrunk = token.StartTrunk
+                subTokenlist[-1].EndTrunk = token.EndTrunk
+                if hasattr(token, "action"):
+                    if len(subTokenlist)>1:
+                        logging.warning("The block has action before Or expand!")
+                    subTokenlist[-1].action = token.action
+            for subtoken in subTokenlist:
+                newrule.Tokens.append(subtoken)
+
             for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
             _RuleList.append(newrule)
@@ -662,24 +711,43 @@ def ExpandOrBlock():
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
-            newtoken = copy.copy(rule.Tokens[tokenindex])
-            newtoken.word = newtoken.word.replace(originBlock, rightBlock)
-            newrule.Tokens.append(newtoken)
+
+            # Analyze the new word, might be a list of tokens.
+            try:
+                subTokenlist = Tokenize(token.word.replace(originBlock, rightBlock))
+            except Exception as e:
+                logging.error("Failed to tokenize because: " + str(e))
+                logging.error("when expanding or block:" + rightBlock + " for rule name: " + rule.RuleName)
+                continue
+            if subTokenlist:
+                ProcessTokens(subTokenlist)
+                if hasattr(token, "pointer"):
+                    subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartTrunk = token.StartTrunk
+                subTokenlist[-1].EndTrunk = token.EndTrunk
+                if hasattr(token, "action"):
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has action before Or expand!")
+                    subTokenlist[-1].action = token.action
+            for subtoken in subTokenlist:
+                newrule.Tokens.append(subtoken)
+
             for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
             _RuleList.append(newrule)
 
             Expand = True
-            #logging.warning("\tExpand is true, because of " + rule.RuleName)
+            logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
             break
 
         if Expand:
             _RuleList.remove(rule)
             Modified = True
 
-    if Modified:
-        logging.info("\tExpandOrBlock next level.")
-        ExpandOrBlock()    #recursive call itself to finish all.
+    return Modified
+    # if Modified:
+    #     logging.info("\tExpandOrBlock next level.")
+    #     ExpandOrBlock()    #recursive call itself to finish all.
 
 
 def OutputRules(style="details"):
@@ -709,17 +777,17 @@ if __name__ == "__main__":
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
-    #LoadRules("../../fsa/Y/900NPy.xml")
-    #LoadRules("../../fsa/Y/800VGy.txt")
+    LoadRules("../../fsa/Y/900NPy.xml")
+    LoadRules("../../fsa/Y/800VGy.txt")
+    LoadRules("../../fsa/Y/1800VPy.xml")
 
-    LoadRules("../../fsa/Y/1test_rules.txt")
-
-    ExpandRuleWildCard()
-    ExpandOrBlock()
-    ExpandParenthesis()
-    ExpandRuleWildCard()
+    #LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
+    #ExpandOrBlock()
+    ExpandParenthesisAndOrBlock()
+    #ExpandOrBlock()
+    ExpandRuleWildCard()
 
-    OutputRules("details")
+    OutputRules("concise")
     PrintMissingFeatureSet()

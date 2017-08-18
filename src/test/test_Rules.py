@@ -1,7 +1,7 @@
 
 import unittest
 from Rules import *
-from Rules import _RuleList,  _ProcessOrBlock
+from Rules import _RuleList,  _ProcessOrBlock, _ExpandOrBlock, _ExpandParenthesis
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -115,7 +115,7 @@ class RuleTest(unittest.TestCase):
 
     def test_Expand(self):
         ResetRules()
-        r = Rule()
+
         self.assertEqual(len(_RuleList), 0)
         InsertRuleInList("aaa==[NR] [PP]?")
         self.assertEqual(len(_RuleList), 1)
@@ -145,7 +145,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(_RuleList), 16)
         print("Before expand  parenthesis")
         #OutputRules()
-        ExpandParenthesis()
+        _ExpandParenthesis()
         self.assertEqual(len(_RuleList), 16)
         print("Before expand rule, after parenthesis")
         #OutputRules()
@@ -165,7 +165,7 @@ class RuleTest(unittest.TestCase):
             _RuleList.append(r)
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 2)
-        ExpandParenthesis()
+        _ExpandParenthesis()
         print("Start rules after expand parenthesis")
         #OutputRules()
         newr = _RuleList[1]
@@ -187,7 +187,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(_RuleList), 2)
         print("Before expand  parenthesis")
         #OutputRules()
-        ExpandParenthesis()
+        _ExpandParenthesis()
         self.assertEqual(len(_RuleList), 2)
         print("Before expand rule, after parenthesis")
         #OutputRules()
@@ -203,7 +203,7 @@ class RuleTest(unittest.TestCase):
 @yourC ==
 (
 	[PRPP:^.M]
-	| (one:^.M POS)
+	| [one:^.M POS]
 
 )
 """)
@@ -214,7 +214,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(_RuleList), 2)
         print("Before expand  parenthesis")
         #OutputRules()
-        ExpandParenthesis()
+        _ExpandParenthesis()
         self.assertEqual(len(_RuleList), 2)
         print("Before expand rule, after parenthesis")
         #OutputRules()
@@ -238,7 +238,7 @@ class RuleTest(unittest.TestCase):
         r = _RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
-        ExpandOrBlock()
+        _ExpandOrBlock()
         #OutputRules()
         self.assertEqual(len(_RuleList), 1)
         r = _RuleList[0]
@@ -252,7 +252,7 @@ class RuleTest(unittest.TestCase):
         r = _RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
-        ExpandOrBlock()
+        _ExpandOrBlock()
         #OutputRules()
         self.assertEqual(len(_RuleList), 1)
         r = _RuleList[0]
@@ -263,11 +263,11 @@ class RuleTest(unittest.TestCase):
         InsertRuleInList("""ADJ_NP6 == < (	('a') | ([PN:^.M]) ) >""")
         self.assertEqual(len(_RuleList), 1)
 
-        ExpandOrBlock()
+        _ExpandOrBlock()
         self.assertEqual(len(_RuleList), 2)
         #OutputRules()
 
-        ExpandParenthesis()
+        _ExpandParenthesis()
         #OutputRules()
         r = _RuleList[0]
         self.assertEqual(len(r.Tokens), 1)
@@ -289,13 +289,17 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(left, "(abc)")
         self.assertEqual(right, "def")
 
+        whole, left, right = _ProcessOrBlock("/abc/|def|ghi", 5)
+        self.assertEqual(whole, "/abc/|def")
+        self.assertEqual(left, "/abc/")
+        self.assertEqual(right, "def")
 
     def test_Parenthesis(self):
         ResetRules()
         InsertRuleInList("""simplePres == <[(VB)|VBZ:VG simple  pres]>;""")
         self.assertEqual(len(_RuleList), 1)
 
-        ExpandOrBlock()
+        _ExpandOrBlock()
         self.assertEqual(len(_RuleList), 2)
         #OutputRules()
 
@@ -305,9 +309,118 @@ class RuleTest(unittest.TestCase):
         """)
         self.assertEqual(len(_RuleList), 1)
 
-        ExpandOrBlock()
-        OutputRules()
+        _ExpandOrBlock()
+        #OutputRules()
         self.assertEqual(len(_RuleList), 4)
 
+    def test_Actions_2(self):
+        ResetRules()
+        InsertRuleInList("""ACTION == ([pureDT:^.A] | [POS:^.M])""")
+
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+        ExpandRuleWildCard()
+
+        OutputRules("concise")
+        self.assertEqual(len(_RuleList), 2)
+
+    def test_Actions_3(self):
+        ResetRules()
+        InsertRuleInList("""ACTION == (([pureDT:^.A] | [POS:^.M]| [POS:^.M POS]))""")
+
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+        ExpandRuleWildCard()
+
+        #OutputRules("concise")
+        self.assertEqual(len(_RuleList), 4)
+
+    def test_Actions_noDT(self):
+        ResetRules()
+        InsertRuleInList("""ACTION == [pureDT:^.A] | [POS:^.M]| [POS:^.M POS]""")
+
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+        ExpandRuleWildCard()
+
+        #OutputRules("concise")
+        self.assertEqual(len(_RuleList), 4)
+
+    def test_Actions_NPP(self):
+        ResetRules()
+
+        InsertRuleInList(
+            """precontext_IN_no_det_NP(Top) ==  
+               
+                    ( [0 R b:^M.R] [0 a:^.M] ) 
+                    | [AP:^.M]
+                   
+                 """)
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
 
 
+        #OutputRules("concise")
+        word = _RuleList[0].Tokens[0].word
+        self.assertFalse(":" in word)
+        word = _RuleList[1].Tokens[0].word
+        self.assertFalse(":" in word)
+        #self.assertEqual(len(_RuleList), 1)
+
+    def test_Expanding_VNPAP2(self):
+        ResetRules()
+        InsertRuleInList("""
+        VNPAP2 == ^[VNPAP !passive VG2] [NP !JS2:^.O ^V2.O2] RB? ^V2[AP OTHO:ingAdj]|[enAdj:^.C] infinitive [!passive:^.purposeR]? 
+        """  )
+
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+
+        #OutputRules("concise")
+        word = _RuleList[0].Tokens[0].word
+        self.assertFalse(":" in word)
+        word = _RuleList[1].Tokens[0].word
+        self.assertFalse(":" in word)
+
+    def test_Expanding_Others(self):
+        ResetRules()
+        InsertRuleInList("""
+        the_dollarsign(Top) == <[DT CURR:NP money]>  
+        """)
+
+        InsertRuleInList("""
+        the_blahblah_problem(Top) == <the [nv|NN:^.M] "up|down|in|out|away" ['time|trouble|difficulty|problem|experience|issue|topic|question|view|viewpoint':NP]> 
+        """)
+
+        InsertRuleInList("""
+        @yourC ==
+        (
+        	[PRPP:^.M]
+        	| [one:^.M POS]
+
+        )
+        """)
+
+        InsertRuleInList("""    DT_NN_VBG_NN2 == 
+            '!with' (/the/|'any|such|these|those'|@yourC)""")
+
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+        OutputRules("concise")
+        word = _RuleList[0].Tokens[0].word
+        self.assertFalse(":" in word)
+        word = _RuleList[1].Tokens[0].word
+        self.assertFalse(":" in word)
+        word = _RuleList[2].Tokens[1].word
+        self.assertFalse(":" in word)
