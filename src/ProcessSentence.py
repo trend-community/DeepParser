@@ -83,8 +83,7 @@ if __name__ == "__main__":
     # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
-    Rules.ExpandOrBlock()
-    Rules.ExpandParenthesis()
+    Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
 
     target = "it was put onto the chair arm.  "

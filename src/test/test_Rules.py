@@ -97,6 +97,7 @@ class RuleTest(unittest.TestCase):
         #print(r)
 
     def test_Macro(self):
+        ResetRules()
         InsertRuleInList("""@andC == ([0 "and|or|&amp;|as_well_as|\/|and\/or"])""")
         s = ProcessMacro("a @andC")
         self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
@@ -111,6 +112,19 @@ class RuleTest(unittest.TestCase):
 
         s = ProcessMacro("""#macro_with_parameter(1=a 2=NULL, 3=c 4)""")
         self.assertEqual(s, "<a  [RB:^.R]? [VBN|Ved:VG perfect c  ]>")
+
+        InsertRuleInList("""@modalV == 
+	( 	MD // MD includes 'will|shall|shalt|would|can|could|should|must|may|might' etc. 
+		| "\'d|wil|mite|wanna|gotta" // we need escape character "\'d" because we reserve ' for STEM checking 
+		| ( ("do|does|did") 'have|seem|claim|appear|tend|want|wish|hope|desire|expect' "to" ) // they do appear to own it 
+	)
+""")
+        InsertRuleInList("""#simpleMpassive(1=$NEG, 2=$neg) == 
+        <@modalV $NEG [RB:^.R]? "be" [RB:^.R]? [VBN|Ved: VG passive simple  modal $neg]> !NNS  
+            """)
+        #InsertRuleInList("""simpleModalPassive == #simpleMpassive(1,2); """)
+
+        #OutputRules()
 
 
     def test_Expand(self):
@@ -185,15 +199,15 @@ class RuleTest(unittest.TestCase):
             _RuleList.append(r)
         ExpandRuleWildCard()
         self.assertEqual(len(_RuleList), 2)
-        print("Before expand  parenthesis")
+        #print("Before expand  parenthesis")
         #OutputRules()
         _ExpandParenthesis()
         self.assertEqual(len(_RuleList), 2)
-        print("Before expand rule, after parenthesis")
+        #print("Before expand rule, after parenthesis")
         #OutputRules()
 
         ExpandRuleWildCard()
-        print(" after expand rule again")
+        #print(" after expand rule again")
         #OutputRules()
         self.assertEqual(len(_RuleList), 3)
 
@@ -208,21 +222,22 @@ class RuleTest(unittest.TestCase):
 )
 """)
 
-        InsertRuleInList("DT_NN_VBG_NN2 == '!with' (/the/|'any|such|these|those'|@yourC) [AP:^.M]? [NN|NNP '!time|trouble|difficulty|problem|experience':^V.S2] ^V[0 Ving '!be|have|seem':^.M] [NNS !dur|date|measure:NP]> [!NN|NNS]")
+        InsertRuleInList("DT_NN_VBG_NN2 == (/the/|'any|such|these|those'|@yourC) ")
 
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 2)
-        print("Before expand  parenthesis")
+        self.assertEqual(len(_RuleList), 1)
+        #print("Before expand  parenthesis")
         #OutputRules()
-        _ExpandParenthesis()
-        self.assertEqual(len(_RuleList), 2)
-        print("Before expand rule, after parenthesis")
+        ExpandParenthesisAndOrBlock()
+
+        #print("Before expand wild card rule, after parenthesis")
         #OutputRules()
+        self.assertEqual(len(_RuleList), 4)
 
         ExpandRuleWildCard()
-        print(" after expand rule again")
+        #print(" after expand wild card")
         #OutputRules()
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(_RuleList), 4)
 
     def test_specialrule(self):
 
@@ -323,7 +338,7 @@ class RuleTest(unittest.TestCase):
 
         ExpandRuleWildCard()
 
-        OutputRules("concise")
+        #OutputRules("concise")
         self.assertEqual(len(_RuleList), 2)
 
     def test_Actions_3(self):
@@ -417,10 +432,37 @@ class RuleTest(unittest.TestCase):
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
-        OutputRules("concise")
+        #OutputRules("concise")
         word = _RuleList[0].Tokens[0].word
         self.assertFalse(":" in word)
         word = _RuleList[1].Tokens[0].word
         self.assertFalse(":" in word)
         word = _RuleList[2].Tokens[1].word
         self.assertFalse(":" in word)
+
+    def test_Actions_SimppleModal(self):
+        ResetRules()
+
+        InsertRuleInList(
+            """negSimpleModal == 
+            <( 	MD 		| "d" 	|  ("do")  	)  >;
+                 """)
+
+        InsertRuleInList(
+            """Not_That_VTH == [JS|CM|Sconj|Bqut] ^[0 not:V] ^that[0 that:^.X JS2] R* [CL:^that.X fact-]
+                 """)
+
+        InsertRuleInList("""
+        VWHSS_how3 == 
+        ^[ADJSUBCAT:AWHSS AP] [PP F=to human ^PP]? advP? [IN:^Wh.X] ^wh[0 what|which|how|how_many|how_much:^.X Gone] [NP F=!DT:^.O2 wh JS2] [infinitive:^.ObjV]?
+        """)
+
+        InsertRuleInList("""NP_CM_VBN == 
+        ^[NP2|DE2 !pro !that !date|durR|time|percent:^V.O2] [CM:Done] advP* ^V[enVG VNP|VNPPP Kid Obj:^.X] [PP|RP|DE|R]* ([CM:Done]|[COLN|JM])""")
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+        OutputRules("concise")
+        self.assertTrue(len(_RuleList) >= 3)
+

@@ -77,6 +77,9 @@ class Rule:
         self.RuleName = blocks[0]
         self.RuleContent = blocks[1]
         self.RuleContent = ProcessMacro(self.RuleContent)
+        if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
+            return  #stop processing macro.
+
         try:
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -111,6 +114,9 @@ class Rule:
                 output += self.RuleName + " :: {"
             else:
                 output += self.RuleName + " == {"
+
+            if len(self.Tokens) == 0:
+                output += self.RuleContent
         else:
             if self.comment:
                 output += "//" + self.comment + '\n'
@@ -261,21 +267,42 @@ def ProcessTokens(Tokens):
         if pointerMatch:
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = ''
+        #
+        # actionMatch = re.match("\[(.+):(.+)\]$", node.word)
+        # if actionMatch:
+        #     ActionIndex = FindLastColonWithoutSpecialCharacter(node.word)
+        #     if ActionIndex>0:
+        #         action = node.word[ActionIndex + 1:-1]
+        #         word_wo_action = "[" + node.word[1:ActionIndex] + "]"
+        #
+        #         if "(" not in word_wo_action and ":" in word_wo_action:
+        #                 orblocks = re.split("\]\|\[", node.word)
+        #                 new_word = "(" + "])|([".join(orblocks) + ")"
+        #                 node.word = new_word
+        #         else:
+        #             node.action = action
+        #             node.word = word_wo_action
+        #     else:   # [CM:Done]|[COLN|JM]
+        #         if "(" not in node.word and "]|[" in node.word :
+        #             orblocks = re.split("\]\|\[", node.word)
+        #             new_word = "(" + "])|([".join(orblocks) + ")"
+        #             node.word = new_word
+        #
+        # actionMatch_complicate = re.match("(.+)|\[(.+):(.+)\]]")
+        if "(" not in node.word and ":" in node.word:
+            orblocks = re.split("\|\[", node.word)
+            if len(orblocks)>1:
+                node.word = "(" + ")|([".join(orblocks) + ")"  # will be tokenize later.
+            else:
+                orblocks = re.split("\]\|", node.word)
+                if len(orblocks) > 1:
+                    node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
+                else:   #no "()" sign, and no "|" sign
+                    actionMatch = re.match("\[(.+):(.+)\]$", node.word)
+                    if actionMatch:
+                        node.word = "[" + actionMatch.group(1) + "]"
+                        node.action = actionMatch.group(2)
 
-        actionMatch = re.match("\[(.+):(.+)\]$", node.word)
-        if actionMatch:
-            ActionIndex = FindLastColonWithoutSpecialCharacter(node.word)
-            if ActionIndex>0:
-                action = node.word[ActionIndex + 1:-1]
-                word_wo_action = "[" + node.word[1:ActionIndex] + "]"
-
-                if "(" not in word_wo_action and ":" in word_wo_action:
-                        orblocks = re.split("\]\|\[", node.word)
-                        new_word = "(" + "])|([".join(orblocks) + ")"
-                        node.word = new_word
-                else:
-                    node.action = action
-                    node.word = word_wo_action
 
         priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
         if priorityMatch:
@@ -293,7 +320,7 @@ def FindLastColonWithoutSpecialCharacter(string):
         if string[index] == ":":
             return index
         if string[index].isalnum() or \
-            string[index] in "^. $,>":
+            string[index] in "^. $,>+-":
             index -=1
         else:
 #            logging.warning("not a ligit action: " + string[index] + " in " + string )
@@ -340,6 +367,7 @@ def _SearchToEnd(string, Reverse=False):
         targetTagIndex = 0
         direction = 1
     while 0<=i<len(string):
+        modified = False
         for pair in Pairs:
             if string[i] == pair[targetTagIndex]:
                 if i>0 and string[i-1] == "|":
@@ -349,6 +377,7 @@ def _SearchToEnd(string, Reverse=False):
                             i -= endofpair +1
                         else:
                             i += endofpair +1 # TODO: verify to +1
+                        modified = True
                     else:
                         raise "Can't find a pair in _SearchToEnd()"
                         #return -1   # error. stop the searching immediately.
@@ -356,9 +385,13 @@ def _SearchToEnd(string, Reverse=False):
             return i-direction
         if string[i].isspace():
             return i-direction
-        for pair in Pairs:
-            if string[i] == pair[targetTagIndex]:
-                return i-direction
+
+        # if string[i] in "[(":   #start of next token
+        #     return i-direction
+        if not modified:
+            for pair in Pairs:
+                if string[i] == pair[targetTagIndex]:
+                    return i-direction
         i += direction
     return i
 
@@ -396,6 +429,9 @@ def _SearchToEnd_OrBlock(string, Reverse=False):
             if string[i] == pair[targetTagIndex]:
                 return i-direction
         i += direction
+
+    if i<0:
+        i = 0
     return i
 
 
@@ -604,7 +640,7 @@ def _ExpandParenthesis():
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                 _RuleList.append(newrule)
                 Expand = True
-                logging.warning("\tExpand Parentheses is true, because of " + rule.RuleName)
+                #logging.warning("\tExpand Parentheses is true, because of " + rule.RuleName)
                 break
         if Expand:
             _RuleList.remove(rule)
@@ -737,7 +773,7 @@ def _ExpandOrBlock():
             _RuleList.append(newrule)
 
             Expand = True
-            logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+            #logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
             break
 
         if Expand:
@@ -777,8 +813,8 @@ if __name__ == "__main__":
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
-    LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/800VGy.txt")
+    #LoadRules("../../fsa/Y/900NPy.xml")
+    #LoadRules("../../fsa/Y/800VGy.txt")
     LoadRules("../../fsa/Y/1800VPy.xml")
 
     #LoadRules("../../fsa/Y/1test_rules.txt")
