@@ -14,7 +14,7 @@ class RuleTest(unittest.TestCase):
         tokenlist = Tokenize("[a b c]|[d e f]")
         self.assertEqual(len(tokenlist), 1)
 
-        tokenlist = Tokenize("""[a b c] 
+        tokenlist = Tokenize("""[a b c]
             | [d e f]""")
         self.assertEqual(len(tokenlist), 1)
 
@@ -65,12 +65,12 @@ class RuleTest(unittest.TestCase):
     def test_which(self):
         r = Rule()
         r.SetRule("""
-        which:: 
+        which::
 	^VWHSS advP? [F=which NP:^V2.O Wh] advP? ^V2[infinitive Kid=!O:^.ObjV]
     ^VWHSS advP? [F=which NP:^V2.O Wh] [NP "!me|him|us|them":^V2.S] PP? R* ^V2[!passive Pred Kid=!Obj:^.ObjV]
     ^VWHSS advP? [F=which NP:^V2.O Whh] R* ^V2[passive Pred Kid=!Obj:^.ObjV]
-	^[NP2 !pro] [R|PP]? ['\,':Done]? (IN+'which':^V.X) ^V[CL:^.ModS] 
-	^[NP2 !pro] [R|PP]? ['\,':Done]? [NP F=the:^V.S] (of+which:^V.X) [R|PP|DE]* ^V[CL:^.ModS] 
+	^[NP2 !pro] [R|PP]? ['\,':Done]? (IN+'which':^V.X) ^V[CL:^.ModS]
+	^[NP2 !pro] [R|PP]? ['\,':Done]? [NP F=the:^V.S] (of+which:^V.X) [R|PP|DE]* ^V[CL:^.ModS]
 //comment
 	^VWHSS advP? ['which+one':^V2.O Wh JS2] advP? ^V2[infinitive Kid=!O:^.ObjV]
     ^VWHSS advP? ['which+one':^V2.O Wh JS2] [NP "!me|him|us|them":^V2.S] PP? R* ^V2[Pred !passive Kid=!Obj:^.ObjS]
@@ -83,9 +83,9 @@ class RuleTest(unittest.TestCase):
 	^VWHSS advP? ['which':^V2.S JS2] R* ^V2[Pred !passive Kid=Obj|Cap:^ObjS CL]
 	^VWHSS advP? ['which+one':^V2.S JS2] R* ^V2[Pred !passive Kid=Obj|Cap:^ObjS]
 //comment
-	^VWHSS advP? [which+one:^V2.S JS2]　R*　^V2[Pred !passive Kid=Obj|Cap:^.ObjS]  
+	^VWHSS advP? [which+one:^V2.S JS2]　R*　^V2[Pred !passive Kid=Obj|Cap:^.ObjS]
 	^VWHSS advP? [F=which NP:^V2.S JS2] R* ^V2[Pred !passive Kid=Obj|Cap:^.ObjsS]
-//commebt	
+//commebt
     ^VWHSS advP? [which:^V2.S JS2] R* ^V2[Pred !passive:^.ObjS]
     ^VWHSS advP? [which+one:^V2.S JS2]) R* ^V2[Pred !passive:^.ObjS]
     ^VWHSS advP? [F=which NP:^V2.S JS2] R* ^V2[Pred !passive:^.ObjS]
@@ -113,14 +113,14 @@ class RuleTest(unittest.TestCase):
         s = ProcessMacro("""#macro_with_parameter(1=a 2=NULL, 3=c 4)""")
         self.assertEqual(s, "<a  [RB:^.R]? [VBN|Ved:VG perfect c  ]>")
 
-        InsertRuleInList("""@modalV == 
-	( 	MD // MD includes 'will|shall|shalt|would|can|could|should|must|may|might' etc. 
-		| "\'d|wil|mite|wanna|gotta" // we need escape character "\'d" because we reserve ' for STEM checking 
-		| ( ("do|does|did") 'have|seem|claim|appear|tend|want|wish|hope|desire|expect' "to" ) // they do appear to own it 
+        InsertRuleInList("""@modalV ==
+	( 	MD // MD includes 'will|shall|shalt|would|can|could|should|must|may|might' etc.
+		| "\'d|wil|mite|wanna|gotta" // we need escape character "\'d" because we reserve ' for STEM checking
+		| ( ("do|does|did") 'have|seem|claim|appear|tend|want|wish|hope|desire|expect' "to" ) // they do appear to own it
 	)
 """)
-        InsertRuleInList("""#simpleMpassive(1=$NEG, 2=$neg) == 
-        <@modalV $NEG [RB:^.R]? "be" [RB:^.R]? [VBN|Ved: VG passive simple  modal $neg]> !NNS  
+        InsertRuleInList("""#simpleMpassive(1=$NEG, 2=$neg) ==
+        <@modalV $NEG [RB:^.R]? "be" [RB:^.R]? [VBN|Ved: VG passive simple  modal $neg]> !NNS
             """)
         #InsertRuleInList("""simpleModalPassive == #simpleMpassive(1,2); """)
 
@@ -371,11 +371,11 @@ class RuleTest(unittest.TestCase):
         ResetRules()
 
         InsertRuleInList(
-            """precontext_IN_no_det_NP(Top) ==  
-               
-                    ( [0 R b:^M.R] [0 a:^.M] ) 
-                    | [AP:^.M]
-                   
+            """precontext_IN_no_det_NP(Top) ==
+
+                    ( [0 R b:^M.R] [0 a:^.M] )
+                     [AP:^.M]
+
                  """)
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
@@ -392,7 +392,7 @@ class RuleTest(unittest.TestCase):
     def test_Expanding_VNPAP2(self):
         ResetRules()
         InsertRuleInList("""
-        VNPAP2 == ^[VNPAP !passive VG2] [NP !JS2:^.O ^V2.O2] RB? ^V2[AP OTHO:ingAdj]|[enAdj:^.C] infinitive [!passive:^.purposeR]? 
+        VNPAP2 == ^[VNPAP !passive VG2] [NP !JS2:^.O ^V2.O2] RB? ^V2[AP OTHO:ingAdj]|[enAdj:^.C] infinitive [!passive:^.purposeR]?
         """  )
 
         ExpandRuleWildCard()
@@ -409,11 +409,11 @@ class RuleTest(unittest.TestCase):
     def test_Expanding_Others(self):
         ResetRules()
         InsertRuleInList("""
-        the_dollarsign(Top) == <[DT CURR:NP money]>  
+        the_dollarsign(Top) == <[DT CURR:NP money]>
         """)
 
         InsertRuleInList("""
-        the_blahblah_problem(Top) == <the [nv|NN:^.M] "up|down|in|out|away" ['time|trouble|difficulty|problem|experience|issue|topic|question|view|viewpoint':NP]> 
+        the_blahblah_problem(Top) == <the [nv|NN:^.M] "up|down|in|out|away" ['time|trouble|difficulty|problem|experience|issue|topic|question|view|viewpoint':NP]>
         """)
 
         InsertRuleInList("""
@@ -425,7 +425,7 @@ class RuleTest(unittest.TestCase):
         )
         """)
 
-        InsertRuleInList("""    DT_NN_VBG_NN2 == 
+        InsertRuleInList("""    DT_NN_VBG_NN2 ==
             '!with' (/the/|'any|such|these|those'|@yourC)""")
 
         ExpandRuleWildCard()
@@ -444,7 +444,7 @@ class RuleTest(unittest.TestCase):
         ResetRules()
 
         InsertRuleInList(
-            """negSimpleModal == 
+            """negSimpleModal ==
             <( 	MD 		| "d" 	|  ("do")  	)  >;
                  """)
 
@@ -453,11 +453,11 @@ class RuleTest(unittest.TestCase):
                  """)
 
         InsertRuleInList("""
-        VWHSS_how3 == 
+        VWHSS_how3 ==
         ^[ADJSUBCAT:AWHSS AP] [PP F=to human ^PP]? advP? [IN:^Wh.X] ^wh[0 what|which|how|how_many|how_much:^.X Gone] [NP F=!DT:^.O2 wh JS2] [infinitive:^.ObjV]?
         """)
 
-        InsertRuleInList("""NP_CM_VBN == 
+        InsertRuleInList("""NP_CM_VBN ==
         ^[NP2|DE2 !pro !that !date|durR|time|percent:^V.O2] [CM:Done] advP* ^V[enVG VNP|VNPPP Kid Obj:^.X] [PP|RP|DE|R]* ([CM:Done]|[COLN|JM])""")
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
@@ -465,4 +465,32 @@ class RuleTest(unittest.TestCase):
 
         OutputRules("concise")
         self.assertTrue(len(_RuleList) >= 3)
+
+    def test_SeparateRules(self):
+        a, b = SeparateRules("""good""")
+        self.assertEqual(a, "good")
+        self.assertFalse(b)
+
+        a, b = SeparateRules("""good
+        second line
+        third line""")
+        self.assertEqual(a, "good")
+        self.assertTrue(b)
+
+        a, b = SeparateRules("""{good
+        second line
+        third line}""")
+        self.assertEqual(a, """{good
+        second line
+        third line}""")
+        self.assertFalse(b)
+
+        a, b = SeparateRules("""{good
+        second line
+        third line};""")
+        self.assertEqual(a, """{good
+        second line
+        third line};""")
+        self.assertFalse(b)
+
 

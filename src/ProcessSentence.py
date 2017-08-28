@@ -86,7 +86,7 @@ if __name__ == "__main__":
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
 
-    target = "it was put onto the chair arm.  "
+    target = "she may like the product  "
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
     for node in nodes:

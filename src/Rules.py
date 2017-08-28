@@ -47,6 +47,22 @@ def SeparateComment(multiline):
             comment += " " + _comment
     return content, comment
 
+#If it is one line, that it is one rule;
+#if it has several lines in {} or () block, then it is one rule;
+# otherwise (it has multiple lines but not in one block), process the first line,
+# return the rest as "remaining"
+def SeparateRules(multilineString):
+    lines = re.split("\n", multilineString)
+    if len(lines) == 1:
+        return multilineString, None
+    if multilineString[0] == "(" and _SearchPair(multilineString[1:], "()") >= len(multilineString)-3: # sometimes there is ";" sign
+        return multilineString, None
+    if multilineString[0] == "{" and _SearchPair(multilineString[1:], "{}") >= len(multilineString)-3:
+        return multilineString, None
+
+    return lines[0], "\n".join(lines[1:])
+
+
 class Rule:
     def __init__(self):
         global _ruleCounter
@@ -75,7 +91,7 @@ class Rule:
         if ID != 1:
             self.ID = ID
         self.RuleName = blocks[0]
-        self.RuleContent = blocks[1]
+        self.RuleContent, remaining = SeparateRules(blocks[1])
         self.RuleContent = ProcessMacro(self.RuleContent)
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
             return  #stop processing macro.
@@ -88,6 +104,8 @@ class Rule:
             self.RuleName = ""
             return
         ProcessTokens(self.Tokens)
+
+        return remaining
 
     def __str__(self):
         return self.output("details")
@@ -497,7 +515,7 @@ def LoadRules(RuleLocation):
                 if rule:
                     InsertRuleInList(rule, RuleFileID)
                     rule = ""
-            rule += " " + line
+            rule += "\n" + line
 
         if rule:
             InsertRuleInList(rule, RuleFileID)
@@ -506,7 +524,7 @@ def InsertRuleInList(string, RuleFileID = 1):
     global _RuleList, _ExpertLexicon, _MacroDict
     node = Rule()
     node.FileID = RuleFileID
-    node.SetRule(string)
+    remaining = node.SetRule(string)
     if node.RuleName:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in _MacroDict:
@@ -532,6 +550,13 @@ def InsertRuleInList(string, RuleFileID = 1):
                             + " \n but now you have: " + string + "\n\n")
  #                       return
                 _RuleList.append(node)
+
+    if remaining:
+        if node.IsExpertLexicon:
+            fakeString = node.RuleName + "_" + str(node.ID) + " :: " + remaining
+        else:
+            fakeString = node.RuleName + "_" + str(node.ID) + " == " + remaining
+        InsertRuleInList(fakeString)
 
 def ExpandRuleWildCard():
     Modified = False
@@ -815,9 +840,9 @@ if __name__ == "__main__":
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
     #LoadRules("../../fsa/Y/900NPy.xml")
     #LoadRules("../../fsa/Y/800VGy.txt")
-    LoadRules("../../fsa/Y/1800VPy.xml")
+    #LoadRules("../../fsa/Y/1800VPy.xml")
 
-    #LoadRules("../../fsa/Y/1test_rules.txt")
+    LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
     #ExpandOrBlock()

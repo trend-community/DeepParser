@@ -4,7 +4,7 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import logging, re, operator, sys, os
+import logging, re, operator, sys, os, pickle
 from functools import lru_cache
 
 class LexiconNode(object):
@@ -24,20 +24,21 @@ class LexiconNode(object):
         return output
     def entry(self):
         output = self.word + ": "
-        lexiconCopy = set()
+        featuresCopy = set()
         features = sorted(self.features)
-        lexiconCopy = features.copy()
+        featuresCopy = features.copy()
+        #remove redundant ancestors.
         for feature in features:
             nodes = SearchFeatureOntology(feature)
             if nodes:
                 ancestors = nodes.ancestors
                 if ancestors:
-                    c = ancestors.intersection(lexiconCopy)
+                    c = ancestors.intersection(featuresCopy)
                     if c:
                         for a in c:
-                            lexiconCopy.remove(a)
+                            featuresCopy.remove(a)
         featureSorted = set()
-        for feature in lexiconCopy:
+        for feature in featuresCopy:
             featureName = GetFeatureName(feature)
             if featureName:
                 featureSorted.add(featureName)
@@ -238,12 +239,22 @@ def PrintLexicon(flag):
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
+    pickleLocation = "featureontology.pickle"
+    if os.path.isfile(pickleLocation):
+        with open(pickleLocation, 'rb') as pk:
+            _FeatureOntology = pickle.load(pk)
+        return
+
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             node = OntologyNode()
             node.SetRule(line)
             if node.openWordID != -1:
                 _FeatureOntology.append(node)
+
+    with open(pickleLocation, 'wb') as pk:
+        pickle.dump(_FeatureOntology, pk)
+
 
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
     for node in _FeatureOntology:
@@ -277,6 +288,15 @@ def GetFeatureName(featureID):
 def LoadLexicon(lexiconLocation):
     global _LexiconDict
     global _CommentDict
+
+    pickleLocation = "lexicon.pickle"
+    #if os.path.isfile(pickleLocation):
+    if False:
+        with open(pickleLocation, 'rb') as pk:
+            _CommentDict = pickle.load(pk)
+            _LexiconDict = pickle.load(pk)
+        return
+
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         oldWord = "firstCommentLine"
         for line in dictionary:
@@ -325,29 +345,35 @@ def LoadLexicon(lexiconLocation):
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
+    with open(pickleLocation, 'wb') as pk:
+        pickle.dump(_LexiconDict, pk)
+        pickle.dump(_CommentDict, pk)
 
 #this can be more complicate: search for case-insensitive, _ed _ing _s...
 def SearchLexicon(word):
+    #word = word.lower()
+    if word in _LexiconDict.keys():
+        return _LexiconDict.get(word)
+
     word = word.lower()
     if word in _LexiconDict.keys():
         return _LexiconDict.get(word)
 
-
-    # word_ed = word.rstrip("ed")
-    # if word_ed in _LexiconDict.keys():
-    #     return _LexiconDict.get(word_ed)
-    # word_d = word.rstrip("d")
-    # if word_d in _LexiconDict.keys():
-    #     return _LexiconDict.get(word_d)
-    # word_ing = word.rstrip("ing")
-    # if word_ing in _LexiconDict.keys():
-    #     return _LexiconDict.get(word_ing)
-    # word_s = word.rstrip("s")
-    # if word_s in _LexiconDict.keys():
-    #     return _LexiconDict.get(word_s)
-    # word_es = word.rstrip("es")
-    # if word_es in _LexiconDict.keys():
-    #     return _LexiconDict.get(word_es)
+    word_ed = word.rstrip("ed")
+    if word_ed in _LexiconDict.keys():
+        return _LexiconDict.get(word_ed)
+    word_d = word.rstrip("d")
+    if word_d in _LexiconDict.keys():
+        return _LexiconDict.get(word_d)
+    word_ing = word.rstrip("ing")
+    if word_ing in _LexiconDict.keys():
+        return _LexiconDict.get(word_ing)
+    word_s = word.rstrip("s")
+    if word_s in _LexiconDict.keys():
+        return _LexiconDict.get(word_s)
+    word_es = word.rstrip("es")
+    if word_es in _LexiconDict.keys():
+        return _LexiconDict.get(word_es)
 
     return None
 
