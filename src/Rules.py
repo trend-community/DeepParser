@@ -14,6 +14,7 @@ _ExpertLexicon = []
 _MacroList = []
 _MacroDict = {}     # not sure which one to use yet
 _ruleCounter = 0
+RuleFileList = []
 
 def ResetRules():
     global _RuleList, _ExpertLexicon, _MacroList, _MacroDict, _ruleCounter
@@ -77,8 +78,9 @@ class Rule:
         self.IsExpertLexicon = False
         self.comment = ''
 
-    def SetRule(self, ruleString, ID=1):
+    def SetRule(self, ruleString, ID=1, FileName="_"):
         self.Origin = ruleString
+        self.FileName = FileName
         code, self.comment = SeparateComment(ruleString)
         blocks = [x.strip() for x in re.split("::", code)]
         if len(blocks) == 2:
@@ -368,7 +370,7 @@ def _SearchPair(string, tagpair, Reverse=False):
         i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
     raise Exception(" Can't find a pair tag!" + string)
-    return -1
+    #return -1
 
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
@@ -397,7 +399,7 @@ def _SearchToEnd(string, Reverse=False):
                             i += endofpair +1 # TODO: verify to +1
                         modified = True
                     else:
-                        raise "Can't find a pair in _SearchToEnd()"
+                        raise Exception("Can't find a pair in _SearchToEnd()")
                         #return -1   # error. stop the searching immediately.
         if string[i] in SignsToIgnore:
             return i-direction
@@ -439,8 +441,8 @@ def _SearchToEnd_OrBlock(string, Reverse=False):
                         else:
                             i += endofpair +1
                     else:
-                        raise "Can't find a pair in _SearchToEnd()"
-                        return 0   # error. stop the searching immediately.
+                        raise Exception("Can't find a pair in _SearchToEnd()")
+                        #return 0   # error. stop the searching immediately.
         if re.match("\W", string[i]):
             return i-direction
         for pair in Pairs:
@@ -494,11 +496,8 @@ def ProcessMacro(ruleContent):
 # -July 26, change to "==" or "::".
 def LoadRules(RuleLocation):
     RuleFileName = os.path.basename(RuleLocation)
-    try:
-        RuleFileID = int(re.findall('^\d+', RuleFileName)[0])
-    except IndexError:
-        logging.error("Rule Filename must start with a number!")
-        raise
+    if RuleFileName not in RuleFileList:
+        RuleFileList.append(RuleFileName)
 
     with open(RuleLocation, encoding="utf-8") as dictionary:
         rule = ""
@@ -513,18 +512,17 @@ def LoadRules(RuleLocation):
 
             if line.find("::")>=0 or line.find("==") >= 0:
                 if rule:
-                    InsertRuleInList(rule, RuleFileID)
+                    InsertRuleInList(rule, RuleFileName)
                     rule = ""
             rule += "\n" + line
 
         if rule:
-            InsertRuleInList(rule, RuleFileID)
+            InsertRuleInList(rule, RuleFileName)
 
-def InsertRuleInList(string, RuleFileID = 1):
+def InsertRuleInList(string, RuleFileName = "_"):
     global _RuleList, _ExpertLexicon, _MacroDict
     node = Rule()
-    node.FileID = RuleFileID
-    remaining = node.SetRule(string)
+    remaining = node.SetRule(string, FileName = RuleFileName)
     if node.RuleName:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in _MacroDict:
@@ -573,6 +571,7 @@ def ExpandRuleWildCard():
                     newrule.IsExpertLexicon = rule.IsExpertLexicon
                     newrule.RuleName = rule.RuleName+"_"+str(repeat_num)
                     newrule.RuleContent = rule.RuleContent
+                    newrule.FileName = rule.FileName
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
                     for tokenindex_this in range(repeat_num):
@@ -601,7 +600,7 @@ def ExpandRuleWildCard():
                                 new_node.StartTrunk = True
                             if NextIsRestart:
                                 new_node.RestartPoint = True
-                            if NextIsPointer:
+                            if NextIsPointer and NextPointer :
                                 new_node.pointer = NextPointer
                         newrule.Tokens.append(new_node)
                     _RuleList.append(newrule)
@@ -657,6 +656,7 @@ def _ExpandParenthesis():
                 newrule.IsExpertLexicon = rule.IsExpertLexicon
                 newrule.RuleName = rule.RuleName+"_p"+str(tokenindex)
                 newrule.RuleContent = rule.RuleContent
+                newrule.FileName = rule.FileName
                 for tokenindex_pre in range(tokenindex):
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
                 for subtoken in subTokenlist:
@@ -706,7 +706,7 @@ def _ProcessOrBlock(Content, orIndex):
 
 def _ExpandOrBlock():
     Modified = False
-    counter = 0
+    #counter = 0
     for rule in _RuleList:
         if len(rule.RuleName) > 200:
             logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
@@ -732,6 +732,7 @@ def _ExpandOrBlock():
             newrule.IsExpertLexicon = rule.IsExpertLexicon
             newrule.RuleName = rule.RuleName+"_o"+str(tokenindex)
             newrule.RuleContent = rule.RuleContent
+            newrule.FileName = rule.FileName
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
             #
@@ -770,6 +771,7 @@ def _ExpandOrBlock():
             newrule.IsExpertLexicon = rule.IsExpertLexicon
             newrule.RuleName = rule.RuleName + "_o" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
+            newrule.FileName = rule.FileName
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
 
@@ -838,11 +840,11 @@ if __name__ == "__main__":
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
     # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
-    #LoadRules("../../fsa/Y/900NPy.xml")
-    #LoadRules("../../fsa/Y/800VGy.txt")
-    #LoadRules("../../fsa/Y/1800VPy.xml")
+    LoadRules("../../fsa/Y/900NPy.xml")
+    LoadRules("../../fsa/Y/800VGy.txt")
+    LoadRules("../../fsa/Y/1800VPy.xml")
 
-    LoadRules("../../fsa/Y/1test_rules.txt")
+    #LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
     #ExpandOrBlock()

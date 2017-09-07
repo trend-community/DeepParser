@@ -1,70 +1,71 @@
-import logging
+import logging, re
 import Tokenization, FeatureOntology
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
 
 counterMatch = 0
 
-#
-# def TokenMatch(strtoken, ruletoken):
-#     if not strtoken:
-#         return False
-#     global counterMatch
-#     word = strtoken.word.lower()
-#     if strtoken.lexicon:
-#         word = strtoken.lexicon.word.lower()
-#     counterMatch += 1
-#     rule = ruletoken.word.strip("[").strip("]")
-#
-#     # compare feature
-#     if strtoken.lexicon:
-#         return LogicMatchFeatures(rule, strtoken)
-#     else:
-#         return False
-#         # featureID = FeatureOntology.GetFeatureID(rule)
-#
-#         # if featureID and featureID in lextoken.features:
-#         #     return True
-#         # else:
-#         #     return False
 
-
-def Match(strTokens, ruleTokens):
-    space = [[0 for j in range(len(strTokens) + 1)]
-             for i in range(len(ruleTokens) + 1)
-             ]
-
-    for i in range(1, len(ruleTokens) + 1):
-        MatchOnce = False
-        for j in range(1, len(strTokens) + 1):
-            if LogicMatch(ruleTokens[i - 1].word.strip("[").strip("]"), strTokens[j - 1]):
-                space[i][j] = 1 + space[i - 1][j - 1]
-                MatchOnce = True
-        if not MatchOnce:  # at least match once.
-            return False  # otherwise, this rule does not fit for this string
-
-    maxValue = 0
-    for j in range(1, len(strTokens) + 1):
-        maxValue = space[len(ruleTokens)][j] if space[len(ruleTokens)][j] > maxValue else maxValue
-
-    if maxValue == len(ruleTokens):
-        # if maxValue > 0:
-        print("Match!!! %s" % maxValue)
-        return True
-    else:
+#Every token in ruleTokens must match each token in strTokens, from head.
+def HeadMatch(strTokens, ruleTokens):
+    if len(ruleTokens) > len(strTokens):
         return False
 
+    for i in range(len(ruleTokens)):
+            if not LogicMatch(ruleTokens[i].word.strip("[").strip("]"), strTokens[i]):
+                return False  # otherwise, this rule does not fit for this string
+
+    return True
+
+def ApplyWinningRule(strtokens, rule):
+    print("Applying " + rule.output('concise'))
+    for i in range(len(rule.Tokens)):
+        if hasattr(rule.Tokens[i], 'action'):
+            Actions = rule.Tokens[i].action.split()
+            logging.warning("Word:" + strtokens[i].word)
+            logging.warning("Before applying feature:" + str(strtokens[i].features))
+            logging.warning("The features are:" + str(Actions))
+
+            for Action in Actions:
+                ActionID = FeatureOntology.GetFeatureID(Action)
+                if ActionID != -1:
+                    strtokens[i].features.add(ActionID)
+            logging.warning("After applying feature:" + str(strtokens[i].features))
+
+    return len(rule.Tokens) #need to modify for those "forward looking rules"
 
 def SearchMatchingRule(strtokens):
-    for rule in Rules._ExpertLexicon:
-        result = Match(strtokens, rule.Tokens)
-        if result:
-            print(rule)
+    for RuleFileName in Rules.RuleFileList:
+        print("Applying:" + RuleFileName)
 
-    for rule in Rules._RuleList:
-        result = Match(strtokens, rule.Tokens)
-        if result:
-            print(rule)
+        for i in range(len(strtokens)):
+            logging.warning("Checking tokens start from:" + strtokens[i].word)
+            WinningRule = None
+            for rule in Rules._ExpertLexicon:
+                if rule.FileName == RuleFileName:
+                    result = HeadMatch(strtokens[i:], rule.Tokens)
+                    if result:
+                        if WinningRule and len(WinningRule.Tokens)>len(rule.Tokens):
+                            pass
+                        else:
+                            WinningRule = rule
+
+            if WinningRule:
+                skiptokennum = ApplyWinningRule(strtokens[i:], WinningRule)
+                i += skiptokennum-2    #go to the next word
+                continue
+
+            for rule in Rules._RuleList:
+                if rule.FileName == RuleFileName:
+                    result = HeadMatch(strtokens[i:], rule.Tokens)
+                    if result:
+                        if WinningRule and len(WinningRule.Tokens) > len(rule.Tokens):
+                            pass
+                        else:
+                            WinningRule = rule
+            if WinningRule:
+                skiptokennum = ApplyWinningRule(strtokens[i:], WinningRule)
+                i += skiptokennum-2    #go to the next word
 
 
 if __name__ == "__main__":
@@ -103,9 +104,16 @@ if __name__ == "__main__":
     for node in nodes:
         output = "Node [" + node.word + "] "
         if node.lexicon:
-            output += str(node.lexicon) + ";"
+            output += str(node.lexicon) + "-"
+        output += str(node.features) + ";"
         print(output)
 
     logging.warning("\tStart matching rules! counterMatch=%s" % counterMatch)
     SearchMatchingRule(nodes)
+    logging.warning("After match:")
+    for node in nodes:
+        output = "Node [" + node.word + "] "
+        output += str(node.features) + ";"
+        print(output)
+
     logging.warning("\tDone! counterMatch=%s" % counterMatch)
