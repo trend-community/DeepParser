@@ -17,6 +17,8 @@ def HeadMatch(strTokens, ruleTokens):
 
     return True
 
+# Apply the features, and other actions.
+#TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule):
     print("Applying " + rule.output('concise'))
     for i in range(len(rule.Tokens)):
@@ -37,8 +39,9 @@ def ApplyWinningRule(strtokens, rule):
 def SearchMatchingRule(strtokens):
     for RuleFileName in Rules.RuleFileList:
         print("Applying:" + RuleFileName)
+        i = 0
 
-        for i in range(len(strtokens)):
+        while i < len(strtokens):
             logging.warning("Checking tokens start from:" + strtokens[i].word)
             WinningRule = None
             for rule in Rules._ExpertLexicon:
@@ -65,7 +68,9 @@ def SearchMatchingRule(strtokens):
                             WinningRule = rule
             if WinningRule:
                 skiptokennum = ApplyWinningRule(strtokens[i:], WinningRule)
-                i += skiptokennum-2    #go to the next word
+                i += skiptokennum - 1    #go to the next word
+
+            i += 1
 
 
 if __name__ == "__main__":
@@ -80,7 +85,7 @@ if __name__ == "__main__":
 
     Rules.LoadRules("../../fsa/Y/800VGy.txt")
     Rules.LoadRules("../../fsa/Y/900NPy.xml")
-    # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+    Rules.LoadRules("../../fsa/Y/1800VPy.xml")
     # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
