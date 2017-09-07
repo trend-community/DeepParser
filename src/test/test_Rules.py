@@ -463,7 +463,7 @@ class RuleTest(unittest.TestCase):
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
-        OutputRules("concise")
+        #OutputRules("concise")
         self.assertTrue(len(_RuleList) >= 3)
 
     def test_SeparateRules(self):

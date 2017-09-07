@@ -21,7 +21,7 @@ class FeatureTest(unittest.TestCase):
         print(SearchFeatureOntology(GetFeatureID("com")))
     def test_lexicon(self):
         FoundSent = False
-        #print("i-myself")
+        print("i-myself")
         s = SearchLexicon("i_myself")
         if s:
             print(s.features)
@@ -38,6 +38,20 @@ class FeatureTest(unittest.TestCase):
         if s:
             print(s.features)
 
+        print("like")
+        s = SearchLexicon("like")
+        if s:
+            print(s.features)
+
+        for f in s.features:
+            feature = GetFeatureName(f)
+            print (feature)
+            if feature == "Ved":
+                print("Found Ved!")
+                FoundSent = True
+        self.assertTrue(FoundSent)
+
+
     def test2(self):
         s = SearchLexicon("ised")
         if s:
@@ -46,6 +60,7 @@ class FeatureTest(unittest.TestCase):
         print(SearchFeatures("airliners"))
         #print("there are so many lexicons:%s" % len(_LexiconDict))
         print(SearchFeatures("pretty"))
+
 
     def test_alias(self):
         node = OntologyNode()

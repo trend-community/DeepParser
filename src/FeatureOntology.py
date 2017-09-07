@@ -7,6 +7,18 @@
 import logging, re, operator, sys, os, pickle
 from functools import lru_cache
 
+
+_FeatureSet = set()
+_FeatureList = []   #this is populated from FeatureSet. to have featureID.
+_FeatureDict = {}   #this is populated from FeatureSet. for better searching
+_AliasDict = {}
+_FeatureOntology = []
+_LexiconDict = {}
+_CommentDict = {}
+_CreateFeatureList = False
+_MissingFeatureSet = set()
+
+
 class LexiconNode(object):
     def __init__(self, word=''):
         self.word = word
@@ -24,7 +36,6 @@ class LexiconNode(object):
         return output
     def entry(self):
         output = self.word + ": "
-        featuresCopy = set()
         features = sorted(self.features)
         featuresCopy = features.copy()
         #remove redundant ancestors.
@@ -61,15 +72,6 @@ class LexiconNode(object):
 
         return output
 
-_FeatureSet = set()
-_FeatureList = []   #this is populated from FeatureSet. to have featureID.
-_FeatureDict = {}   #this is populated from FeatureSet. for better searching
-_AliasDict = {}
-_FeatureOntology = []
-_LexiconDict = {}
-_CommentDict = {}
-_CreateFeatureList = False
-_MissingFeatureSet = set()
 
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
@@ -126,21 +128,21 @@ class OntologyNode:
         blocks = [x.strip() for x in re.split("=", line) if x]
         if len(blocks) <= 1:
             return line     # there is no "=" sign.
-        #Now the last block has the real feature name and code
+        #Now the last block has the alias name and code
         code = blocks[-1]
         realfeature = blocks[0]
         realfeatureId = GetFeatureID(realfeature)
 
-        featureID = GetFeatureID(realfeature)
-        if featureID == -1: #the feature in file is not in featureFullList
+        #featureID = GetFeatureID(realfeature)
+        if realfeatureId == -1: #the feature in file is not in featureFullList
             logging.warning("The feature in file is not in feature list!" + realfeature + " in \n\t" + line)
             return code # ignore
 
-        realnode = SearchFeatureOntology(featureID)
+        realnode = SearchFeatureOntology(realfeatureId)
         if not realnode:
             realnode = OntologyNode()
             realnode.openWord = realfeature
-            realnode.openWordID = featureID
+            realnode.openWordID = realfeatureId
             _FeatureOntology.append(realnode)
 
         features = re.split(",|;| ", code)    # the first feature is the last alias.
@@ -151,18 +153,17 @@ class OntologyNode:
             if aliasnode:
                 realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
-                #TODO: find all feature ontology nodes that have alias as ancestor
-                #   replace that as the realfeature (featureID)
                 if alias in _FeatureSet:
                     _FeatureSet.remove(alias)
 
+            # find all feature ontology nodes that have alias as ancestor
+            #   replace that using the realfeatureId
             for node in _FeatureOntology:
                 if aliasId in node.ancestors:
                     node.ancestors.remove(aliasId)
                     node.ancestors.add(realfeatureId)
 
-            _AliasDict[alias] = featureID
-
+            _AliasDict[alias] = realfeatureId
 
         return code.replace(lastalias, realfeature )
 
@@ -239,11 +240,11 @@ def PrintLexicon(flag):
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
-    pickleLocation = "featureontology.pickle"
-    if os.path.isfile(pickleLocation):
-        with open(pickleLocation, 'rb') as pk:
-            _FeatureOntology = pickle.load(pk)
-        return
+    # pickleLocation = "featureontology.pickle"
+    # if os.path.isfile(pickleLocation):
+    #     with open(pickleLocation, 'rb') as pk:
+    #         _FeatureOntology = pickle.load(pk)
+    #     return
 
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
@@ -252,8 +253,8 @@ def LoadFeatureOntology(featureOncologyLocation):
             if node.openWordID != -1:
                 _FeatureOntology.append(node)
 
-    with open(pickleLocation, 'wb') as pk:
-        pickle.dump(_FeatureOntology, pk)
+    # with open(pickleLocation, 'wb') as pk:
+    #     pickle.dump(_FeatureOntology, pk)
 
 
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
@@ -277,25 +278,26 @@ def GetFeatureID(feature):
 
 @lru_cache(maxsize=1000)
 def GetFeatureName(featureID):
+
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
     else:
-        logging.warning("Wrong to get Feature Name: Searching for " + str(featureID) + " but it is not in featurefulllist.")
+        logging.warning("Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureList)=" + str(len(_FeatureList)))
         # raise(Exception("error"))
-        return None
+        return ""
 
 
 def LoadLexicon(lexiconLocation):
     global _LexiconDict
     global _CommentDict
 
-    pickleLocation = "lexicon.pickle"
-    #if os.path.isfile(pickleLocation):
-    if False:
-        with open(pickleLocation, 'rb') as pk:
-            _CommentDict = pickle.load(pk)
-            _LexiconDict = pickle.load(pk)
-        return
+    # pickleLocation = "lexicon.pickle"
+    # #if os.path.isfile(pickleLocation):
+    # if False:
+    #     with open(pickleLocation, 'rb') as pk:
+    #         _CommentDict = pickle.load(pk)
+    #         _LexiconDict = pickle.load(pk)
+    #     return
 
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         oldWord = "firstCommentLine"
@@ -312,7 +314,7 @@ def LoadLexicon(lexiconLocation):
                 #logging.warn("line is not in [word]:[features] format:\n\t" + line)
                 continue
             newNode = False
-            node = SearchLexicon(blocks[0])
+            node = SearchLexicon(blocks[0], 'origin')
             #node = None
             if not node:
                 newNode = True
@@ -345,33 +347,37 @@ def LoadLexicon(lexiconLocation):
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
-    with open(pickleLocation, 'wb') as pk:
-        pickle.dump(_LexiconDict, pk)
-        pickle.dump(_CommentDict, pk)
+    # with open(pickleLocation, 'wb') as pk:
+    #     pickle.dump(_LexiconDict, pk)
+    #     pickle.dump(_CommentDict, pk)
 
-#this can be more complicate: search for case-insensitive, _ed _ing _s...
-def SearchLexicon(word):
+#   If the SearchType is not flexible, then search the origin word only.
+# Otherwise, after failed for the origin word, search for case-insensitive, _ed _ing _s...
+def SearchLexicon(word, SearchType='flexible'):
     #word = word.lower()
     if word in _LexiconDict.keys():
         return _LexiconDict.get(word)
+
+    if SearchType != 'flexible':
+        return None
 
     word = word.lower()
     if word in _LexiconDict.keys():
         return _LexiconDict.get(word)
 
-    word_ed = word.rstrip("ed")
+    word_ed = re.sub("ed$", '', word)
     if word_ed in _LexiconDict.keys():
         return _LexiconDict.get(word_ed)
-    word_d = word.rstrip("d")
+    word_d = re.sub("d$", '', word)
     if word_d in _LexiconDict.keys():
         return _LexiconDict.get(word_d)
-    word_ing = word.rstrip("ing")
+    word_ing = re.sub("ing$", '', word)
     if word_ing in _LexiconDict.keys():
         return _LexiconDict.get(word_ing)
-    word_s = word.rstrip("s")
+    word_s = re.sub("s$", '', word)
     if word_s in _LexiconDict.keys():
         return _LexiconDict.get(word_s)
-    word_es = word.rstrip("es")
+    word_es = re.sub("es$", '', word)
     if word_es in _LexiconDict.keys():
         return _LexiconDict.get(word_es)
 
