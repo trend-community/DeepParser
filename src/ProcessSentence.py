@@ -12,7 +12,7 @@ def HeadMatch(strTokens, ruleTokens):
         return False
 
     for i in range(len(ruleTokens)):
-            if not LogicMatch(ruleTokens[i].word.strip("[").strip("]"), strTokens[i]):
+            if not LogicMatch(ruleTokens[i].word, strTokens[i]):
                 return False  # otherwise, this rule does not fit for this string
 
     return True

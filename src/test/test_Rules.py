@@ -493,4 +493,50 @@ class RuleTest(unittest.TestCase):
         third line};""")
         self.assertFalse(b)
 
+    def test_PreProcess_CheckFeatures(self):
+        ResetRules()
 
+        InsertRuleInList(
+            """features ==
+            'a|b|c';
+                 """)
+
+        PreProcess_CheckFeatures()
+        self.assertEqual(len(_RuleList), 1)
+        word = _RuleList[0].Tokens[0].word
+        self.assertEqual(word, "['a'|'b'|'c']")
+
+        InsertRuleInList(
+            """features2 ==
+            [notfeature:xx];
+                 """)
+        #OutputRules()
+        PreProcess_CheckFeatures()
+        self.assertEqual(len(_RuleList), 2)
+        word = _RuleList[1].Tokens[0].word
+        self.assertEqual(word, "['notfeature']")
+
+        InsertRuleInList(
+            """features3 ==
+            notfeature|'a'|notfeature2;
+                 """)
+
+        PreProcess_CheckFeatures()
+        OutputRules()
+        self.assertEqual(len(_RuleList), 3)
+        word = _RuleList[2].Tokens[0].word
+        self.assertEqual(word, "['notfeature'|'a'|'notfeature2']")
+
+    def test_Random(self):
+        ResetRules()
+        FeatureOntology.LoadFullFeatureList('../../../fsa/extra/featurelist.txt')
+
+        InsertRuleInList("""
+        Conj_NP2 == 
+{
+
+ 	[!NN|plural]|[date|measure|dur]|[RP|PP]
+};
+   """)
+        PreProcess_CheckFeatures()
+        OutputRules()

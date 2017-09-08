@@ -7,7 +7,10 @@ import copy
 #import FeatureOntology
 #usage: to output rules list, run:
 #       python Rules.py > rules.txt
-from FeatureOntology import PrintMissingFeatureSet
+
+from LogicOperation import CheckPrefix as LogicOperation_CheckPrefix
+from LogicOperation import SeparateOrBlocks as LogicOperation_SeparateOrBlocks
+import FeatureOntology
 
 _RuleList = []
 _ExpertLexicon = []
@@ -263,14 +266,14 @@ def ProcessTokens(Tokens):
             node.word = node.word.rstrip("*")
             node.repeat = [0, 3]
 
-        repeatMatch = re.match("(.*\D+)(\d+)\*(\d+)$", node.word)
+        repeatMatch = re.match("(.*[\]\"')])(\d+)\*(\d+)$", node.word)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             node.repeat = [int(repeatMatch.group(2)), int(repeatMatch.group(3))]
 
         repeatMatch = re.match("(.+)\*(\d*)$", node.word)
         if not repeatMatch:
-            repeatMatch = re.match("(.*\D+)(\d+)$", node.word)
+            repeatMatch = re.match("(.*[\])\"'])(\d+)$", node.word)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             repeatMax = 3           #default as 3
@@ -322,7 +325,6 @@ def ProcessTokens(Tokens):
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
-
 
         priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
         if priorityMatch:
@@ -679,9 +681,9 @@ def _ExpandParenthesis():
 
 def _ProcessOrBlock(Content, orIndex):
     if orIndex <= 0 or orIndex >= len(Content):
-        raise "Wrong orIndex:" + str(orIndex)
+        raise Exception("Wrong orIndex:" + str(orIndex))
     if Content[orIndex] != '|':
-        raise "Wrong orIndex for Content:" + Content[orIndex]
+        raise Exception("Wrong orIndex for Content:" + Content[orIndex])
 
     start = orIndex
     end = orIndex
@@ -813,6 +815,73 @@ def _ExpandOrBlock():
     #     ExpandOrBlock()    #recursive call itself to finish all.
 
 
+#Check the rules. If it is a stem, not a feature, but omit quote
+#   then we add quote;
+# If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
+def PreProcess_CheckFeatures():
+    for rule in _RuleList:
+        for token in rule.Tokens:
+            word = token.word
+            if len(word) < 2:
+                continue
+            try:
+                if word[0] == "[" and _SearchPair(word[1:], "[]") == len(word)-2:
+                    word = word[1:-1]
+
+                word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+            except Exception as e:
+                logging.error("Error for rule:" + rule.RuleName)
+
+            if matchtype == 'stem' :
+                if "|" in word:
+                    items = re.split("\|", word.lstrip("!"))
+                    if word.startswith("!"):
+                        token.word = "[!'" + "'|'".join(items) + "']"
+                    else:
+                        token.word = "['" + "'|'".join(items) + "']"
+                elif " " in word:   #'this is a good': separate as multiple token.
+                    logging.warning("The rule is: " + str(rule))
+                    raise Exception("TODO: separate this as multiple token")
+
+            elif matchtype == 'word':
+                if "|" in word:
+                    items = re.split("\|", word.lstrip("!"))
+                    if word.startswith("!"):
+                        token.word = "[!\"" + "\"|\"".join(items) + "\"]"
+                    else:
+                        token.word = "[\"" + "\"|\"".join(items) + "\"]"
+                elif " " in word:  # 'this is a good': separate as multiple token.
+                    raise Exception("TODO: separate this as multiple token")
+
+            elif matchtype == 'unknown':
+                if not re.search('\|| |!', word):
+                    if FeatureOntology.GetFeatureID(word) == -1:
+                        logging.warning("Will treat this word as a stem:" + word)
+                        token.word = "['" + word + "']"
+                elif "|" in word and " " not in word and "[" not in word:
+                    # be aware of ['and|or|of|that|which'|PP|CM]
+                    try:
+                        if word.startswith("!"):
+                            prefix = "!"
+                            OrBlocks = LogicOperation_SeparateOrBlocks(word[1:])
+
+                        else:
+                            prefix = ""
+                            OrBlocks = LogicOperation_SeparateOrBlocks(word)
+                    except Exception as e:
+                        logging.error("Error for rule:" + rule.RuleName)
+
+                    token.word = prefix + "["
+                    for OrBlock in OrBlocks:
+                        _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
+                        if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
+                            logging.warning("Will treat this as a stem:" + OrBlock)
+                            token.word += "'" + OrBlock + "'|"
+                        else:
+                            token.word += OrBlock + "|"
+                    token.word = re.sub("\|$", "]", token.word)
+
+
 def OutputRules(style="details"):
     print("// ****Rules****")
     print("// * size: " + str(len(_RuleList)) + " *" )
@@ -834,23 +903,18 @@ def OutputRules(style="details"):
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
-    # import os
-    #
-    # dir_path = os.path.dirname(os.path.realpath(__file__))
-    # LoadRules(dir_path + "/../../fsa/Y/900NPy.xml")
-    # LoadRules(dir_path + "/../../fsa/Y/1800VPy.xml")
-    LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/800VGy.txt")
+    #LoadRules("../../fsa/Y/900NPy.xml")
+    #LoadRules("../../fsa/Y/800VGy.txt")
     LoadRules("../../fsa/Y/1800VPy.xml")
 
     #LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
-    #ExpandOrBlock()
     ExpandParenthesisAndOrBlock()
-    #ExpandOrBlock()
     ExpandRuleWildCard()
+    PreProcess_CheckFeatures()
 
     OutputRules("concise")
-    PrintMissingFeatureSet()
+    FeatureOntology.PrintMissingFeatureSet()

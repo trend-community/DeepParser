@@ -1,5 +1,5 @@
 import unittest, os
-from ..LogicOperation import *
+from LogicOperation import *
 import Tokenization
 
 
@@ -107,3 +107,43 @@ class RuleTest(unittest.TestCase):
         node.word = "f"
         self.assertFalse(LogicMatch("c|d !d|e", node))
 
+    def test_LogicCombined(self):
+        """Logic Combined"""
+
+        blocks = SeparateOrBlocks("a|b|c")
+        self.assertEqual(len(blocks), 3)
+
+        blocks = SeparateOrBlocks("a")
+        self.assertEqual(len(blocks), 1)
+
+        blocks = SeparateOrBlocks("'a|b'|c")
+        self.assertEqual(len(blocks), 2)
+
+        node =  Tokenization.EmptyBase()
+        node.lexicon = None
+        node.word = "d"
+        node.features = set()
+
+
+        self.assertTrue(LogicMatch("'c|d'|e", node))
+
+        self.assertTrue(LogicMatch("notfeature|'d'|notfeature2", node))
+
+    def test_CheckPrefix(self):
+        word, matchtype = CheckPrefix("\"abc\"", "unknown")
+        self.assertEqual(matchtype, "word")
+
+        word, matchtype = CheckPrefix("\"abc\"|ab", "unknown")
+        self.assertEqual(matchtype, "unknown")
+
+        word, matchtype = CheckPrefix("\"abc\"|ab|\"cde\"", "unknown")
+        self.assertEqual(matchtype, "unknown")
+
+        word, matchtype = CheckPrefix("'abc'", "unknown")
+        self.assertEqual(matchtype, "stem")
+
+        word, matchtype = CheckPrefix("'abc'|ab", "unknown")
+        self.assertEqual(matchtype, "unknown")
+
+        word, matchtype = CheckPrefix("'abc'|ab|'cde'", "unknown")
+        self.assertEqual(matchtype, "unknown")
