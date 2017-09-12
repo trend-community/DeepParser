@@ -12,15 +12,19 @@ def HeadMatch(strTokens, ruleTokens):
         return False
 
     for i in range(len(ruleTokens)):
+        try:
             if not LogicMatch(ruleTokens[i].word, strTokens[i]):
-                return False  # otherwise, this rule does not fit for this string
-
+                return False  #  this rule does not fit for this string
+        except Exception as e:
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i].word )
+            logging.error(e)
+            #raise
     return True
 
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule):
-    print("Applying " + rule.output('concise'))
+    print("Applying " + rule.RuleName)
     for i in range(len(rule.Tokens)):
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
@@ -37,6 +41,7 @@ def ApplyWinningRule(strtokens, rule):
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
 def SearchMatchingRule(strtokens):
+    WinningRules = []
     for RuleFileName in Rules.RuleFileList:
         print("Applying:" + RuleFileName)
         i = 0
@@ -69,9 +74,10 @@ def SearchMatchingRule(strtokens):
             if WinningRule:
                 skiptokennum = ApplyWinningRule(strtokens[i:], WinningRule)
                 i += skiptokennum - 1    #go to the next word
+                WinningRules.append(WinningRule.RuleName)
 
             i += 1
-
+    return WinningRules
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:

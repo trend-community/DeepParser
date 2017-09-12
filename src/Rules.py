@@ -18,6 +18,7 @@ _MacroList = []
 _MacroDict = {}     # not sure which one to use yet
 _ruleCounter = 0
 RuleFileList = []
+UnitTest = {}
 
 def ResetRules():
     global _RuleList, _ExpertLexicon, _MacroList, _MacroDict, _ruleCounter
@@ -31,13 +32,12 @@ def ResetRules():
 
 
 def _SeparateComment(line):
-    blocks = [x.strip() for x in re.split("//", line) if x ]   # remove comment.
-    if not blocks:
-        return "", ""
-    comment = ""
-    if len(blocks) > 1:
-        comment = " ".join(blocks[1:])
-    return blocks[0], comment
+    line = line.strip()
+    SlashLocation = line.find("//")
+    if SlashLocation < 0:
+        return line, ""
+    else:
+        return line[:SlashLocation].strip(), line[SlashLocation+2:].strip()
 
 def SeparateComment(multiline):
     blocks = [x.strip() for x in re.split("\n", multiline) ]
@@ -215,7 +215,7 @@ def Tokenize(RuleContent):
                 StartPosition = i
 
         for pair in Pairs:
-            if RuleContent[i] == pair[0]:
+            if RuleContent[i] == pair[0] and (i==0 or RuleContent[i-1] != "\\"): #escape:
                 #StartPosition = i
                 end = _SearchPair(RuleContent[i+1:], pair)
                 if end >= 0:
@@ -504,9 +504,9 @@ def LoadRules(RuleLocation):
     with open(RuleLocation, encoding="utf-8") as dictionary:
         rule = ""
         for line in dictionary:
-            commentLocation = line.find("//")
-            if commentLocation>=0:
-                line = line[:commentLocation]   #remove anything after //
+            # commentLocation = line.find("//")
+            # if commentLocation>=0:
+            #     line = line[:commentLocation]   #remove anything after //
 
             line = line.strip()
             if not line:
@@ -558,9 +558,18 @@ def InsertRuleInList(string, RuleFileName = "_"):
             fakeString = node.RuleName + "_" + str(node.ID) + " == " + remaining
         InsertRuleInList(fakeString)
 
-def ExpandRuleWildCard():
+    testLocation = node.comment.find("test:")
+    if testLocation < 0:
+        testLocation = node.comment.find("TEST:")
+    if testLocation >= 0:
+        TestSentence = node.comment[testLocation + 5:].strip()
+        if TestSentence != "":
+            UnitTest.update({node.RuleName: TestSentence})
+
+
+def _ExpandRuleWildCard_List(OneList):
     Modified = False
-    for rule in _RuleList:
+    for rule in OneList:
         Expand = False
         #for token in rule.Tokens:
         for tokenindex in range(len(rule.Tokens)):
@@ -605,29 +614,40 @@ def ExpandRuleWildCard():
                             if NextIsPointer and NextPointer :
                                 new_node.pointer = NextPointer
                         newrule.Tokens.append(new_node)
-                    _RuleList.append(newrule)
+                    OneList.append(newrule)
                     Expand = True
             if Expand:
                 break
         if Expand:
-            _RuleList.remove(rule)
+            OneList.remove(rule)
             Modified = True
+            
+    return Modified
+
+
+def ExpandRuleWildCard():
+    
+    Modified = _ExpandRuleWildCard_List(_RuleList)
+    Modified = Modified or _ExpandRuleWildCard_List(_ExpertLexicon)
 
     if Modified:
         logging.info("\tExpandRuleWildCard next level.")
         ExpandRuleWildCard()    #recursive call itself to finish all.
 
 def ExpandParenthesisAndOrBlock():
-    Modified = _ExpandParenthesis()
-    Modified = _ExpandOrBlock() or Modified
+    Modified = _ExpandParenthesis(_RuleList)
+    Modified = Modified or _ExpandParenthesis(_ExpertLexicon)
+    Modified = Modified or _ExpandOrBlock(_RuleList)
+    Modified = Modified or _ExpandOrBlock(_ExpertLexicon)
+    
     if Modified:
         logging.warning("ExpandParenthesisAndOrBlock to next level")
         ExpandParenthesisAndOrBlock()
 
 
-def _ExpandParenthesis():
+def _ExpandParenthesis(OneList):
     Modified = False
-    for rule in _RuleList:
+    for rule in OneList:
         if len(rule.RuleName) > 400:
             logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
             continue
@@ -665,12 +685,12 @@ def _ExpandParenthesis():
                     newrule.Tokens.append(subtoken)
                 for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
-                _RuleList.append(newrule)
+                OneList.append(newrule)
                 Expand = True
                 #logging.warning("\tExpand Parentheses is true, because of " + rule.RuleName)
                 break
         if Expand:
-            _RuleList.remove(rule)
+            OneList.remove(rule)
             Modified = True
 
     return Modified
@@ -706,10 +726,10 @@ def _ProcessOrBlock(Content, orIndex):
     return Content[start:end+1], Content[start:orIndex], Content[orIndex+1:end+1]
 
 
-def _ExpandOrBlock():
+def _ExpandOrBlock(OneList):
     Modified = False
     #counter = 0
-    for rule in _RuleList:
+    for rule in OneList:
         if len(rule.RuleName) > 200:
             logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
             continue
@@ -764,7 +784,7 @@ def _ExpandOrBlock():
 
             for tokenindex_post in range(tokenindex+1, len(rule.Tokens)):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
-            _RuleList.append(newrule)
+            OneList.append(newrule)
 
             # right:
             newrule = Rule()
@@ -799,14 +819,14 @@ def _ExpandOrBlock():
 
             for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
-            _RuleList.append(newrule)
+            OneList.append(newrule)
 
             Expand = True
             #logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
             break
 
         if Expand:
-            _RuleList.remove(rule)
+            OneList.remove(rule)
             Modified = True
 
     return Modified
@@ -870,6 +890,7 @@ def PreProcess_CheckFeatures():
                             OrBlocks = LogicOperation_SeparateOrBlocks(word)
                     except Exception as e:
                         logging.error("Error for rule:" + rule.RuleName)
+                        continue    #not to process the rest.
 
                     token.word = prefix + "["
                     for OrBlock in OrBlocks:
@@ -901,15 +922,27 @@ def OutputRules(style="details"):
     print("// End of Rules/Expert Lexicons/Macros")
 
 
+# def BuildRuleUnitTest():
+#     testLocation = rule.comment.find("test:")
+#     if testLocation < 0:
+#         testLocation = rule.comment.find("TEST:")
+#     if testLocation >= 0:
+#         TestSentence = rule.comment[testLocation + 5:].strip()
+#         if Tokenization == "":
+#             continue
+
+
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
     #LoadRules("../../fsa/Y/900NPy.xml")
     #LoadRules("../../fsa/Y/800VGy.txt")
-    LoadRules("../../fsa/Y/1800VPy.xml")
+    #LoadRules("../../fsa/Y/1800VPy.xml")
 
-    #LoadRules("../../fsa/Y/1test_rules.txt")
+    #BuildRuleUnitTest() #Do this before the expansion.
+
+    LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
     ExpandParenthesisAndOrBlock()

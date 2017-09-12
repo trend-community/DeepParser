@@ -162,7 +162,7 @@ def SeparateOrBlocks(OrString):
                 StartPosition = i
 
         for pair in Pairs:
-            if OrString[i] == pair[0]:
+            if OrString[i] == pair[0] and (i==0 or OrString[i-1] != "\\"): #escape
 
                 end = _SearchPair(OrString[i+1:], pair)
                 if end >= 0:
