@@ -20,6 +20,9 @@ _ruleCounter = 0
 RuleFileList = []
 UnitTest = {}
 
+class RuleToken(object): pass
+
+
 def ResetRules():
     global _RuleList, _ExpertLexicon, _MacroList, _MacroDict, _ruleCounter
 
@@ -48,8 +51,8 @@ def SeparateComment(multiline):
         if _content:
             content += "\n" + _content
         if _comment:
-            comment += " " + _comment
-    return content, comment
+            comment += "\n//" + _comment
+    return content.strip(), comment.strip()
 
 #If it is one line, that it is one rule;
 #if it has several lines in {} or () block, then it is one rule;
@@ -80,11 +83,14 @@ class Rule:
         self.Actions = {}
         self.IsExpertLexicon = False
         self.comment = ''
+        self.FileName = ''
 
     def SetRule(self, ruleString, ID=1, FileName="_"):
         self.Origin = ruleString
         self.FileName = FileName
         code, self.comment = SeparateComment(ruleString)
+        if not code:
+            return
         blocks = [x.strip() for x in re.split("::", code)]
         if len(blocks) == 2:
             self.IsExpertLexicon = True
@@ -92,12 +98,26 @@ class Rule:
             blocks = [x.strip() for x in re.split("==", code)]
             if  len(blocks) != 2:
                 logging.debug(" not separated by :: or == ")
+                logging.debug("string:" + ruleString)
                 return
+
+        RuleBlocks = re.search("(.+)==(.+)$", ruleString, re.DOTALL)
+        if not RuleBlocks:
+            RuleBlocks = re.match("(.+)::(.+)$", ruleString, re.DOTALL)
+
+        if not RuleBlocks or RuleBlocks.lastindex != 2:
+            raise Exception("This rule can't be correctly parsed:\n\t" + ruleString)
+
         if ID != 1:
             self.ID = ID
-        self.RuleName = blocks[0]
-        self.RuleContent, remaining = SeparateRules(blocks[1])
-        self.RuleContent = ProcessMacro(self.RuleContent)
+        self.RuleName = RuleBlocks[1].strip()
+        RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
+        RuleCode, self.comment = SeparateComment(RuleContent)
+        if not RuleCode:
+            self.RuleName = ""
+            return  #stop processing if the RuleCode is null
+
+        self.RuleContent = ProcessMacro(RuleCode)
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
             return  #stop processing macro.
 
@@ -131,8 +151,6 @@ class Rule:
             output += "[Rule]\n"
 
         if style == "concise" :
-            if self.comment:
-                output += "//" + self.comment + '\n'
             if self.IsExpertLexicon:
                 output += self.RuleName + " :: {"
             else:
@@ -141,8 +159,6 @@ class Rule:
             if len(self.Tokens) == 0:
                 output += self.RuleContent
         else:
-            if self.comment:
-                output += "//" + self.comment + '\n'
             output += "[RuleName]=" + self.RuleName + '\n'
             output += "\t[Origin Content]=\n" + self.RuleContent + '\n'
             output += "\t[Compiled Content]=\n{"
@@ -153,15 +169,18 @@ class Rule:
                 output += "^" + token.pointer
             t = token.word
             if hasattr(token, 'action'):
-                t = t.replace("]", "[ACTION]" + token.action + "]")
+                t = t.replace("]", ":" + token.action + "]")
             output += t
             if token.repeat != [1,1]:
                 output += "*" + str(token.repeat[1])
             if token.EndTrunk:
                 output += ">"
-            output += "_"   # should be a space. use _ in dev mode.
-        output += "};\n"
+            output += " "   # should be a space. use _ in dev mode.
+        output += "};"
+        if self.comment:
+            output += "//" + self.comment
 
+        output += '\n'
         return output
 
 
@@ -203,7 +222,7 @@ def Tokenize(RuleContent):
             if StartToken:
                 StartToken = False
                 EndOfToken = i
-                node = Tokenization.EmptyBase()
+                node = RuleToken()
                 node.word = RuleContent[StartPosition:EndOfToken]
                 TokenList.append(node)
                 #i = EndOfToken
@@ -221,7 +240,7 @@ def Tokenize(RuleContent):
                 if end >= 0:
                     StartToken = False
                     EndOfToken = i+2+end + _SearchToEnd(RuleContent[i+1+end+1:])
-                    node = Tokenization.EmptyBase()
+                    node = RuleToken()
                     node.word = RuleContent[StartPosition:EndOfToken+1]
                     TokenList.append(node)
                     i = EndOfToken
@@ -231,7 +250,7 @@ def Tokenize(RuleContent):
 
     if StartToken:       #wrap up the last one
         EndOfToken = i
-        node = Tokenization.EmptyBase()
+        node = RuleToken()
         node.word = RuleContent[StartPosition:EndOfToken]
         TokenList.append(node)
 
@@ -321,7 +340,8 @@ def ProcessTokens(Tokens):
                 if len(orblocks) > 1:
                     node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
                 else:   #no "()" sign, and no "|" sign
-                    actionMatch = re.match("\[(.+):(.+)\]$", node.word)
+                        # using (.*):, not (.+): , because the word can be blank (means matching everything)
+                    actionMatch = re.match("\[(.*):(.+)\]$", node.word)
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
@@ -544,7 +564,7 @@ def InsertRuleInList(string, RuleFileName = "_"):
                 _ExpertLexicon.append(node)
             else:
                 for n in _RuleList:
-                    if n.RuleName == node.RuleName:
+                    if n.RuleName == node.RuleName and n.FileName == node.FileName:
                         logging.warning(
                             "This rule name " + node.RuleName + " is already used for Rule " + str(n)
                             + " \n but now you have: " + string + "\n\n")
@@ -552,19 +572,28 @@ def InsertRuleInList(string, RuleFileName = "_"):
                 _RuleList.append(node)
 
     if remaining:
-        if node.IsExpertLexicon:
-            fakeString = node.RuleName + "_" + str(node.ID) + " :: " + remaining
+        RuleName_Paitial = re.match("(.*)_\d+$", node.RuleName)
+        if RuleName_Paitial:
+            RuleName = RuleName_Paitial[1]+ "_" + str(node.ID)
         else:
-            fakeString = node.RuleName + "_" + str(node.ID) + " == " + remaining
-        InsertRuleInList(fakeString)
+            RuleName = node.RuleName + "_" + str(node.ID)
+        if node.IsExpertLexicon:
+            fakeString = RuleName + " :: " + remaining
+        else:
+            fakeString = RuleName + " == " + remaining
+        InsertRuleInList(fakeString, RuleFileName)
 
-    testLocation = node.comment.find("test:")
-    if testLocation < 0:
-        testLocation = node.comment.find("TEST:")
-    if testLocation >= 0:
-        TestSentence = node.comment[testLocation + 5:].strip()
-        if TestSentence != "":
-            UnitTest.update({node.RuleName: TestSentence})
+    SearchMatch = re.compile('test:(.+)', re.IGNORECASE|re.MULTILINE)
+    s = SearchMatch.findall(node.comment)
+    for TestSentence in SearchMatch.findall(node.comment):
+        UnitTest.update({node.RuleName: TestSentence})
+    # testLocation = node.comment.find("test:")
+    # if testLocation < 0:
+    #     testLocation = node.comment.find("TEST:")
+    # if testLocation >= 0:
+    #     TestSentence = node.comment[testLocation + 5:].strip()
+    #     if TestSentence != "":
+    #         UnitTest.update({node.RuleName: TestSentence})
 
 
 def _ExpandRuleWildCard_List(OneList):
@@ -635,10 +664,12 @@ def ExpandRuleWildCard():
         ExpandRuleWildCard()    #recursive call itself to finish all.
 
 def ExpandParenthesisAndOrBlock():
+    logging.info("ExpandParenthesisAndOrBlock: Size of RuleList:" + str(len(_RuleList)) +
+                 " Size of ExpertLexicon:" + str(len(_ExpertLexicon)))
     Modified = _ExpandParenthesis(_RuleList)
-    Modified = Modified or _ExpandParenthesis(_ExpertLexicon)
-    Modified = Modified or _ExpandOrBlock(_RuleList)
-    Modified = Modified or _ExpandOrBlock(_ExpertLexicon)
+    Modified = _ExpandParenthesis(_ExpertLexicon) or Modified
+    Modified = _ExpandOrBlock(_RuleList) or Modified
+    Modified = _ExpandOrBlock(_ExpertLexicon) or Modified
     
     if Modified:
         logging.warning("ExpandParenthesisAndOrBlock to next level")
@@ -752,7 +783,7 @@ def _ExpandOrBlock(OneList):
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
             newrule.IsExpertLexicon = rule.IsExpertLexicon
-            newrule.RuleName = rule.RuleName+"_o"+str(tokenindex)
+            newrule.RuleName = rule.RuleName+"_ol"+str(tokenindex)
             newrule.RuleContent = rule.RuleContent
             newrule.FileName = rule.FileName
             for tokenindex_pre in range(tokenindex):
@@ -791,7 +822,7 @@ def _ExpandOrBlock(OneList):
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
             newrule.IsExpertLexicon = rule.IsExpertLexicon
-            newrule.RuleName = rule.RuleName + "_o" + str(tokenindex)
+            newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
             newrule.FileName = rule.FileName
             for tokenindex_pre in range(tokenindex):
@@ -835,14 +866,18 @@ def _ExpandOrBlock(OneList):
     #     ExpandOrBlock()    #recursive call itself to finish all.
 
 
+def PreProcess_CheckFeatures():
+    _PreProcess_CheckFeatures(_RuleList)
+    _PreProcess_CheckFeatures(_ExpertLexicon)
+
 #Check the rules. If it is a stem, not a feature, but omit quote
 #   then we add quote;
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
-def PreProcess_CheckFeatures():
-    for rule in _RuleList:
+def _PreProcess_CheckFeatures(OneList):
+    for rule in OneList:
         for token in rule.Tokens:
             word = token.word
-            if len(word) < 2:
+            if len(word) <= 2:
                 continue
             try:
                 if word[0] == "[" and _SearchPair(word[1:], "[]") == len(word)-2:
@@ -903,51 +938,55 @@ def PreProcess_CheckFeatures():
                     token.word = re.sub("\|$", "]", token.word)
 
 
-def OutputRules(style="details"):
-    print("// ****Rules****")
-    print("// * size: " + str(len(_RuleList)) + " *" )
+def OutputRules(style="details", RuleFile="all"):
+    output = "// ****Rules****\n"
+    output += "// * size: " + str(len(_RuleList)) + " *\n"
     for rule in  sorted(_RuleList, key=operator.attrgetter('RuleName')):
-        print(rule.output(style))
+        if RuleFile == "all" or RuleFile == rule.FileName:
+            output += rule.output(style) + "\n"
 
-    print("// ****Expert Lexicons****")
-    print("// * size: " + str(len(_ExpertLexicon)) + " *" )
+    output += "// ****Expert Lexicons****\n"
+    output += "// * size: " + str(len(_ExpertLexicon)) + " *\n"
     for rule in _ExpertLexicon:
-        print(rule.output(style))
+        if RuleFile == "all" or RuleFile == rule.FileName:
+            output += rule.output(style) + "\n"
 
-    print ("// ****Macros****")
-    print("// * size: " + str(len(_MacroDict)) + " *" )
+    output += "// ****Macros****\n"
+    output += "// * size: " + str(len(_MacroDict)) + " *\n"
     for rule in _MacroDict.values():
-        print(rule.output(style))
+        if RuleFile == "all" or RuleFile == rule.FileName:
+            output += rule.output(style) + "\n"
 
-    print("// End of Rules/Expert Lexicons/Macros")
+    output += "// End of Rules/Expert Lexicons/Macros\n"
+    return output
 
-
-# def BuildRuleUnitTest():
-#     testLocation = rule.comment.find("test:")
-#     if testLocation < 0:
-#         testLocation = rule.comment.find("TEST:")
-#     if testLocation >= 0:
-#         TestSentence = rule.comment[testLocation + 5:].strip()
-#         if Tokenization == "":
-#             continue
-
+def OutputRuleFiles(FolderLocation):
+    for RuleFile in RuleFileList:
+        output = OutputRules("concise", RuleFile)
+        FileLocation = os.path.join(FolderLocation, RuleFile+".compiled")
+        with open(FileLocation, "w", encoding="utf-8" ) as writer:
+            writer.write(output)
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
-    #LoadRules("../../fsa/Y/900NPy.xml")
-    #LoadRules("../../fsa/Y/800VGy.txt")
-    #LoadRules("../../fsa/Y/1800VPy.xml")
+    # LoadRules("../../fsa/Y/900NPy.xml")
+    # LoadRules("../../fsa/Y/800VGy.txt")
+    # LoadRules("../../fsa/Y/1800VPy.xml")
+    # LoadRules("../../fsa/Y/100y.txt")
+    LoadRules("../../fsa/Y/50POSy.xml")
+    #
+    # LoadRules("../../fsa/X/mainX2.txt")
+    # LoadRules("../../fsa/X/ruleLexiconX.txt")
 
-    #BuildRuleUnitTest() #Do this before the expansion.
-
-    LoadRules("../../fsa/Y/1test_rules.txt")
+    #LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
     ExpandParenthesisAndOrBlock()
     ExpandRuleWildCard()
     PreProcess_CheckFeatures()
 
-    OutputRules("concise")
+    print (OutputRules("concise"))
+    OutputRuleFiles("../temp/")
     FeatureOntology.PrintMissingFeatureSet()

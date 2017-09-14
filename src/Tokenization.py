@@ -1,8 +1,9 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
 import logging
+from FeatureOntology import GetFeatureName as FeatureOntology_GetFeatureName
 
-class EmptyBase(object): pass
+#class EmptyBase(object): pass
 #
 # def Tokenize(sentence):
 #     global DS
@@ -14,6 +15,20 @@ class EmptyBase(object): pass
 #         Element.position = 1
 #         DS.append(Element)
 
+
+class SentenceNode(object):
+    def __str__(self):
+        output = "[" + self.word + "] "
+        if self.lexicon:
+            output += self.lexicon.word
+        output += ": "
+        for feature in self.features:
+            f = FeatureOntology_GetFeatureName(feature)
+            if f:
+                output += f + ","
+            else:
+                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
+        return output
 
 
 def Tokenize(sentence):
@@ -31,7 +46,7 @@ def Tokenize(sentence):
                 continue    #when ' sign is inside a word, like can't don't
 
         if (prevc.isalnum() and not c.isalnum()) or (not prevc.isalnum() and not prevc.isspace()):
-            Element = EmptyBase()
+            Element = SentenceNode()
             Element.word = sentence[StartPosition:i]
             Element.position = StartPosition
             DS.append(Element)
@@ -43,7 +58,7 @@ def Tokenize(sentence):
         i += 1
 
     if StartToken:  #wrap up the last one
-        Element = EmptyBase()
+        Element = SentenceNode()
         Element.word = sentence[StartPosition:]
         Element.position = StartPosition
         DS.append(Element)

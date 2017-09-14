@@ -12,13 +12,13 @@ class FeatureTest(unittest.TestCase):
 
     def test_simple(self):
         """exact match"""
-        node =  Tokenization.EmptyBase()
+        node =  Tokenization.SentenceNode()
         node.features = set()
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
         self.assertTrue(LogicMatchFeatures("NN", node))
     def test_And(self):
-        node =  Tokenization.EmptyBase()
+        node =  Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "abc"
         node.features = set()
@@ -29,7 +29,7 @@ class FeatureTest(unittest.TestCase):
         node.features.add(FeatureOntology.GetFeatureID('percent'))
         self.assertTrue(LogicMatchFeatures("NN percent", node))
     def test_Or(self):
-        node = Tokenization.EmptyBase()
+        node = Tokenization.SentenceNode()
         node.features = set()
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
@@ -38,7 +38,7 @@ class FeatureTest(unittest.TestCase):
         self.assertTrue(LogicMatchFeatures("NP|percent", node))
         self.assertFalse(LogicMatchFeatures("NP", node))
     def test_NotOr(self):
-        node = Tokenization.EmptyBase()
+        node = Tokenization.SentenceNode()
         node.features = set()
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
@@ -51,14 +51,14 @@ class FeatureTest(unittest.TestCase):
 class RuleTest(unittest.TestCase):
     def test_LogitExact(self):
         """Exact match"""
-        node = Tokenization.EmptyBase()
+        node = Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "being"
         node.features = set()
         self.assertTrue(LogicMatch("being", node))
     def test_LogicOr(self):
         """Logic Or"""
-        node = Tokenization.EmptyBase()
+        node = Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "being"
         node.features = set()
@@ -66,7 +66,7 @@ class RuleTest(unittest.TestCase):
         self.assertTrue(LogicMatch("being|getting", node))
     def test_LogicAnd(self):
         """Logic And"""
-        node =  Tokenization.EmptyBase()
+        node =  Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "c"
         node.features = set()
@@ -75,7 +75,7 @@ class RuleTest(unittest.TestCase):
         self.assertTrue(LogicMatch("c c", node))
     def test_LogicAndOr(self):
         """Logic And/Or"""
-        node =  Tokenization.EmptyBase()
+        node =  Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "d"
         node.features = set()
@@ -84,9 +84,12 @@ class RuleTest(unittest.TestCase):
 
         node.word = "c"
         self.assertTrue(LogicMatch("c|d c", node))
+
+        #self.assertTrue(LogicMatch())
+
     def test_LogicNotOr(self):
         """Logic And/Or"""
-        node =  Tokenization.EmptyBase()
+        node =  Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "d"
         node.features = set()
@@ -102,6 +105,8 @@ class RuleTest(unittest.TestCase):
         self.assertTrue(LogicMatch("c|d !d|e", node))
         node.word = "d"
         self.assertFalse(LogicMatch("c|d !d|e", node))
+        node.word = "e"
+        self.assertFalse(LogicMatch("c|e !d|f|g|e", node))
         node.word = "e"
         self.assertFalse(LogicMatch("c|d !d|c", node))
         node.word = "f"
@@ -119,7 +124,7 @@ class RuleTest(unittest.TestCase):
         blocks = SeparateOrBlocks("'a|b'|c")
         self.assertEqual(len(blocks), 2)
 
-        node =  Tokenization.EmptyBase()
+        node =  Tokenization.SentenceNode()
         node.lexicon = None
         node.word = "d"
         node.features = set()

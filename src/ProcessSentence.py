@@ -21,10 +21,17 @@ def HeadMatch(strTokens, ruleTokens):
             #raise
     return True
 
+def ApplyFeature(featureList, featureID):
+    FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
+    if not FeatureNode:
+        raise Exception("The feature node should not be null!")
+    featureList.add(featureID)
+    featureList.update(FeatureNode.ancestors)
+
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule):
-    print("Applying " + rule.RuleName)
+    print("Applying Winning Rule:" + rule.RuleName)
     for i in range(len(rule.Tokens)):
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
@@ -35,7 +42,8 @@ def ApplyWinningRule(strtokens, rule):
             for Action in Actions:
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID != -1:
-                    strtokens[i].features.add(ActionID)
+                    ApplyFeature(strtokens[i].features, ActionID)
+                    #strtokens[i].features.add(ActionID)
             logging.warning("After applying feature:" + str(strtokens[i].features))
 
     return len(rule.Tokens) #need to modify for those "forward looking rules"
@@ -60,7 +68,9 @@ def SearchMatchingRule(strtokens):
 
             if WinningRule:
                 skiptokennum = ApplyWinningRule(strtokens[i:], WinningRule)
-                i += skiptokennum-2    #go to the next word
+                i += skiptokennum-1    #go to the next word
+                WinningRules.append(WinningRule.RuleName)
+                i += 1
                 continue
 
             for rule in Rules._RuleList:

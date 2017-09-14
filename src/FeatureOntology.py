@@ -265,6 +265,8 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
 
 @lru_cache(maxsize=1000)
 def GetFeatureID(feature):
+    if re.search(u'[\u4e00-\u9fff]', feature):
+        return -1   # Chinese is not a feature.
     if feature in _AliasDict:
         return _AliasDict[feature]
     if feature in _FeatureDict:
@@ -406,13 +408,13 @@ if __name__ == "__main__":
         # LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintFeatureSet()
 
-    if command == "CreateFeatureOntology":
+    elif command == "CreateFeatureOntology":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         PrintFeatureOntology()
         PrintMissingFeatureSet()
 
-    if command == "CreateLexicon":
+    elif command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         para = dir_path + '/../../fsa/Y/lexY.txt'
@@ -423,4 +425,8 @@ if __name__ == "__main__":
             flag = True
         PrintLexicon(flag)
         PrintMissingFeatureSet()
+
+    else:
+        print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology/CreateLexicon > outputfile.txt")
+        exit(0)
 
