@@ -228,7 +228,8 @@ def PrintLexicon(flag):
     if flag:
         s=sorted(_LexiconDict.keys())
     else :
-        s=sorted(_LexiconDict.keys(),key=len)
+        s = sorted(_LexiconDict.keys())
+        s = sorted(s, key=len)
     for word in s:
         if oldWord in _CommentDict.keys():
             print(_CommentDict[oldWord],end="")
@@ -447,7 +448,7 @@ if __name__ == "__main__":
     elif command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        para = dir_path + '/../../fsa/Y/lexY.txt'
+        para = dir_path + '/../../fsa/X/LexX.txt'
         LoadLexicon(para)
         if "LexX" in para:
             flag = False
