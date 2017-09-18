@@ -354,16 +354,16 @@ def LoadLexicon(lexiconLocation):
     for lexicon in _LexiconDict:
         node = _LexiconDict[lexicon]
         if node.stem and node.stem != node.word and node.stem in _LexiconDict:
-            node.features = ApplyStemNorm(node, node.stem)
+            node.features = ApplyWordVariant(node, node.stem)
 
         if node.norm and node.norm != node.word and node.norm in _LexiconDict:
-            node.features = ApplyStemNorm(node, node.norm)
+            node.features = ApplyWordVariant(node, node.norm)
 
     # with open(pickleLocation, 'wb') as pk:
     #     pickle.dump(_LexiconDict, pk)
     #     pickle.dump(_CommentDict, pk)
 
-def ApplyStemNorm(node, word):
+def ApplyWordVariant(node, word):
     VFeatureID = GetFeatureID("deverbal")
     VBFeatureID = GetFeatureID("VB")
     VedFeatureID = GetFeatureID("Ved")
@@ -376,7 +376,7 @@ def ApplyStemNorm(node, word):
             node.features.add(VedFeatureID)
             if VBFeatureID in node.features:
                 node.features.remove(VBFeatureID)
-        if node.word == node.stem + "ing":
+        if node.word == word + "ing":
             node.features.add(VingFeatureID)
             if VBFeatureID in node.features:
                 node.features.remove(VBFeatureID)

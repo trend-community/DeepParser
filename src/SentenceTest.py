@@ -22,10 +22,10 @@ if __name__ == "__main__":
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
     #FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
 
-    #Rules.LoadRules("../temp/800VGy.txt.compiled")
+    Rules.LoadRules("../temp/800VGy.txt.compiled")
     #Rules.LoadRules("../temp/900NPy.xml.compiled")
     #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+    #Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
     Rules.ExpandParenthesisAndOrBlock()
@@ -50,16 +50,17 @@ if __name__ == "__main__":
             node.features = set()
             if node.lexicon:
                 node.features.update(node.lexicon.features)
-                if (node.word == node.lexicon.word+"d" or node.word == node.lexicon.word+"ed") \
-                    and VFeatureID in node.lexicon.features:
-                    node.features.add(FeatureOntology.GetFeatureID("Ved"))
-                    if VBFeatureID in node.features:
-                        node.features.remove(VBFeatureID)
-                if (node.word == node.lexicon.word + "ing")  \
-                        and VFeatureID in node.lexicon.features:
-                    node.features.add(FeatureOntology.GetFeatureID("Ving"))
-                    if VBFeatureID in node.features:
-                        node.features.remove(VBFeatureID)
+                node.features = FeatureOntology.ApplyWordVariant(node, node.lexicon.word)
+                # if (node.word == node.lexicon.word+"d" or node.word == node.lexicon.word+"ed") \
+                #     and VFeatureID in node.lexicon.features:
+                #     node.features.add(FeatureOntology.GetFeatureID("Ved"))
+                #     if VBFeatureID in node.features:
+                #         node.features.remove(VBFeatureID)
+                # if (node.word == node.lexicon.word + "ing")  \
+                #         and VFeatureID in node.lexicon.features:
+                #     node.features.add(FeatureOntology.GetFeatureID("Ving"))
+                #     if VBFeatureID in node.features:
+                #         node.features.remove(VBFeatureID)
             else:
                 node.features.add(FeatureOntology.GetFeatureID('NNP'))
         JSnode = Tokenization.SentenceNode()
