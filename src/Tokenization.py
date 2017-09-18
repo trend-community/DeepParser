@@ -17,6 +17,11 @@ from FeatureOntology import GetFeatureName as FeatureOntology_GetFeatureName
 
 
 class SentenceNode(object):
+    def __init__(self):
+        self.word = ''
+        self.features = set()
+        self.lexicon = None
+
     def __str__(self):
         output = "[" + self.word + "] "
         if self.lexicon:

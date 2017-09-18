@@ -349,9 +349,39 @@ def LoadLexicon(lexiconLocation):
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
+    # Apply the features of stem/norm into it's variants.
+
+    for lexicon in _LexiconDict:
+        node = _LexiconDict[lexicon]
+        if node.stem and node.stem != node.word and node.stem in _LexiconDict:
+            node.features = ApplyStemNorm(node, node.stem)
+
+        if node.norm and node.norm != node.word and node.norm in _LexiconDict:
+            node.features = ApplyStemNorm(node, node.norm)
+
     # with open(pickleLocation, 'wb') as pk:
     #     pickle.dump(_LexiconDict, pk)
     #     pickle.dump(_CommentDict, pk)
+
+def ApplyStemNorm(node, word):
+    VFeatureID = GetFeatureID("deverbal")
+    VBFeatureID = GetFeatureID("VB")
+    VedFeatureID = GetFeatureID("Ved")
+    VingFeatureID = GetFeatureID("Ving")
+
+    stemnode = _LexiconDict[word]
+    node.features.update(stemnode.features)
+    if VFeatureID in node.features:
+        if node.word == word + "ed" or node.word == word + "d":
+            node.features.add(VedFeatureID)
+            if VBFeatureID in node.features:
+                node.features.remove(VBFeatureID)
+        if node.word == node.stem + "ing":
+            node.features.add(VingFeatureID)
+            if VBFeatureID in node.features:
+                node.features.remove(VBFeatureID)
+
+    return node.features
 
 #   If the SearchType is not flexible, then search the origin word only.
 # Otherwise, after failed for the origin word, search for case-insensitive, _ed _ing _s...

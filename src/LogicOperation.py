@@ -75,7 +75,7 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
             word = strToken.lexicon.norm
         else:
             word = strToken.word
-        if rule.lower() == word:
+        if rule.lower() == word.lower():
             return True
         else:
             return False

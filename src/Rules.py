@@ -18,7 +18,18 @@ _MacroList = []
 _MacroDict = {}     # not sure which one to use yet
 _ruleCounter = 0
 RuleFileList = []
-UnitTest = {}
+UnitTest = []
+
+class UnitTestNode(object):
+    def __init__(self):
+        self.FileName = ''
+        self.RuleName = ''
+        self.TestSentence = ''
+
+    def __init__(self, FileName, RuleName, TestTentence):
+        self.FileName = FileName
+        self.RuleName = RuleName
+        self.TestSentence = TestTentence
 
 class RuleToken(object): pass
 
@@ -51,7 +62,7 @@ def SeparateComment(multiline):
         if _content:
             content += "\n" + _content
         if _comment:
-            comment += "\n//" + _comment
+            comment += " //" + _comment
     return content.strip(), comment.strip()
 
 #If it is one line, that it is one rule;
@@ -88,7 +99,7 @@ class Rule:
     def SetRule(self, ruleString, ID=1, FileName="_"):
         self.Origin = ruleString
         self.FileName = FileName
-        code, self.comment = SeparateComment(ruleString)
+        code, comment = SeparateComment(ruleString)
         if not code:
             return
         blocks = [x.strip() for x in re.split("::", code)]
@@ -111,15 +122,23 @@ class Rule:
         if ID != 1:
             self.ID = ID
         self.RuleName = RuleBlocks[1].strip()
+        if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
+            self.RuleContent = ProcessMacro(blocks[1])   #Process the whole code, not to worry about comment and unit test
+            self.comment = comment
+            return  #stop processing macro.
+
         RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
         RuleCode, self.comment = SeparateComment(RuleContent)
         if not RuleCode:
-            self.RuleName = ""
-            return  #stop processing if the RuleCode is null
+            self.RuleContent = ""
+            if self.comment:
+                if remaining:
+                    remaining += self.comment
+                else:
+                    remaining = self.comment
+            return remaining #stop processing if the RuleCode is null
 
         self.RuleContent = ProcessMacro(RuleCode)
-        if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
-            return  #stop processing macro.
 
         try:
             self.Tokens = Tokenize(self.RuleContent)
@@ -178,7 +197,7 @@ class Rule:
             output += " "   # should be a space. use _ in dev mode.
         output += "};"
         if self.comment:
-            output += "//" + self.comment
+            output += self.comment
 
         output += '\n'
         return output
@@ -484,7 +503,7 @@ def ProcessMacro(ruleContent):
         for MacroName in _MacroDict:
             if MacroName.startswith(macroName):
                 MacroParameters = re.findall("(\d+)=(\$\w+)", MacroName)
-                macroParameters = re.findall("(\d+)=?(\w+)?", macro)
+                macroParameters = re.findall("(\d+)=?([^,\d)]*)?", macro)
                 macroContent = _MacroDict[MacroName].RuleContent
                 for Parameter_Pair in MacroParameters:
                     for parameter_pair in macroParameters:
@@ -492,7 +511,7 @@ def ProcessMacro(ruleContent):
                             if len(parameter_pair) == 1 or parameter_pair[1] == "NULL":
                                 ReplaceWith = ''
                             else:
-                                ReplaceWith = parameter_pair[1]
+                                ReplaceWith = parameter_pair[1].strip()
                             macroContent = macroContent.replace(Parameter_Pair[1], ReplaceWith)
                 ruleContent = ruleContent.replace(macro, macroContent)
     #return ruleContent
@@ -517,13 +536,15 @@ def ProcessMacro(ruleContent):
 # continue until };, or a blank line.
 # -July 26, change to "==" or "::".
 def LoadRules(RuleLocation):
+    global UnitTest, RuleFileList
+
     RuleFileName = os.path.basename(RuleLocation)
     if RuleFileName not in RuleFileList:
         RuleFileList.append(RuleFileName)
 
-    with open(RuleLocation, encoding="utf-8") as dictionary:
+    with open(RuleLocation, encoding="utf-8") as RuleFile:
         rule = ""
-        for line in dictionary:
+        for line in RuleFile:
             # commentLocation = line.find("//")
             # if commentLocation>=0:
             #     line = line[:commentLocation]   #remove anything after //
@@ -541,11 +562,21 @@ def LoadRules(RuleLocation):
         if rule:
             InsertRuleInList(rule, RuleFileName)
 
+    UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
+    if os.path.exists(UnitTestFileName):
+        UnitTest = [x for x in UnitTest if x.FileName != RuleFileName]
+        with open(UnitTestFileName, encoding="utf-8") as RuleFile:
+            for line in RuleFile:
+                RuleName, TestSentence = _SeparateComment(line)
+                unittest = UnitTestNode(RuleFileName, RuleName, TestSentence)
+                UnitTest.append(unittest)
+
+
 def InsertRuleInList(string, RuleFileName = "_"):
-    global _RuleList, _ExpertLexicon, _MacroDict
+    global _RuleList, _ExpertLexicon, _MacroDict, UnitTest
     node = Rule()
     remaining = node.SetRule(string, FileName = RuleFileName)
-    if node.RuleName:
+    if node.RuleContent:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in _MacroDict:
                 logging.warning("This macro name " + node.RuleName + " is already used for Macro " + str(_MacroDict[node.RuleName]) \
@@ -572,21 +603,26 @@ def InsertRuleInList(string, RuleFileName = "_"):
                 _RuleList.append(node)
 
     if remaining:
-        RuleName_Paitial = re.match("(.*)_\d+$", node.RuleName)
-        if RuleName_Paitial:
-            RuleName = RuleName_Paitial[1]+ "_" + str(node.ID)
-        else:
-            RuleName = node.RuleName + "_" + str(node.ID)
-        if node.IsExpertLexicon:
-            fakeString = RuleName + " :: " + remaining
-        else:
-            fakeString = RuleName + " == " + remaining
-        InsertRuleInList(fakeString, RuleFileName)
+        code, _ = SeparateComment(remaining)
+        if code:    #if not code, then ignore it.
+            RuleName = GetPrefix(node.RuleName)+ "_" + str(node.ID)
 
-    SearchMatch = re.compile('test:(.+)', re.IGNORECASE|re.MULTILINE)
-    s = SearchMatch.findall(node.comment)
-    for TestSentence in SearchMatch.findall(node.comment):
-        UnitTest.update({node.RuleName: TestSentence})
+            if node.IsExpertLexicon:
+                fakeString = RuleName + " :: " + remaining
+            else:
+                fakeString = RuleName + " == " + remaining
+            try:
+                InsertRuleInList(fakeString, RuleFileName)
+            except RecursionError as e:
+                logging.error("Failed to process:" + string + "\n remaining is:" + remaining)
+                logging.error(str(e))
+                raise
+
+    SearchMatch = re.compile('test:(.+?)//', re.IGNORECASE|re.MULTILINE)
+    s = SearchMatch.findall(node.comment+"//")
+    for TestSentence in SearchMatch.findall(node.comment+"//"):
+        unittest = UnitTestNode(node.FileName, node.RuleName, TestSentence)
+        UnitTest.append(unittest)
     # testLocation = node.comment.find("test:")
     # if testLocation < 0:
     #     testLocation = node.comment.find("TEST:")
@@ -938,16 +974,22 @@ def _PreProcess_CheckFeatures(OneList):
                     token.word = re.sub("\|$", "]", token.word)
 
 
+#Return the word before the first "_";
+# If there is no "_", return the whole word
+def GetPrefix(Name):
+    return re.findall("(.*?)_", Name+"_")[0]
+
+
 def OutputRules(style="details", RuleFile="all"):
     output = "// ****Rules****\n"
     output += "// * size: " + str(len(_RuleList)) + " *\n"
-    for rule in  sorted(_RuleList, key=operator.attrgetter('RuleName')):
+    for rule in  sorted(_RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
         if RuleFile == "all" or RuleFile == rule.FileName:
             output += rule.output(style) + "\n"
 
     output += "// ****Expert Lexicons****\n"
     output += "// * size: " + str(len(_ExpertLexicon)) + " *\n"
-    for rule in _ExpertLexicon:
+    for rule in sorted(_ExpertLexicon, key=operator.attrgetter('RuleName')):
         if RuleFile == "all" or RuleFile == rule.FileName:
             output += rule.output(style) + "\n"
 
@@ -967,26 +1009,35 @@ def OutputRuleFiles(FolderLocation):
         with open(FileLocation, "w", encoding="utf-8" ) as writer:
             writer.write(output)
 
+        utoutput = ""
+        for unittestnode in UnitTest:
+            if unittestnode.FileName == RuleFile:
+                utoutput += unittestnode.RuleName + "\t//" + unittestnode.TestSentence + "\n"
+        utFileLocation = os.path.join(FolderLocation, RuleFile+".unittest")
+        with open(utFileLocation, "w", encoding="utf-8") as writer:
+            writer.write(utoutput)
+
+
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
-    # LoadRules("../../fsa/Y/900NPy.xml")
-    # LoadRules("../../fsa/Y/800VGy.txt")
-    # LoadRules("../../fsa/Y/1800VPy.xml")
-    # LoadRules("../../fsa/Y/100y.txt")
+    #LoadRules("../../fsa/Y/900NPy.xml")
+    LoadRules("../../fsa/Y/800VGy.txt")
+    LoadRules("../../fsa/Y/1800VPy.xml")
+    LoadRules("../../fsa/Y/100y.txt")
     LoadRules("../../fsa/Y/50POSy.xml")
-    #
-    # LoadRules("../../fsa/X/mainX2.txt")
-    # LoadRules("../../fsa/X/ruleLexiconX.txt")
 
-    #LoadRules("../../fsa/Y/1test_rules.txt")
+    LoadRules("../../fsa/X/mainX2.txt")
+    LoadRules("../../fsa/X/ruleLexiconX.txt")
+
+    LoadRules("../../fsa/Y/1test_rules.txt")
 
     ExpandRuleWildCard()
     ExpandParenthesisAndOrBlock()
     ExpandRuleWildCard()
     PreProcess_CheckFeatures()
 
-    print (OutputRules("concise"))
+    #print (OutputRules("concise"))
     OutputRuleFiles("../temp/")
     FeatureOntology.PrintMissingFeatureSet()

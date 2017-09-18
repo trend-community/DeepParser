@@ -113,6 +113,10 @@ class RuleTest(unittest.TestCase):
         s = ProcessMacro("""#macro_with_parameter(1=a 2=NULL, 3=c 4)""")
         self.assertEqual(s, "<a  [RB:^.R]? [VBN|Ved:VG perfect c  ]>")
 
+        s = ProcessMacro("""#macro_with_parameter(1="a|b" 2=NULL, 3=c 4)""")
+        self.assertEqual(s, """<"a|b"  [RB:^.R]? [VBN|Ved:VG perfect c  ]>""")
+
+
         InsertRuleInList("""@modalV ==
 	( 	MD // MD includes 'will|shall|shalt|would|can|could|should|must|may|might' etc.
 		| "\'d|wil|mite|wanna|gotta" // we need escape character "\'d" because we reserve ' for STEM checking

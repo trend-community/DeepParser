@@ -61,7 +61,8 @@ def SearchMatchingRule(strtokens):
                 if rule.FileName == RuleFileName:
                     result = HeadMatch(strtokens[i:], rule.Tokens)
                     if result:
-                        if WinningRule and len(WinningRule.Tokens)>len(rule.Tokens):
+                        if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
+                            #also consider the priority
                             pass
                         else:
                             WinningRule = rule
@@ -77,7 +78,8 @@ def SearchMatchingRule(strtokens):
                 if rule.FileName == RuleFileName:
                     result = HeadMatch(strtokens[i:], rule.Tokens)
                     if result:
-                        if WinningRule and len(WinningRule.Tokens) > len(rule.Tokens):
+                        if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
+                        #also consider the priority
                             pass
                         else:
                             WinningRule = rule
@@ -111,15 +113,28 @@ if __name__ == "__main__":
     target = "she may like the product  "
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
+
     for node in nodes:
         node.lexicon = FeatureOntology.SearchLexicon(node.word)
         node.features = set()
         if node.lexicon:
             node.features.update(node.lexicon.features)
+            if (node.word == node.lexicon.word + "d" or node.word == node.lexicon.word + "ed") \
+                    and FeatureOntology.GetFeatureID("V") in node.lexicon.features:
+                node.features.add(FeatureOntology.GetFeatureID("Ved"))
+            if (node.word == node.lexicon.word + "ing") \
+                    and FeatureOntology.GetFeatureID("V") in node.lexicon.features:
+                node.features.add(FeatureOntology.GetFeatureID("Ving"))
         else:
             node.features.add(FeatureOntology.GetFeatureID('NNP'))
+    JSnode = Tokenization.SentenceNode()
+    nodes = [JSnode] + nodes
+    if nodes[-1].word != ".":
+        JWnode = Tokenization.SentenceNode()
+        nodes = nodes + [JWnode]
     nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
-    nodes[0].features.add(FeatureOntology.GetFeatureID('JS2'))
+    nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
+    nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
     # default lexY.txt is already loaded. additional lexicons can be load here:
     # FeatureOntology.LoadLexicon("../../fsa/X/lexX.txt")
     for node in nodes:
