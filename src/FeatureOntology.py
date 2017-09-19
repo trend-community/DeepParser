@@ -103,7 +103,7 @@ class OntologyNode:
         if len(code) == 0:
             return
 
-        features = [x.strip() for x in re.split(",|;| ", code) if x]
+        features = [x.strip() for x in re.split("[,; ]", code) if x]
         openWord = features[0]
         openWordID = GetFeatureID(openWord)
 
@@ -145,7 +145,7 @@ class OntologyNode:
             realnode.openWordID = realfeatureId
             _FeatureOntology.append(realnode)
 
-        features = re.split(",|;| ", code)    # the first feature is the last alias.
+        features = re.split("[,; ]", code)    # the first feature is the last alias.
         lastalias = features[0]
         for alias in blocks[1:-1] + [lastalias]:
             aliasnode = SearchFeatureOntology(GetFeatureID(alias))

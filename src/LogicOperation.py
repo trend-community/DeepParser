@@ -68,7 +68,7 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
     if matchtype == "unknown":
         return LogicMatchFeatures(rule, strToken)
 
-    if not re.search('\|| |!', rule):
+    if not re.search('[| !]', rule):
         if matchtype == "stem" and strToken.lexicon:
             word = strToken.lexicon.stem
         elif matchtype == "norm" and strToken.lexicon:
@@ -110,7 +110,7 @@ def LogicMatchFeatures(rule, strToken):
     if matchtype != "feature":
         return LogicMatch(rule, strToken, matchtype)
 
-    if not re.search('\|| |!', rule):
+    if not re.search('[| !]', rule):
         if -1 in strToken.features:
             strToken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)

@@ -1,7 +1,6 @@
 import logging, sys, re
 import Tokenization, FeatureOntology
 import ProcessSentence, Rules
-from Rules import _RuleList, _ExpertLexicon
 
 if __name__ == "__main__":
     DebugMode = False
@@ -43,8 +42,6 @@ if __name__ == "__main__":
 
         nodes = Tokenization.Tokenize(TestSentence)
 
-        VFeatureID = FeatureOntology.GetFeatureID("V")
-        VBFeatureID = FeatureOntology.GetFeatureID("VB")
         for node in nodes:
             node.lexicon = FeatureOntology.SearchLexicon(node.word)
             node.features = set()
@@ -65,11 +62,11 @@ if __name__ == "__main__":
                 node.features.add(FeatureOntology.GetFeatureID('NNP'))
         JSnode = Tokenization.SentenceNode()
         nodes = [JSnode] + nodes
+        nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
+        nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
         if nodes[-1].word != ".":
             JWnode = Tokenization.SentenceNode()
             nodes = nodes + [JWnode]
-        nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
-        nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
         nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
 
         if DebugMode:
