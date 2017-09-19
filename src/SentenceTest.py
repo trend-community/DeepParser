@@ -16,6 +16,7 @@ if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
@@ -43,23 +44,8 @@ if __name__ == "__main__":
         nodes = Tokenization.Tokenize(TestSentence)
 
         for node in nodes:
-            node.lexicon = FeatureOntology.SearchLexicon(node.word)
-            node.features = set()
-            if node.lexicon:
-                node.features.update(node.lexicon.features)
-                node.features = FeatureOntology.ApplyWordVariant(node, node.lexicon.word)
-                # if (node.word == node.lexicon.word+"d" or node.word == node.lexicon.word+"ed") \
-                #     and VFeatureID in node.lexicon.features:
-                #     node.features.add(FeatureOntology.GetFeatureID("Ved"))
-                #     if VBFeatureID in node.features:
-                #         node.features.remove(VBFeatureID)
-                # if (node.word == node.lexicon.word + "ing")  \
-                #         and VFeatureID in node.lexicon.features:
-                #     node.features.add(FeatureOntology.GetFeatureID("Ving"))
-                #     if VBFeatureID in node.features:
-                #         node.features.remove(VBFeatureID)
-            else:
-                node.features.add(FeatureOntology.GetFeatureID('NNP'))
+            FeatureOntology.ApplyLexicon(node)
+
         JSnode = Tokenization.SentenceNode()
         nodes = [JSnode] + nodes
         nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))

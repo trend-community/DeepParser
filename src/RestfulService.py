@@ -28,21 +28,6 @@ def LoadRules(RulePath):
     return str(True)
 
 
-@app.route("/LoadCommon/<LoadCommonRules>")
-def LoadCommon(LoadCommonRules=False):
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
-    logging.warning("Parameter is:" + str(LoadCommonRules))
-    if LoadCommonRules:
-        Rules.LoadRules("../temp/800VGy.txt.compiled")
-        #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-        #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-        PostProcessRules()
-    return str(True)
-
-
 @app.route("/PostProcessRules")
 def PostProcessRules():
     Rules.ExpandRuleWildCard()
@@ -53,10 +38,22 @@ def PostProcessRules():
     return str(True)
 
 
-@app.route("/Tokenize", methods=['POST'])
-def Tokenize_en():
-    Sentence = request.form['Sentence']
-    return jsonpickle.encode(Tokenization.Tokenize(Sentence))
+@app.route("/LoadCommon/<LoadCommonRules>")
+def LoadCommon(LoadCommonRules=False):
+    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+    FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
+    logging.warning("Parameter is:" + str(LoadCommonRules))
+    if LoadCommonRules:
+        Rules.LoadRules("../temp/800VGy.txt.compiled")
+        Rules.LoadRules("../temp/900NPy.xml.compiled")
+        Rules.LoadRules("../temp/1800VPy.xml.compiled")
+        #Rules.LoadRules("../../fsa/Y/900NPy.xml")
+        #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        PostProcessRules()
+    return str(True)
 
 
 @app.route("/SearchLexicon/<word>")
@@ -64,15 +61,42 @@ def SearchLexicon(word):
     return jsonpickle.encode(FeatureOntology.SearchLexicon(word))
 
 
+@app.route("/GetFeatureID/<word>")
+def GetFeatureID(word):
+    return jsonpickle.encode(FeatureOntology.GetFeatureID(word))
+
+
+@app.route("/Tokenize", methods=['POST'])
+def Tokenize_en():
+    Sentence = request.data.decode("utf-8")
+    return jsonpickle.encode(Tokenization.Tokenize(Sentence))
+
+
+@app.route("/ApplyLexicon", methods=['POST'])
+def ApplyLexicon():
+    node = jsonpickle.decode(request.data)
+    return jsonpickle.encode(FeatureOntology.ApplyLexicon(node))
+
+
+@app.route("/TokenizeAndApplyLexicon", methods=['POST'])
+def TokenizeAndApplyLexicon():
+    Sentence = request.data.decode("utf-8")
+    nodes = Tokenization.Tokenize(Sentence)
+    for node in nodes:
+        FeatureOntology.ApplyLexicon(node)
+    return jsonpickle.encode(nodes)
+
+
 @app.route("/SearchMatchingRule", methods=['POST'])
 def SearchMatchingRule():
-    nodes = request.form['nodes']
+    nodes = jsonpickle.decode(request.data)
     return jsonpickle.encode(ProcessSentence.SearchMatchingRule(nodes))
+
 
 @app.route("/OutputRules/<Mode>")
 def OutputRules(Mode="concise"):
-
     return Rules.OutputRules(Mode)
+
 
 if __name__ == "__main__":
     LoadCommon(LoadCommonRules=True)

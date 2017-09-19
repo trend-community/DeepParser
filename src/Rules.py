@@ -564,6 +564,7 @@ def LoadRules(RuleLocation):
 
     UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
     if os.path.exists(UnitTestFileName):
+        #First delete the unit test of current file to have clean plate
         UnitTest = [x for x in UnitTest if x.FileName != RuleFileName]
         with open(UnitTestFileName, encoding="utf-8") as RuleFile:
             for line in RuleFile:
