@@ -479,9 +479,9 @@ if __name__ == "__main__":
     elif command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        para = dir_path + '/../../fsa/X/LexX.txt'
+        para = dir_path + '/../../fsa/X/defLexX.txt'
         LoadLexicon(para)
-        if "LexX" in para:
+        if "/fsa/X" in para:
             Englishflag = False
         else:
             Englishflag = True
