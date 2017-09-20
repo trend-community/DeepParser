@@ -100,15 +100,24 @@ def SeparateComment(line):
 
 def SplitFeatures(FeatureString):
     StemPart = None
-    stemMatch = re.match("(.*)\'(.*)\'(.*)", FeatureString)
+    stemMatch = re.match("(.*)(\'.+\')(.*)", FeatureString)
     #if re.search('\'.*\'$', FeatureString):
     if stemMatch and stemMatch.lastindex == 3:
         StemPart = stemMatch.group(2)
         FeatureString = stemMatch.group(1) + stemMatch.group(3)
 
+    NormPart = None
+    normMatch = re.match("(.*)(/.+/)(.*)", FeatureString)
+    #if re.search('\'.*\'$', FeatureString):
+    if normMatch and normMatch.lastindex == 3:
+        NormPart = normMatch.group(2)
+        FeatureString = normMatch.group(1) + normMatch.group(3)
+
     features = FeatureString.split()
     if StemPart:
         features += [StemPart]
+    if NormPart:
+        features += [NormPart]
     return features
 
 class OntologyNode:

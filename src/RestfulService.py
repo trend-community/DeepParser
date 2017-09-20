@@ -43,15 +43,22 @@ def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/brandX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/idiom4X.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/idiomX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/locX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/perX.txt')
+
     logging.warning("Parameter is:" + str(LoadCommonRules))
     if LoadCommonRules:
         Rules.LoadRules("../temp/800VGy.txt.compiled")
-        Rules.LoadRules("../temp/900NPy.xml.compiled")
-        Rules.LoadRules("../temp/1800VPy.xml.compiled")
+        #Rules.LoadRules("../temp/900NPy.xml.compiled")
+        #Rules.LoadRules("../temp/1800VPy.xml.compiled")
         #Rules.LoadRules("../../fsa/Y/900NPy.xml")
         #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
         # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        Rules.LoadRules("../../fsa/X/180NPx.txt")
+        Rules.LoadRules("../../fsa/X/270VPx.txt")
         PostProcessRules()
     return str(True)
 
@@ -78,6 +85,14 @@ def ApplyLexicon():
     return jsonpickle.encode(FeatureOntology.ApplyLexicon(node))
 
 
+@app.route("/ApplyLexiconToNodes", methods=['POST'])
+def ApplyLexiconToNodes():
+    nodes = jsonpickle.decode(request.data)
+    for node in nodes:
+        FeatureOntology.ApplyLexicon(node)
+    return jsonpickle.encode(nodes)
+
+
 @app.route("/TokenizeAndApplyLexicon", methods=['POST'])
 def TokenizeAndApplyLexicon():
     Sentence = request.data.decode("utf-8")
@@ -100,4 +115,4 @@ def OutputRules(Mode="concise"):
 
 if __name__ == "__main__":
     LoadCommon(LoadCommonRules=True)
-    app.run(port=5001, debug=True)
+    app.run(port=5001, debug=False)

@@ -5,12 +5,50 @@ import requests, json, jsonpickle
 from functools import lru_cache
 
 url = "http://localhost:5001"
+url_ch = "http://localhost:8080"
+
+IMPOSSIBLESTRING = "@#$%!"
 
 @lru_cache(maxsize=1000)
 def GetFeatureID(Feature):
     GetFeatureIDURL = url + "/GetFeatureID/"
     return int(requests.get(GetFeatureIDURL + Feature).text)
 
+def Tokenize(Sentence):
+    if IsAscii(Sentence):
+        TokenizeURL = url + "/Tokenize"
+        ret_t = requests.post(TokenizeURL, data=Sentence)
+        nodes_t = jsonpickle.decode(ret_t.text)
+    else:
+        TokenizeURL = url_ch + "/Tokenize/"
+        #ret_t = requests.get(TokenizeURL + Sentence)
+        data = {'Sentence': Sentence}
+        segmented = requests.get(TokenizeURL, params=data).text
+        #segmented = jsonpickle.decode(segmented)
+        segmented = segmented.replace("\/", IMPOSSIBLESTRING)
+        blocks = segmented.split("/")
+        nodes_t = []
+        for block in blocks:
+            block = block.replace(IMPOSSIBLESTRING, "\/")
+            Element = Tokenization.SentenceNode()
+            WordPropertyPair = block.split(":")
+            Element.word = WordPropertyPair[0]
+            if len(WordPropertyPair)>1:
+                features = WordPropertyPair[1]
+                for feature in features.split():
+                    featureid = GetFeatureID(feature)
+                    Element.features.add(featureid)
+
+            nodes_t.append(Element)
+    return nodes_t
+
+def IsAscii(Sentence):
+    try:
+        Sentence.encode(encoding='utf-8').decode('ascii')
+    except UnicodeDecodeError:
+        return False
+    else:
+        return True
 
 if __name__ == "__main__":
     DebugMode = False
@@ -48,10 +86,8 @@ if __name__ == "__main__":
             TestSentence = unittestnode.TestSentence
         print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        # TokenizeURL = url + "/Tokenize"
-        # ret = requests.post(TokenizeURL, data=TestSentence)
-        # nodes = jsonpickle.decode(ret.text)
-        #
+        nodes = Tokenize(TestSentence)
+
         # for node in nodes:
         #     #node.lexicon = FeatureOntology.SearchLexicon(node.word)
         #     ApplyLexiconURL = url + "/ApplyLexicon"
@@ -59,11 +95,13 @@ if __name__ == "__main__":
         #     newnode = jsonpickle.decode(ret.text)
         #     node.features.update(newnode.features)
 
-
-        TokenizeAndApplyLexiconURL = url + "/TokenizeAndApplyLexicon"
-        ret = requests.post(TokenizeAndApplyLexiconURL, data=TestSentence)
+        ApplyLexiconToNodes = url + "/ApplyLexiconToNodes"
+        ret = requests.post(ApplyLexiconToNodes, data=jsonpickle.encode(nodes))
         nodes = jsonpickle.decode(ret.text)
 
+        # TokenizeAndApplyLexiconURL = url + "/TokenizeAndApplyLexicon"
+        # ret = requests.post(TokenizeAndApplyLexiconURL, data=TestSentence)
+        # nodes = jsonpickle.decode(ret.text)
 
         JSnode = Tokenization.SentenceNode()
         nodes = [JSnode] + nodes
