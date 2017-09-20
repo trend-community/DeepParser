@@ -220,6 +220,11 @@ def PrintFeatureOntology():
     for key in sorted(_AliasDict):
         print( _FeatureList[_AliasDict[key]] + "=" + key )
 
+def RealLength(x):
+    if " " in x:
+        return len(x) -1
+    return len(x)
+
 def PrintLexicon(flag):
     print("//***Lexicon***")
     if _CommentDict.get("firstCommentLine"):
@@ -228,8 +233,7 @@ def PrintLexicon(flag):
     if flag:
         s=sorted(_LexiconDict.keys())
     else :
-        s = sorted(_LexiconDict.keys())
-        s = sorted(s, key=len)
+        s = sorted(_LexiconDict.keys(), key=lambda x: (RealLength(x), x))
     for word in s:
         if oldWord in _CommentDict.keys():
             print(_CommentDict[oldWord],end="")
