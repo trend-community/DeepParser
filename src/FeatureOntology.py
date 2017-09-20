@@ -221,16 +221,25 @@ def PrintFeatureOntology():
         print( _FeatureList[_AliasDict[key]] + "=" + key )
 
 def RealLength(x):
+    index = 0
+    occurance = 0
+    while index < len(x):
+        index = x.find(' ', index)
+        if index!=-1:
+            occurance += 1
+            index += 1
+        else:
+            break
     if " " in x:
-        return len(x) -1
+        return len(x) - occurance
     return len(x)
 
-def PrintLexicon(flag):
+def PrintLexicon(Englishflag):
     print("//***Lexicon***")
     if _CommentDict.get("firstCommentLine"):
         print(_CommentDict.get("firstCommentLine"))
     oldWord = None
-    if flag:
+    if Englishflag:
         s=sorted(_LexiconDict.keys())
     else :
         s = sorted(_LexiconDict.keys(), key=lambda x: (RealLength(x), x))
@@ -473,10 +482,10 @@ if __name__ == "__main__":
         para = dir_path + '/../../fsa/X/LexX.txt'
         LoadLexicon(para)
         if "LexX" in para:
-            flag = False
+            Englishflag = False
         else:
-            flag = True
-        PrintLexicon(flag)
+            Englishflag = True
+        PrintLexicon(Englishflag)
         PrintMissingFeatureSet()
 
     else:
