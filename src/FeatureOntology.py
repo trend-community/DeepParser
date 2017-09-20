@@ -354,7 +354,7 @@ def LoadLexicon(lexiconLocation):
     logging.debug("Start applying features for variants")
     for lexicon in _LexiconDict:
         node = _LexiconDict[lexicon]
-        _ApplyWordVariant(node, node)
+        _ApplyWordStem(node, node)
 
     logging.debug("Finish loading lexicon")
     # with open(pickleLocation, 'wb') as pk:
@@ -362,7 +362,7 @@ def LoadLexicon(lexiconLocation):
     #     pickle.dump(_CommentDict, pk)
 
 
-def _ApplyWordVariant(NewNode, lexiconnode):
+def _ApplyWordStem(NewNode, lexiconnode):
     #VFeatureID = GetFeatureID("deverbal")
     VBFeatureID = GetFeatureID("VB")
     VedFeatureID = GetFeatureID("Ved")
@@ -378,18 +378,6 @@ def _ApplyWordVariant(NewNode, lexiconnode):
             if NewNode.word == stemnode.word + "ing":
                     NewNode.features.remove(VBFeatureID)
                     NewNode.features.add(VingFeatureID)
-
-    if NewNode.word != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
-        normnode = _LexiconDict[lexiconnode.norm]
-        NewNode.features.update(normnode.features)
-        if VBFeatureID in NewNode.features:
-            if NewNode.word == normnode.word + "ed" or NewNode.word == normnode.word + "d":
-                    NewNode.features.remove(VBFeatureID)
-                    NewNode.features.add(VedFeatureID)
-            if NewNode.word == normnode.word + "ing":
-                    NewNode.features.remove(VBFeatureID)
-                    NewNode.features.add(VingFeatureID)
-
 
 
 #   If the SearchType is not flexible, then search the origin word only.
@@ -431,7 +419,7 @@ def ApplyLexicon(node):
         node.features.add(GetFeatureID('NNP'))
     else:
         node.features.update(node.lexicon.features)
-        _ApplyWordVariant(node, node.lexicon)
+        _ApplyWordStem(node, node.lexicon)
     return node
 
 def SearchFeatures(word):
