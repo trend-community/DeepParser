@@ -72,4 +72,13 @@ class FeatureTest(unittest.TestCase):
         node.SetRule("job = titleN,per,anim,phy,n;perF 	// occupation and occupationN ")
         self.assertFalse(node.ancestors)    #this should be in _FeatureOntology already
 
+    def test_SplitFeatures(self):
+        a = SplitFeatures("this is a string")
+        self.assertEqual(len(a), 4)
+
+        a = SplitFeatures("this is 'a string'")
+        self.assertEqual(len(a), 3)
+
+        a = SplitFeatures("this is a /norm|norm2|norm4/")
+        self.assertEqual(len(a), 4)
 

@@ -73,10 +73,43 @@ class LexiconNode(object):
         return output
 
 
+# return -1 if failed. Should throw error?
+def _SearchPair(string, tagpair):
+    depth = 0
+    i = 0
+    currentTagIndex = 0
+    targetTagIndex = 1
+
+    while 0<=i<len(string):
+        if string[i] == tagpair[targetTagIndex]:
+            depth -= 1
+            if depth == -1: # found!
+                return i
+        if string[i] == tagpair[currentTagIndex]:
+            depth += 1
+        i += 1
+    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
+    raise Exception(" Can't find a pair tag!" + string)
+    #return -1
+
+
 def SeparateComment(line):
     blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
     return blocks[0], "//".join(blocks[1:])
 
+
+def SplitFeatures(FeatureString):
+    StemPart = None
+    stemMatch = re.match("(.*)\'(.*)\'(.*)", FeatureString)
+    #if re.search('\'.*\'$', FeatureString):
+    if stemMatch and stemMatch.lastindex == 3:
+        StemPart = stemMatch.group(2)
+        FeatureString = stemMatch.group(1) + stemMatch.group(3)
+
+    features = FeatureString.split()
+    if StemPart:
+        features += [StemPart]
+    return features
 
 class OntologyNode:
     def __init__(self):
@@ -339,7 +372,7 @@ def LoadLexicon(lexiconLocation):
                     node.comment = comment
             # else:
             #     logging.debug("This word is repeated in lexicon: %s" % blocks[0])
-            features = blocks[1].split()
+            features = SplitFeatures(blocks[1]) # blocks[1].split()
             for feature in features:
 
                 if re.match('^\'.*\'$', feature):
@@ -467,7 +500,7 @@ if __name__ == "__main__":
     elif command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        para = dir_path + '/../../fsa/X/defLexX.txt'
+        para = dir_path + '/../../fsa/X/brandX.txt'
         LoadLexicon(para)
         if "/fsa/X" in para:
             Englishflag = False
