@@ -39,7 +39,11 @@ def ApplyWinningRule(strtokens, rule):
             logging.warning("Before applying feature:" + str(strtokens[i].features))
             logging.warning("The features are:" + str(Actions))
 
+            if "NEW" in Actions:
+                strtokens[i].features = []
             for Action in Actions:
+                if Action == "NEW":
+                    continue
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID != -1:
                     ApplyFeature(strtokens[i].features, ActionID)

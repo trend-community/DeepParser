@@ -120,6 +120,7 @@ def SplitFeatures(FeatureString):
         features += [NormPart]
     return features
 
+
 class OntologyNode:
     def __init__(self):
         self.openWord = ''

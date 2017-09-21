@@ -74,9 +74,10 @@ if __name__ == "__main__":
 
     with open(UnitTestFileName, encoding="utf-8") as RuleFile:
         for line in RuleFile:
-            RuleName, TestSentence = Rules._SeparateComment(line)
-            unittest = Rules.UnitTestNode(UnitTestFileName, RuleName, TestSentence)
-            UnitTest.append(unittest)
+            if line.strip():
+                RuleName, TestSentence = Rules._SeparateComment(line.strip())
+                unittest = Rules.UnitTestNode(UnitTestFileName, RuleName, TestSentence)
+                UnitTest.append(unittest)
 
     for unittestnode in UnitTest:
         ExtraMessageIndex = unittestnode.TestSentence.find(">")

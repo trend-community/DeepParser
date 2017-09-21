@@ -22,6 +22,14 @@ class RuleTest(unittest.TestCase):
         tokenlist = Tokenize(""" 	MD | "\'d|wil|mite|wanna|gotta" | ( ("do|does|did") 'have|seem|claim|appear|tend|want|wish|hope|desire|expect' "to" )""")
         self.assertEqual(len(tokenlist), 1)
 
+    def test_T_pointer_or(self):
+        tokenlist = Tokenize(" [VB : ^.ModS]|[要: ^.ModS] ")
+        self.assertEqual(len(tokenlist), 1)
+        self.assertEqual(tokenlist[0].word, "[VB : ^.ModS]|[要: ^.ModS]")
+
+        tokenlist = Tokenize(" ^A[VB : ^.ModS]|^B[要: ^.ModS] ")
+        self.assertEqual(len(tokenlist), 1)
+        self.assertEqual(tokenlist[0].word, "^A[VB : ^.ModS]|^B[要: ^.ModS]")
 
     def test_SetRule_number(self):
         r = Rule()
@@ -215,7 +223,7 @@ class RuleTest(unittest.TestCase):
         #OutputRules()
         self.assertEqual(len(_RuleList), 3)
 
-    def test_parenthsis_empty(self):
+    def test_parenthsis_or(self):
         _RuleList.clear()
         InsertRuleInList("""
 @yourC ==
@@ -242,6 +250,30 @@ class RuleTest(unittest.TestCase):
         #print(" after expand wild card")
         #OutputRules()
         self.assertEqual(len(_RuleList), 4)
+
+    def test_parenthsis_or_pointer(self):
+        ResetRules()
+        InsertRuleInList("""
+@yourC ==
+( ^V[VB : ^.ModS] | ^W[要: ^.ModS] )
+""")
+
+        InsertRuleInList("DT_NN_VBG_NN2 == @yourC ")
+
+        ExpandRuleWildCard()
+        self.assertEqual(len(_RuleList), 1)
+        # print("Before expand  parenthesis")
+        # OutputRules()
+        ExpandParenthesisAndOrBlock()
+
+        # print("Before expand wild card rule, after parenthesis")
+        # OutputRules()
+        self.assertEqual(len(_RuleList), 2)
+
+        ExpandRuleWildCard()
+        # print(" after expand wild card")
+        # OutputRules()
+        self.assertEqual(len(_RuleList), 2)
 
     def test_specialrule(self):
 
@@ -485,16 +517,25 @@ class RuleTest(unittest.TestCase):
         second line
         third line}""")
         self.assertEqual(a, """{good
-        second line
-        third line}""")
+second line
+third line}""")
         self.assertFalse(b)
 
         a, b = SeparateRules("""{good
         second line
         third line};""")
         self.assertEqual(a, """{good
+second line
+third line};""")
+        self.assertFalse(b)
+
+        a, b = SeparateRules("""
+        {good line
         second line
-        third line};""")
+        third line};
+        //unittest: test1
+        //unittest: test 2
+        """)
         self.assertFalse(b)
 
     def test_PreProcess_CheckFeatures(self):
