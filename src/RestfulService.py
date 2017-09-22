@@ -90,7 +90,8 @@ def Tokenize_en():
 @app.route("/ApplyLexicon", methods=['POST'])
 def ApplyLexicon():
     node = jsonpickle.decode(request.data)
-    return jsonpickle.encode(FeatureOntology.ApplyLexicon(node))
+    FeatureOntology.ApplyLexicon(node)
+    return jsonpickle.encode(node)
 
 
 @app.route("/ApplyLexiconToNodes", methods=['POST'])
@@ -101,13 +102,14 @@ def ApplyLexiconToNodes():
     return jsonpickle.encode(nodes)
 
 
-@app.route("/TokenizeAndApplyLexicon", methods=['POST'])
-def TokenizeAndApplyLexicon():
-    Sentence = request.data.decode("utf-8")
-    nodes = Tokenization.Tokenize(Sentence)
-    for node in nodes:
-        FeatureOntology.ApplyLexicon(node)
-    return jsonpickle.encode(nodes)
+# Not recommend to use. It is not a good concept.
+# @app.route("/TokenizeAndApplyLexicon", methods=['POST'])
+# def TokenizeAndApplyLexicon():
+#     Sentence = request.data.decode("utf-8")
+#     nodes = Tokenization.Tokenize(Sentence)
+#     for node in nodes:
+#         FeatureOntology.ApplyLexicon(node)
+#     return jsonpickle.encode(nodes)
 
 
 @app.route("/SearchMatchingRule", methods=['POST'])

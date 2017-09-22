@@ -17,10 +17,13 @@ from FeatureOntology import GetFeatureName as FeatureOntology_GetFeatureName
 
 
 class SentenceNode(object):
-    def __init__(self):
-        self.word = ''
+    def __init__(self, word):
+        self.word = word
+        self.stem = word
+        self.norm = word
         self.features = set()
         self.lexicon = None
+        self.Gone = False
 
     def __str__(self):
         output = "[" + self.word + "] "
@@ -51,8 +54,7 @@ def Tokenize(sentence):
                 continue    #when ' sign is inside a word, like can't don't
 
         if (prevc.isalnum() and not c.isalnum()) or (not prevc.isalnum() and not prevc.isspace()):
-            Element = SentenceNode()
-            Element.word = sentence[StartPosition:i]
+            Element = SentenceNode(sentence[StartPosition:i])
             Element.position = StartPosition
             DS.append(Element)
             StartToken = False
@@ -63,8 +65,7 @@ def Tokenize(sentence):
         i += 1
 
     if StartToken:  #wrap up the last one
-        Element = SentenceNode()
-        Element.word = sentence[StartPosition:]
+        Element = SentenceNode(sentence[StartPosition:])
         Element.position = StartPosition
         DS.append(Element)
 

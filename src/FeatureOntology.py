@@ -485,6 +485,8 @@ def ApplyLexicon(node):
     if node.lexicon is None:
         node.features.add(GetFeatureID('NNP'))
     else:
+        node.stem = node.lexicon.stem
+        node.norm = node.lexicon.norm
         node.features.update(node.lexicon.features)
         _ApplyWordStem(node, node.lexicon)
     return node
