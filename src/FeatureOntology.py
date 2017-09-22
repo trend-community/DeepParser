@@ -25,6 +25,7 @@ class LexiconNode(object):
         self.stem = word
         self.norm = word
         self.features = set()
+        self.missingfeature = None
     def __str__(self):
         output = self.word + ": "
         for feature in self.features:
@@ -66,6 +67,9 @@ class LexiconNode(object):
 
         if self.norm != self.word:
             output += "/" + self.norm + "/ "
+
+        if self.missingfeature !=None:
+            output +=self.missingfeature
 
         if hasattr(self, "comment"):
             output += " //" + self.comment
@@ -393,6 +397,9 @@ def LoadLexicon(lexiconLocation):
                     continue
                 else:
                     featureID =GetFeatureID(feature)
+                    if featureID==-1:
+                        logging.debug("Missing Feature: " + feature)
+                        node.missingfeature="//Missing Feature: " + feature
                     node.features.add(featureID)
                     ontologynode = SearchFeatureOntology(featureID)
                     if ontologynode:
@@ -509,7 +516,7 @@ if __name__ == "__main__":
     elif command == "CreateLexicon":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        para = dir_path + '/../../fsa/X/brandX.txt'
+        para = dir_path + '/../../fsa/X/perX.txt'
         LoadLexicon(para)
         if "/fsa/X" in para:
             Englishflag = False
