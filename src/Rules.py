@@ -73,11 +73,34 @@ def SeparateRules(multilineString):
     lines = re.split("\n", multilineString)
     if len(lines) == 1:
         return multilineString, None
-    if multilineString[0] == "(" and _SearchPair(multilineString[1:], "()") >= len(multilineString)-3: # sometimes there is ";" sign
-        return multilineString, None
-    if multilineString[0] == "{" and _SearchPair(multilineString[1:], "{}") >= len(multilineString)-3:
-        return multilineString, None
 
+    #Move the comment after ";" sign into the first line.
+    newlines = []
+    for line in lines:
+        newline = line.strip()
+        if not newline:
+            continue
+        if newline.startswith("//"):
+            if len(newlines)>0 :
+                newlines[0] += line
+            else:
+                newlines.append(newline)
+        else:
+            newlines.append(newline)
+
+    endlineMatch = re.match("(.*;)\s*(//.*)", newlines[-1])
+    if endlineMatch and endlineMatch.lastindex == 2:
+        newlines[-1] = endlineMatch[1]
+        newlines[0] += endlineMatch[2]
+
+    newString = "\n".join(newlines)
+
+    if newString[0] == "(" and _SearchPair(newString[1:], "()") >= len(newString)-3: # sometimes there is ";" sign
+        return newString, None
+    if newString[0] == "{" and _SearchPair(newString[1:], "{}") >= len(newString)-3:
+        return newString, None
+    if newString[0] == "<" and _SearchPair(newString[1:], "<>") >= len(newString)-3:
+        return newString, None
     return lines[0], "\n".join(lines[1:])
 
 
@@ -123,29 +146,33 @@ class Rule:
             self.ID = ID
         self.RuleName = RuleBlocks[1].strip()
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
-            self.RuleContent = ProcessMacro(blocks[1])   #Process the whole code, not to worry about comment and unit test
+            RuleContent = ProcessMacro(blocks[1])   #Process the whole code, not to worry about comment and unit test
+            if code.endswith(";"):
+                RuleContent = RuleContent[:-1]
+            self.RuleContent = RuleContent
             self.comment = comment
             return  #stop processing macro.
 
-        RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
-        RuleCode, self.comment = SeparateComment(RuleContent)
-        if not RuleCode:
-            self.RuleContent = ""
-            if self.comment:
-                if remaining:
-                    remaining += self.comment
-                else:
-                    remaining = self.comment
-            return remaining #stop processing if the RuleCode is null
-
-        self.RuleContent = ProcessMacro(RuleCode)
-
         try:
+            RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
+            RuleCode, self.comment = SeparateComment(RuleContent)
+            if not RuleCode:
+                self.RuleContent = ""
+                if self.comment:
+                    if remaining:
+                        remaining += self.comment
+                    else:
+                        remaining = self.comment
+                return remaining #stop processing if the RuleCode is null
+
+            self.RuleContent = ProcessMacro(RuleCode)
+
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
             logging.error("Failed to tokenize because: " + str(e))
             logging.error("Rulename is: " + self.RuleName)
             self.RuleName = ""
+            self.RuleContent = ""
             return
         ProcessTokens(self.Tokens)
 
@@ -431,13 +458,14 @@ def _SearchToEnd(string, Reverse=False):
         modified = False
         for pair in Pairs:
             if string[i] == pair[targetTagIndex]:
-                if i>0 and string[i-1] == "|":
+                #if i>0 and string[i-1] == "|":
+                if i > 0 and "|" in string[:i]: # for case as: "[a]|^V[b]"
                     endofpair = _SearchPair(string[i+1:], pair, Reverse)
                     if endofpair >= 0:
                         if Reverse:
                             i -= endofpair +1
                         else:
-                            i += endofpair +1 # TODO: verify to +1
+                            i += endofpair +1
                         modified = True
                     else:
                         raise Exception("Can't find a pair in _SearchToEnd()")
@@ -948,7 +976,7 @@ def _PreProcess_CheckFeatures(OneList):
             elif matchtype == 'unknown':
                 if not re.search('\|| |!', word):
                     if FeatureOntology.GetFeatureID(word) == -1:
-                        logging.warning("Will treat this word as a stem:" + word)
+                        #logging.warning("Will treat this word as a stem:" + word)
                         token.word = "['" + word + "']"
                 elif "|" in word and " " not in word and "[" not in word:
                     # be aware of ['and|or|of|that|which'|PP|CM]
@@ -968,7 +996,7 @@ def _PreProcess_CheckFeatures(OneList):
                     for OrBlock in OrBlocks:
                         _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
                         if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
-                            logging.warning("Will treat this as a stem:" + OrBlock)
+                            #logging.warning("Will treat this as a stem:" + OrBlock)
                             token.word += "'" + OrBlock + "'|"
                         else:
                             token.word += OrBlock + "|"
@@ -1024,15 +1052,17 @@ if __name__ == "__main__":
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
     #LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/800VGy.txt")
-    LoadRules("../../fsa/Y/1800VPy.xml")
-    LoadRules("../../fsa/Y/100y.txt")
-    LoadRules("../../fsa/Y/50POSy.xml")
+    # LoadRules("../../fsa/Y/800VGy.txt")
+    # LoadRules("../../fsa/Y/1800VPy.xml")
+    # LoadRules("../../fsa/Y/100y.txt")
+    # LoadRules("../../fsa/Y/50POSy.xml")
+    #
+    # LoadRules("../../fsa/X/mainX2.txt")
+    # LoadRules("../../fsa/X/ruleLexiconX.txt")
+    #
+    #LoadRules("../../fsa/Y/1test_rules.txt")
 
-    LoadRules("../../fsa/X/mainX2.txt")
-    LoadRules("../../fsa/X/ruleLexiconX.txt")
-
-    LoadRules("../../fsa/Y/1test_rules.txt")
+    LoadRules("../../fsa/X/180NPx.txt")
 
     ExpandRuleWildCard()
     ExpandParenthesisAndOrBlock()
