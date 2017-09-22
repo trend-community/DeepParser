@@ -26,7 +26,7 @@ class LexiconNode(object):
         self.stem = word
         self.norm = word
         self.features = set()
-        self.missingfeature = None
+        self.missingfeature = ""
     def __str__(self):
         output = self.word + ": "
         for feature in self.features:
@@ -69,8 +69,8 @@ class LexiconNode(object):
         if self.norm != self.word:
             output += "/" + self.norm + "/ "
 
-        if self.missingfeature !=None:
-            output +=self.missingfeature
+        if self.missingfeature !="":
+            output += "//Missing feature: " + self.missingfeature
 
         if hasattr(self, "comment"):
             output += " //" + self.comment
@@ -283,7 +283,7 @@ def RealLength(x):
     return len(x)
 
 def PrintLexicon(Englishflag):
-    print("//***Lexicon***")
+    # print("//***Lexicon***")
     if _CommentDict.get("firstCommentLine"):
         print(_CommentDict.get("firstCommentLine"))
     oldWord = None
@@ -293,7 +293,7 @@ def PrintLexicon(Englishflag):
         s = sorted(_LexiconDict.keys(), key=lambda x: (RealLength(x), x))
     for word in s:
         if oldWord in _CommentDict.keys():
-            print(_CommentDict[oldWord],end="")
+            print(_CommentDict[oldWord], end="")
             oldWord = word
 
         output = _LexiconDict.get(word).entry()
@@ -404,7 +404,7 @@ def LoadLexicon(lexiconLocation):
                     featureID =GetFeatureID(feature)
                     if featureID==-1:
                         logging.debug("Missing Feature: " + feature)
-                        node.missingfeature="//Missing Feature: " + feature
+                        node.missingfeature += " " + feature
                     node.features.add(featureID)
                     ontologynode = SearchFeatureOntology(featureID)
                     if ontologynode:
