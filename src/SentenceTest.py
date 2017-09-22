@@ -46,12 +46,12 @@ if __name__ == "__main__":
         for node in nodes:
             FeatureOntology.ApplyLexicon(node)
 
-        JSnode = Tokenization.SentenceNode()
+        JSnode = Tokenization.SentenceNode('')
         nodes = [JSnode] + nodes
         nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
         nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
         if nodes[-1].word != ".":
-            JWnode = Tokenization.SentenceNode()
+            JWnode = Tokenization.SentenceNode('')
             nodes = nodes + [JWnode]
         nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
 

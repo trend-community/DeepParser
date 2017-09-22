@@ -104,14 +104,14 @@ if __name__ == "__main__":
         # ret = requests.post(TokenizeAndApplyLexiconURL, data=TestSentence)
         # nodes = jsonpickle.decode(ret.text)
 
-        JSnode = Tokenization.SentenceNode()
+        JSnode = Tokenization.SentenceNode('')
         nodes = [JSnode] + nodes
         nodes[0].features.add(GetFeatureID('JS'))
 
         nodes[1].features.add(GetFeatureID('JS2'))
 
         if nodes[-1].word != ".":
-            JWnode = Tokenization.SentenceNode()
+            JWnode = Tokenization.SentenceNode('')
             nodes = nodes + [JWnode]
         nodes[-1].features.add(GetFeatureID('JW'))
 
