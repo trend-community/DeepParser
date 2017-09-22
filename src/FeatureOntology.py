@@ -4,9 +4,10 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import logging, re, operator, sys, os, pickle
+import logging, re, operator, sys, os, pickle, requests
 from functools import lru_cache
-
+url = "http://localhost:5001"
+url_ch = "http://localhost:8080"
 
 _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
@@ -337,6 +338,9 @@ def GetFeatureID(feature):
 
 @lru_cache(maxsize=1000)
 def GetFeatureName(featureID):
+    if len(_FeatureList) == 0:
+        GetFeatureNameURL = url + "/GetFeatureName/"
+        return requests.get(GetFeatureNameURL + str(featureID)).text
 
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]

@@ -465,7 +465,7 @@ def _SearchToEnd(string, Reverse=False):
                         if Reverse:
                             i -= endofpair +1
                         else:
-                            i += endofpair +1 # TODO: verify to +1
+                            i += endofpair +1
                         modified = True
                     else:
                         raise Exception("Can't find a pair in _SearchToEnd()")
