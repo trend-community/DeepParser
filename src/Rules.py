@@ -20,6 +20,7 @@ _ruleCounter = 0
 RuleFileList = []
 UnitTest = []
 
+
 class UnitTestNode(object):
     def __init__(self):
         self.FileName = ''
@@ -135,9 +136,10 @@ class Rule:
                 logging.debug("string:" + ruleString)
                 return
 
-        RuleBlocks = re.search("(.+)==(.+)$", ruleString, re.DOTALL)
-        if not RuleBlocks:
-            RuleBlocks = re.match("(.+)::(.+)$", ruleString, re.DOTALL)
+        if self.IsExpertLexicon:
+            RuleBlocks = re.search("(.+)::(.+)$", ruleString, re.DOTALL)
+        else:
+            RuleBlocks = re.match("(.+)==(.+)$", ruleString, re.DOTALL)
 
         if not RuleBlocks or RuleBlocks.lastindex != 2:
             raise Exception("This rule can't be correctly parsed:\n\t" + ruleString)
@@ -173,7 +175,7 @@ class Rule:
             logging.error("Rulename is: " + self.RuleName)
             self.RuleName = ""
             self.RuleContent = ""
-            return
+            return remaining
         ProcessTokens(self.Tokens)
 
         return remaining
@@ -567,6 +569,7 @@ def LoadRules(RuleLocation):
     global UnitTest, RuleFileList
 
     RuleFileName = os.path.basename(RuleLocation)
+    logging.debug("Start Loading Rule " + RuleFileName)
     if RuleFileName not in RuleFileList:
         RuleFileList.append(RuleFileName)
 
@@ -581,7 +584,8 @@ def LoadRules(RuleLocation):
             if not line:
                 continue
 
-            if line.find("::")>=0 or line.find("==") >= 0:
+            code, _ = SeparateComment(line)
+            if code.find("::")>=0 or code.find("==") >= 0:
                 if rule:
                     InsertRuleInList(rule, RuleFileName)
                     rule = ""

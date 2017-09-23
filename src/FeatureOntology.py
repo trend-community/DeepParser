@@ -318,7 +318,7 @@ def LoadFeatureOntology(featureOncologyLocation):
     # with open(pickleLocation, 'wb') as pk:
     #     pickle.dump(_FeatureOntology, pk)
 
-
+@lru_cache(maxsize=1000)
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
     for node in _FeatureOntology:
         if node.openWordID == featureID:
@@ -327,6 +327,10 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
 
 @lru_cache(maxsize=1000)
 def GetFeatureID(feature):
+    if len(_FeatureList) == 0:
+        GetFeatureIDURL = url + "/GetFeatureID/"
+        return int(requests.get(GetFeatureIDURL + feature).text)
+
     if re.search(u'[\u4e00-\u9fff]', feature):
         return -1   # Chinese is not a feature.
     if feature in _AliasDict:
@@ -344,7 +348,13 @@ def GetFeatureID(feature):
 def GetFeatureName(featureID):
     if len(_FeatureList) == 0:
         GetFeatureNameURL = url + "/GetFeatureName/"
-        return requests.get(GetFeatureNameURL + str(featureID)).text
+        try:
+            ret = requests.get(GetFeatureNameURL + str(featureID))
+            ret.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            logging.error(e)
+            return ""
+        return ret.text
 
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
@@ -365,6 +375,7 @@ def LoadLexicon(lexiconLocation):
     #         _CommentDict = pickle.load(pk)
     #         _LexiconDict = pickle.load(pk)
     #     return
+    logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
 
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         oldWord = "firstCommentLine"
@@ -401,7 +412,7 @@ def LoadLexicon(lexiconLocation):
                     node.stem = feature
                     continue
                 else:
-                    featureID =GetFeatureID(feature)
+                    featureID = GetFeatureID(feature)
                     if featureID==-1:
                         logging.debug("Missing Feature: " + feature)
                         node.missingfeature += " " + feature
@@ -491,6 +502,7 @@ def ApplyLexicon(node):
         _ApplyWordStem(node, node.lexicon)
     return node
 
+@lru_cache(maxsize=1000)
 def SearchFeatures(word):
     lexicon = SearchLexicon(word)
     if lexicon is None:

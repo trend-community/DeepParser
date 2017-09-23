@@ -28,12 +28,23 @@ def HeadMatch(strTokens, ruleTokens):
     return True
 
 
+def IsAscii(Sentence):
+    if isinstance(Sentence, list):
+        Sentence = "".join(Sentence)
+    try:
+        Sentence.encode(encoding='utf-8').decode('ascii')
+    except UnicodeDecodeError:
+        return False
+    else:
+        return True
+
+
 def ApplyFeature(featureList, featureID):
-    FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
-    if not FeatureNode:
-        raise Exception("The feature node should not be null!")
     featureList.add(featureID)
-    featureList.update(FeatureNode.ancestors)
+    FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
+    if  FeatureNode:
+        featureList.update(FeatureNode.ancestors)
+
 
 #During chucking "+++", concatenate the stem of each token of this group
 # (find the starting point and ending point) into the current token stem
@@ -72,16 +83,19 @@ def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     StrEndPos = StrEndPos+GoneInStrTokens
 
 
-    NewStem = ''
+    NewStems = []
     for i in range(StrStartPos, StrEndPos+1):
         if StrTokens[i].Gone:
             continue
-        NewStem += StrTokens[i].stem     # or StrTokens[i].lexicon.stem?
+        NewStems.append( StrTokens[i].stem)     # or StrTokens[i].lexicon.stem?
         StrTokens[i].Gone = True
+
+    if IsAscii(NewStems):
+        NewStem = " ".join(NewStems)
+    else:
+        NewStem = "".join(NewStems)
     StrTokens[StrPosition].stem = NewStem
     StrTokens[StrPosition].Gone = False
-
-
 
 
 # Apply the features, and other actions.
@@ -97,16 +111,17 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         if hasattr(rule.Tokens[i + GoneInStrTokens], 'action'):
             Actions = rule.Tokens[i].action.split()
             logging.warning("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
-            logging.warning("Before applying feature:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
-            logging.warning("The features are:" + str(Actions))
+            logging.warning("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
+            logging.warning("The actions are:" + str(Actions))
 
             if "NEW" in Actions:
-                strtokens[StartPosition + i + GoneInStrTokens].features = []
+                strtokens[StartPosition + i + GoneInStrTokens].features = set()
             for Action in Actions:
                 if Action == "NEW":
                     continue
                 if Action == "+++":
-                    Chunking(strtokens, StartPosition + i + GoneInStrTokens, rule, i)
+                    Chunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
+                    continue
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
                     strtokens[StartPosition + i + GoneInStrTokens].Gone = True
@@ -117,7 +132,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
-def SearchMatchingRule(strtokens):
+def MatchAndApplyRules(strtokens):
     WinningRules = []
     for RuleFileName in Rules.RuleFileList:
         print("Applying:" + RuleFileName)
@@ -161,7 +176,7 @@ def SearchMatchingRule(strtokens):
                 WinningRules.append(WinningRule.RuleName)
 
             i += 1
-    return WinningRules
+    return WinningRules, strtokens
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
@@ -169,21 +184,31 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/brandX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/idiom4X.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/idiomX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/locX.txt')
+    FeatureOntology.LoadLexicon('../../fsa/X/perX.txt')
 
     #Rules.LoadRules("../../fsa/Y/100y.txt")
+    Rules.LoadRules("../../fsa/X/mainX2.txt")
+    Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
+    Rules.LoadRules("../../fsa/Y/100y.txt")
 
     #Rules.LoadRules("../../fsa/Y/800VGy.txt")
-    Rules.LoadRules("../temp/800VGy.txt.compiled")
+    #Rules.LoadRules("../temp/800VGy.txt.compiled")
     #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-    Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+    #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
 
-    target = "she may like the product  "
+    target = "Testing chucking together so that words are not separate  "
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
 
@@ -208,10 +233,12 @@ if __name__ == "__main__":
         print(output)
 
     logging.warning("\tStart matching rules! counterMatch=%s" % counterMatch)
-    SearchMatchingRule(nodes)
-    logging.warning("After match:")
+    RuleNames, _ = MatchAndApplyRules(nodes)
+    print("After match:")
     for node in nodes:
         output = "Node [" + node.word + "] "
+        if node.lexicon:
+            output += str(node.lexicon) + "-"
         output += str(node.features) + ";"
         print(output)
 

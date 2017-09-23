@@ -52,6 +52,7 @@ def LoadCommon(LoadCommonRules=False):
 
     logging.warning("Parameter is:" + str(LoadCommonRules))
     if LoadCommonRules:
+        Rules.LoadRules("../../fsa/X/0defLexX.txt")
         Rules.LoadRules("../temp/800VGy.txt.compiled")
         #Rules.LoadRules("../temp/900NPy.xml.compiled")
         #Rules.LoadRules("../temp/1800VPy.xml.compiled")
@@ -63,6 +64,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/Y/100y.txt")
         # Rules.LoadRules("../../fsa/X/180NPx.txt")
         # Rules.LoadRules("../../fsa/X/270VPx.txt")
+
         PostProcessRules()
     return str(True)
 
@@ -112,10 +114,11 @@ def ApplyLexiconToNodes():
 #     return jsonpickle.encode(nodes)
 
 
-@app.route("/SearchMatchingRule", methods=['POST'])
-def SearchMatchingRule():
+@app.route("/MatchAndApplyRules", methods=['POST'])
+def MatchAndApplyRules():
     nodes = jsonpickle.decode(request.data)
-    return jsonpickle.encode(ProcessSentence.SearchMatchingRule(nodes))
+    WinningRules, Nodes = ProcessSentence.MatchAndApplyRules(nodes)
+    return jsonpickle.encode([WinningRules, Nodes])
 
 
 @app.route("/OutputRules/<Mode>")
@@ -124,5 +127,9 @@ def OutputRules(Mode="concise"):
 
 
 if __name__ == "__main__":
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+
     LoadCommon(LoadCommonRules=True)
-    app.run(port=5001, debug=True)
+    app.run(port=5001, debug=False)

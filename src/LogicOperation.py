@@ -70,9 +70,9 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
 
     if not re.search('[| !]', rule):
         if matchtype == "stem" and strToken.lexicon:
-            word = strToken.lexicon.stem
+            word = strToken.stem
         elif matchtype == "norm" and strToken.lexicon:
-            word = strToken.lexicon.norm
+            word = strToken.norm
         else:
             word = strToken.word
         if rule.lower() == word.lower():

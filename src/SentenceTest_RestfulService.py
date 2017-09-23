@@ -9,10 +9,6 @@ url_ch = "http://localhost:8080"
 
 IMPOSSIBLESTRING = "@#$%!"
 
-@lru_cache(maxsize=1000)
-def GetFeatureID(Feature):
-    GetFeatureIDURL = url + "/GetFeatureID/"
-    return int(requests.get(GetFeatureIDURL + Feature).text)
 
 def Tokenize(Sentence):
     if IsAscii(Sentence):
@@ -30,13 +26,13 @@ def Tokenize(Sentence):
         nodes_t = []
         for block in blocks:
             block = block.replace(IMPOSSIBLESTRING, "\/")
-            Element = Tokenization.SentenceNode()
+            Element = Tokenization.SentenceNode('')
             WordPropertyPair = block.split(":")
             Element.word = WordPropertyPair[0]
             if len(WordPropertyPair)>1:
                 features = WordPropertyPair[1]
                 for feature in features.split():
-                    featureid = GetFeatureID(feature)
+                    featureid = FeatureOntology.GetFeatureID(feature)
                     Element.features.add(featureid)
 
             nodes_t.append(Element)
@@ -66,6 +62,8 @@ if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+
+    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
     UnitTest = []
     if not os.path.exists(UnitTestFileName):
@@ -106,22 +104,22 @@ if __name__ == "__main__":
 
         JSnode = Tokenization.SentenceNode('')
         nodes = [JSnode] + nodes
-        nodes[0].features.add(GetFeatureID('JS'))
+        nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
 
-        nodes[1].features.add(GetFeatureID('JS2'))
+        nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
 
         if nodes[-1].word != ".":
             JWnode = Tokenization.SentenceNode('')
             nodes = nodes + [JWnode]
-        nodes[-1].features.add(GetFeatureID('JW'))
+        nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
 
         if DebugMode:
             for node in nodes:
                 print(node)
 
-        SearchMatchingRuleURL = url + "/SearchMatchingRule"
-        ret = requests.post(SearchMatchingRuleURL, data=jsonpickle.encode(nodes))
-        WinningRules = jsonpickle.decode(ret.text)
+        MatchAndApplyRulesURL = url + "/MatchAndApplyRules"
+        ret = requests.post(MatchAndApplyRulesURL, data=jsonpickle.encode(nodes))
+        [WinningRules, nodes] = jsonpickle.decode(ret.text)
         print(str(WinningRules))
         for WinningRule in WinningRules:
             if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):

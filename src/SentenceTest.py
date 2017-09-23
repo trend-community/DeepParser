@@ -22,10 +22,12 @@ if __name__ == "__main__":
     FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
     #FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
 
-    Rules.LoadRules("../temp/800VGy.txt.compiled")
+    #Rules.LoadRules("../temp/800VGy.txt.compiled")
     #Rules.LoadRules("../temp/900NPy.xml.compiled")
     #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
     #Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+
+    Rules.LoadRules("../../fsa/X/0defLexX.txt")
     Rules.ExpandRuleWildCard()
 
     Rules.ExpandParenthesisAndOrBlock()
@@ -59,7 +61,7 @@ if __name__ == "__main__":
             for node in nodes:
                 print(node)
 
-        WinningRules = ProcessSentence.SearchMatchingRule(nodes)
+        WinningRules, _ = ProcessSentence.MatchAndApplyRules(nodes)
         for WinningRule in WinningRules:
             if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                 print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
