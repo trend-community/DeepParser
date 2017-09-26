@@ -1,5 +1,5 @@
 import logging, re
-import Tokenization, FeatureOntology
+import Tokenization, FeatureOntology, LexiconLookup
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
 from utils import IsAscii
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     nodes = Tokenization.Tokenize(target)
 
     for node in nodes:
-        FeatureOntology.ApplyLexicon(node)
+        LexiconLookup.ApplyLexicon(node)
 
     JSnode = Tokenization.SentenceNode('')
     nodes = [JSnode] + nodes

@@ -42,7 +42,7 @@ def PostProcessRules():
 def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
     FeatureOntology.LoadLexicon('../../fsa/X/brandX.txt')
     FeatureOntology.LoadLexicon('../../fsa/X/idiom4X.txt')
