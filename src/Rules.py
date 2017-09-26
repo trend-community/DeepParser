@@ -3,6 +3,7 @@ import logging, re, os, operator
 import Tokenization
 import copy
 #from RuleMacro import ProcessMacro
+from utils import *
 
 #import FeatureOntology
 #usage: to output rules list, run:
@@ -22,10 +23,10 @@ UnitTest = []
 
 
 class UnitTestNode(object):
-    def __init__(self):
-        self.FileName = ''
-        self.RuleName = ''
-        self.TestSentence = ''
+    # def __init__(self):
+    #     self.FileName = ''
+    #     self.RuleName = ''
+    #     self.TestSentence = ''
 
     def __init__(self, FileName, RuleName, TestTentence):
         self.FileName = FileName
@@ -45,26 +46,6 @@ def ResetRules():
     _MacroDict = {}  # not sure which one to use yet
     _ruleCounter = 0
 
-
-def _SeparateComment(line):
-    line = line.strip()
-    SlashLocation = line.find("//")
-    if SlashLocation < 0:
-        return line, ""
-    else:
-        return line[:SlashLocation].strip(), line[SlashLocation+2:].strip()
-
-def SeparateComment(multiline):
-    blocks = [x.strip() for x in re.split("\n", multiline) ]
-    content = ""
-    comment = ""
-    for block in blocks:
-        _content, _comment = _SeparateComment(block)
-        if _content:
-            content += "\n" + _content
-        if _comment:
-            comment += " //" + _comment
-    return content.strip(), comment.strip()
 
 #If it is one line, that it is one rule;
 #if it has several lines in {} or () block, then it is one rule;
@@ -96,11 +77,11 @@ def SeparateRules(multilineString):
 
     newString = "\n".join(newlines)
 
-    if newString[0] == "(" and _SearchPair(newString[1:], "()") >= len(newString)-3: # sometimes there is ";" sign
+    if newString[0] == "(" and SearchPair(newString[1:], "()") >= len(newString)-3: # sometimes there is ";" sign
         return newString, None
-    if newString[0] == "{" and _SearchPair(newString[1:], "{}") >= len(newString)-3:
+    if newString[0] == "{" and SearchPair(newString[1:], "{}") >= len(newString)-3:
         return newString, None
-    if newString[0] == "<" and _SearchPair(newString[1:], "<>") >= len(newString)-3:
+    if newString[0] == "<" and SearchPair(newString[1:], "<>") >= len(newString)-3:
         return newString, None
     return lines[0], "\n".join(lines[1:])
 
@@ -183,8 +164,8 @@ class Rule:
     def __str__(self):
         return self.output("details")
 
-    def oneliner(self):
-        return self.output("concise")
+    # def oneliner(self):
+    #     return self.output("concise")
 
     # style: concise, or detail
     def output(self, style="concise"):
@@ -232,21 +213,6 @@ class Rule:
         return output
 
 
-def RemoveExcessiveSpace(Content):
-    #Remove any whitespace around | sign, so it ismade as a word.
-    r = re.compile("\s*\|\s*", re.MULTILINE)
-    Content = r.sub("|", Content)
-
-    r = re.compile("<\s*", re.MULTILINE)
-    Content = r.sub("<", Content)
-
-    r = re.compile("\s*>", re.MULTILINE)
-    Content = r.sub(">", Content)
-
-    Content = Content.strip(";")
-
-    return Content
-
 # Note: this tokenization is for tokenizing rule,
 #       which is different from tokenizing the normal language.
 # ignore { }
@@ -284,10 +250,10 @@ def Tokenize(RuleContent):
         for pair in Pairs:
             if RuleContent[i] == pair[0] and (i==0 or RuleContent[i-1] != "\\"): #escape:
                 #StartPosition = i
-                end = _SearchPair(RuleContent[i+1:], pair)
+                end = SearchPair(RuleContent[i+1:], pair)
                 if end >= 0:
                     StartToken = False
-                    EndOfToken = i+2+end + _SearchToEnd(RuleContent[i+1+end+1:])
+                    EndOfToken = i+2+end + SearchToEnd(RuleContent[i+1+end+1:])
                     node = RuleToken()
                     node.word = RuleContent[StartPosition:EndOfToken+1]
                     TokenList.append(node)
@@ -357,28 +323,7 @@ def ProcessTokens(Tokens):
         if pointerMatch:
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = ''
-        #
-        # actionMatch = re.match("\[(.+):(.+)\]$", node.word)
-        # if actionMatch:
-        #     ActionIndex = FindLastColonWithoutSpecialCharacter(node.word)
-        #     if ActionIndex>0:
-        #         action = node.word[ActionIndex + 1:-1]
-        #         word_wo_action = "[" + node.word[1:ActionIndex] + "]"
-        #
-        #         if "(" not in word_wo_action and ":" in word_wo_action:
-        #                 orblocks = re.split("\]\|\[", node.word)
-        #                 new_word = "(" + "])|([".join(orblocks) + ")"
-        #                 node.word = new_word
-        #         else:
-        #             node.action = action
-        #             node.word = word_wo_action
-        #     else:   # [CM:Done]|[COLN|JM]
-        #         if "(" not in node.word and "]|[" in node.word :
-        #             orblocks = re.split("\]\|\[", node.word)
-        #             new_word = "(" + "])|([".join(orblocks) + ")"
-        #             node.word = new_word
-        #
-        # actionMatch_complicate = re.match("(.+)|\[(.+):(.+)\]]")
+
         if "(" not in node.word and ":" in node.word:
             orblocks = re.split("\|\[", node.word)
             if len(orblocks)>1:
@@ -417,75 +362,6 @@ def FindLastColonWithoutSpecialCharacter(string):
             return -1
     return -1
 
-# return -1 if failed. Should throw error?
-def _SearchPair(string, tagpair, Reverse=False):
-    depth = 0
-    if Reverse:
-        i = len(string)-1
-        currentTagIndex = 1
-        targetTagIndex = 0
-        direction = -1
-    else:
-        i = 0
-        currentTagIndex = 0
-        targetTagIndex = 1
-        direction = 1
-    while 0<=i<len(string):
-        if string[i] == tagpair[targetTagIndex]:
-            depth -= 1
-            if depth == -1: # found!
-                return i
-        if string[i] == tagpair[currentTagIndex]:
-            depth += 1
-        i += direction
-    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
-    #return -1
-
-# The previous step already search up to the close tag.
-#   Now the task is to search after the close tag up the the end of this token,
-#   close at a space, or starting of next token (TODO: next token? sure??).
-def _SearchToEnd(string, Reverse=False):
-    if not string:      # if it is empty
-        return 0
-    if Reverse:
-        i = len(string)-1
-        targetTagIndex = 1
-        direction = -1
-    else:
-        i = 0
-        targetTagIndex = 0
-        direction = 1
-    while 0<=i<len(string):
-        modified = False
-        for pair in Pairs:
-            if string[i] == pair[targetTagIndex]:
-                #if i>0 and string[i-1] == "|":
-                if i > 0 and "|" in string[:i]: # for case as: "[a]|^V[b]"
-                    endofpair = _SearchPair(string[i+1:], pair, Reverse)
-                    if endofpair >= 0:
-                        if Reverse:
-                            i -= endofpair +1
-                        else:
-                            i += endofpair +1
-                        modified = True
-                    else:
-                        raise Exception("Can't find a pair in _SearchToEnd()")
-                        #return -1   # error. stop the searching immediately.
-        if string[i] in SignsToIgnore:
-            return i-direction
-        if string[i].isspace():
-            return i-direction
-
-        # if string[i] in "[(":   #start of next token
-        #     return i-direction
-        if not modified:
-            for pair in Pairs:
-                if string[i] == pair[targetTagIndex]:
-                    return i-direction
-        i += direction
-    return i
-
 
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
@@ -505,7 +381,7 @@ def _SearchToEnd_OrBlock(string, Reverse=False):
         for pair in Pairs:
             if string[i] == pair[targetTagIndex]:
                 if i>0 and string[i-1] == "|":
-                    endofpair = _SearchPair(string[i+1:], pair, Reverse)
+                    endofpair = SearchPair(string[i+1:], pair, Reverse)
                     if endofpair >= 0:
                         if Reverse:
                             i -= endofpair +1
@@ -600,7 +476,7 @@ def LoadRules(RuleLocation):
         UnitTest = [x for x in UnitTest if x.FileName != RuleFileName]
         with open(UnitTestFileName, encoding="utf-8") as RuleFile:
             for line in RuleFile:
-                RuleName, TestSentence = _SeparateComment(line)
+                RuleName, TestSentence = SeparateComment(line)
                 unittest = UnitTestNode(RuleFileName, RuleName, TestSentence)
                 UnitTest.append(unittest)
 
@@ -732,6 +608,7 @@ def ExpandRuleWildCard():
         logging.info("\tExpandRuleWildCard next level.")
         ExpandRuleWildCard()    #recursive call itself to finish all.
 
+
 def ExpandParenthesisAndOrBlock():
     logging.info("ExpandParenthesisAndOrBlock: Size of RuleList:" + str(len(_RuleList)) +
                  " Size of ExpertLexicon:" + str(len(_ExpertLexicon)))
@@ -754,8 +631,8 @@ def _ExpandParenthesis(OneList):
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
-            if (token.word.startswith("(") and len(token.word) == 2+_SearchPair(token.word[1:], ["(", ")"])) \
-                    or (token.word.startswith("[(") and len(token.word) == 4+_SearchPair(token.word[2:], ["(", ")"])):
+            if (token.word.startswith("(") and len(token.word) == 2+SearchPair(token.word[1:], ["(", ")"])) \
+                    or (token.word.startswith("[(") and len(token.word) == 4+SearchPair(token.word[2:], ["(", ")"])):
                 #logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
                 parenthesisIndex = token.word.find("(")
                 try:
@@ -811,13 +688,13 @@ def _ProcessOrBlock(Content, orIndex):
     try:
         for pair in Pairs:
             if Content[orIndex+1] == pair[0]:
-                end = end + 2 + _SearchPair(Content[orIndex+2:], pair)
+                end = end + 2 + SearchPair(Content[orIndex+2:], pair)
         if end == orIndex:  # the next character is not pair, so it is a normal word
             end = end + 2 + _SearchToEnd_OrBlock(Content[orIndex+2:])
 
         for pair in Pairs:
             if Content[orIndex-1] == pair[1]:
-                start = _SearchPair(Content[:orIndex-1], pair, Reverse=True)
+                start = SearchPair(Content[:orIndex-1], pair, Reverse=True)
         if start == orIndex:  # the next character is not pair, so it is a normal word
             start = _SearchToEnd_OrBlock(Content[:orIndex-1], Reverse=True)
     except Exception as e:
@@ -949,11 +826,11 @@ def _PreProcess_CheckFeatures(OneList):
             if len(word) <= 2:
                 continue
             try:
-                if word[0] == "[" and _SearchPair(word[1:], "[]") == len(word)-2:
+                if word[0] == "[" and SearchPair(word[1:], "[]") == len(word)-2:
                     word = word[1:-1]
 
                 word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
-            except Exception as e:
+            except RuntimeError as e:
                 logging.error("Error for rule:" + rule.RuleName)
 
             if matchtype == 'stem' :
@@ -978,7 +855,7 @@ def _PreProcess_CheckFeatures(OneList):
                     raise Exception("TODO: separate this as multiple token")
 
             elif matchtype == 'unknown':
-                if not re.search('\|| |!', word):
+                if not re.search('[| !]', word):
                     if FeatureOntology.GetFeatureID(word) == -1:
                         #logging.warning("Will treat this word as a stem:" + word)
                         token.word = "['" + word + "']"
@@ -992,7 +869,7 @@ def _PreProcess_CheckFeatures(OneList):
                         else:
                             prefix = ""
                             OrBlocks = LogicOperation_SeparateOrBlocks(word)
-                    except Exception as e:
+                    except RuntimeError as e:
                         logging.error("Error for rule:" + rule.RuleName)
                         continue    #not to process the rest.
 
@@ -1005,12 +882,6 @@ def _PreProcess_CheckFeatures(OneList):
                         else:
                             token.word += OrBlock + "|"
                     token.word = re.sub("\|$", "]", token.word)
-
-
-#Return the word before the first "_";
-# If there is no "_", return the whole word
-def GetPrefix(Name):
-    return re.findall("(.*?)_", Name+"_")[0]
 
 
 def OutputRules(style="details", RuleFile="all"):
@@ -1034,6 +905,7 @@ def OutputRules(style="details", RuleFile="all"):
 
     output += "// End of Rules/Expert Lexicons/Macros\n"
     return output
+
 
 def OutputRuleFiles(FolderLocation):
     for RuleFile in RuleFileList:

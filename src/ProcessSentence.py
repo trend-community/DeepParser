@@ -2,6 +2,7 @@ import logging, re
 import Tokenization, FeatureOntology
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
+from utils import IsAscii
 
 counterMatch = 0
 
@@ -27,16 +28,6 @@ def HeadMatch(strTokens, ruleTokens):
             #raise
     return True
 
-
-def IsAscii(Sentence):
-    if isinstance(Sentence, list):
-        Sentence = "".join(Sentence)
-    try:
-        Sentence.encode(encoding='utf-8').decode('ascii')
-    except UnicodeDecodeError:
-        return False
-    else:
-        return True
 
 
 def ApplyFeature(featureList, featureID):

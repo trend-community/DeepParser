@@ -1,34 +1,9 @@
-import logging, re
+
 import FeatureOntology
+from utils import *
 
 #not, and, or
-#type: word/norm/stem
-
-
-# return -1 if failed. Should throw error?
-def _SearchPair(string, tagpair, Reverse=False):
-    depth = 0
-    if Reverse:
-        i = len(string)-1
-        currentTagIndex = 1
-        targetTagIndex = 0
-        direction = -1
-    else:
-        i = 0
-        currentTagIndex = 0
-        targetTagIndex = 1
-        direction = 1
-    while 0<=i<len(string):
-        if string[i] == tagpair[targetTagIndex]:
-            depth -= 1
-            if depth == -1: # found!
-                return i
-        if string[i] == tagpair[currentTagIndex]:
-            depth += 1
-        i += direction
-    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
-    #return -1
+#compare type: word/norm/stem/feature
 
 
 #   Sometimes it is like:  'a|b|c'
@@ -38,22 +13,21 @@ def CheckPrefix(word, matchtype):
     if len(word) < 2:
         return word, matchtype
 
-    if word[0] == "[" and _SearchPair(word[1:], "[]") == len(word) - 2:
+    if word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
         word = word[1:-1]   #remove redundant []
 
     prefix = ""
 
-
     if word.startswith("!"):
         prefix = "!"
         word = word.lstrip("!")
-    if word.startswith("\"") and _SearchPair(word[1:], "\"\"") == len(word)-2 :  # word  comparison
+    if word.startswith("\"") and SearchPair(word[1:], "\"\"") == len(word)-2 :  # word  comparison
         word = word.strip("\"")
         matchtype = "word"      # case insensitive
-    elif word.startswith("'") and _SearchPair(word[1:], "''") == len(word)-2 :
+    elif word.startswith("'") and SearchPair(word[1:], "''") == len(word)-2 :
         word = word.strip("'")
         matchtype = "stem"      # case insensitive
-    elif word.startswith("/") and _SearchPair(word[1:], "//") == len(word)-2 :
+    elif word.startswith("/") and SearchPair(word[1:], "//") == len(word)-2 :
         word = word.strip("/")
         matchtype = "norm"      # case insensitive
 
@@ -147,7 +121,8 @@ def SeparateOrBlocks(OrString):
 
     i = 0
     StartToken = False
-    Pairs = ['[]', '()', '""', '\'\'', '//']
+    #Pairs = ['[]', '()', '""', '\'\'', '//']
+    # Pairs is defined in utils.py
     while i < len(OrString):
         if OrString[i] == "|":
             if StartToken:
@@ -164,7 +139,7 @@ def SeparateOrBlocks(OrString):
         for pair in Pairs:
             if OrString[i] == pair[0] and (i==0 or OrString[i-1] != "\\"): #escape
 
-                end = _SearchPair(OrString[i+1:], pair)
+                end = SearchPair(OrString[i+1:], pair)
                 if end >= 0:
                     StartToken = False
                     EndOfToken = i+2+end

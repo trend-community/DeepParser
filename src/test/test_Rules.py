@@ -60,8 +60,8 @@ class RuleTest(unittest.TestCase):
         r = Rule()
         r.SetRule("""rule4words=={[word] [word]
 	[word] [word]};""")
-        result = r.oneliner()[-46:] == "rule4words == {[word]_[word]_[word]_[word]_};\n" or \
-            r.oneliner()[-46:] == "rule4words == {[word] [word] [word] [word] };\n"
+        result = r.output("concise")[-46:] == "rule4words == {[word]_[word]_[word]_[word]_};\n" or \
+            r.output("concise")[-46:] == "rule4words == {[word] [word] [word] [word] };\n"
         self.assertTrue(result)
     def test_pointer(self):
         r = Rule()
@@ -370,8 +370,6 @@ class RuleTest(unittest.TestCase):
 
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
-
         ExpandRuleWildCard()
 
         #OutputRules("concise")

@@ -6,6 +6,8 @@
 
 import logging, re, operator, sys, os, pickle, requests
 from functools import lru_cache
+from utils import *
+
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
 
@@ -76,31 +78,6 @@ class LexiconNode(object):
             output += " //" + self.comment
 
         return output
-
-
-# return -1 if failed. Should throw error?
-def _SearchPair(string, tagpair):
-    depth = 0
-    i = 0
-    currentTagIndex = 0
-    targetTagIndex = 1
-
-    while 0<=i<len(string):
-        if string[i] == tagpair[targetTagIndex]:
-            depth -= 1
-            if depth == -1: # found!
-                return i
-        if string[i] == tagpair[currentTagIndex]:
-            depth += 1
-        i += 1
-    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
-    #return -1
-
-
-def SeparateComment(line):
-    blocks = [x.strip() for x in re.split("//", line) ]   # remove comment.
-    return blocks[0], "//".join(blocks[1:])
 
 
 def SplitFeatures(FeatureString):

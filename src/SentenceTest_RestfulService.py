@@ -3,6 +3,7 @@ import Tokenization, FeatureOntology
 import ProcessSentence, Rules
 import requests, json, jsonpickle
 from functools import lru_cache
+from utils import SeparateComment
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     with open(UnitTestFileName, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                RuleName, TestSentence = Rules._SeparateComment(line.strip())
+                RuleName, TestSentence = SeparateComment(line.strip())
                 unittest = Rules.UnitTestNode(UnitTestFileName, RuleName, TestSentence)
                 UnitTest.append(unittest)
 
@@ -83,6 +84,7 @@ if __name__ == "__main__":
             TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
         else:
             TestSentence = unittestnode.TestSentence
+        TestSentence = TestSentence.strip("/")
         print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
         nodes = Tokenize(TestSentence)
@@ -124,3 +126,7 @@ if __name__ == "__main__":
         for WinningRule in WinningRules:
             if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                 print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
+
+        if DebugMode:
+            for node in nodes:
+                print(node)

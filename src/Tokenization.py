@@ -28,7 +28,9 @@ class SentenceNode(object):
     def __str__(self):
         output = "[" + self.word + "] "
         if self.lexicon:
-            output += self.lexicon.word
+            output += self.stem
+        if self.Gone:
+            output += '(Gone)'
         output += ": "
         for feature in self.features:
             f = FeatureOntology_GetFeatureName(feature)
