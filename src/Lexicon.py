@@ -24,7 +24,7 @@ class LexiconNode(object):
         self.forLookup = False
 
     def __str__(self):
-        output = self.word + ": "
+        output = self.stem + ": "
         for feature in self.features:
             f = GetFeatureName(feature)
             if f:
@@ -156,6 +156,8 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                 newNode = True
                 node = LexiconNode(blocks[0])
                 node.forLookup = forLookup
+                if "_" in node.word:            #TODO: to confirm.
+                    node.forLookup = True       #for those combination words.
                 if comment:
                     node.comment = comment
             # else:
@@ -256,7 +258,8 @@ def SearchFeatures(word):
 
 
 def ApplyLexicon(node):
-    node.lexicon = SearchLexicon(node.word)
+    if not node.lexicon:
+        node.lexicon = SearchLexicon(node.word)
     if node.lexicon is None:
         node.features.add(GetFeatureID('NNP'))
     else:
@@ -266,6 +269,77 @@ def ApplyLexicon(node):
         _ApplyWordStem(node, node.lexicon)
     return node
 
+#combining some tokens into one token and
+# (1) refresh with the lexical features;
+# (2) void the combined tokens with FEATURE:Gone
+def ChuckingLexicon(strtokens, length, lexicon):
+    logging.debug("Start chucking lexicon " + lexicon.word)
+    NewStems = []
+    for i in range(length):
+        NewStems.append( strtokens[i].stem)     # or StrTokens[i].lexicon.stem?
+        strtokens[i].Gone = True
+
+    if IsAscii(NewStems):
+        NewStem = "_".join(NewStems)
+    else:
+        NewStem = "".join(NewStems)
+    strtokens[0].stem = NewStem
+    #strtokens[0].word = NewStem
+    strtokens[0].Gone = False
+    strtokens[0].lexicon = lexicon
+    ApplyLexicon(strtokens[0])      #including features and stems
+
+
+def HeadMatchLexicon(strTokens, word):
+    i = 0
+    CombinedString = ""
+    while i< len(strTokens):
+        # if not strTokens[i].stem:   #JS and other empty strings. ignore.
+        #     i += 1
+        #     continue                # do this judgment before it gets in here.
+        if CombinedString \
+            and IsAscii(CombinedString): #ignore the first word.
+            CombinedString += "_" + strTokens[i].stem
+        else:
+            CombinedString += strTokens[i].stem
+        if len(CombinedString) > len(word):
+            return -1
+        if len(CombinedString) == len(word):
+            if CombinedString == word:
+                return i+1              # Return the length
+            else:
+                return -1
+        i += 1
+
+    return -1
+
+#Lookup will be used right after segmentation.
+#Assume there is no "Gone" tokens here.
+def LexiconLookup(strTokens):
+    i = 0
+    while i < len(strTokens):
+        if not strTokens[i].stem:   #JS and other empty strings. ignore.
+            i += 1
+            continue
+
+        WinningLexicon = None
+        for word in _LexiconDict:
+            if _LexiconDict.get(word).forLookup:
+                MatchLength = HeadMatchLexicon(strTokens[i:], word)
+                if MatchLength > 0:
+                    if WinningLexicon and len(WinningLexicon.word) >= len(word):
+                        pass
+                    else:
+                        WinningLexicon = _LexiconDict.get(word)
+                        WinningLexicon_MatchLength = MatchLength
+                        logging.debug("Found Winning Lexicon " + str(WinningLexicon))
+
+        if WinningLexicon:
+            logging.debug("Start applying winning lexicon")
+            ChuckingLexicon(strTokens[i:], WinningLexicon_MatchLength, WinningLexicon)
+            i += WinningLexicon_MatchLength - 1
+
+        i += 1
 
 
 if __name__ == "__main__":

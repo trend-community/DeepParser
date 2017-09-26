@@ -247,8 +247,6 @@ if __name__ == "__main__":
     if command == "CreateFeatureList":
         _CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        # LoadLexicon(dir_path + '/../../fsa/X/lexX.txt')
-        # LoadLexicon(dir_path + '/../../fsa/Y/lexY.txt')
         PrintFeatureSet()
 
     elif command == "CreateFeatureOntology":

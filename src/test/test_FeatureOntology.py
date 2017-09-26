@@ -1,5 +1,6 @@
 import unittest
 from FeatureOntology import *
+from Lexicon import *
 #import .. import FeatureOntology
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -19,37 +20,6 @@ class FeatureTest(unittest.TestCase):
     def test_ontology(self):
         print(SearchFeatureOntology(GetFeatureID("com")))
         print(SearchFeatureOntology(GetFeatureID("com")))
-    def test_lexicon(self):
-        FoundSent = False
-        print("i-myself")
-        s = SearchLexicon("i_myself")
-        if s:
-            print(s.features)
-
-        for f in s.features:
-            feature = GetFeatureName(f)
-            print (feature)
-            if feature == "sent":
-                print("Found sent!")
-                FoundSent = True
-        self.assertTrue(FoundSent)
-
-        s = SearchLexicon("BS")
-        if s:
-            print(s.features)
-
-        print("like")
-        s = SearchLexicon("like")
-        if s:
-            print(s.features)
-
-        for f in s.features:
-            feature = GetFeatureName(f)
-            print (feature)
-            if feature == "Ved":
-                print("Found Ved!")
-                FoundSent = True
-        self.assertTrue(FoundSent)
 
 
     def test2(self):

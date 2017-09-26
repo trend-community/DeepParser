@@ -1,5 +1,5 @@
 import logging, re
-import Tokenization, FeatureOntology, LexiconLookup
+import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
 from utils import IsAscii
@@ -27,7 +27,6 @@ def HeadMatch(strTokens, ruleTokens):
             logging.error(e)
             #raise
     return True
-
 
 
 def ApplyFeature(featureList, featureID):
@@ -123,6 +122,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
+
 def MatchAndApplyRules(strtokens):
     WinningRules = []
     for RuleFileName in Rules.RuleFileList:
@@ -147,7 +147,7 @@ def MatchAndApplyRules(strtokens):
 
             if WinningRule:
                 skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
-                i += skiptokennum-1    #go to the next word
+                i += skiptokennum - 1    #go to the next word
                 WinningRules.append(WinningRule.RuleName)
                 i += 1
                 continue
@@ -176,16 +176,16 @@ if __name__ == "__main__":
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/brandX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/idiom4X.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/idiomX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/locX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/perX.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
+    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/locX.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/perX.txt')
 
     #Rules.LoadRules("../../fsa/Y/100y.txt")
-    Rules.LoadRules("../../fsa/X/mainX2.txt")
+    #Rules.LoadRules("../../fsa/X/mainX2.txt")
     Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
     Rules.LoadRules("../../fsa/Y/100y.txt")
 
@@ -199,12 +199,12 @@ if __name__ == "__main__":
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
 
-    target = "Testing chucking together so that words are not separate  "
+    target = "from behind in terms of the chunking.  "
     logging.info(target)
     nodes = Tokenization.Tokenize(target)
 
     for node in nodes:
-        LexiconLookup.ApplyLexicon(node)
+        Lexicon.ApplyLexicon(node)
 
     JSnode = Tokenization.SentenceNode('')
     nodes = [JSnode] + nodes
@@ -214,8 +214,8 @@ if __name__ == "__main__":
     nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
     nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
     nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
-    # default lexY.txt is already loaded. additional lexicons can be load here:
-    # FeatureOntology.LoadLexicon("../../fsa/X/lexX.txt")
+    Lexicon.LexiconLookup(nodes)
+
     for node in nodes:
         output = "Node [" + node.word + "] "
         if node.lexicon:

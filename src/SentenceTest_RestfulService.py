@@ -1,5 +1,5 @@
 import logging, sys, re, os
-import Tokenization, FeatureOntology
+import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 import requests, json, jsonpickle
 from functools import lru_cache
@@ -65,6 +65,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    # Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', True)
+    #Lexicon.LoadLexicon('../temp/testdefLex.txt', True)
 
     UnitTest = []
     if not os.path.exists(UnitTestFileName):
@@ -114,6 +117,8 @@ if __name__ == "__main__":
             JWnode = Tokenization.SentenceNode('')
             nodes = nodes + [JWnode]
         nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
+
+        Lexicon.LexiconLookup(nodes)
 
         if DebugMode:
             for node in nodes:

@@ -1,5 +1,5 @@
 import logging, sys, re
-import Tokenization, FeatureOntology
+import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 
 if __name__ == "__main__":
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    FeatureOntology.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     #FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
 
     Rules.LoadRules("../temp/800VGy.txt.compiled")
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         nodes = Tokenization.Tokenize(TestSentence)
 
         for node in nodes:
-            FeatureOntology.ApplyLexicon(node)
+            Lexicon.ApplyLexicon(node)
 
         JSnode = Tokenization.SentenceNode('')
         nodes = [JSnode] + nodes
@@ -56,6 +56,8 @@ if __name__ == "__main__":
             JWnode = Tokenization.SentenceNode('')
             nodes = nodes + [JWnode]
         nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
+
+        Lexicon.LexiconLookup(nodes)
 
         if DebugMode:
             for node in nodes:

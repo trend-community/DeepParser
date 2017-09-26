@@ -1,5 +1,5 @@
 import logging, sys, re, jsonpickle
-import Tokenization, FeatureOntology
+import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request
 
@@ -18,7 +18,7 @@ def LoadFeatureOntology(OntologyPath):
 
 @app.route("/LoadLexicon/<LexiconPath>")
 def LoadLexicon(LexiconPath):
-    FeatureOntology.LoadLexicon(LexiconPath)
+    Lexicon.LoadLexicon(LexiconPath)
     return str(True)
 
 
@@ -43,12 +43,12 @@ def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/brandX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/idiom4X.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/idiomX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/locX.txt')
-    FeatureOntology.LoadLexicon('../../fsa/X/perX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
+    Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/locX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/perX.txt')
 
     logging.warning("Parameter is:" + str(LoadCommonRules))
     if LoadCommonRules:
@@ -71,7 +71,7 @@ def LoadCommon(LoadCommonRules=False):
 
 @app.route("/SearchLexicon/<word>")
 def SearchLexicon(word):
-    return jsonpickle.encode(FeatureOntology.SearchLexicon(word))
+    return jsonpickle.encode(Lexicon.SearchLexicon(word))
 
 
 @app.route("/GetFeatureID/<word>")
@@ -92,7 +92,7 @@ def Tokenize_en():
 @app.route("/ApplyLexicon", methods=['POST'])
 def ApplyLexicon():
     node = jsonpickle.decode(request.data)
-    FeatureOntology.ApplyLexicon(node)
+    Lexicon.ApplyLexicon(node)
     return jsonpickle.encode(node)
 
 
@@ -100,7 +100,7 @@ def ApplyLexicon():
 def ApplyLexiconToNodes():
     nodes = jsonpickle.decode(request.data)
     for node in nodes:
-        FeatureOntology.ApplyLexicon(node)
+        Lexicon.ApplyLexicon(node)
     return jsonpickle.encode(nodes)
 
 
