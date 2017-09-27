@@ -198,8 +198,12 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
 @lru_cache(maxsize=1000)
 def GetFeatureID(feature):
     if len(_FeatureList) == 0:
-        GetFeatureIDURL = url + "/GetFeatureID/"
-        return int(requests.get(GetFeatureIDURL + feature).text)
+        try:
+            GetFeatureIDURL = url + "/GetFeatureID/"
+            ret = requests.get(GetFeatureIDURL + feature)
+        except Exception:
+            return -1
+        return int(ret.text)
 
     if re.search(u'[\u4e00-\u9fff]', feature):
         return -1   # Chinese is not a feature.
