@@ -68,6 +68,13 @@ def SeparateComment(multiline):
     return content.strip(), comment.strip()
 
 
+#Can be expand for more scenario.
+def IsCD(word):
+    try:
+        return float(word) and True
+    except ValueError:
+        return False
+
 
 def IsAscii(Sentence):
     if isinstance(Sentence, list):

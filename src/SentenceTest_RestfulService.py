@@ -3,7 +3,7 @@ import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 import requests, json, jsonpickle
 from functools import lru_cache
-from utils import SeparateComment
+from utils import SeparateComment, IsAscii
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
@@ -26,7 +26,7 @@ def Tokenize(Sentence):
         blocks = segmented.split("/")
         nodes_t = []
         for block in blocks:
-            block = block.replace(IMPOSSIBLESTRING, "\/")
+            block = block.replace(IMPOSSIBLESTRING, "/")
             Element = Tokenization.SentenceNode('')
             WordPropertyPair = block.split(":")
             Element.word = WordPropertyPair[0]
@@ -39,13 +39,6 @@ def Tokenize(Sentence):
             nodes_t.append(Element)
     return nodes_t
 
-def IsAscii(Sentence):
-    try:
-        Sentence.encode(encoding='utf-8').decode('ascii')
-    except UnicodeDecodeError:
-        return False
-    else:
-        return True
 
 if __name__ == "__main__":
     DebugMode = False

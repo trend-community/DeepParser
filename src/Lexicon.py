@@ -4,6 +4,7 @@
 
 import logging, re, operator, sys, os, pickle, requests
 from functools import lru_cache
+import string
 
 from utils import *
 from FeatureOntology import *
@@ -258,10 +259,19 @@ def SearchFeatures(word):
 
 
 def ApplyLexicon(node):
-    if not node.lexicon:
+    NNPFeatureID = GetFeatureID('NNP')
+    if NNPFeatureID in node.features:
+        node.features.remove(NNPFeatureID)
+    if not node.lexicon:    # If lexicon is assigned before, then don't do the search
+                            #  because the node.word is not as reliable as stem.
         node.lexicon = SearchLexicon(node.word)
     if node.lexicon is None:
-        node.features.add(GetFeatureID('NNP'))
+        if IsCD(node.word):
+            node.features.add(GetFeatureID('CD'))
+        elif node.word in string.punctuation:
+            node.features.add(GetFeatureID('punc'))
+        else:
+            node.features.add(GetFeatureID('NNP'))
     else:
         node.stem = node.lexicon.stem
         node.norm = node.lexicon.norm
@@ -278,6 +288,7 @@ def ChuckingLexicon(strtokens, length, lexicon):
     for i in range(length):
         NewStems.append( strtokens[i].stem)     # or StrTokens[i].lexicon.stem?
         strtokens[i].Gone = True
+        strtokens[i].features = set()      #remove the existing features
 
     if IsAscii(NewStems):
         NewStem = "_".join(NewStems)
