@@ -197,6 +197,10 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
 
 @lru_cache(maxsize=1000)
 def GetFeatureID(feature):
+    if _CreateFeatureList:
+        _FeatureSet.add(feature)
+        return 1
+
     if len(_FeatureList) == 0:
         try:
             GetFeatureIDURL = url + "/GetFeatureID/"
@@ -211,9 +215,7 @@ def GetFeatureID(feature):
         return _AliasDict[feature]
     if feature in _FeatureDict:
         return _FeatureDict[feature]
-    if _CreateFeatureList:
-        _FeatureSet.add(feature)
-        return 1
+
     logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
