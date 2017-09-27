@@ -69,6 +69,8 @@ def SeparateComment(multiline):
 
 
 #Can be expand for more scenario.
+# unicode numbers (or English "one", "two"...) should be in lexicon to have "CD" feature.
+#       so not to be included in here.
 def IsCD(word):
     try:
         return float(word) and True
@@ -157,3 +159,16 @@ def SearchToEnd(string, Reverse=False):
 def GetPrefix(Name):
     return re.findall("(.*?)_", Name+"_")[0]
 
+
+def OutputStringTokens(strTokens):
+    output = ""
+    for token in strTokens:
+        if token.Gone:
+            continue
+        if not token.stem:
+            continue
+        if output:
+            output += "/"
+        output += token.oneliner()
+
+    return output

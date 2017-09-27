@@ -97,8 +97,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         while strtokens[StartPosition + i + GoneInStrTokens].Gone:
             GoneInStrTokens += 1
             if i + GoneInStrTokens == len(strtokens):
-                raise Exception("Not")
-        if hasattr(rule.Tokens[i + GoneInStrTokens], 'action'):
+                raise RuntimeError("Can't be applied: " + rule.RuleName)
+        if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
             logging.warning("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
             logging.warning("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))

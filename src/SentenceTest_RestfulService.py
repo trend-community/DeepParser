@@ -3,7 +3,7 @@ import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 import requests, json, jsonpickle
 from functools import lru_cache
-from utils import SeparateComment, IsAscii
+from utils import SeparateComment, IsAscii, OutputStringTokens
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
@@ -128,3 +128,4 @@ if __name__ == "__main__":
         if DebugMode:
             for node in nodes:
                 print(node)
+        print(OutputStringTokens(nodes))

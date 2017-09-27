@@ -27,8 +27,7 @@ class SentenceNode(object):
 
     def __str__(self):
         output = "[" + self.word + "] "
-        if self.lexicon:
-            output += self.stem
+        output += self.stem
         if self.Gone:
             output += '(Gone)'
         output += ": "
@@ -39,6 +38,22 @@ class SentenceNode(object):
             else:
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return output
+
+    def oneliner(self):
+        output = self.stem
+        featureString = ""
+        for feature in self.features:
+            f = FeatureOntology_GetFeatureName(feature)
+            if f:
+                if featureString:
+                    featureString += ","
+                featureString += f
+            else:
+                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
+        if featureString:
+            output += ":" + featureString
+        return output
+
 
 
 def Tokenize(sentence):

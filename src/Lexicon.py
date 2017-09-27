@@ -259,9 +259,6 @@ def SearchFeatures(word):
 
 
 def ApplyLexicon(node):
-    NNPFeatureID = GetFeatureID('NNP')
-    if NNPFeatureID in node.features:
-        node.features.remove(NNPFeatureID)
     if not node.lexicon:    # If lexicon is assigned before, then don't do the search
                             #  because the node.word is not as reliable as stem.
         node.lexicon = SearchLexicon(node.word)
@@ -272,6 +269,7 @@ def ApplyLexicon(node):
             node.features.add(GetFeatureID('punc'))
         else:
             node.features.add(GetFeatureID('NNP'))
+            node.features.add(GetFeatureID('OOV'))
     else:
         node.stem = node.lexicon.stem
         node.norm = node.lexicon.norm

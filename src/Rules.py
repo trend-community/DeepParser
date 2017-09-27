@@ -477,7 +477,7 @@ def LoadRules(RuleLocation):
         with open(UnitTestFileName, encoding="utf-8") as RuleFile:
             for line in RuleFile:
                 RuleName, TestSentence = SeparateComment(line)
-                unittest = UnitTestNode(RuleFileName, RuleName, TestSentence)
+                unittest = UnitTestNode(RuleFileName, RuleName, TestSentence.strip("//"))
                 UnitTest.append(unittest)
 
 
@@ -917,7 +917,7 @@ def OutputRuleFiles(FolderLocation):
         utoutput = ""
         for unittestnode in UnitTest:
             if unittestnode.FileName == RuleFile:
-                utoutput += unittestnode.RuleName + "\t//" + unittestnode.TestSentence + "\n"
+                utoutput += unittestnode.RuleName + "\t// " + unittestnode.TestSentence + "\n"
         utFileLocation = os.path.join(FolderLocation, RuleFile+".unittest")
         with open(utFileLocation, "w", encoding="utf-8") as writer:
             writer.write(utoutput)
