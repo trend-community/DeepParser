@@ -273,7 +273,13 @@ def ApplyLexicon(node):
     else:
         node.stem = node.lexicon.stem
         node.norm = node.lexicon.norm
-        node.features.update(node.lexicon.features)
+        NEWFeatureID = GetFeatureID("NEW")
+        if NEWFeatureID in node.lexicon.features:
+            node.features = set()
+            node.features.update(node.lexicon.features)
+            node.features.remove(NEWFeatureID)
+        else:
+            node.features.update(node.lexicon.features)
         _ApplyWordStem(node, node.lexicon)
     return node
 
@@ -302,6 +308,8 @@ def ChuckingLexicon(strtokens, length, lexicon):
 def HeadMatchLexicon(strTokens, word):
     i = 0
     CombinedString = ""
+    if not word.startswith(strTokens[0].stem):
+        return -1   #verify first stem to be the starting of word.
     while i< len(strTokens):
         # if not strTokens[i].stem:   #JS and other empty strings. ignore.
         #     i += 1
@@ -318,6 +326,8 @@ def HeadMatchLexicon(strTokens, word):
                 return i+1              # Return the length
             else:
                 return -1
+        if not word.startswith(CombinedString):
+            return -1
         i += 1
 
     return -1
@@ -365,7 +375,7 @@ if __name__ == "__main__":
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         para = dir_path + '/../../fsa/X/perX.txt'
         LoadLexicon(para)
-        para = dir_path + '/../../fsa/X/perX.txt'
+        para = dir_path + '/../../fsa/X/defLexX.txt'
         LoadLexicon(para, forLookup=True)
         if "/fsa/X" in para:
             Englishflag = False

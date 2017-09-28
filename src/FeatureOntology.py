@@ -205,7 +205,7 @@ def GetFeatureID(feature):
         try:
             GetFeatureIDURL = url + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
-        except Exception:
+        except IOError:
             return -1
         return int(ret.text)
 

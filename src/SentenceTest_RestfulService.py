@@ -3,41 +3,8 @@ import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 import requests, json, jsonpickle
 from functools import lru_cache
-from utils import SeparateComment, IsAscii, OutputStringTokens
+from utils import *
 
-url = "http://localhost:5001"
-url_ch = "http://localhost:8080"
-
-IMPOSSIBLESTRING = "@#$%!"
-
-
-def Tokenize(Sentence):
-    if IsAscii(Sentence):
-        TokenizeURL = url + "/Tokenize"
-        ret_t = requests.post(TokenizeURL, data=Sentence)
-        nodes_t = jsonpickle.decode(ret_t.text)
-    else:
-        TokenizeURL = url_ch + "/Tokenize/"
-        #ret_t = requests.get(TokenizeURL + Sentence)
-        data = {'Sentence': Sentence}
-        segmented = requests.get(TokenizeURL, params=data).text
-        #segmented = jsonpickle.decode(segmented)
-        segmented = segmented.replace("\/", IMPOSSIBLESTRING)
-        blocks = segmented.split("/")
-        nodes_t = []
-        for block in blocks:
-            block = block.replace(IMPOSSIBLESTRING, "/")
-            Element = Tokenization.SentenceNode('')
-            WordPropertyPair = block.split(":")
-            Element.word = WordPropertyPair[0]
-            if len(WordPropertyPair)>1:
-                features = WordPropertyPair[1]
-                for feature in features.split():
-                    featureid = FeatureOntology.GetFeatureID(feature)
-                    Element.features.add(featureid)
-
-            nodes_t.append(Element)
-    return nodes_t
 
 
 if __name__ == "__main__":
@@ -71,6 +38,9 @@ if __name__ == "__main__":
         for line in RuleFile:
             if line.strip():
                 RuleName, TestSentence = SeparateComment(line.strip())
+                if not TestSentence:    # For the testfile that only have test sentence, not rule name
+                    TestSentence = RuleName
+                    RuleName = ""
                 unittest = Rules.UnitTestNode(UnitTestFileName, RuleName, TestSentence)
                 UnitTest.append(unittest)
 
@@ -81,9 +51,10 @@ if __name__ == "__main__":
         else:
             TestSentence = unittestnode.TestSentence
         TestSentence = TestSentence.strip("/")
-        print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
+        if DebugMode:
+            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        nodes = Tokenize(TestSentence)
+        nodes = ProcessSentence.Tokenize(TestSentence)
 
         # for node in nodes:
         #     #node.lexicon = FeatureOntology.SearchLexicon(node.word)

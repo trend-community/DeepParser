@@ -1,8 +1,8 @@
-import logging, re
+import logging, re, requests, jsonpickle
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
-from utils import IsAscii
+from utils import *
 
 counterMatch = 0
 
@@ -169,6 +169,40 @@ def MatchAndApplyRules(strtokens):
             i += 1
     return WinningRules, strtokens
 
+
+
+IMPOSSIBLESTRING = "@#$%!"
+
+
+def Tokenize(Sentence):
+    Sentence = Sentence.strip()
+    if IsAscii(Sentence):
+        TokenizeURL = url + "/Tokenize"
+        ret_t = requests.post(TokenizeURL, data=Sentence)
+        nodes_t = jsonpickle.decode(ret_t.text)
+    else:
+        TokenizeURL = url_ch + "/Tokenize/"
+        #ret_t = requests.get(TokenizeURL + Sentence)
+        data = {'Sentence': Sentence}
+        segmented = requests.get(TokenizeURL, params=data).text
+        #segmented = jsonpickle.decode(segmented)
+        segmented = segmented.replace("\/", IMPOSSIBLESTRING)
+        blocks = segmented.split("/")
+        nodes_t = []
+        for block in blocks:
+            block = block.replace(IMPOSSIBLESTRING, "/")
+            WordPropertyPair = block.split(":")
+            Element = Tokenization.SentenceNode(WordPropertyPair[0])
+            if len(WordPropertyPair)>1:
+                features = WordPropertyPair[1]
+                for feature in features.split():
+                    featureid = FeatureOntology.GetFeatureID(feature)
+                    Element.features.add(featureid)
+
+            nodes_t.append(Element)
+    return nodes_t
+
+
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
@@ -176,7 +210,7 @@ if __name__ == "__main__":
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    #Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
     Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     #Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
     #Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
@@ -186,22 +220,23 @@ if __name__ == "__main__":
 
     #Rules.LoadRules("../../fsa/Y/100y.txt")
     #Rules.LoadRules("../../fsa/X/mainX2.txt")
-    Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
-    Rules.LoadRules("../../fsa/Y/100y.txt")
+    # Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
+    # Rules.LoadRules("../../fsa/Y/100y.txt")
 
     #Rules.LoadRules("../../fsa/Y/800VGy.txt")
     #Rules.LoadRules("../temp/800VGy.txt.compiled")
     #Rules.LoadRules("../../fsa/Y/900NPy.xml")
     #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+    Rules.LoadRules("../../fsa/X/0defLexX.txt")
+    # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
     Rules.ExpandRuleWildCard()
 
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
 
-    target = "from behind in terms of the chunking.  "
+    target = "八十五分不等于五分。 "
     logging.info(target)
-    nodes = Tokenization.Tokenize(target)
+    nodes = Tokenize(target)
 
     for node in nodes:
         Lexicon.ApplyLexicon(node)
@@ -234,3 +269,5 @@ if __name__ == "__main__":
         print(output)
 
     logging.warning("\tDone! counterMatch=%s" % counterMatch)
+
+    print(OutputStringTokens(nodes))

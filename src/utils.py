@@ -1,5 +1,8 @@
 import logging, re
 
+url = "http://localhost:5001"
+url_ch = "http://localhost:8080"
+
 
 # return -1 if failed. Should throw error?
 def _SearchPair_old(string, tagpair):
