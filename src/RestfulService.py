@@ -115,19 +115,19 @@ def ApplyLexiconToNodes():
 #     return jsonpickle.encode(nodes)
 
 
-@app.route("/MatchAndApplyRules", methods=['POST'])
-def MatchAndApplyRules():
+@app.route("/MatchAndApplyAllRules", methods=['POST'])
+def MatchAndApplyAllRules():
     nodes = jsonpickle.decode(request.data)
-    WinningRules, Nodes = ProcessSentence.MatchAndApplyAllRules(nodes)
-    return jsonpickle.encode([WinningRules, Nodes])
+    WinningRules = ProcessSentence.MatchAndApplyAllRules(nodes)
+    return jsonpickle.encode([WinningRules, nodes])
 
 
 @app.route("/MatchAndApplyRuleFile", methods=["POST"])
 def MatchAndApplyRuleFile():
     nodes = jsonpickle.decode(request.form["nodes"])
     RuleFileName = jsonpickle.decode(request.form["rulefilename"])
-    WinningRules, Nodes = ProcessSentence.MatchAndApplyRuleFile(nodes, RuleFileName)
-    return jsonpickle.encode([WinningRules, Nodes])
+    WinningRules = ProcessSentence.MatchAndApplyRuleFile(nodes, RuleFileName)
+    return jsonpickle.encode([WinningRules, nodes])
 
 
 @app.route("/OutputRules/<Mode>")
@@ -157,4 +157,5 @@ if __name__ == "__main__":
             exit(0)
 
     ProcessSentence.LoadCommon(LoadCommonRules=True)
+    print("Running in port " + str(port))
     app.run(port=port, debug=False)

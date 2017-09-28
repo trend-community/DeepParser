@@ -182,7 +182,8 @@ def MultiLevelSegmentation(Sentence):
     Lexicon.ApplyLexiconToNodes(Nodes)
     MatchAndApplyRuleFile(Nodes, "0defLexX.txt")
     Lexicon.LexiconLookup(Nodes)
-    MatchAndApplyAllRules(Nodes)
+    MatchAndApplyRuleFile(Nodes, "mainX2.txt")
+    MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
     return Nodes
 
 
@@ -223,48 +224,11 @@ if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-
-    #Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/locX.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/perX.txt')
-
-    #Rules.LoadRules("../../fsa/Y/100y.txt")
-    #Rules.LoadRules("../../fsa/X/mainX2.txt")
-    # Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
-    # Rules.LoadRules("../../fsa/Y/100y.txt")
-
-    #Rules.LoadRules("../../fsa/Y/800VGy.txt")
-    #Rules.LoadRules("../temp/800VGy.txt.compiled")
-    #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-    #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    Rules.LoadRules("../../fsa/X/0defLexX.txt")
-    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-    Rules.ExpandRuleWildCard()
-
-    Rules.ExpandParenthesisAndOrBlock()
-    Rules.ExpandRuleWildCard()
+    LoadCommon(True)
 
     target = "八十五分不等于五分。 "
-    logging.info(target)
-    nodes = Tokenization.Tokenize(target)
+    nodes = MultiLevelSegmentation(target)
 
-    Lexicon.ApplyLexiconToNodes(nodes)
-
-    JSnode = Tokenization.SentenceNode('')
-    nodes = [JSnode] + nodes
-    if nodes[-1].word != ".":
-        JWnode = Tokenization.SentenceNode('')
-        nodes = nodes + [JWnode]
-    nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
-    nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
-    nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
-    Lexicon.LexiconLookup(nodes)
 
     for node in nodes:
         output = "Node [" + node.word + "] "
@@ -274,7 +238,7 @@ if __name__ == "__main__":
         print(output)
 
     logging.warning("\tStart matching rules! counterMatch=%s" % counterMatch)
-    RuleNames, _ = MatchAndApplyAllRules(nodes)
+    RuleNames = MatchAndApplyAllRules(nodes)
     print("After match:")
     for node in nodes:
         output = "Node [" + node.word + "] "

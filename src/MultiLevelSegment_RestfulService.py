@@ -17,7 +17,7 @@ if __name__ == "__main__":
                 DebugMode = True
     else:
         print(
-            "Usage: python SentenceTest_ResefulService.py unittestfile [Debug]")
+            "Usage: python MultiLevelSegment_ResefulService.py unittestfile [Debug]")
         exit(0)
 
     for handler in logging.root.handlers[:]:
@@ -59,17 +59,4 @@ if __name__ == "__main__":
             for node in nodes:
                 print(node)
 
-        #print(OutputStringTokens_oneliner(nodes))
-
-        MatchAndApplyAllRulesURL = url + "/MatchAndApplyAllRules"
-        ret = requests.post(MatchAndApplyAllRulesURL, data=jsonpickle.encode(nodes))
-        [WinningRules, nodes] = jsonpickle.decode(ret.text)
-        #print(str(WinningRules))
-        for WinningRule in WinningRules:
-            if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
-                print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
-
-        if DebugMode:
-            for node in nodes:
-                print(node)
-        print(OutputStringTokens_json(nodes))
+        print(OutputStringTokens_oneliner(nodes))
