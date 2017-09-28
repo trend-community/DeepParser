@@ -22,10 +22,10 @@ if __name__ == "__main__":
     Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     #FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
 
-    Rules.LoadRules("../temp/800VGy.txt.compiled")
+    # Rules.LoadRules("../temp/800VGy.txt.compiled")
     #Rules.LoadRules("../temp/900NPy.xml.compiled")
     #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    #Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
 
     Rules.LoadRules("../../fsa/X/0defLexX.txt")
     Rules.ExpandRuleWildCard()

@@ -258,6 +258,11 @@ def SearchFeatures(word):
     return lexicon.features
 
 
+def ApplyLexiconToNodes(nodes):
+    for node in nodes:
+        ApplyLexicon(node)
+    return nodes
+
 def ApplyLexicon(node):
     if not node.lexicon:    # If lexicon is assigned before, then don't do the search
                             #  because the node.word is not as reliable as stem.

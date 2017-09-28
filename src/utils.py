@@ -1,4 +1,4 @@
-import logging, re
+import logging, re, json
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
@@ -76,7 +76,8 @@ def SeparateComment(multiline):
 #       so not to be included in here.
 def IsCD(word):
     try:
-        return float(word) and True
+        _ = float(word)
+        return True
     except ValueError:
         return False
 
@@ -163,7 +164,12 @@ def GetPrefix(Name):
     return re.findall("(.*?)_", Name+"_")[0]
 
 
-def OutputStringTokens(strTokens):
+def OutputStringTokens_json(strTokens):
+    output = json.dumps([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem], ensure_ascii=False)
+
+    return output
+
+def OutputStringTokens_oneliner(strTokens):
     output = ""
     for token in strTokens:
         if token.Gone:

@@ -82,6 +82,11 @@ if __name__ == "__main__":
             nodes = nodes + [JWnode]
         nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
 
+
+        MatchAndApplyRulesURL = url + "/MatchAndApplyRules"
+        ret = requests.post(MatchAndApplyRulesURL, data=jsonpickle.encode(nodes))
+        [WinningRules, nodes] = jsonpickle.decode(ret.text)
+
         Lexicon.LexiconLookup(nodes)
 
         if DebugMode:
@@ -91,7 +96,7 @@ if __name__ == "__main__":
         MatchAndApplyRulesURL = url + "/MatchAndApplyRules"
         ret = requests.post(MatchAndApplyRulesURL, data=jsonpickle.encode(nodes))
         [WinningRules, nodes] = jsonpickle.decode(ret.text)
-        print(str(WinningRules))
+        #print(str(WinningRules))
         for WinningRule in WinningRules:
             if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                 print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
@@ -99,4 +104,4 @@ if __name__ == "__main__":
         if DebugMode:
             for node in nodes:
                 print(node)
-        print(OutputStringTokens(nodes))
+        print(OutputStringTokens_json(nodes))

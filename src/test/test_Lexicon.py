@@ -1,5 +1,5 @@
 import unittest
-
+import Tokenization
 from Lexicon import *
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -39,3 +39,9 @@ class LexiconTest(unittest.TestCase):
                 print("Found Ved!")
                 FoundSent = True
         self.assertTrue(FoundSent)
+
+    def test_ApplyLexicon(self):
+        node = Tokenization.SentenceNode('0')
+        ApplyLexicon(node)
+        CDFeatureID = GetFeatureID('CD')
+        self.assertTrue(CDFeatureID in node.features)

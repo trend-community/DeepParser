@@ -39,7 +39,6 @@ class RuleToken(object): pass
 def ResetRules():
     global _RuleList, _ExpertLexicon, _MacroList, _MacroDict, _ruleCounter
 
-
     del _RuleList[:]
     del _ExpertLexicon[:]
     del _MacroList[:]
