@@ -91,7 +91,7 @@ def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule, StartPosition):
-    print("Applying Winning Rule:" + rule.RuleName)
+    logging.info("Applying Winning Rule:" + rule.RuleName)
     GoneInStrTokens = 0
     for i in range(len(rule.Tokens)):
         while strtokens[StartPosition + i + GoneInStrTokens].Gone:
@@ -100,9 +100,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
-            logging.warning("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
-            logging.warning("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
-            logging.warning("The actions are:" + str(Actions))
+            logging.debug("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
+            logging.debug("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
+            logging.debug("The actions are:" + str(Actions))
 
             if "NEW" in Actions:
                 strtokens[StartPosition + i + GoneInStrTokens].features = set()
@@ -118,7 +118,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID != -1:
                     ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, ActionID)
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
-            logging.warning("After applying feature:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
+            logging.debug("After applying feature:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
 
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
@@ -131,7 +131,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
         if strtokens[i].Gone:
             i += 1
             continue
-        logging.warning("Checking tokens start from:" + strtokens[i].word)
+        logging.debug("Checking tokens start from:" + strtokens[i].word)
         WinningRule = None
         for rule in Rules._ExpertLexicon:
             if rule.FileName == FileName:
@@ -199,7 +199,7 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
 
-    logging.warning("Parameter is:" + str(LoadCommonRules))
+    logging.info("Parameter is:" + str(LoadCommonRules))
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
         #Rules.LoadRules("../temp/800VGy.txt.compiled")
@@ -223,7 +223,7 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
     target = "八十五分不等于五分。 "
@@ -233,20 +233,22 @@ if __name__ == "__main__":
     for node in nodes:
         output = "Node [" + node.word + "] "
         if node.lexicon:
-            output += str(node.lexicon) + "-"
+            output += str(node.lexicon)
         output += str(node.features) + ";"
         print(output)
 
-    logging.warning("\tStart matching rules! counterMatch=%s" % counterMatch)
+    print(OutputStringTokens_oneliner(nodes))
+
+    logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
     RuleNames = MatchAndApplyAllRules(nodes)
     print("After match:")
     for node in nodes:
         output = "Node [" + node.word + "] "
         if node.lexicon:
-            output += str(node.lexicon) + "-"
+            output += str(node.lexicon)
         output += str(node.features) + ";"
         print(output)
 
-    logging.warning("\tDone! counterMatch=%s" % counterMatch)
+    logging.info("\tDone! counterMatch=%s" % counterMatch)
 
     print(OutputStringTokens_oneliner(nodes))

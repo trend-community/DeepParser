@@ -41,7 +41,7 @@ In your browser visit
     http://localhost:5001/MultiLevelSegmentation/中文切词分析句子
 
 
-4, Running the program
+4, Running the MultiLevelSegment program
 4.1 Prepare the source file, such as "test.txt". It is suggested to place this file in a separate folder, such as git/parser/temp folder
 
 4.2 in current git/parser/src folder, execute:
@@ -52,3 +52,8 @@ Note: The error message and standard output are showing in the screen. If you wa
 4.3 Run the program locally (Still require support froom the web service of MultiSegmental Java Program in port 8080)
     python MultiLevelSegment.py ../temp/test.txt >../temp/output.txt 2>../temp/error.txt
 
+
+5, Running the ProcessSentence program
+The ProcessSentence program apply all rule files, after MultiLevelSegment.
+The rules keep changing, you can modify the list in "ProcessSentence.py".
+Replace "MultiLevelSegment" with "ProcessSentence" for the commands in Section 4, you now have all commands you need to process test sentences.

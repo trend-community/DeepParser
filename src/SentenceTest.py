@@ -17,23 +17,7 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    #FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
-
-    # Rules.LoadRules("../temp/800VGy.txt.compiled")
-    #Rules.LoadRules("../temp/900NPy.xml.compiled")
-    #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-
-    Rules.LoadRules("../../fsa/X/0defLexX.txt")
-    Rules.ExpandRuleWildCard()
-
-    Rules.ExpandParenthesisAndOrBlock()
-    Rules.ExpandRuleWildCard()
-
-    Rules.OutputRuleFiles("../temp/")
+    ProcessSentence.LoadCommon(True)
 
     for unittestnode in Rules.UnitTest:
         ExtraMessageIndex = unittestnode.TestSentence.find(">")
@@ -43,7 +27,7 @@ if __name__ == "__main__":
             TestSentence = unittestnode.TestSentence
         print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        nodes = ProcessSentence.MultiLevelSegmentation(target)
+        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
 
         if DebugMode:
             for node in nodes:
@@ -54,6 +38,7 @@ if __name__ == "__main__":
             if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                 print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
 
+        if DebugMode:
+            for node in nodes:
+                print(node)
 
-    if DebugMode:
-        Rules.OutputRules('concise')
