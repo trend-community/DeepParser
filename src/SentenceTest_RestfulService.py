@@ -72,4 +72,4 @@ if __name__ == "__main__":
         if DebugMode:
             for node in nodes:
                 print(node)
-        print(OutputStringTokens_json(nodes))
+        print(OutputStringTokens_oneliner(nodes))

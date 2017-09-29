@@ -1,0 +1,5 @@
+Flask==0.12.2
+jsonpickle==0.9.5
+requests==2.18.4
+urllib3==1.22
+

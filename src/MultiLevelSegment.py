@@ -48,12 +48,3 @@ if __name__ == "__main__":
         if DebugMode:
             for node in nodes:
                 print(node)
-
-        WinningRules, _ = ProcessSentence.MatchAndApplyRules(nodes)
-        for WinningRule in WinningRules:
-            if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
-                print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
-
-
-    if DebugMode:
-        Rules.OutputRules('concise')
