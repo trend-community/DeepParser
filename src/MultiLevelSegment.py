@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     else:
         print(
-            "Usage: python MultiLevelSegment.py unittestfile [Debug]")
+            "Usage: python MultiLevelSegment.py unittestfile [Debug]/[NoFeature]")
         exit(0)
 
     for handler in logging.root.handlers[:]:

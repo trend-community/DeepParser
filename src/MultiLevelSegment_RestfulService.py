@@ -20,7 +20,7 @@ if __name__ == "__main__":
                 NoFeature = True
     else:
         print(
-            "Usage: python MultiLevelSegment_ResefulService.py unittestfile [Debug]")
+            "Usage: python MultiLevelSegment_ResefulService.py unittestfile [Debug]/[NoFeature]")
         exit(0)
 
     for handler in logging.root.handlers[:]:

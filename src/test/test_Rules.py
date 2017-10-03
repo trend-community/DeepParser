@@ -1,6 +1,8 @@
 
 import unittest
 from Rules import *
+from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock
+
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -104,23 +106,26 @@ class RuleTest(unittest.TestCase):
         #print(r)
 
     def test_Macro(self):
-        ResetRules()
-        InsertRuleInList("""@andC == ([0 "and|or|&amp;|as_well_as|\/|and\/or"])""")
-        s = ProcessMacro("a @andC")
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("""@andC == ([0 "and|or|&amp;|as_well_as|\/|and\/or"])""", rulegroup)
+        s = ProcessMacro("a @andC", rulegroup.MacroDict)
         self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
 
-        s = ProcessMacro("a @andC @andC")
+        s = ProcessMacro("a @andC @andC", rulegroup.MacroDict)
         self.assertEqual(s, "a ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"]) ([0 \"and|or|&amp;|as_well_as|\/|and\/or\"])")
 
         InsertRuleInList("""#macro_with_parameter(1=$HAVE 2=$NEG, 3=$tm 4=$neg) ==
-         <$HAVE $NEG [RB:^.R]? [VBN|Ved:VG perfect $tm $neg ]>""")
-        s = ProcessMacro("""#macro_with_parameter(1=a 2=b, 3=c 4=d)""")
+         <$HAVE $NEG [RB:^.R]? [VBN|Ved:VG perfect $tm $neg ]>""", rulegroup)
+        s = ProcessMacro("""#macro_with_parameter(1=a 2=b, 3=c 4=d)""", rulegroup.MacroDict)
         self.assertEqual(s, "<a b [RB:^.R]? [VBN|Ved:VG perfect c d ]>")
 
-        s = ProcessMacro("""#macro_with_parameter(1=a 2=NULL, 3=c 4)""")
+        s = ProcessMacro("""#macro_with_parameter(1=a 2=NULL, 3=c 4)""", rulegroup.MacroDict)
         self.assertEqual(s, "<a  [RB:^.R]? [VBN|Ved:VG perfect c  ]>")
 
-        s = ProcessMacro("""#macro_with_parameter(1="a|b" 2=NULL, 3=c 4)""")
+        s = ProcessMacro("""#macro_with_parameter(1="a|b" 2=NULL, 3=c 4)""", rulegroup.MacroDict)
         self.assertEqual(s, """<"a|b"  [RB:^.R]? [VBN|Ved:VG perfect c  ]>""")
 
 
@@ -129,27 +134,30 @@ class RuleTest(unittest.TestCase):
 		| "\'d|wil|mite|wanna|gotta" // we need escape character "\'d" because we reserve ' for STEM checking
 		| ( ("do|does|did") 'have|seem|claim|appear|tend|want|wish|hope|desire|expect' "to" ) // they do appear to own it
 	)
-""")
+""", rulegroup)
         InsertRuleInList("""#simpleMpassive(1=$NEG, 2=$neg) ==
         <@modalV $NEG [RB:^.R]? "be" [RB:^.R]? [VBN|Ved: VG passive simple  modal $neg]> !NNS
-            """)
+            """, rulegroup)
         #InsertRuleInList("""simpleModalPassive == #simpleMpassive(1,2); """)
 
         #OutputRules()
 
 
     def test_Expand(self):
-        ResetRules()
 
-        self.assertEqual(len(_RuleList), 0)
-        InsertRuleInList("aaa==[NR] [PP]?")
-        self.assertEqual(len(_RuleList), 1)
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        self.assertEqual(len(rulegroup.RuleList), 0)
+        InsertRuleInList("aaa==[NR] [PP]?", rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 1)
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 2)
-        InsertRuleInList("bbb==[JS]? [JM]?")
-        self.assertEqual(len(_RuleList), 3)
+        self.assertEqual(len(rulegroup.RuleList), 2)
+        InsertRuleInList("bbb==[JS]? [JM]?", rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 3)
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 6)
+        self.assertEqual(len(rulegroup.RuleList), 6)
 
         #OutputRules()
 
@@ -160,70 +168,80 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(r.Tokens[1].word, "[cd]")
 
     def test_parenthsis_complicate(self):
-        _RuleList.clear()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
         r = Rule()
         r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]? ^V2[0 Ved:^.M] [AP:^.M]* @noun_mod [N !date:NP]>")
         self.assertEqual(len(r.Tokens), 7)
         if r.RuleName:
-            _RuleList.append(r)
+            rulegroup.RuleList.append(r)
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 16)
+        self.assertEqual(len(rulegroup.RuleList), 16)
         print("Before expand  parenthesis")
         #OutputRules()
-        _ExpandParenthesis(_RuleList)
-        self.assertEqual(len(_RuleList), 16)
+        _ExpandParenthesis(rulegroup.RuleList)
+        self.assertEqual(len(rulegroup.RuleList), 16)
         print("Before expand rule, after parenthesis")
         #OutputRules()
 
         ExpandRuleWildCard()
         print(" after expand rule again")
         #OutputRules()
-        #self.assertEqual(len(_RuleList), 24)
+        #self.assertEqual(len(rulegroup.RuleList), 24)
 
     def test_parenthsis(self):
-        _RuleList.clear()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
         r = Rule()
         r.SetRule(
             "rule_p ==  <([R:^V.R]? ^V[0 Ved:^.M] @andC)? ")
         self.assertEqual(len(r.Tokens), 1)
         if r.RuleName:
-            _RuleList.append(r)
+            rulegroup.RuleList.append(r)
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 2)
-        _ExpandParenthesis(_RuleList)
+        self.assertEqual(len(rulegroup.RuleList), 2)
+        _ExpandParenthesis(rulegroup.RuleList)
         print("Start rules after expand parenthesis")
         #OutputRules()
-        newr = _RuleList[1]
+        newr = rulegroup.RuleList[1]
         self.assertEqual(len(newr.Tokens), 3)
         ExpandRuleWildCard()
         print("Start rules after expand wild card again")
         #OutputRules()
-        self.assertEqual(len(_RuleList), 3)
+        self.assertEqual(len(rulegroup.RuleList), 3)
 
 
     def test_parenthsis_complicate_little(self):
-        _RuleList.clear()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+        
         r = Rule()
         r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]>")
         self.assertEqual(len(r.Tokens), 3)
         if r.RuleName:
-            _RuleList.append(r)
+            rulegroup.RuleList.append(r)
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(rulegroup.RuleList), 2)
         #print("Before expand  parenthesis")
         #OutputRules()
-        _ExpandParenthesis(_RuleList)
-        self.assertEqual(len(_RuleList), 2)
+        _ExpandParenthesis(rulegroup.RuleList)
+        self.assertEqual(len(rulegroup.RuleList), 2)
         #print("Before expand rule, after parenthesis")
         #OutputRules()
 
         ExpandRuleWildCard()
         #print(" after expand rule again")
         #OutputRules()
-        self.assertEqual(len(_RuleList), 3)
+        self.assertEqual(len(rulegroup.RuleList), 3)
 
     def test_parenthsis_or(self):
-        _RuleList.clear()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
         InsertRuleInList("""
 @yourC ==
 (
@@ -231,95 +249,110 @@ class RuleTest(unittest.TestCase):
 	| [one:^.M POS]
 
 )
-""")
+""", rulegroup)
 
-        InsertRuleInList("DT_NN_VBG_NN2 == (/the/|'any|such|these|those'|@yourC) ")
+        InsertRuleInList("DT_NN_VBG_NN2 == (/the/|'any|such|these|those'|@yourC) ", rulegroup)
 
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 1)
+        self.assertEqual(len(rulegroup.RuleList), 1)
         #print("Before expand  parenthesis")
         #OutputRules()
         ExpandParenthesisAndOrBlock()
 
         #print("Before expand wild card rule, after parenthesis")
         #OutputRules()
-        self.assertEqual(len(_RuleList), 4)
+        self.assertEqual(len(rulegroup.RuleList), 4)
 
         ExpandRuleWildCard()
         #print(" after expand wild card")
         #OutputRules()
-        self.assertEqual(len(_RuleList), 4)
+        self.assertEqual(len(rulegroup.RuleList), 4)
 
     def test_parenthsis_or_pointer(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
         InsertRuleInList("""
 @yourC ==
 ( ^V[VB : ^.ModS] | ^W[要: ^.ModS] )
-""")
+""", rulegroup)
 
-        InsertRuleInList("DT_NN_VBG_NN2 == @yourC ")
+        InsertRuleInList("DT_NN_VBG_NN2 == @yourC ", rulegroup)
 
         ExpandRuleWildCard()
-        self.assertEqual(len(_RuleList), 1)
+        self.assertEqual(len(rulegroup.RuleList), 1)
         # print("Before expand  parenthesis")
         # OutputRules()
         ExpandParenthesisAndOrBlock()
 
         # print("Before expand wild card rule, after parenthesis")
         # OutputRules()
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(rulegroup.RuleList), 2)
 
         ExpandRuleWildCard()
         # print(" after expand wild card")
         # OutputRules()
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(rulegroup.RuleList), 2)
 
     def test_specialrule(self):
 
-        ResetRules()
-        InsertRuleInList("""single_token_NP5 == <[proNN:NP]>""")
-        r = _RuleList[0]
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("""single_token_NP5 == <[proNN:NP]>""", rulegroup)
+        r = rulegroup.RuleList[0]
         self.assertEqual(r.Tokens[0].word, "[proNN]")
 
     def test_ExpandOrBlock(self):
-        _RuleList.clear()
-        InsertRuleInList("abc == 'a' 'better|worse' 'gift'")
-        self.assertEqual(len(_RuleList), 1)
-        r = _RuleList[0]
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("abc == 'a' 'better|worse' 'gift'", rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 1)
+        r = rulegroup.RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
-        _ExpandOrBlock(_RuleList)
+        _ExpandOrBlock(rulegroup.RuleList)
         #OutputRules()
-        self.assertEqual(len(_RuleList), 1)
-        r = _RuleList[0]
+        self.assertEqual(len(rulegroup.RuleList), 1)
+        r = rulegroup.RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
 
     def test_ExpandOrBlock2(self):
-        ResetRules()
-        InsertRuleInList("abc == 'a' ('better|worse') 'gift'")
-        self.assertEqual(len(_RuleList), 1)
-        r = _RuleList[0]
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("abc == 'a' ('better|worse') 'gift'", rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 1)
+        r = rulegroup.RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
-        _ExpandOrBlock(_RuleList)
+        _ExpandOrBlock(rulegroup.RuleList)
         #OutputRules()
-        self.assertEqual(len(_RuleList), 1)
-        r = _RuleList[0]
+        self.assertEqual(len(rulegroup.RuleList), 1)
+        r = rulegroup.RuleList[0]
         self.assertEqual(len(r.Tokens), 3)
 
     def test_Parenthesis2(self):
-        ResetRules()
-        InsertRuleInList("""ADJ_NP6 == < (	('a') | ([PN:^.M]) ) >""")
-        self.assertEqual(len(_RuleList), 1)
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
-        _ExpandOrBlock(_RuleList)
-        self.assertEqual(len(_RuleList), 2)
+        InsertRuleInList("""ADJ_NP6 == < (	('a') | ([PN:^.M]) ) >""", rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 1)
+
+        _ExpandOrBlock(rulegroup.RuleList)
+        self.assertEqual(len(rulegroup.RuleList), 2)
         #OutputRules()
 
-        _ExpandParenthesis(_RuleList)
+        _ExpandParenthesis(rulegroup.RuleList)
         #OutputRules()
-        r = _RuleList[0]
+        r = rulegroup.RuleList[0]
         self.assertEqual(len(r.Tokens), 1)
         #OutputRules()
 
@@ -345,38 +378,47 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(right, "def")
 
     def test_Parenthesis(self):
-        ResetRules()
-        InsertRuleInList("""simplePres == <[(VB)|VBZ:VG simple  pres]>;""")
-        self.assertEqual(len(_RuleList), 1)
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
-        _ExpandOrBlock(_RuleList)
-        self.assertEqual(len(_RuleList), 2)
+        InsertRuleInList("""simplePres == <[(VB)|VBZ:VG simple  pres]>;""", rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 1)
+
+        _ExpandOrBlock(rulegroup.RuleList)
+        self.assertEqual(len(rulegroup.RuleList), 2)
         #OutputRules()
 
-        ResetRules()
+        ResetRules(rulegroup)
         InsertRuleInList("""abc ==
         <[DT|PDT|( [PRPP:^.M] | (one:^.M POS) ):^.M]  [NE:NP]>
-        """)
-        self.assertEqual(len(_RuleList), 1)
+        """, rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 1)
 
-        _ExpandOrBlock(_RuleList)
+        _ExpandOrBlock(rulegroup.RuleList)
         #OutputRules()
-        self.assertEqual(len(_RuleList), 4)
+        self.assertEqual(len(rulegroup.RuleList), 4)
 
     def test_Actions_2(self):
-        ResetRules()
-        InsertRuleInList("""ACTION == ([pureDT:^.A] | [POS:^.M])""")
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("""ACTION == ([pureDT:^.A] | [POS:^.M])""", rulegroup)
 
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
         #OutputRules("concise")
-        self.assertEqual(len(_RuleList), 2)
+        self.assertEqual(len(rulegroup.RuleList), 2)
 
     def test_Actions_3(self):
-        ResetRules()
-        InsertRuleInList("""ACTION == (([pureDT:^.A] | [POS:^.M]| [POS:^.M POS]))""")
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("""ACTION == (([pureDT:^.A] | [POS:^.M]| [POS:^.M POS]))""", rulegroup)
 
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
@@ -385,11 +427,14 @@ class RuleTest(unittest.TestCase):
         ExpandRuleWildCard()
 
         #OutputRules("concise")
-        self.assertEqual(len(_RuleList), 4)
+        self.assertEqual(len(rulegroup.RuleList), 4)
 
     def test_Actions_noDT(self):
-        ResetRules()
-        InsertRuleInList("""ACTION == [pureDT:^.A] | [POS:^.M]| [POS:^.M POS]""")
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("""ACTION == [pureDT:^.A] | [POS:^.M]| [POS:^.M POS]""", rulegroup)
 
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
@@ -398,10 +443,12 @@ class RuleTest(unittest.TestCase):
         ExpandRuleWildCard()
 
         #OutputRules("concise")
-        self.assertEqual(len(_RuleList), 4)
+        self.assertEqual(len(rulegroup.RuleList), 4)
 
     def test_Actions_NPP(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
         InsertRuleInList(
             """precontext_IN_no_det_NP(Top) ==
@@ -409,24 +456,26 @@ class RuleTest(unittest.TestCase):
                     ( [0 R b:^M.R] [0 a:^.M] )
                      [AP:^.M]
 
-                 """)
+                 """, rulegroup)
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
-
         #OutputRules("concise")
-        word = _RuleList[0].Tokens[0].word
+        word = rulegroup.RuleList[0].Tokens[0].word
         self.assertFalse(":" in word)
-        word = _RuleList[1].Tokens[0].word
+        word = rulegroup.RuleList[1].Tokens[0].word
         self.assertFalse(":" in word)
-        #self.assertEqual(len(_RuleList), 1)
+        #self.assertEqual(len(rulegroup.RuleList), 1)
 
     def test_Expanding_VNPAP2(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
         InsertRuleInList("""
         VNPAP2 == ^[VNPAP !passive VG2] [NP !JS2:^.O ^V2.O2] RB? ^V2[AP OTHO:ingAdj]|[enAdj:^.C] infinitive [!passive:^.purposeR]?
-        """  )
+        """  , rulegroup)
 
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
@@ -434,20 +483,23 @@ class RuleTest(unittest.TestCase):
 
 
         #OutputRules("concise")
-        word = _RuleList[0].Tokens[0].word
+        word = rulegroup.RuleList[0].Tokens[0].word
         self.assertFalse(":" in word)
-        word = _RuleList[1].Tokens[0].word
+        word = rulegroup.RuleList[1].Tokens[0].word
         self.assertFalse(":" in word)
 
     def test_Expanding_Others(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
         InsertRuleInList("""
         the_dollarsign(Top) == <[DT CURR:NP money]>
-        """)
+        """, rulegroup)
 
         InsertRuleInList("""
         the_blahblah_problem(Top) == <the [nv|NN:^.M] "up|down|in|out|away" ['time|trouble|difficulty|problem|experience|issue|topic|question|view|viewpoint':NP]>
-        """)
+        """, rulegroup)
 
         InsertRuleInList("""
         @yourC ==
@@ -456,48 +508,51 @@ class RuleTest(unittest.TestCase):
         	| [one:^.M POS]
 
         )
-        """)
+        """, rulegroup)
 
         InsertRuleInList("""    DT_NN_VBG_NN2 ==
-            '!with' (/the/|'any|such|these|those'|@yourC)""")
+            '!with' (/the/|'any|such|these|those'|@yourC)""", rulegroup)
 
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
         #OutputRules("concise")
-        word = _RuleList[0].Tokens[0].word
+        word = rulegroup.RuleList[0].Tokens[0].word
         self.assertFalse(":" in word)
-        word = _RuleList[1].Tokens[0].word
+        word = rulegroup.RuleList[1].Tokens[0].word
         self.assertFalse(":" in word)
-        word = _RuleList[2].Tokens[1].word
+        word = rulegroup.RuleList[2].Tokens[1].word
         self.assertFalse(":" in word)
 
     def test_Actions_SimppleModal(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
 
         InsertRuleInList(
             """negSimpleModal ==
             <( 	MD 		| "d" 	|  ("do")  	)  >;
-                 """)
+                 """, rulegroup)
 
         InsertRuleInList(
             """Not_That_VTH == [JS|CM|Sconj|Bqut] ^[0 not:V] ^that[0 that:^.X JS2] R* [CL:^that.X fact-]
-                 """)
+                 """, rulegroup)
 
         InsertRuleInList("""
         VWHSS_how3 ==
         ^[ADJSUBCAT:AWHSS AP] [PP F=to human ^PP]? advP? [IN:^Wh.X] ^wh[0 what|which|how|how_many|how_much:^.X Gone] [NP F=!DT:^.O2 wh JS2] [infinitive:^.ObjV]?
-        """)
+        """, rulegroup)
 
         InsertRuleInList("""NP_CM_VBN ==
-        ^[NP2|DE2 !pro !that !date|durR|time|percent:^V.O2] [CM:Done] advP* ^V[enVG VNP|VNPPP Kid Obj:^.X] [PP|RP|DE|R]* ([CM:Done]|[COLN|JM])""")
+        ^[NP2|DE2 !pro !that !date|durR|time|percent:^V.O2] [CM:Done] advP* ^V[enVG VNP|VNPPP Kid Obj:^.X] [PP|RP|DE|R]* ([CM:Done]|[COLN|JM])""", rulegroup)
         ExpandRuleWildCard()
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
         #OutputRules("concise")
-        self.assertTrue(len(_RuleList) >= 3)
+        self.assertTrue(len(rulegroup.RuleList) >= 3)
 
     def test_SeparateRules(self):
         a, b = SeparateRules("""good""")
@@ -536,41 +591,47 @@ third line};""")
         self.assertFalse(b)
 
     def test_PreProcess_CheckFeatures(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
 
         InsertRuleInList(
             """features ==
             'a|b|c';
-                 """)
+                 """, rulegroup)
 
         PreProcess_CheckFeatures()
-        self.assertEqual(len(_RuleList), 1)
-        word = _RuleList[0].Tokens[0].word
+        self.assertEqual(len(rulegroup.RuleList), 1)
+        word = rulegroup.RuleList[0].Tokens[0].word
         self.assertEqual(word, "['a'|'b'|'c']")
 
         InsertRuleInList(
             """features2 ==
             [notfeature:xx];
-                 """)
+                 """, rulegroup)
         #OutputRules()
         PreProcess_CheckFeatures()
-        self.assertEqual(len(_RuleList), 2)
-        word = _RuleList[1].Tokens[0].word
+        self.assertEqual(len(rulegroup.RuleList), 2)
+        word = rulegroup.RuleList[1].Tokens[0].word
         self.assertEqual(word, "['notfeature']")
 
         InsertRuleInList(
             """features3 ==
             notfeature|'a'|notfeature2;
-                 """)
+                 """, rulegroup)
 
         PreProcess_CheckFeatures()
-        OutputRules()
-        self.assertEqual(len(_RuleList), 3)
-        word = _RuleList[2].Tokens[0].word
+        OutputRules(rulegroup)
+        self.assertEqual(len(rulegroup.RuleList), 3)
+        word = rulegroup.RuleList[2].Tokens[0].word
         self.assertEqual(word, "['notfeature'|'a'|'notfeature2']")
 
     def test_Random(self):
-        ResetRules()
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
         FeatureOntology.LoadFullFeatureList('../../../fsa/extra/featurelist.txt')
 
         InsertRuleInList("""
@@ -579,6 +640,6 @@ third line};""")
 
  	[!NN|plural]|[date|measure|dur]|[RP|PP]
 };
-   """)
+   """, rulegroup)
         PreProcess_CheckFeatures()
-        OutputRules()
+        OutputRules(rulegroup)

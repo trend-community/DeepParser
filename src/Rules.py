@@ -12,14 +12,6 @@ from LogicOperation import CheckPrefix as LogicOperation_CheckPrefix
 from LogicOperation import SeparateOrBlocks as LogicOperation_SeparateOrBlocks
 import FeatureOntology
 
-# _RuleList = []
-# _ExpertLexicon = []
-# _MacroList = []
-# _MacroDict = {}     # not sure which one to use yet
-_ruleCounter = 0
-# RuleFileList = []
-# UnitTest = []
-
 RuleGroupDict = {}
 
 
@@ -52,9 +44,7 @@ class RuleToken(object):
 def ResetRules(rg):
     del rg.RuleList[:]
     del rg.ExpertLexicon[:]
-    del rg.MacroList[:]
     rg.MacroDict = {}  # not sure which one to use yet
-    rg.ruleCounter = 0
 
 
 # If it is one line, that it is one rule;
@@ -97,10 +87,10 @@ def SeparateRules(multilineString):
 
 
 class Rule:
+    idCounter = 0
     def __init__(self):
-        global _ruleCounter
-        _ruleCounter += 1
-        self.ID = _ruleCounter
+        Rule.idCounter += 1
+        self.ID = Rule.idCounter
         self.RuleName = ''
         self.Origin = ''
         self.RuleContent = ''
@@ -110,7 +100,7 @@ class Rule:
         self.IsExpertLexicon = False
         self.comment = ''
 
-    def SetRule(self, ruleString, rg, ID=1):
+    def SetRule(self, ruleString, MacroDict={}, ID=1):
         self.Origin = ruleString
         code, comment = SeparateComment(ruleString)
         if not code:
@@ -138,7 +128,7 @@ class Rule:
         self.RuleName = RuleBlocks[1].strip()
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
             RuleContent = ProcessMacro(blocks[1],
-                                       rg.MacroDict)  # Process the whole code, not to worry about comment and unit test
+                                       MacroDict)  # Process the whole code, not to worry about comment and unit test
             if code.endswith(";"):
                 RuleContent = RuleContent[:-1]
             self.RuleContent = RuleContent
@@ -158,7 +148,7 @@ class Rule:
                         remaining = self.comment
                 return remaining  # stop processing if the RuleCode is null
 
-            self.RuleContent = ProcessMacro(RuleCode, rg.MacroDict)
+            self.RuleContent = ProcessMacro(RuleCode, MacroDict)
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -497,7 +487,7 @@ def LoadRules(RuleLocation):
 
 def InsertRuleInList(string, rulegroup):
     node = Rule()
-    remaining = node.SetRule(string, rg=rulegroup)
+    remaining = node.SetRule(string, rulegroup.MacroDict)
     if node.RuleContent:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in rulegroup.MacroDict:
@@ -636,7 +626,7 @@ def ExpandParenthesisAndOrBlock():
         Modified = _ExpandOrBlock(rg.ExpertLexicon) or Modified
 
     if Modified:
-        logging.warning("ExpandParenthesisAndOrBlock to next level")
+        logging.info("ExpandParenthesisAndOrBlock to next level")
         ExpandParenthesisAndOrBlock()
 
 
@@ -914,7 +904,7 @@ def OutputRules(rulegroup, style="details"):
 
     output += "// ****Expert Lexicons****\n"
     output += "// * size: " + str(len(rulegroup.ExpertLexicon)) + " *\n"
-    for rule in sorted(rulegroup.ExpertLexicon, key=operator.attrgetter('RuleName')):
+    for rule in sorted(rulegroup.ExpertLexicon, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
         output += rule.output(style) + "\n"
 
     output += "// ****Macros****\n"
