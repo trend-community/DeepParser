@@ -48,12 +48,12 @@ In your browser visit
 4.1 Prepare the source file, such as "test.txt". It is suggested to place this file in a separate folder, such as git/parser/temp folder
 
 4.2 in current git/parser/src folder, execute:
-	python MultiLevelSegment_RestfulService.py ../temp/test.txt
+	python MultiLevelSegment_RestfulService.py [NoFeature] ../temp/test.txt
 Note: The error message and standard output are showing in the screen. If you want them to be in separate files, please execute:
-    python MultiLevelSegment_RestfulService.py ../temp/test.txt >../temp/output.txt 2>../temp/error.txt
+    python MultiLevelSegment_RestfulService.py [NoFeature] ../temp/test.txt >../temp/output.txt 2>../temp/error.txt
 
 4.3 Run the program locally (Still require support froom the web service of MultiSegmental Java Program in port 8080)
-    python MultiLevelSegment.py ../temp/test.txt >../temp/output.txt 2>../temp/error.txt
+    python MultiLevelSegment.py ../temp/test.txt [NoFeature] >../temp/output.txt 2>../temp/error.txt
 
 
 5, Running the ProcessSentence program
