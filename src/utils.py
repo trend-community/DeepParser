@@ -169,7 +169,7 @@ def OutputStringTokens_json(strTokens):
 
     return output
 
-def OutputStringTokens_oneliner(strTokens):
+def OutputStringTokens_oneliner(strTokens, NoFeature=False):
     output = ""
     for token in strTokens:
         if token.Gone:
@@ -178,6 +178,9 @@ def OutputStringTokens_oneliner(strTokens):
             continue
         if output:
             output += "/"
-        output += token.oneliner()
+        if NoFeature:
+            output += token.stem
+        else:
+            output += token.oneliner()
 
     return output

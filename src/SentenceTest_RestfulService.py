@@ -38,7 +38,7 @@ if __name__ == "__main__":
                 if not TestSentence:    # For the testfile that only have test sentence, not rule name
                     TestSentence = RuleName
                     RuleName = ""
-                unittest = Rules.UnitTestNode(UnitTestFileName, RuleName, TestSentence)
+                unittest = Rules.UnitTestNode(RuleName, TestSentence)
                 UnitTest.append(unittest)
 
     for unittestnode in UnitTest:
