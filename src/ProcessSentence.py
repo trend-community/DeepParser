@@ -36,10 +36,10 @@ def ApplyFeature(featureList, featureID):
         featureList.update(FeatureNode.ancestors)
 
 
-#During chucking "+++", concatenate the stem of each token of this group
+#During chunking "+++", concatenate the stem of each token of this group
 # (find the starting point and ending point) into the current token stem
 # and mark the others Gone
-def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
+def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     RuleStartPos = RulePosition
     StrStartPos = StrPosition
     GoneInStrTokens = 0
@@ -72,7 +72,6 @@ def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         raise EOFError("Can't find EndTrunk")
     StrEndPos = StrEndPos+GoneInStrTokens
 
-
     NewStems = []
     for i in range(StrStartPos, StrEndPos+1):
         if StrTokens[i].Gone:
@@ -86,6 +85,7 @@ def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         NewStem = "".join(NewStems)
     StrTokens[StrPosition].stem = NewStem
     StrTokens[StrPosition].Gone = False
+    Lexicon.ApplyWordLengthFeature(StrTokens[StrPosition])
 
 
 # Apply the features, and other actions.
@@ -110,7 +110,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if Action == "NEW":
                     continue
                 if Action == "+++":
-                    Chunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
+                    ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
                     continue
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
@@ -131,10 +131,10 @@ def MatchAndApplyRuleFile(strtokens, FileName):
         if strtokens[i].Gone:
             i += 1
             continue
-        logging.debug("Checking tokens start from:" + strtokens[i].word)
+        #logging.debug("Checking tokens start from:" + strtokens[i].word)
         WinningRule = None
-        for rule in Rules._ExpertLexicon:
-            if rule.FileName == FileName:
+        rulegroup = Rules.RuleGroupDict[FileName]
+        for rule in rulegroup.ExpertLexicon:
                 result = HeadMatch(strtokens[i:], rule.Tokens)
                 if result:
                     if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
@@ -150,8 +150,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
             i += 1
             continue
 
-        for rule in Rules._RuleList:
-            if rule.FileName == FileName:
+        for rule in rulegroup.RuleList:
                 result = HeadMatch(strtokens[i:], rule.Tokens)
                 if result:
                     if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
@@ -170,7 +169,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
 
 def MatchAndApplyAllRules(strtokens):
     WinningRules = []
-    for RuleFileName in Rules.RuleFileList:
+    for RuleFileName in Rules.RuleGroupDict:
         logging.info("Applying:" + RuleFileName)
         WinningRules.extend(MatchAndApplyRuleFile(strtokens, RuleFileName))
 
@@ -223,19 +222,14 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
     target = "八十五分不等于五分。 "
     nodes = MultiLevelSegmentation(target)
 
-
     for node in nodes:
-        output = "Node [" + node.word + "] "
-        if node.lexicon:
-            output += str(node.lexicon)
-        output += str(node.features) + ";"
-        print(output)
+        print(str(node))
 
     print(OutputStringTokens_oneliner(nodes))
 
@@ -243,11 +237,7 @@ if __name__ == "__main__":
     RuleNames = MatchAndApplyAllRules(nodes)
     print("After match:")
     for node in nodes:
-        output = "Node [" + node.word + "] "
-        if node.lexicon:
-            output += str(node.lexicon)
-        output += str(node.features) + ";"
-        print(output)
+        print(str(node))
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 

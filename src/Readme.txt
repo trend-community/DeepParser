@@ -7,6 +7,7 @@ Note 2: By default the web services are only open for local access.
 
 Feel free to use virtenv or anaconda python, if you know what you are doing.
 
+
 0, Prerequists:
 System:
     java/maven, python 3.
@@ -17,6 +18,8 @@ Folder structure:
         git/parser/src
     and the MultiSegmental Java program should be in
         git/multisegmental/src
+Environment:
+	To support Chinese/Unicode better, set environment variable PYTHONIOENCODING=utf-8
 
 
 1, Initial install:
@@ -55,5 +58,5 @@ Note: The error message and standard output are showing in the screen. If you wa
 
 5, Running the ProcessSentence program
 The ProcessSentence program apply all rule files, after MultiLevelSegment.
-The rules keep changing, you can modify the list in "ProcessSentence.py".
+The rules keep changing, you can modify the list in LoadCommon() of "ProcessSentence.py".
 Replace "MultiLevelSegment" with "ProcessSentence" for the commands in Section 4, you now have all commands you need to process test sentences.

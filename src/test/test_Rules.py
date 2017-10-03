@@ -1,7 +1,6 @@
 
 import unittest
 from Rules import *
-from Rules import _RuleList,  _ProcessOrBlock, _ExpandOrBlock, _ExpandParenthesis
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):

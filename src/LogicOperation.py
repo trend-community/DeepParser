@@ -69,7 +69,7 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
                 for OrBlock in OrBlocks:
                     Result = Result or LogicMatch(OrBlock, strToken, matchtype)
             else:
-                raise Exception("Why OrBlock is none?")
+                raise RuntimeError("Why OrBlock is none?")
 
     return Result
 
@@ -111,7 +111,7 @@ def LogicMatchFeatures(rule, strToken):
                 for OrBlock in OrBlocks:
                     Result = Result or LogicMatchFeatures(OrBlock, strToken)
             else:
-                raise Exception("Why OrBlock is none?")
+                raise RuntimeError("Why OrBlock is none?")
     return Result
 
 def SeparateOrBlocks(OrString):

@@ -263,6 +263,40 @@ def ApplyLexiconToNodes(nodes):
         ApplyLexicon(node)
     return nodes
 
+
+def ApplyWordLengthFeature(node):
+    if IsAscii(node.stem):
+        return
+
+    # Below is for None-English only:
+    if GetFeatureID('c1') in node.features:
+        node.features.remove(GetFeatureID('c1'))
+    if GetFeatureID('c2') in node.features:
+        node.features.remove(GetFeatureID('c2'))
+    if GetFeatureID('c3') in node.features:
+        node.features.remove(GetFeatureID('c3'))
+    if GetFeatureID('c4') in node.features:
+        node.features.remove(GetFeatureID('c4'))
+    if GetFeatureID('c4plus') in node.features:
+        node.features.remove(GetFeatureID('c4plus'))
+
+    wordlength = len(node.stem)
+    if wordlength<1:
+        pass
+    elif wordlength == 1:
+        node.features.add(GetFeatureID('c1'))
+    elif wordlength == 2:
+        node.features.add(GetFeatureID('c2'))
+    elif wordlength == 3:
+        node.features.add(GetFeatureID('c3'))
+    elif wordlength == 4:
+        node.features.add(GetFeatureID('c4'))
+    else:
+        node.features.add(GetFeatureID('c4plus'))
+
+    return
+
+
 def ApplyLexicon(node):
     if not node.lexicon:    # If lexicon is assigned before, then don't do the search
                             #  because the node.word is not as reliable as stem.
@@ -286,12 +320,15 @@ def ApplyLexicon(node):
         else:
             node.features.update(node.lexicon.features)
         _ApplyWordStem(node, node.lexicon)
+
+    ApplyWordLengthFeature(node)
     return node
+
 
 #combining some tokens into one token and
 # (1) refresh with the lexical features;
 # (2) void the combined tokens with FEATURE:Gone
-def ChuckingLexicon(strtokens, length, lexicon):
+def ChunkingLexicon(strtokens, length, lexicon):
     logging.debug("Start chucking lexicon " + lexicon.word)
     NewStems = []
     for i in range(length):
@@ -360,7 +397,7 @@ def LexiconLookup(strTokens):
 
         if WinningLexicon:
             logging.debug("Start applying winning lexicon")
-            ChuckingLexicon(strTokens[i:], WinningLexicon_MatchLength, WinningLexicon)
+            ChunkingLexicon(strTokens[i:], WinningLexicon_MatchLength, WinningLexicon)
             i += WinningLexicon_MatchLength - 1
 
         i += 1

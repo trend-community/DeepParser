@@ -20,7 +20,7 @@ def _SearchPair_old(string, tagpair):
             depth += 1
         i += 1
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
+    raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
 
@@ -46,7 +46,7 @@ def SearchPair(string, tagpair, Reverse=False):
             depth += 1
         i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
+    raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
 
@@ -141,7 +141,7 @@ def SearchToEnd(string, Reverse=False):
                             i += endofpair +1
                         modified = True
                     else:
-                        raise Exception("Can't find a pair in _SearchToEnd()")
+                        raise RuntimeError("Can't find a pair in _SearchToEnd()")
                         #return -1   # error. stop the searching immediately.
         if string[i] in SignsToIgnore:
             return i-direction
