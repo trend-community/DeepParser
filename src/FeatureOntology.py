@@ -187,7 +187,7 @@ def LoadFeatureOntology(featureOncologyLocation):
     #     pickle.dump(_FeatureOntology, pk)
 
 
-@lru_cache(maxsize=1000)
+@lru_cache(maxsize=5000)
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
     for node in _FeatureOntology:
         if node.openWordID == featureID:
@@ -195,7 +195,7 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
     return None
 
 
-@lru_cache(maxsize=1000)
+@lru_cache(maxsize=5000)
 def GetFeatureID(feature):
     if _CreateFeatureList:
         _FeatureSet.add(feature)
@@ -221,7 +221,7 @@ def GetFeatureID(feature):
     return -1    # -1? 0?
 
 
-@lru_cache(maxsize=1000)
+@lru_cache(maxsize=5000)
 def GetFeatureName(featureID):
     if len(_FeatureList) == 0:
         GetFeatureNameURL = url + "/GetFeatureName/"

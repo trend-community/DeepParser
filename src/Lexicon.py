@@ -13,6 +13,8 @@ from FeatureOntology import *
 # url_ch = "http://localhost:8080"
 
 _LexiconDict = {}
+_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
+                            # the same node is also saved in _LexiconDict
 _CommentDict = {}
 
 class LexiconNode(object):
@@ -22,7 +24,7 @@ class LexiconNode(object):
         self.norm = word
         self.features = set()
         self.missingfeature = ""
-        self.forLookup = False
+        #self.forLookup = False
 
     def __str__(self):
         output = self.stem + ": "
@@ -131,7 +133,7 @@ def PrintLexicon(EnglishFlag):
 
 
 def LoadLexicon(lexiconLocation, forLookup = False):
-    global _LexiconDict
+    global _LexiconDict, _LexiconLookupDict
     global _CommentDict
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
@@ -156,9 +158,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             if not node:
                 newNode = True
                 node = LexiconNode(blocks[0])
-                node.forLookup = forLookup
-                if "_" in node.word:            #TODO: to confirm.
-                    node.forLookup = True       #for those combination words.
+                # node.forLookup = forLookup
+                # if "_" in node.word:            #TODO: to confirm.
+                #     node.forLookup = True       #for those combination words.
                 if comment:
                     node.comment = comment
             # else:
@@ -186,6 +188,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
 
             if newNode:
                 _LexiconDict.update({node.word: node})
+                if forLookup \
+                        or "_" in node.word:    #
+                    _LexiconLookupDict.update({node.word: node})
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -379,13 +384,16 @@ def HeadMatchLexicon(strTokens, word):
 def LexiconLookup(strTokens):
     i = 0
     while i < len(strTokens):
-        if not strTokens[i].stem:   #JS and other empty strings. ignore.
+        localstem = strTokens[i].stem
+        if not localstem:   #JS and other empty strings. ignore.
             i += 1
             continue
 
         WinningLexicon = None
-        for word in _LexiconDict:
-            if _LexiconDict.get(word).forLookup:
+        for word in _LexiconLookupDict:
+            #if _LexiconDict.get(word).forLookup:
+                if not word.startswith(localstem):
+                    continue
                 MatchLength = HeadMatchLexicon(strTokens[i:], word)
                 if MatchLength > 0:
                     if WinningLexicon and len(WinningLexicon.word) >= len(word):

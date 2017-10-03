@@ -177,19 +177,25 @@ def MatchAndApplyAllRules(strtokens):
 
 
 def MultiLevelSegmentation(Sentence):
+    logging.debug("-Start MultiLevelSegmentation: tokenize")
     Nodes = Tokenization.Tokenize(Sentence)
+    logging.debug("-Start ApplyLexiconToNodes")
     Lexicon.ApplyLexiconToNodes(Nodes)
+    logging.debug("-Start MatchAndApplyRuleFile")
     MatchAndApplyRuleFile(Nodes, "0defLexX.txt")
+    logging.debug("-Start LexiconLookup")
     Lexicon.LexiconLookup(Nodes)
+    logging.debug("-Start MatchAndApplyRuleFile 2 rules")
     MatchAndApplyRuleFile(Nodes, "mainX2.txt")
     MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
+    logging.debug("-End MultiLevelSegmentation")
     return Nodes
 
 
 def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
     Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')

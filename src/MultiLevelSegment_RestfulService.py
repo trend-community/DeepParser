@@ -6,7 +6,6 @@ from functools import lru_cache
 from utils import *
 
 
-
 if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
