@@ -197,6 +197,7 @@ def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/lexXplus.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
     Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
     Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
