@@ -187,7 +187,7 @@ def LoadFeatureOntology(featureOncologyLocation):
     #     pickle.dump(_FeatureOntology, pk)
 
 
-@lru_cache(maxsize=5000)
+# why it has problem? @lru_cache(maxsize=5000, typed=True)
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
     for node in _FeatureOntology:
         if node.openWordID == featureID:

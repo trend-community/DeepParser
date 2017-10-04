@@ -2,8 +2,12 @@ import logging, sys, re, jsonpickle
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request
+from flask_cache import Cache
 
 app = Flask(__name__)
+app.config['CACHE_TYPE'] = 'simple'
+app.cache = Cache(app)
+
 #
 # @app.route("/LoadFullFeatureList/<ListPath>")
 # def LoadFullFeatureList(ListPath):
@@ -72,26 +76,31 @@ app = Flask(__name__)
 
 
 @app.route("/SearchLexicon/<word>")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def SearchLexicon(word):
     return jsonpickle.encode(Lexicon.SearchLexicon(word))
 
 
 @app.route("/GetFeatureID/<word>")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def GetFeatureID(word):
     return jsonpickle.encode(FeatureOntology.GetFeatureID(word))
 
 
 @app.route("/GetFeatureName/<FeatureID>")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def GetFeatureName(FeatureID):
     return jsonpickle.encode(FeatureOntology.GetFeatureName(int(FeatureID)))
 
 
 @app.route("/Tokenize/<Sentence>")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def Tokenize(Sentence):
     return jsonpickle.encode(Tokenization.Tokenize(Sentence))
 
 
 @app.route("/ApplyLexicon", methods=['POST'])
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def ApplyLexicon():
     node = jsonpickle.decode(request.data)
     Lexicon.ApplyLexicon(node)
@@ -99,6 +108,7 @@ def ApplyLexicon():
 
 
 @app.route("/ApplyLexiconToNodes", methods=['POST'])
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def ApplyLexiconToNodes():
     nodes = jsonpickle.decode(request.data)
     Lexicon.ApplyLexiconToNodes(nodes)
@@ -131,12 +141,14 @@ def MatchAndApplyRuleFile():
 
 
 @app.route("/OutputRules/<Mode>")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def OutputRules(Mode="concise"):
     return Rules.OutputRules(Mode)
 
 
 #Following the instruction in pipelineX.txt
 @app.route("/MultiLevelSegmentation/<Sentence>")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def MultiLevelSegmentation(Sentence):
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
     return jsonpickle.encode(nodes)
@@ -159,3 +171,4 @@ if __name__ == "__main__":
     ProcessSentence.LoadCommon(LoadCommonRules=True)
     print("Running in port " + str(port))
     app.run(port=port, debug=False)
+    #app.test_client().get('/')

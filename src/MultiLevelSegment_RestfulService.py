@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
 
@@ -44,6 +44,7 @@ if __name__ == "__main__":
                 UnitTest.append(unittest)
 
     for unittestnode in UnitTest:
+        logging.debug("-Start one unit test")
         ExtraMessageIndex = unittestnode.TestSentence.find(">")
         if ExtraMessageIndex>0:
             TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
@@ -54,7 +55,9 @@ if __name__ == "__main__":
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
         MultiLevelSegmentationURL = url + "/MultiLevelSegmentation/"
+        logging.debug("-request MultiLevelSegmentation")
         ret = requests.get(MultiLevelSegmentationURL + TestSentence)
+        logging.debug("-get request")
         nodes = jsonpickle.decode(ret.text)
 
         if DebugMode:
@@ -62,3 +65,4 @@ if __name__ == "__main__":
                 print(node)
 
         print(OutputStringTokens_oneliner(nodes, NoFeature))
+        logging.debug("---completed output")

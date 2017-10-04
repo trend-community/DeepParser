@@ -224,6 +224,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.ExpandRuleWildCard()
 
         Rules.OutputRuleFiles("../temp/")
+        print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:

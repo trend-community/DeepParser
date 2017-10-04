@@ -113,10 +113,11 @@ def RealLength(x):
     return len(x)
 
 
-def PrintLexicon(EnglishFlag):
+def OutputLexicon(EnglishFlag):
     # print("//***Lexicon***")
+    Output = ""
     if _CommentDict.get("firstCommentLine"):
-        print(_CommentDict.get("firstCommentLine"))
+        Output += _CommentDict.get("firstCommentLine") + "\n"
     oldWord = None
     if EnglishFlag:
         s=sorted(_LexiconDict.keys())
@@ -124,11 +125,10 @@ def PrintLexicon(EnglishFlag):
         s = sorted(_LexiconDict.keys(), key=lambda x: (RealLength(x), x))
     for word in s:
         if oldWord in _CommentDict.keys():
-            print(_CommentDict[oldWord], end="")
+            Output += _CommentDict[oldWord]
             oldWord = word
 
-        output = _LexiconDict.get(word).entry()
-        print(output)
+        Output += _LexiconDict.get(word).entry() + "\n"
         oldWord = word
 
 
@@ -431,7 +431,7 @@ if __name__ == "__main__":
             Englishflag = False
         else:
             Englishflag = True
-        PrintLexicon(Englishflag)
+        print(OutputLexicon(Englishflag))
         PrintMissingFeatureSet()
     else:
         print("Usage: python LexiconLookup.py CreateLexicon > outputfile.txt")
