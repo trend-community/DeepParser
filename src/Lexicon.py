@@ -3,7 +3,6 @@
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import logging, re, operator, sys, os, pickle, requests
-from functools import lru_cache
 import string
 
 from utils import *
@@ -255,7 +254,6 @@ def SearchLexicon(word, SearchType='flexible'):
     return None
 
 
-@lru_cache(maxsize=1000)
 def SearchFeatures(word):
     lexicon = SearchLexicon(word)
     if lexicon is None:

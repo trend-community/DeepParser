@@ -2,7 +2,6 @@ import logging, sys, re, os
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 import requests, json, jsonpickle
-from functools import lru_cache
 from utils import *
 
 

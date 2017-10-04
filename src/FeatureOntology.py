@@ -5,7 +5,6 @@
 #       python Rules.py > features.txt
 
 import logging, re, operator, sys, os, pickle, requests
-from functools import lru_cache
 from utils import *
 
 url = "http://localhost:5001"
@@ -187,19 +186,26 @@ def LoadFeatureOntology(featureOncologyLocation):
     #     pickle.dump(_FeatureOntology, pk)
 
 
-# why it has problem? @lru_cache(maxsize=5000, typed=True)
+SearchFeatureOntology_Cache = {}
 def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
+    #print("SearchFeatureOntology ID" + str(featureID))
+    if featureID in SearchFeatureOntology_Cache:
+        return SearchFeatureOntology_Cache[featureID]
     for node in _FeatureOntology:
         if node.openWordID == featureID:
+            SearchFeatureOntology_Cache[featureID] = node
             return node
-    return None
+    return ''
 
 
-@lru_cache(maxsize=5000)
+GetFeatureID_Cache = {}
 def GetFeatureID(feature):
     if _CreateFeatureList:
         _FeatureSet.add(feature)
         return 1
+
+    if feature in GetFeatureID_Cache:
+        return GetFeatureID_Cache[feature]
 
     if len(_FeatureList) == 0:
         try:
@@ -207,6 +213,7 @@ def GetFeatureID(feature):
             ret = requests.get(GetFeatureIDURL + feature)
         except IOError:
             return -1
+        GetFeatureID_Cache[feature] = int(ret.text)
         return int(ret.text)
 
     if re.search(u'[\u4e00-\u9fff]', feature):
@@ -221,8 +228,8 @@ def GetFeatureID(feature):
     return -1    # -1? 0?
 
 
-@lru_cache(maxsize=5000)
 def GetFeatureName(featureID):
+
     if len(_FeatureList) == 0:
         GetFeatureNameURL = url + "/GetFeatureName/"
         try:
@@ -258,8 +265,10 @@ if __name__ == "__main__":
     elif command == "CreateFeatureOntology":
         LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        PrintFeatureOntology()
+        #PrintFeatureOntology()
         PrintMissingFeatureSet()
+        for i in range(14, 100):
+            print(str(i) + " ontology:" + str(SearchFeatureOntology(i)))
 
     else:
         print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology > outputfile.txt")
