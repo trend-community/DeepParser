@@ -419,7 +419,6 @@ if __name__ == "__main__":
     command = sys.argv[1]
 
     if command == "CreateLexicon":
-        LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         para = dir_path + '/../../fsa/X/perX.txt'
         LoadLexicon(para)
