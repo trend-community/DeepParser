@@ -7,7 +7,7 @@ class FeatureTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(FeatureTest, self).__init__(*args, **kwargs)
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        FeatureOntology.LoadFullFeatureList(dir_path + '/../../../fsa/extra/featurelist.txt')
+        FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
 
     def test_simple(self):

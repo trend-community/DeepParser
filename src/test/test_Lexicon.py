@@ -3,7 +3,6 @@ import Tokenization
 from Lexicon import *
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-LoadFullFeatureList(dir_path + '/../../../fsa/extra/featurelist.txt')
 LoadFeatureOntology(dir_path + '/../../../fsa/Y/feature.txt')
 LoadLexicon(dir_path + '/../../../fsa/Y/lexY.txt')
 

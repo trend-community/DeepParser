@@ -632,7 +632,7 @@ third line};""")
         ResetRules(rulegroup)
         RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
-        FeatureOntology.LoadFullFeatureList('../../../fsa/extra/featurelist.txt')
+        FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
         InsertRuleInList("""
         Conj_NP2 == 

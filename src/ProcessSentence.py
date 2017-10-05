@@ -193,7 +193,7 @@ def MultiLevelSegmentation(Sentence):
 
 
 def LoadCommon(LoadCommonRules=False):
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/lexX.txt')

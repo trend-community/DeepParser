@@ -934,7 +934,7 @@ def OutputRuleFiles(FolderLocation):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     LoadRules("../../fsa/Y/900NPy.xml")
     LoadRules("../../fsa/Y/800VGy.txt")

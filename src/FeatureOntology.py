@@ -17,7 +17,7 @@ _AliasDict = {}
 _FeatureOntology = []
 
 
-_CreateFeatureList = False
+#_CreateFeatureList = False
 _MissingFeatureSet = set()
 
 
@@ -36,13 +36,13 @@ class OntologyNode:
             for i in self.ancestors:
                 output += GetFeatureName(i) +"; "
         if self.Comment:
-            output += "\t//" + self.Comment
+            output += "\t" + self.Comment
         return output
 
     def SetRule(self, line):
         code, comment = SeparateComment(line)
         self.Comment = comment
-        code = self.ProcessAlias(code)
+        code = self.ProcessAliasInFeatureFile(code)
         if len(code) == 0:
             return
 
@@ -66,8 +66,11 @@ class OntologyNode:
                     self.ancestors.add(fid)
                     #self.ancestors = set(self.ancestors)
 
+    # if there is alias (using = sign):
+    #   1, add the alias (and the real feature id) into _AliasDict
+    #   2, return the openword and features without alias.
     @staticmethod
-    def ProcessAlias( line):
+    def ProcessAliasInFeatureFile( line):
         blocks = [x.strip() for x in re.split("=", line) if x]
         if len(blocks) <= 1:
             return line     # there is no "=" sign.
@@ -108,26 +111,32 @@ class OntologyNode:
 
             _AliasDict[alias] = realfeatureId
 
-        return code.replace(lastalias, realfeature )
+        #Only return the features, not the alias.
+        if len(features) > 1:
+            return  ','.join([blocks[0]] + features[1:])
+        else:
+            return blocks[0]
+        #return features code.replace(lastalias, realfeature )
 
-#Used to extract feature from dictionary, to create full feature list.
-#   not useful after full feature list is created.
-def LoadFeatureSet(dictionaryLocation):
-    with open(dictionaryLocation, encoding="utf-8") as dictionary:
+#Used to extract features from feature.txt, to create full feature list.
+def LoadFeatureSet(featureOncologyLocation):
+    global _FeatureList, _FeatureDict, _FeatureSet
+    _FeatureSet.clear()
+
+    with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             code, __ = SeparateComment(line)
-            blocks = [x.strip() for x in re.split(":", code) if x]
-            if len(blocks) <= 1:
-                continue            # there is no ":" sign
-            featurestring = blocks[-1]   # the last block has features
-            features = featurestring.split()    #separate by space
+            features = [x.strip() for x in re.split("[,;=\s]", code) if x]
+
             for feature in features:
                 if re.match('^\'.*\'$', feature) or re.match('^/.*/$', feature):
                     continue
                 _FeatureSet.add(feature)
+    _FeatureList = list(sorted(_FeatureSet))
+    _FeatureDict = {f:ID for ID,f in enumerate(sorted(_FeatureSet))}
 
 
-def LoadFullFeatureList(featureListLocation):
+def LoadFullFeatureList_Deprecate(featureListLocation):
     global _FeatureList, _FeatureDict
     _FeatureSet.clear()
     with open(featureListLocation, encoding="utf-8") as dictionary:
@@ -137,7 +146,7 @@ def LoadFullFeatureList(featureListLocation):
                 continue
             _FeatureSet.add(feature)
     _FeatureList = list(sorted(_FeatureSet))
-    _FeatureDict = {f:i for i,f in enumerate(sorted(_FeatureSet))}
+    _FeatureDict = {f:ID for ID,f in enumerate(sorted(_FeatureSet))}
 
 
 def PrintFeatureSet():
@@ -162,7 +171,7 @@ def PrintFeatureOntology():
         if node.ancestors:
             print(node)
     print("//***Alias***")
-    for key in sorted(_AliasDict):
+    for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
         print( _FeatureList[_AliasDict[key]] + "=" + key )
 
 
@@ -174,6 +183,8 @@ def LoadFeatureOntology(featureOncologyLocation):
     #     with open(pickleLocation, 'rb') as pk:
     #         _FeatureOntology = pickle.load(pk)
     #     return
+
+    LoadFeatureSet(featureOncologyLocation)
 
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
@@ -195,14 +206,14 @@ def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (fe
         if node.openWordID == featureID:
             SearchFeatureOntology_Cache[featureID] = node
             return node
-    return ''
+    return None
 
 
 GetFeatureID_Cache = {}
 def GetFeatureID(feature):
-    if _CreateFeatureList:
-        _FeatureSet.add(feature)
-        return 1
+    # if _CreateFeatureList:
+    #     _FeatureSet.add(feature)
+    #     return 1
 
     if feature in GetFeatureID_Cache:
         return GetFeatureID_Cache[feature]
@@ -258,17 +269,16 @@ if __name__ == "__main__":
     command = sys.argv[1]
 
     if command == "CreateFeatureList":
-        _CreateFeatureList = True
-        LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+        #_CreateFeatureList = True
+        LoadFeatureSet(dir_path + '/../../fsa/Y/feature.txt')
         PrintFeatureSet()
 
     elif command == "CreateFeatureOntology":
-        LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
+        #LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
+        #_CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        #PrintFeatureOntology()
-        PrintMissingFeatureSet()
-        for i in range(14, 100):
-            print(str(i) + " ontology:" + str(SearchFeatureOntology(i)))
+        PrintFeatureOntology()
+        #PrintFeatureSet()
 
     else:
         print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology > outputfile.txt")

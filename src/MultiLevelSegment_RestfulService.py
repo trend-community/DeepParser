@@ -8,12 +8,14 @@ from utils import *
 if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
+    level = logging.INFO
     if len(sys.argv) > 1:
         UnitTestFileName = sys.argv[1]
         if len(sys.argv) > 2:
             command = sys.argv[2]
             if command == 'Debug':
                 DebugMode = True
+                level = logging.DEBUG
             if command == 'NoFeature':
                 NoFeature = True
     else:
@@ -23,9 +25,9 @@ if __name__ == "__main__":
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     UnitTest = []
     if not os.path.exists(UnitTestFileName):

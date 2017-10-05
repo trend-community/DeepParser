@@ -23,7 +23,7 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     UnitTest = []
     if not os.path.exists(UnitTestFileName):
