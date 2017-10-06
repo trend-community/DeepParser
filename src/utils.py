@@ -1,4 +1,7 @@
-import logging, re
+import logging, re, json
+
+url = "http://localhost:5001"
+url_ch = "http://localhost:8080"
 
 
 # return -1 if failed. Should throw error?
@@ -17,7 +20,7 @@ def _SearchPair_old(string, tagpair):
             depth += 1
         i += 1
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
+    raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
 
@@ -43,7 +46,7 @@ def SearchPair(string, tagpair, Reverse=False):
             depth += 1
         i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise Exception(" Can't find a pair tag!" + string)
+    raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
 
@@ -73,7 +76,8 @@ def SeparateComment(multiline):
 #       so not to be included in here.
 def IsCD(word):
     try:
-        return float(word) and True
+        _ = float(word)
+        return True
     except ValueError:
         return False
 
@@ -137,7 +141,7 @@ def SearchToEnd(string, Reverse=False):
                             i += endofpair +1
                         modified = True
                     else:
-                        raise Exception("Can't find a pair in _SearchToEnd()")
+                        raise RuntimeError("Can't find a pair in _SearchToEnd()")
                         #return -1   # error. stop the searching immediately.
         if string[i] in SignsToIgnore:
             return i-direction
@@ -160,7 +164,12 @@ def GetPrefix(Name):
     return re.findall("(.*?)_", Name+"_")[0]
 
 
-def OutputStringTokens(strTokens):
+def OutputStringTokens_json(strTokens):
+    output = json.dumps([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem], ensure_ascii=False)
+
+    return output
+
+def OutputStringTokens_oneliner(strTokens, NoFeature=False):
     output = ""
     for token in strTokens:
         if token.Gone:
@@ -169,6 +178,9 @@ def OutputStringTokens(strTokens):
             continue
         if output:
             output += "/"
-        output += token.oneliner()
+        if NoFeature:
+            output += token.stem
+        else:
+            output += token.oneliner()
 
     return output

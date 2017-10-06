@@ -17,23 +17,7 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    #FeatureOntology.LoadLexicon('../../fsa/X/lexX.txt')
-
-    Rules.LoadRules("../temp/800VGy.txt.compiled")
-    #Rules.LoadRules("../temp/900NPy.xml.compiled")
-    #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    #Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-
-    Rules.LoadRules("../../fsa/X/0defLexX.txt")
-    Rules.ExpandRuleWildCard()
-
-    Rules.ExpandParenthesisAndOrBlock()
-    Rules.ExpandRuleWildCard()
-
-    Rules.OutputRuleFiles("../temp/")
+    ProcessSentence.LoadCommon(True)
 
     for unittestnode in Rules.UnitTest:
         ExtraMessageIndex = unittestnode.TestSentence.find(">")
@@ -43,21 +27,7 @@ if __name__ == "__main__":
             TestSentence = unittestnode.TestSentence
         print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        nodes = Tokenization.Tokenize(TestSentence)
-
-        for node in nodes:
-            Lexicon.ApplyLexicon(node)
-
-        JSnode = Tokenization.SentenceNode('')
-        nodes = [JSnode] + nodes
-        nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
-        nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
-        if nodes[-1].word != ".":
-            JWnode = Tokenization.SentenceNode('')
-            nodes = nodes + [JWnode]
-        nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
-
-        Lexicon.LexiconLookup(nodes)
+        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
 
         if DebugMode:
             for node in nodes:
@@ -68,6 +38,7 @@ if __name__ == "__main__":
             if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                 print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
 
+        if DebugMode:
+            for node in nodes:
+                print(node)
 
-    if DebugMode:
-        Rules.OutputRules('concise')

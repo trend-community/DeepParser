@@ -1,8 +1,8 @@
-import logging, re
+import logging, re, requests, jsonpickle
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
-from utils import IsAscii
+from utils import *
 
 counterMatch = 0
 
@@ -36,10 +36,10 @@ def ApplyFeature(featureList, featureID):
         featureList.update(FeatureNode.ancestors)
 
 
-#During chucking "+++", concatenate the stem of each token of this group
+#During chunking "+++", concatenate the stem of each token of this group
 # (find the starting point and ending point) into the current token stem
 # and mark the others Gone
-def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
+def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     RuleStartPos = RulePosition
     StrStartPos = StrPosition
     GoneInStrTokens = 0
@@ -72,7 +72,6 @@ def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         raise EOFError("Can't find EndTrunk")
     StrEndPos = StrEndPos+GoneInStrTokens
 
-
     NewStems = []
     for i in range(StrStartPos, StrEndPos+1):
         if StrTokens[i].Gone:
@@ -86,12 +85,13 @@ def Chunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         NewStem = "".join(NewStems)
     StrTokens[StrPosition].stem = NewStem
     StrTokens[StrPosition].Gone = False
+    Lexicon.ApplyWordLengthFeature(StrTokens[StrPosition])
 
 
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule, StartPosition):
-    print("Applying Winning Rule:" + rule.RuleName)
+    logging.info("Applying Winning Rule:" + rule.RuleName)
     GoneInStrTokens = 0
     for i in range(len(rule.Tokens)):
         while strtokens[StartPosition + i + GoneInStrTokens].Gone:
@@ -100,9 +100,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
-            logging.warning("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
-            logging.warning("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
-            logging.warning("The actions are:" + str(Actions))
+            logging.debug("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
+            logging.debug("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
+            logging.debug("The actions are:" + str(Actions))
 
             if "NEW" in Actions:
                 strtokens[StartPosition + i + GoneInStrTokens].features = set()
@@ -110,7 +110,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if Action == "NEW":
                     continue
                 if Action == "+++":
-                    Chunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
+                    ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
                     continue
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
@@ -118,119 +118,135 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID != -1:
                     ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, ActionID)
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
-            logging.warning("After applying feature:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
+            logging.debug("After applying feature:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
 
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
 
-def MatchAndApplyRules(strtokens):
+def MatchAndApplyRuleFile(strtokens, FileName):
     WinningRules = []
-    for RuleFileName in Rules.RuleFileList:
-        print("Applying:" + RuleFileName)
-        i = 0
+    i = 0
 
-        while i < len(strtokens):
-            if strtokens[i].Gone:
-                i += 1
-                continue
-            logging.warning("Checking tokens start from:" + strtokens[i].word)
-            WinningRule = None
-            for rule in Rules._ExpertLexicon:
-                if rule.FileName == RuleFileName:
-                    result = HeadMatch(strtokens[i:], rule.Tokens)
-                    if result:
-                        if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
-                            #also consider the priority
-                            pass
-                        else:
-                            WinningRule = rule
-
-            if WinningRule:
-                skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
-                i += skiptokennum - 1    #go to the next word
-                WinningRules.append(WinningRule.RuleName)
-                i += 1
-                continue
-
-            for rule in Rules._RuleList:
-                if rule.FileName == RuleFileName:
-                    result = HeadMatch(strtokens[i:], rule.Tokens)
-                    if result:
-                        if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
-                        #also consider the priority
-                            pass
-                        else:
-                            WinningRule = rule
-            if WinningRule:
-                skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
-                i += skiptokennum - 1    #go to the next word
-                WinningRules.append(WinningRule.RuleName)
-
+    while i < len(strtokens):
+        if strtokens[i].Gone:
             i += 1
-    return WinningRules, strtokens
+            continue
+        #logging.debug("Checking tokens start from:" + strtokens[i].word)
+        WinningRule = None
+        rulegroup = Rules.RuleGroupDict[FileName]
+        for rule in rulegroup.ExpertLexicon:
+                result = HeadMatch(strtokens[i:], rule.Tokens)
+                if result:
+                    if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
+                        # also consider the priority
+                        pass
+                    else:
+                        WinningRule = rule
+
+        if WinningRule:
+            skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
+            i += skiptokennum - 1  # go to the next word
+            WinningRules.append(WinningRule.RuleName)
+            i += 1
+            continue
+
+        for rule in rulegroup.RuleList:
+                result = HeadMatch(strtokens[i:], rule.Tokens)
+                if result:
+                    if WinningRule and len(WinningRule.Tokens) >= len(rule.Tokens):
+                        # also consider the priority
+                        pass
+                    else:
+                        WinningRule = rule
+        if WinningRule:
+            skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
+            i += skiptokennum - 1  # go to the next word
+            WinningRules.append(WinningRule.RuleName)
+
+        i += 1
+    return WinningRules
+
+
+def MatchAndApplyAllRules(strtokens):
+    WinningRules = []
+    for RuleFileName in Rules.RuleGroupDict:
+        logging.info("Applying:" + RuleFileName)
+        WinningRules.extend(MatchAndApplyRuleFile(strtokens, RuleFileName))
+
+    return WinningRules
+
+
+def MultiLevelSegmentation(Sentence):
+    logging.debug("-Start MultiLevelSegmentation: tokenize")
+    Nodes = Tokenization.Tokenize(Sentence)
+    logging.debug("-Start ApplyLexiconToNodes")
+    Lexicon.ApplyLexiconToNodes(Nodes)
+    logging.debug("-Start MatchAndApplyRuleFile")
+    MatchAndApplyRuleFile(Nodes, "0defLexX.txt")
+    logging.debug("-Start LexiconLookup")
+    Lexicon.LexiconLookup(Nodes)
+    logging.debug("-Start MatchAndApplyRuleFile 2 rules")
+    MatchAndApplyRuleFile(Nodes, "mainX2.txt")
+    MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
+    logging.debug("-End MultiLevelSegmentation")
+    return Nodes
+
+
+def LoadCommon(LoadCommonRules=False):
+    #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/lexXplus.txt')
+    Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
+    Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/locX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/perX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
+
+    logging.info("Parameter is:" + str(LoadCommonRules))
+    if LoadCommonRules:
+        Rules.LoadRules("../../fsa/X/0defLexX.txt")
+        #Rules.LoadRules("../temp/800VGy.txt.compiled")
+        #Rules.LoadRules("../temp/900NPy.xml.compiled")
+        #Rules.LoadRules("../temp/1800VPy.xml.compiled")
+        #Rules.LoadRules("../../fsa/Y/900NPy.xml")
+        #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        Rules.LoadRules("../../fsa/X/mainX2.txt")
+        Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
+        #Rules.LoadRules("../../fsa/Y/100y.txt")
+        # Rules.LoadRules("../../fsa/X/180NPx.txt")
+        # Rules.LoadRules("../../fsa/X/270VPx.txt")
+
+        Rules.ExpandRuleWildCard()
+        Rules.ExpandParenthesisAndOrBlock()
+        Rules.ExpandRuleWildCard()
+
+        Rules.OutputRuleFiles("../temp/")
+        print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+    LoadCommon(True)
 
-    #Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/locX.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/perX.txt')
-
-    #Rules.LoadRules("../../fsa/Y/100y.txt")
-    #Rules.LoadRules("../../fsa/X/mainX2.txt")
-    Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
-    Rules.LoadRules("../../fsa/Y/100y.txt")
-
-    #Rules.LoadRules("../../fsa/Y/800VGy.txt")
-    #Rules.LoadRules("../temp/800VGy.txt.compiled")
-    #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-    #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-    Rules.ExpandRuleWildCard()
-
-    Rules.ExpandParenthesisAndOrBlock()
-    Rules.ExpandRuleWildCard()
-
-    target = "from behind in terms of the chunking.  "
-    logging.info(target)
-    nodes = Tokenization.Tokenize(target)
+    target = "八十五分不等于五分。 "
+    nodes = MultiLevelSegmentation(target)
 
     for node in nodes:
-        Lexicon.ApplyLexicon(node)
+        print(str(node))
 
-    JSnode = Tokenization.SentenceNode('')
-    nodes = [JSnode] + nodes
-    if nodes[-1].word != ".":
-        JWnode = Tokenization.SentenceNode('')
-        nodes = nodes + [JWnode]
-    nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
-    nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
-    nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
-    Lexicon.LexiconLookup(nodes)
+    print(OutputStringTokens_oneliner(nodes))
 
-    for node in nodes:
-        output = "Node [" + node.word + "] "
-        if node.lexicon:
-            output += str(node.lexicon) + "-"
-        output += str(node.features) + ";"
-        print(output)
-
-    logging.warning("\tStart matching rules! counterMatch=%s" % counterMatch)
-    RuleNames, _ = MatchAndApplyRules(nodes)
+    logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
+    RuleNames = MatchAndApplyAllRules(nodes)
     print("After match:")
     for node in nodes:
-        output = "Node [" + node.word + "] "
-        if node.lexicon:
-            output += str(node.lexicon) + "-"
-        output += str(node.features) + ";"
-        print(output)
+        print(str(node))
 
-    logging.warning("\tDone! counterMatch=%s" % counterMatch)
+    logging.info("\tDone! counterMatch=%s" % counterMatch)
+
+    print(OutputStringTokens_oneliner(nodes))

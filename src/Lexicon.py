@@ -3,7 +3,6 @@
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import logging, re, operator, sys, os, pickle, requests
-from functools import lru_cache
 import string
 
 from utils import *
@@ -13,6 +12,8 @@ from FeatureOntology import *
 # url_ch = "http://localhost:8080"
 
 _LexiconDict = {}
+_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
+                            # the same node is also saved in _LexiconDict
 _CommentDict = {}
 
 class LexiconNode(object):
@@ -22,7 +23,7 @@ class LexiconNode(object):
         self.norm = word
         self.features = set()
         self.missingfeature = ""
-        self.forLookup = False
+        #self.forLookup = False
 
     def __str__(self):
         output = self.stem + ": "
@@ -111,10 +112,11 @@ def RealLength(x):
     return len(x)
 
 
-def PrintLexicon(EnglishFlag):
+def OutputLexicon(EnglishFlag):
     # print("//***Lexicon***")
+    Output = ""
     if _CommentDict.get("firstCommentLine"):
-        print(_CommentDict.get("firstCommentLine"))
+        Output += _CommentDict.get("firstCommentLine") + "\n"
     oldWord = None
     if EnglishFlag:
         s=sorted(_LexiconDict.keys())
@@ -122,16 +124,15 @@ def PrintLexicon(EnglishFlag):
         s = sorted(_LexiconDict.keys(), key=lambda x: (RealLength(x), x))
     for word in s:
         if oldWord in _CommentDict.keys():
-            print(_CommentDict[oldWord], end="")
+            Output += _CommentDict[oldWord]
             oldWord = word
 
-        output = _LexiconDict.get(word).entry()
-        print(output)
+        Output += _LexiconDict.get(word).entry() + "\n"
         oldWord = word
 
 
 def LoadLexicon(lexiconLocation, forLookup = False):
-    global _LexiconDict
+    global _LexiconDict, _LexiconLookupDict
     global _CommentDict
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
@@ -156,9 +157,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             if not node:
                 newNode = True
                 node = LexiconNode(blocks[0])
-                node.forLookup = forLookup
-                if "_" in node.word:            #TODO: to confirm.
-                    node.forLookup = True       #for those combination words.
+                # node.forLookup = forLookup
+                # if "_" in node.word:            #TODO: to confirm.
+                #     node.forLookup = True       #for those combination words.
                 if comment:
                     node.comment = comment
             # else:
@@ -186,6 +187,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
 
             if newNode:
                 _LexiconDict.update({node.word: node})
+                if forLookup \
+                        or "_" in node.word:    #
+                    _LexiconLookupDict.update({node.word: node})
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -250,12 +254,50 @@ def SearchLexicon(word, SearchType='flexible'):
     return None
 
 
-@lru_cache(maxsize=1000)
 def SearchFeatures(word):
     lexicon = SearchLexicon(word)
     if lexicon is None:
         return {}   #return empty feature set
     return lexicon.features
+
+
+def ApplyLexiconToNodes(nodes):
+    for node in nodes:
+        ApplyLexicon(node)
+    return nodes
+
+
+def ApplyWordLengthFeature(node):
+    if IsAscii(node.stem):
+        return
+
+    # Below is for None-English only:
+    if GetFeatureID('c1') in node.features:
+        node.features.remove(GetFeatureID('c1'))
+    if GetFeatureID('c2') in node.features:
+        node.features.remove(GetFeatureID('c2'))
+    if GetFeatureID('c3') in node.features:
+        node.features.remove(GetFeatureID('c3'))
+    if GetFeatureID('c4') in node.features:
+        node.features.remove(GetFeatureID('c4'))
+    if GetFeatureID('c4plus') in node.features:
+        node.features.remove(GetFeatureID('c4plus'))
+
+    wordlength = len(node.stem)
+    if wordlength<1:
+        pass
+    elif wordlength == 1:
+        node.features.add(GetFeatureID('c1'))
+    elif wordlength == 2:
+        node.features.add(GetFeatureID('c2'))
+    elif wordlength == 3:
+        node.features.add(GetFeatureID('c3'))
+    elif wordlength == 4:
+        node.features.add(GetFeatureID('c4'))
+    else:
+        node.features.add(GetFeatureID('c4plus'))
+
+    return
 
 
 def ApplyLexicon(node):
@@ -273,14 +315,23 @@ def ApplyLexicon(node):
     else:
         node.stem = node.lexicon.stem
         node.norm = node.lexicon.norm
-        node.features.update(node.lexicon.features)
+        NEWFeatureID = GetFeatureID("NEW")
+        if NEWFeatureID in node.lexicon.features:
+            node.features = set()
+            node.features.update(node.lexicon.features)
+            node.features.remove(NEWFeatureID)
+        else:
+            node.features.update(node.lexicon.features)
         _ApplyWordStem(node, node.lexicon)
+
+    ApplyWordLengthFeature(node)
     return node
+
 
 #combining some tokens into one token and
 # (1) refresh with the lexical features;
 # (2) void the combined tokens with FEATURE:Gone
-def ChuckingLexicon(strtokens, length, lexicon):
+def ChunkingLexicon(strtokens, length, lexicon):
     logging.debug("Start chucking lexicon " + lexicon.word)
     NewStems = []
     for i in range(length):
@@ -302,6 +353,8 @@ def ChuckingLexicon(strtokens, length, lexicon):
 def HeadMatchLexicon(strTokens, word):
     i = 0
     CombinedString = ""
+    if not word.startswith(strTokens[0].stem):
+        return -1   #verify first stem to be the starting of word.
     while i< len(strTokens):
         # if not strTokens[i].stem:   #JS and other empty strings. ignore.
         #     i += 1
@@ -318,6 +371,8 @@ def HeadMatchLexicon(strTokens, word):
                 return i+1              # Return the length
             else:
                 return -1
+        if not word.startswith(CombinedString):
+            return -1
         i += 1
 
     return -1
@@ -327,13 +382,16 @@ def HeadMatchLexicon(strTokens, word):
 def LexiconLookup(strTokens):
     i = 0
     while i < len(strTokens):
-        if not strTokens[i].stem:   #JS and other empty strings. ignore.
+        localstem = strTokens[i].stem
+        if not localstem:   #JS and other empty strings. ignore.
             i += 1
             continue
 
         WinningLexicon = None
-        for word in _LexiconDict:
-            if _LexiconDict.get(word).forLookup:
+        for word in _LexiconLookupDict:
+            #if _LexiconDict.get(word).forLookup:
+                if not word.startswith(localstem):
+                    continue
                 MatchLength = HeadMatchLexicon(strTokens[i:], word)
                 if MatchLength > 0:
                     if WinningLexicon and len(WinningLexicon.word) >= len(word):
@@ -345,7 +403,7 @@ def LexiconLookup(strTokens):
 
         if WinningLexicon:
             logging.debug("Start applying winning lexicon")
-            ChuckingLexicon(strTokens[i:], WinningLexicon_MatchLength, WinningLexicon)
+            ChunkingLexicon(strTokens[i:], WinningLexicon_MatchLength, WinningLexicon)
             i += WinningLexicon_MatchLength - 1
 
         i += 1
@@ -361,17 +419,16 @@ if __name__ == "__main__":
     command = sys.argv[1]
 
     if command == "CreateLexicon":
-        LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         para = dir_path + '/../../fsa/X/perX.txt'
         LoadLexicon(para)
-        para = dir_path + '/../../fsa/X/perX.txt'
+        para = dir_path + '/../../fsa/X/defLexX.txt'
         LoadLexicon(para, forLookup=True)
         if "/fsa/X" in para:
             Englishflag = False
         else:
             Englishflag = True
-        PrintLexicon(Englishflag)
+        print(OutputLexicon(Englishflag))
         PrintMissingFeatureSet()
     else:
         print("Usage: python LexiconLookup.py CreateLexicon > outputfile.txt")

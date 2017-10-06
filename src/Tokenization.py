@@ -1,7 +1,8 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
-import logging
-from FeatureOntology import GetFeatureName as FeatureOntology_GetFeatureName
+import logging, requests, jsonpickle
+import FeatureOntology
+from utils import *
 
 #class EmptyBase(object): pass
 #
@@ -30,38 +31,36 @@ class SentenceNode(object):
         output += self.stem
         if self.Gone:
             output += '(Gone)'
-        output += ": "
-        for feature in self.features:
-            f = FeatureOntology_GetFeatureName(feature)
-            if f:
-                output += f + ","
-            else:
-                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
+        featureString = self.GetFeatures()
+        if featureString:
+            output += ":" + featureString
         return output
 
     def oneliner(self):
         output = self.stem
+        featureString = self.GetFeatures()
+        if featureString:
+            output += ":" + featureString
+        return output
+
+    def GetFeatures(self):
         featureString = ""
         for feature in self.features:
-            f = FeatureOntology_GetFeatureName(feature)
+            f = FeatureOntology.GetFeatureName(feature)
             if f:
                 if featureString:
                     featureString += ","
                 featureString += f
             else:
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
-        if featureString:
-            output += ":" + featureString
-        return output
+        return featureString
 
-
-
-def Tokenize(sentence):
+def Tokenize_space(sentence):
     StartToken = True
     StartPosition = 0
     #for i in range(1, len(sentence)):   #ignore the first one.
     i = 1
-    DS = []
+    Tokens = []
     while i<len(sentence):
         c = sentence[i]
         prevc = sentence[i-1]
@@ -73,7 +72,7 @@ def Tokenize(sentence):
         if (prevc.isalnum() and not c.isalnum()) or (not prevc.isalnum() and not prevc.isspace()):
             Element = SentenceNode(sentence[StartPosition:i])
             Element.position = StartPosition
-            DS.append(Element)
+            Tokens.append(Element)
             StartToken = False
 
         if (c.isalnum() and (not prevc.isalnum()) ) or (not c.isalnum() and not c.isspace()):
@@ -84,11 +83,47 @@ def Tokenize(sentence):
     if StartToken:  #wrap up the last one
         Element = SentenceNode(sentence[StartPosition:])
         Element.position = StartPosition
-        DS.append(Element)
+        Tokens.append(Element)
 
-    return DS
+    return Tokens
 
-def DisplayDS(DS):
+
+
+IMPOSSIBLESTRING = "@#$%!"
+def Tokenize(Sentence):
+    Sentence = Sentence.strip()
+    if IsAscii(Sentence):
+        Tokens = Tokenize_space(Sentence)
+
+        # if FeatureOntology._FeatureSet:
+            #this part is to get tokenize from webservice. not actually practical.
+        # TokenizeURL = url + "/Tokenize"
+        # ret_t = requests.post(TokenizeURL, data=Sentence)
+        # nodes_t = jsonpickle.decode(ret_t.text)
+    else:
+        TokenizeURL = url_ch + "/Tokenize/"
+        #ret_t = requests.get(TokenizeURL + Sentence)
+        data = {'Sentence': Sentence}
+        segmented = requests.get(TokenizeURL, params=data).text
+        #segmented = jsonpickle.decode(segmented)
+        segmented = segmented.replace("\/", IMPOSSIBLESTRING)
+        blocks = segmented.split("/")
+        Tokens = []
+        for block in blocks:
+            block = block.replace(IMPOSSIBLESTRING, "/")
+            WordPropertyPair = block.split(":")
+            Element = SentenceNode(WordPropertyPair[0])
+            if len(WordPropertyPair)>1:
+                features = WordPropertyPair[1]
+                for feature in features.split():
+                    featureid = FeatureOntology.GetFeatureID(feature)
+                    Element.features.add(featureid)
+
+            Tokens.append(Element)
+    return Tokens
+
+
+def DisplayDS_old(DS):
     for ds in DS:
         print("[word]:" + ds.word + "\t[position]:" + str(ds.position))
 
@@ -104,7 +139,7 @@ if __name__ == "__main__":
 
     print("\n\n My tokenization:")
     nodes = Tokenize(target)
-    DisplayDS(nodes)
+    DisplayDS_old(nodes)
 
 
 

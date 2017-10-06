@@ -7,21 +7,17 @@ class FeatureTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(FeatureTest, self).__init__(*args, **kwargs)
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        FeatureOntology.LoadFullFeatureList(dir_path + '/../../../fsa/extra/featurelist.txt')
+        FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
 
     def test_simple(self):
         """exact match"""
         node =  Tokenization.SentenceNode('')
-        node.features = set()
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
         self.assertTrue(LogicMatchFeatures("NN", node))
     def test_And(self):
-        node =  Tokenization.SentenceNode('')
-        node.lexicon = None
-        node.word = "abc"
-        node.features = set()
+        node =  Tokenization.SentenceNode("abc")
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
         self.assertFalse(LogicMatchFeatures("NN percent", node))

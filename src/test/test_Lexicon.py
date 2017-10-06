@@ -1,9 +1,8 @@
 import unittest
-
+import Tokenization
 from Lexicon import *
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-LoadFullFeatureList(dir_path + '/../../../fsa/extra/featurelist.txt')
 LoadFeatureOntology(dir_path + '/../../../fsa/Y/feature.txt')
 LoadLexicon(dir_path + '/../../../fsa/Y/lexY.txt')
 
@@ -39,3 +38,9 @@ class LexiconTest(unittest.TestCase):
                 print("Found Ved!")
                 FoundSent = True
         self.assertTrue(FoundSent)
+
+    def test_ApplyLexicon(self):
+        node = Tokenization.SentenceNode('0')
+        ApplyLexicon(node)
+        CDFeatureID = GetFeatureID('CD')
+        self.assertTrue(CDFeatureID in node.features)
