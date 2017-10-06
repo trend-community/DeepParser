@@ -35,12 +35,6 @@ class UnitTestNode(object):
         self.TestSentence = TestTentence
 
 
-class RuleToken(object):
-    def __init__(self):
-        self.EndTrunk = 0
-        self.StartTrunk = 0
-
-
 def ResetRules(rg):
     del rg.RuleList[:]
     del rg.ExpertLexicon[:]
@@ -86,11 +80,18 @@ def SeparateRules(multilineString):
     return lines[0], "\n".join(lines[1:])
 
 
+class RuleToken(object):
+    def __init__(self):
+        self.EndTrunk = 0
+        self.StartTrunk = 0
+
+
 class Rule:
     idCounter = 0
     def __init__(self):
         Rule.idCounter += 1
         self.ID = Rule.idCounter
+        self.FileName = ''
         self.RuleName = ''
         self.Origin = ''
         self.RuleContent = ''
@@ -138,6 +139,8 @@ class Rule:
         try:
             remaining = ''
             RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
+            if remaining:
+                self.Origin = self.Origin.replace(remaining, '').strip()
             RuleCode, self.comment = SeparateComment(RuleContent)
             if not RuleCode:
                 self.RuleContent = ""
@@ -487,6 +490,7 @@ def LoadRules(RuleLocation):
 
 def InsertRuleInList(string, rulegroup):
     node = Rule()
+    node.FileName = rulegroup.FileName  #used in keeping record of the winning rules.
     remaining = node.SetRule(string, rulegroup.MacroDict)
     if node.RuleContent:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
@@ -555,6 +559,7 @@ def _ExpandRuleWildCard_List(OneList):
             if token.repeat != [1, 1]:
                 for repeat_num in range(token.repeat[0], token.repeat[1] + 1):
                     newrule = Rule()
+                    newrule.FileName = rule.FileName
                     newrule.Origin = rule.Origin
                     newrule.comment = rule.comment
                     newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -658,6 +663,7 @@ def _ExpandParenthesis(OneList):
                     subTokenlist[-1].EndTrunk = token.EndTrunk
 
                 newrule = Rule()
+                newrule.FileName = rule.FileName
                 newrule.Origin = rule.Origin
                 newrule.comment = rule.comment
                 newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -733,6 +739,7 @@ def _ExpandOrBlock(OneList):
 
             # left:
             newrule = Rule()
+            newrule.FileName = rule.FileName
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
             newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -771,6 +778,7 @@ def _ExpandOrBlock(OneList):
 
             # right:
             newrule = Rule()
+            newrule.FileName = rule.FileName
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
             newrule.IsExpertLexicon = rule.IsExpertLexicon

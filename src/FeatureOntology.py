@@ -234,7 +234,7 @@ def GetFeatureID(feature):
     if feature in _FeatureDict:
         return _FeatureDict[feature]
 
-    logging.warning("Searching for " + feature + " but it is not in featurefulllist.")
+    logging.warning("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
 

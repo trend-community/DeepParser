@@ -350,6 +350,8 @@ def ChunkingLexicon(strtokens, length, lexicon):
     ApplyLexicon(strtokens[0])      #including features and stems
 
 
+# return the how many tokens combined together as the "word".
+# -1 if not matched.
 def HeadMatchLexicon(strTokens, word):
     i = 0
     CombinedString = ""
@@ -359,8 +361,8 @@ def HeadMatchLexicon(strTokens, word):
         # if not strTokens[i].stem:   #JS and other empty strings. ignore.
         #     i += 1
         #     continue                # do this judgment before it gets in here.
-        if CombinedString \
-            and IsAscii(CombinedString): #ignore the first word.
+        if IsAscii(CombinedString) \
+            and CombinedString:         #ignore the first word.
             CombinedString += "_" + strTokens[i].stem
         else:
             CombinedString += strTokens[i].stem
