@@ -66,15 +66,21 @@ def HeadMatch(strTokens, ruleTokens):
 
     GoneInStrTokens = 0
     for i in range(len(ruleTokens)):
+        if i + GoneInStrTokens >= len(strTokens):
+            return False  # got to the end of the string
         try:
             #Ignore the "Gone" tokens.
             while strTokens[i+GoneInStrTokens].Gone :
                 GoneInStrTokens += 1
-                if i+GoneInStrTokens == len(strTokens):
+                if i+GoneInStrTokens >= len(strTokens):
                     return False    #got to the end of the string
             if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
                 return False  #  this rule does not fit for this string
         except Exception as e:
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
+            logging.error(e)
+            #raise
+        except IndexError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
             #raise
@@ -268,18 +274,15 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
 
-    logging.info("Parameter is:" + str(LoadCommonRules))
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
-        #Rules.LoadRules("../temp/800VGy.txt.compiled")
-        #Rules.LoadRules("../temp/900NPy.xml.compiled")
-        #Rules.LoadRules("../temp/1800VPy.xml.compiled")
+        # Rules.LoadRules("../temp/800VGy.txt.compiled")
         #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-        #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+        # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
         # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
-        #Rules.LoadRules("../../fsa/Y/100y.txt")
+        # Rules.LoadRules("../../fsa/Y/100y.txt")
         # Rules.LoadRules("../../fsa/X/180NPx.txt")
         # Rules.LoadRules("../../fsa/X/270VPx.txt")
 
