@@ -67,9 +67,9 @@ class LexiconNode(object):
         if self.norm != self.word:
             output += "/" + self.norm + "/ "
         if self.missingfeature !="":
-            output += "//Missing feature: " + self.missingfeature
+            output +=  self.missingfeature
         if hasattr(self, "comment"):
-            output += " //" + self.comment
+            output += self.comment
 
         return output
 
@@ -178,7 +178,7 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                     featureID = GetFeatureID(feature)
                     if featureID==-1:
                         logging.debug("Missing Feature: " + feature)
-                        node.missingfeature += " " + feature
+                        node.missingfeature += "\\" + feature
                     node.features.add(featureID)
                     ontologynode = SearchFeatureOntology(featureID)
                     if ontologynode:
