@@ -284,7 +284,7 @@ def LoadCommon(LoadCommonRules=False):
         # Rules.LoadRules("../../fsa/Y/800VGy.txt")
         # Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
