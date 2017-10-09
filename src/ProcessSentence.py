@@ -12,7 +12,7 @@ WinningRuleDict = {}
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
     if len(strtokens) >= 3:
-        AddSpace = IsAscii(strtokens[1].word) and IsAscii(strtokens[-2].word) and IsAscii(strtokens[len(strtokens)/2].word)
+        AddSpace = IsAscii(strtokens[1].word) and IsAscii(strtokens[-2].word) and IsAscii(strtokens[int(len(strtokens)/2)].word)
     else:
         AddSpace = IsAscii(strtokens[1].word)
     for i in range(StartPosition):
@@ -248,14 +248,14 @@ def MultiLevelSegmentation(Sentence):
         Nodes = Nodes + [JWnode]
     Nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
     Nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
-    Nodes[-1].features.add(FeatureOntology.GetFeatureID('JW'))
+    Nodes[-1].features.add(FeatureOntology.GetFeatureID('JM'))
 
     logging.debug("-Start MatchAndApplyRuleFile")
     MatchAndApplyRuleFile(Nodes, "0defLexX.txt")
     logging.debug("-Start LexiconLookup")
     Lexicon.LexiconLookup(Nodes)
 
-    MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
+    #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
 
     logging.debug("-Start MatchAndApplyRuleFile 2 rules")
     MatchAndApplyRuleFile(Nodes, "mainX2.txt")
@@ -282,7 +282,7 @@ def LoadCommon(LoadCommonRules=False):
         # Rules.LoadRules("../../fsa/Y/800VGy.txt")
         # #Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        #Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
@@ -320,4 +320,4 @@ if __name__ == "__main__":
 
     print(OutputStringTokens_oneliner(nodes))
 
-    print(OutputWinningRules())
+    print("Winning rules:\n" + OutputWinningRules())

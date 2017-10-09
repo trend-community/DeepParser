@@ -615,7 +615,7 @@ def ExpandRuleWildCard():
         Modified = _ExpandRuleWildCard_List(rg.ExpertLexicon) or Modified
 
     if Modified:
-        logging.info("\tExpandRuleWildCard next level.")
+        logging.info("ExpandRuleWildCard next level.")
         ExpandRuleWildCard()  # recursive call itself to finish all.
 
 
@@ -713,7 +713,22 @@ def _ProcessOrBlock(Content, orIndex):
     except Exception as e:
         logging.info("Failed to process or block because: " + str(e))
         return None, None, None
-    return Content[start:end + 1], Content[start:orIndex], Content[orIndex + 1:end + 1]
+
+    originBlock = Content[start:end + 1]
+    leftBlock = Content[start:orIndex]
+    rightBlock = Content[orIndex + 1:end + 1]
+
+    #if left/right block is enclosed by (), and it is part of a block , then the () can be removed:
+    # write out in log as confirmation.
+    if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content)-2:
+        if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
+            logging.warning("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+            leftBlock = leftBlock[1:-1]
+        if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
+            logging.warning("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+            rightBlock = rightBlock[1:-1]
+
+    return originBlock, leftBlock, rightBlock
 
 
 def _ExpandOrBlock(OneList):
@@ -949,18 +964,18 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/800VGy.txt")
-    LoadRules("../../fsa/Y/1800VPy.xml")
-    LoadRules("../../fsa/Y/100y.txt")
-    LoadRules("../../fsa/Y/50POSy.xml")
-    #
-    LoadRules("../../fsa/X/mainX2.txt")
-    LoadRules("../../fsa/X/ruleLexiconX.txt")
-    #
+    # LoadRules("../../fsa/Y/900NPy.xml")
+    # LoadRules("../../fsa/Y/800VGy.txt")
+    # # LoadRules("../../fsa/Y/1800VPy.xml")
+    # # LoadRules("../../fsa/Y/100y.txt")
+    # # LoadRules("../../fsa/Y/50POSy.xml")
+    # # #
+    # LoadRules("../../fsa/X/mainX2.txt")
+    # LoadRules("../../fsa/X/ruleLexiconX.txt")
+    # # #
     LoadRules("../../fsa/Y/1test_rules.txt")
 
-    LoadRules("../../fsa/X/180NPx.txt")
+    # LoadRules("../../fsa/X/180NPx.txt")
 
     ExpandRuleWildCard()
     ExpandParenthesisAndOrBlock()
