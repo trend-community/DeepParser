@@ -66,4 +66,5 @@ if __name__ == "__main__":
                 print(node)
 
         print(OutputStringTokens_oneliner(nodes, NoFeature))
-        logging.debug("---completed output")
+
+    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())

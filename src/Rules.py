@@ -722,10 +722,10 @@ def _ProcessOrBlock(Content, orIndex):
     # write out in log as confirmation.
     if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content)-2:
         if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-            logging.warning("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+            logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
             leftBlock = leftBlock[1:-1]
         if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-            logging.warning("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+            logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
             rightBlock = rightBlock[1:-1]
 
     return originBlock, leftBlock, rightBlock
