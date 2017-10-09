@@ -31,7 +31,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 paraLex = dir_path + '/../../fsa/X/LexX.txt'
 paraDef = dir_path + '/../../fsa/X/defLexX.txt'
 paraMain = dir_path + '/../../fsa/X/main2017.txt'
-newPlus = "outputPlus.txt"
+newPlus = dir_path + "/../../fsa/X/LexXplus.txt"
 
 def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
@@ -129,10 +129,10 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
             _LexiconDict1.update({word:node1})
 
             if _LexiconDict1==_LexiconDictDefX:
-                logging.debug("def " + word)
+                # logging.debug("def " + word)
                 _LexiconDictDefPlusX.update({word:node1})
             else:
-                logging.debug("lexx " + word)
+                # logging.debug("lexx " + word)
                 _LexiconDictLexPlusX.update({word:node1})
 
             removeWord.add(word)
@@ -155,7 +155,7 @@ def AlignMain():
                 code, comment = SeparateComment(line)
                 if (code not in _LexiconDictB.keys()) and (code not in _LexiconDictP.keys()) and ((code not in _LexiconDictL.keys())) and ((code not in _LexiconDictI.keys())) and ((code not in _LexiconDictI4.keys())) and (code not in _LexiconDictLexX.keys()) and (code not in _LexiconDictDefX.keys()):
                     file.write(code + comment + "\n")
-    # shutil.move(newloc,paraMain)
+    shutil.move(newloc,paraMain)
 
 
 
@@ -171,58 +171,22 @@ def AddDefandLexX():
     logging.debug(len(_LexiconDictLexX))
 
 
-def printNewLex(loc, _LexiconDictTemp, newloc, LexX=False):
-    with open(newloc,'w') as file:
-        if not LexX:
-            with open(loc,encoding='utf-8') as dictionary:
-                for line in dictionary:
-                    if line.startswith("//"):
-                        file.write(line)
-                        continue
-                        #print(line,end="")
-                    if ":" in line:
-                        newline = line[0:line.index(":")]
+def printNewLex(_CommentDictTemp, _LexiconDictTemp, newloc):
+    s = sorted(_LexiconDictTemp.keys(), key=lambda x: (RealLength(x), x))
+    with open(newloc, 'w') as file:
+        output = ""
+        if _CommentDictTemp.get("firstCommentLine"):
+            output += _CommentDictTemp.get("firstCommentLine") + "\n"
+        oldWord = None
+        logging.debug("the size of lexX is: " + str(len(_LexiconDictTemp)))
+        for word in s:
+            if oldWord in _CommentDictTemp.keys():
+                output += _CommentDictTemp[oldWord]
+                oldWord = word
+            output += _LexiconDictTemp.get(word).entry() + "\n"
+            oldWord = word
+        file.write(output+"\n")
 
-                        if newline in _LexiconDictTemp.keys():
-                            file.write(line)
-                            #print(line, end="")
-                        else:
-                            logging.debug(loc + " " + newline)
-                            continue
-        else:
-            logging.debug("the size of lexX is: " + str(len(_LexiconDictTemp)))
-            for word in _LexiconDictTemp.keys():
-                output = word + ": "
-                node = _LexiconDictTemp.get(word)
-                featuresCopy = node.features.copy()
-                for feature in node.features:
-                    nodes = SearchFeatureOntology(feature)
-                    if nodes:
-                        ancestors = nodes.ancestors
-                        if ancestors:
-                            c = ancestors.intersection(featuresCopy)
-                            if c:
-                                for a in c:
-                                    featuresCopy.remove(a)
-                featureSorted = set()
-                for feature in featuresCopy:
-                    featureName = GetFeatureName(feature)
-                    if featureName:
-                        featureSorted.add(featureName)
-
-                featureSorted = sorted(featureSorted)
-
-                for feature in featureSorted:
-                    output += feature + " "
-                if node.stem != node.word:
-                    output += "'" + node.stem + "' "
-                if node.norm != node.word:
-                    output += "/" + node.norm + "/ "
-                if node.missingfeature != "":
-                    output += node.missingfeature
-                if hasattr(node, "comment"):
-                    output += node.comment
-                file.write(output+"\n")
 
 
 def FeaturesMorethanFour():
@@ -329,6 +293,12 @@ def GenerateLexPlus():
                 newNode.features = featuresID
                 newNode.norm = newWord
                 _LexiconDictPlus.update({newWord: newNode})
+                if len(word)==2 and word[1]=="出":
+
+                    newWord = word[0] + "得" + word[1] + "来"
+                    newNode.features = featuresID
+                    newNode.norm = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
 
                 newWord = first + "不" + first + "得" + second
                 featuresID.add(orQID)
@@ -354,6 +324,12 @@ def GenerateLexPlus():
                 newNode.features = featuresID
                 newNode.norm = newWord
                 _LexiconDictPlus.update({newWord: newNode})
+                if len(word)==2 and word[1]=="出":
+                    newWord = word[0] + "不" + word[1] + "来"
+                    newNode.word = newWord
+                    newNode.features = featuresID
+                    newNode.norm = newNode.word
+                    _LexiconDictPlus.update({newWord: newNode})
 
                 if notDeID not in featuresID:
                     featuresID.remove(cannotPBID)
@@ -362,7 +338,13 @@ def GenerateLexPlus():
                     newNode.word = newWord
                     newNode.features = featuresID
                     newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
+                    _LexiconDictPlus.update({newWord: newNode})
+                    if len(word) == 2 and word[1] == "出":
+                        newWord = word[0] + "的" + word[1] + "来"
+                        newNode.word = newWord
+                        newNode.features = featuresID
+                        newNode.norm = newNode.word
+                        _LexiconDictPlus.update({newWord: newNode})
 
             if abID in featuresID and len(word)==2:
                 first = word[0]
@@ -402,7 +384,39 @@ def LexStartWithChar(startingChar):
                 res.update({word[1]:newNode})
     return res
 
+def printPlus():
+    with open(newPlus, 'w') as file:
 
+        for word in _LexiconDictPlus.keys():
+            output = word + ": "
+            node = _LexiconDictPlus.get(word)
+            featuresCopy = node.features.copy()
+            for feature in node.features:
+                nodes = SearchFeatureOntology(feature)
+                if nodes:
+                    ancestors = nodes.ancestors
+                    if ancestors:
+                        c = ancestors.intersection(featuresCopy)
+                        if c:
+                            for a in c:
+                                featuresCopy.remove(a)
+            featureSorted = set()
+            for feature in featuresCopy:
+                featureName = GetFeatureName(feature)
+                if featureName:
+                    featureSorted.add(featureName)
+            featureSorted = sorted(featureSorted)
+            for feature in featureSorted:
+                output += feature + " "
+            if node.stem != node.word:
+                output += "'" + node.stem + "' "
+            if node.norm != node.word:
+                output += "/" + node.norm + "/ "
+            if node.missingfeature != "":
+                output += node.missingfeature
+            if hasattr(node, "comment"):
+                output += node.comment
+            file.write(output + "\n")
 
 
 
@@ -415,11 +429,7 @@ if __name__ == "__main__":
         exit(0)
     command = sys.argv[0]
 
-
-    LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-
-
     paraB = dir_path + '/../../fsa/X/brandX.txt'
     OrganizeLex(paraB, _CommentDictB,_LexiconDictB)
     paraP = dir_path + '/../../fsa/X/perX.txt'
@@ -450,13 +460,6 @@ if __name__ == "__main__":
 
     compareLex(_LexiconDictI, _LexiconDictI4)
 
-    newB = 'newB.txt'
-    newP = 'newP.txt'
-    newL = 'newL.txt'
-    newI = 'newI.txt'
-    newI4 = 'newI4.txt'
-    newLexX = 'newLexX.txt'
-    newDef = 'newDef.txt'
 
     # printNewLex(paraB, _LexiconDictB, newB)
     # printNewLex(paraP, _LexiconDictP, newP)
@@ -484,16 +487,24 @@ if __name__ == "__main__":
     AddDefandLexX()
 
     FeaturesMorethanFour()
-    printNewLex(paraB, _LexiconDictB, newB)
-    printNewLex(paraP, _LexiconDictP, newP)
-    printNewLex(paraL, _LexiconDictL, newL)
-    printNewLex(paraI, _LexiconDictI, newI)
-    printNewLex(paraI4, _LexiconDictI4, newI4)
+    printNewLex(_CommentDictB, _LexiconDictB, paraB)
 
-    printNewLex(paraLex, _LexiconDictLexX, newLexX, LexX = True)
-    printNewLex(paraDef, _LexiconDictDefX, newDef, LexX = True)
+    printNewLex(_CommentDictP,_LexiconDictP, paraP)
+
+    printNewLex(_CommentDictL,_LexiconDictL, paraL)
+
+    printNewLex(_CommentDictI,_LexiconDictI, paraI)
+
+    printNewLex(_CommentDictI4,_LexiconDictI4, paraI4)
+
+    printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLex)
+
+    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
+
     GenerateLexPlus()
-    printNewLex(paraDef, _LexiconDictPlus, newPlus, LexX=True)
+    printPlus()
+
+
 
 
 
