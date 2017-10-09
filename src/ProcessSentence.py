@@ -254,6 +254,9 @@ def MultiLevelSegmentation(Sentence):
     MatchAndApplyRuleFile(Nodes, "0defLexX.txt")
     logging.debug("-Start LexiconLookup")
     Lexicon.LexiconLookup(Nodes)
+
+    MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
+
     logging.debug("-Start MatchAndApplyRuleFile 2 rules")
     MatchAndApplyRuleFile(Nodes, "mainX2.txt")
     MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
@@ -276,14 +279,14 @@ def LoadCommon(LoadCommonRules=False):
 
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
-        # Rules.LoadRules("../temp/800VGy.txt.compiled")
-        #Rules.LoadRules("../../fsa/Y/900NPy.xml")
+        # Rules.LoadRules("../../fsa/Y/800VGy.txt")
+        # #Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        #Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
-        # Rules.LoadRules("../../fsa/X/180NPx.txt")
+        Rules.LoadRules("../../fsa/X/180NPx.txt")
         # Rules.LoadRules("../../fsa/X/270VPx.txt")
 
         Rules.ExpandRuleWildCard()
@@ -291,7 +294,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.ExpandRuleWildCard()
 
         Rules.OutputRuleFiles("../temp/")
-        print(Lexicon.OutputLexicon(False))
+        #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:

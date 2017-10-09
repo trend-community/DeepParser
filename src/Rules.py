@@ -623,7 +623,7 @@ def ExpandParenthesisAndOrBlock():
     Modified = False
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
-        logging.info("ExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)) +
+        logging.info("\tExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)) +
                      " Size of ExpertLexicon:" + str(len(rg.ExpertLexicon)))
         Modified = _ExpandParenthesis(rg.RuleList) or Modified
         Modified = _ExpandParenthesis(rg.ExpertLexicon) or Modified
@@ -730,7 +730,12 @@ def _ExpandOrBlock(OneList):
             if orIndex <= 0:
                 orIndex = token.word.find("|(")
                 if orIndex <= 0:
-                    continue
+                    orIndex = token.word.find("]|[")
+                    if orIndex <= 0:
+                        continue
+                    else:
+                        orIndex += 1    #move the pointer from ] to |
+
 
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
             if originBlock is None:

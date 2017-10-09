@@ -88,10 +88,10 @@ def MultiLevelSegmentation(Sentence):
     return jsonpickle.encode(nodes)
 
 
-@app.route("/OutputWinningRules")
-@app.cache.cached(timeout=10)  # cache this view for 10 seconds
-def OutputWinningRules():
-    return ProcessSentence.OutputWinningRules()
+# @app.route("/OutputWinningRules")
+# @app.cache.cached(timeout=10)  # cache this view for 10 seconds
+# def OutputWinningRules():
+#     return ProcessSentence.OutputWinningRules()
 
 
 if __name__ == "__main__":

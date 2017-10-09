@@ -130,6 +130,7 @@ def OutputLexicon(EnglishFlag):
         Output += _LexiconDict.get(word).entry() + "\n"
         oldWord = word
 
+    return Output
 
 def LoadLexicon(lexiconLocation, forLookup = False):
     global _LexiconDict, _LexiconLookupDict
@@ -415,24 +416,16 @@ if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    if len(sys.argv) != 2:
-        print("Usage: python LexiconLookup.py CreateLexicon > outputfile.txt")
-        exit(0)
-    command = sys.argv[1]
-
-    if command == "CreateLexicon":
-        LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        para = dir_path + '/../../fsa/X/perX.txt'
-        LoadLexicon(para)
-        para = dir_path + '/../../fsa/X/defLexX.txt'
-        LoadLexicon(para, forLookup=True)
-        if "/fsa/X" in para:
-            Englishflag = False
-        else:
-            Englishflag = True
-        print(OutputLexicon(Englishflag))
-        PrintMissingFeatureSet()
+    LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+    para = dir_path + '/../../fsa/X/perX.txt'
+    LoadLexicon(para)
+    para = dir_path + '/../../fsa/X/defLexX.txt'
+    LoadLexicon(para, forLookup=True)
+    if "/fsa/X" in para:
+        Englishflag = False
     else:
-        print("Usage: python LexiconLookup.py CreateLexicon > outputfile.txt")
-        exit(0)
+        Englishflag = True
+    print(OutputLexicon(Englishflag))
+    PrintMissingFeatureSet()
+
 
