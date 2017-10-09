@@ -260,6 +260,8 @@ def MultiLevelSegmentation(Sentence):
     logging.debug("-Start MatchAndApplyRuleFile 2 rules")
     MatchAndApplyRuleFile(Nodes, "mainX2.txt")
     MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
+    MatchAndApplyRuleFile(Nodes, "10compound.txt")
+    MatchAndApplyRuleFile(Nodes, "180NPx.txt")
     logging.debug("-End MultiLevelSegmentation")
     return Nodes
 
