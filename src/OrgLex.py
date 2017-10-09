@@ -146,7 +146,7 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
 
 def AlignMain():
     newloc = "outputMain.txt"
-    with open(newloc, 'w') as file:
+    with open(newloc, 'w',encoding='utf-8') as file:
         with open(paraMain, encoding='utf-8') as dictionary:
             for line in dictionary:
                 if line.startswith("//"):
@@ -173,7 +173,7 @@ def AddDefandLexX():
 
 def printNewLex(_CommentDictTemp, _LexiconDictTemp, newloc):
     s = sorted(_LexiconDictTemp.keys(), key=lambda x: (RealLength(x), x))
-    with open(newloc, 'w') as file:
+    with open(newloc, 'w',encoding='utf-8') as file:
         output = ""
         if _CommentDictTemp.get("firstCommentLine"):
             output += _CommentDictTemp.get("firstCommentLine") + "\n"
@@ -385,7 +385,7 @@ def LexStartWithChar(startingChar):
     return res
 
 def printPlus():
-    with open(newPlus, 'w') as file:
+    with open(newPlus, 'w',encoding='utf-8') as file:
 
         for word in _LexiconDictPlus.keys():
             output = word + ": "
