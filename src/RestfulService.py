@@ -8,72 +8,6 @@ app = Flask(__name__)
 app.config['CACHE_TYPE'] = 'simple'
 app.cache = Cache(app)
 
-#
-# @app.route("/LoadFullFeatureList/<ListPath>")
-# def LoadFullFeatureList(ListPath):
-#     FeatureOntology.LoadFullFeatureList(ListPath)
-#     return str(True)
-#
-#
-# @app.route("/LoadFeatureOntology/<OntologyPath>")
-# def LoadFeatureOntology(OntologyPath):
-#     FeatureOntology.LoadFeatureOntology(OntologyPath)
-#     return str(True)
-#
-#
-# @app.route("/LoadLexicon/<LexiconPath>")
-# def LoadLexicon(LexiconPath):
-#     Lexicon.LoadLexicon(LexiconPath)
-#     return str(True)
-#
-#
-# @app.route("/LoadRules/<RulePath>")
-# def LoadRules(RulePath):
-#     Rules.LoadRules(RulePath)
-#     return str(True)
-#
-#
-# @app.route("/PostProcessRules")
-# def PostProcessRules():
-#     Rules.ExpandRuleWildCard()
-#     Rules.ExpandParenthesisAndOrBlock()
-#     Rules.ExpandRuleWildCard()
-#
-#     Rules.OutputRuleFiles("../temp/")
-#     return str(True)
-#
-#
-# @app.route("/LoadCommon/<LoadCommonRules>")
-# def LoadCommon(LoadCommonRules=False):
-#     FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-#     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-#     Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/lexX.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/locX.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
-#     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
-#
-#     logging.warning("Parameter is:" + str(LoadCommonRules))
-#     if LoadCommonRules:
-#         Rules.LoadRules("../../fsa/X/0defLexX.txt")
-#         #Rules.LoadRules("../temp/800VGy.txt.compiled")
-#         #Rules.LoadRules("../temp/900NPy.xml.compiled")
-#         #Rules.LoadRules("../temp/1800VPy.xml.compiled")
-#         #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-#         #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-#         # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-#         Rules.LoadRules("../../fsa/X/mainX2.txt")
-#         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
-#         #Rules.LoadRules("../../fsa/Y/100y.txt")
-#         # Rules.LoadRules("../../fsa/X/180NPx.txt")
-#         # Rules.LoadRules("../../fsa/X/270VPx.txt")
-#
-#         PostProcessRules()
-#     return str(True)
-
 
 @app.route("/SearchLexicon/<word>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
@@ -148,16 +82,22 @@ def OutputRules(Mode="concise"):
 
 #Following the instruction in pipelineX.txt
 @app.route("/MultiLevelSegmentation/<Sentence>")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
+@app.cache.cached(timeout=10)  # cache this view for 10 seconds
 def MultiLevelSegmentation(Sentence):
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
     return jsonpickle.encode(nodes)
 
 
+# @app.route("/OutputWinningRules")
+# @app.cache.cached(timeout=10)  # cache this view for 10 seconds
+# def OutputWinningRules():
+#     return ProcessSentence.OutputWinningRules()
+
+
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     jsonpickle.set_encoder_options('json', ensure_ascii=False);
 
     port = 5001

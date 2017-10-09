@@ -35,12 +35,6 @@ class UnitTestNode(object):
         self.TestSentence = TestTentence
 
 
-class RuleToken(object):
-    def __init__(self):
-        self.EndTrunk = 0
-        self.StartTrunk = 0
-
-
 def ResetRules(rg):
     del rg.RuleList[:]
     del rg.ExpertLexicon[:]
@@ -86,11 +80,18 @@ def SeparateRules(multilineString):
     return lines[0], "\n".join(lines[1:])
 
 
+class RuleToken(object):
+    def __init__(self):
+        self.EndTrunk = 0
+        self.StartTrunk = 0
+
+
 class Rule:
     idCounter = 0
     def __init__(self):
         Rule.idCounter += 1
         self.ID = Rule.idCounter
+        self.FileName = ''
         self.RuleName = ''
         self.Origin = ''
         self.RuleContent = ''
@@ -138,6 +139,8 @@ class Rule:
         try:
             remaining = ''
             RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
+            if remaining:
+                self.Origin = self.Origin.replace(remaining, '').strip()
             RuleCode, self.comment = SeparateComment(RuleContent)
             if not RuleCode:
                 self.RuleContent = ""
@@ -487,6 +490,7 @@ def LoadRules(RuleLocation):
 
 def InsertRuleInList(string, rulegroup):
     node = Rule()
+    node.FileName = rulegroup.FileName  #used in keeping record of the winning rules.
     remaining = node.SetRule(string, rulegroup.MacroDict)
     if node.RuleContent:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
@@ -555,6 +559,7 @@ def _ExpandRuleWildCard_List(OneList):
             if token.repeat != [1, 1]:
                 for repeat_num in range(token.repeat[0], token.repeat[1] + 1):
                     newrule = Rule()
+                    newrule.FileName = rule.FileName
                     newrule.Origin = rule.Origin
                     newrule.comment = rule.comment
                     newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -610,7 +615,7 @@ def ExpandRuleWildCard():
         Modified = _ExpandRuleWildCard_List(rg.ExpertLexicon) or Modified
 
     if Modified:
-        logging.info("\tExpandRuleWildCard next level.")
+        logging.info("ExpandRuleWildCard next level.")
         ExpandRuleWildCard()  # recursive call itself to finish all.
 
 
@@ -618,7 +623,7 @@ def ExpandParenthesisAndOrBlock():
     Modified = False
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
-        logging.info("ExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)) +
+        logging.info("\tExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)) +
                      " Size of ExpertLexicon:" + str(len(rg.ExpertLexicon)))
         Modified = _ExpandParenthesis(rg.RuleList) or Modified
         Modified = _ExpandParenthesis(rg.ExpertLexicon) or Modified
@@ -658,6 +663,7 @@ def _ExpandParenthesis(OneList):
                     subTokenlist[-1].EndTrunk = token.EndTrunk
 
                 newrule = Rule()
+                newrule.FileName = rule.FileName
                 newrule.Origin = rule.Origin
                 newrule.comment = rule.comment
                 newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -707,7 +713,22 @@ def _ProcessOrBlock(Content, orIndex):
     except Exception as e:
         logging.info("Failed to process or block because: " + str(e))
         return None, None, None
-    return Content[start:end + 1], Content[start:orIndex], Content[orIndex + 1:end + 1]
+
+    originBlock = Content[start:end + 1]
+    leftBlock = Content[start:orIndex]
+    rightBlock = Content[orIndex + 1:end + 1]
+
+    #if left/right block is enclosed by (), and it is part of a block , then the () can be removed:
+    # write out in log as confirmation.
+    if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content)-2:
+        if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
+            logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+            leftBlock = leftBlock[1:-1]
+        if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
+            logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+            rightBlock = rightBlock[1:-1]
+
+    return originBlock, leftBlock, rightBlock
 
 
 def _ExpandOrBlock(OneList):
@@ -724,7 +745,12 @@ def _ExpandOrBlock(OneList):
             if orIndex <= 0:
                 orIndex = token.word.find("|(")
                 if orIndex <= 0:
-                    continue
+                    orIndex = token.word.find("]|[")
+                    if orIndex <= 0:
+                        continue
+                    else:
+                        orIndex += 1    #move the pointer from ] to |
+
 
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
             if originBlock is None:
@@ -733,6 +759,7 @@ def _ExpandOrBlock(OneList):
 
             # left:
             newrule = Rule()
+            newrule.FileName = rule.FileName
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
             newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -771,6 +798,7 @@ def _ExpandOrBlock(OneList):
 
             # right:
             newrule = Rule()
+            newrule.FileName = rule.FileName
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
             newrule.IsExpertLexicon = rule.IsExpertLexicon
@@ -936,18 +964,18 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    LoadRules("../../fsa/Y/900NPy.xml")
-    LoadRules("../../fsa/Y/800VGy.txt")
-    LoadRules("../../fsa/Y/1800VPy.xml")
-    LoadRules("../../fsa/Y/100y.txt")
-    LoadRules("../../fsa/Y/50POSy.xml")
-    #
-    LoadRules("../../fsa/X/mainX2.txt")
-    LoadRules("../../fsa/X/ruleLexiconX.txt")
-    #
+    # LoadRules("../../fsa/Y/900NPy.xml")
+    # LoadRules("../../fsa/Y/800VGy.txt")
+    # # LoadRules("../../fsa/Y/1800VPy.xml")
+    # # LoadRules("../../fsa/Y/100y.txt")
+    # # LoadRules("../../fsa/Y/50POSy.xml")
+    # # #
+    # LoadRules("../../fsa/X/mainX2.txt")
+    # LoadRules("../../fsa/X/ruleLexiconX.txt")
+    # # #
     LoadRules("../../fsa/Y/1test_rules.txt")
 
-    LoadRules("../../fsa/X/180NPx.txt")
+    # LoadRules("../../fsa/X/180NPx.txt")
 
     ExpandRuleWildCard()
     ExpandParenthesisAndOrBlock()

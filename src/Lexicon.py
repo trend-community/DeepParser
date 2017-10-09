@@ -130,6 +130,7 @@ def OutputLexicon(EnglishFlag):
         Output += _LexiconDict.get(word).entry() + "\n"
         oldWord = word
 
+    return Output
 
 def LoadLexicon(lexiconLocation, forLookup = False):
     global _LexiconDict, _LexiconLookupDict
@@ -350,6 +351,8 @@ def ChunkingLexicon(strtokens, length, lexicon):
     ApplyLexicon(strtokens[0])      #including features and stems
 
 
+# return the how many tokens combined together as the "word".
+# -1 if not matched.
 def HeadMatchLexicon(strTokens, word):
     i = 0
     CombinedString = ""
@@ -359,8 +362,8 @@ def HeadMatchLexicon(strTokens, word):
         # if not strTokens[i].stem:   #JS and other empty strings. ignore.
         #     i += 1
         #     continue                # do this judgment before it gets in here.
-        if CombinedString \
-            and IsAscii(CombinedString): #ignore the first word.
+        if IsAscii(CombinedString) \
+            and CombinedString:         #ignore the first word.
             CombinedString += "_" + strTokens[i].stem
         else:
             CombinedString += strTokens[i].stem
@@ -413,24 +416,16 @@ if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    if len(sys.argv) != 2:
-        print("Usage: python LexiconLookup.py CreateLexicon > outputfile.txt")
-        exit(0)
-    command = sys.argv[1]
-
-    if command == "CreateLexicon":
-        LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        para = dir_path + '/../../fsa/X/perX.txt'
-        LoadLexicon(para)
-        para = dir_path + '/../../fsa/X/defLexX.txt'
-        LoadLexicon(para, forLookup=True)
-        if "/fsa/X" in para:
-            Englishflag = False
-        else:
-            Englishflag = True
-        print(OutputLexicon(Englishflag))
-        PrintMissingFeatureSet()
+    LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+    para = dir_path + '/../../fsa/X/perX.txt'
+    LoadLexicon(para)
+    para = dir_path + '/../../fsa/X/defLexX.txt'
+    LoadLexicon(para, forLookup=True)
+    if "/fsa/X" in para:
+        Englishflag = False
     else:
-        print("Usage: python LexiconLookup.py CreateLexicon > outputfile.txt")
-        exit(0)
+        Englishflag = True
+    print(OutputLexicon(Englishflag))
+    PrintMissingFeatureSet()
+
 

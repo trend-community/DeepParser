@@ -6,6 +6,58 @@ from utils import *
 
 counterMatch = 0
 
+WinningRuleDict = {}
+
+
+def MarkWinningTokens(strtokens, rule, StartPosition):
+    result = ""
+    if len(strtokens) >= 3:
+        AddSpace = IsAscii(strtokens[1].word) and IsAscii(strtokens[-2].word) and IsAscii(strtokens[int(len(strtokens)/2)].word)
+    else:
+        AddSpace = IsAscii(strtokens[1].word)
+    for i in range(StartPosition):
+        if not strtokens[i].Gone:
+            result += strtokens[i].stem
+            if AddSpace:
+                result += " "
+
+    GoneInStrTokens = 0
+    result += "<B>"
+    for i in range(len(rule.Tokens)):
+        while strtokens[StartPosition + i + GoneInStrTokens].Gone:
+            GoneInStrTokens += 1
+            if i + GoneInStrTokens == len(strtokens):
+                raise RuntimeError("Can't be applied: " + rule.RuleName)
+        result += strtokens[StartPosition + i + GoneInStrTokens].stem
+        if AddSpace:
+            result += " "
+    result += "</B>"
+
+    for i in range(StartPosition + len(rule.Tokens) + GoneInStrTokens, len(strtokens)):
+        if not strtokens[i].Gone:
+            result += strtokens[i].stem
+            if AddSpace:
+                result += " "
+
+    return result.strip()
+
+
+def StoreWinningRule(strtokens, rule, StartPosition):
+    global WinningRuleDict
+    if rule.RuleName in WinningRuleDict:
+        _, hits = WinningRuleDict[rule.RuleName]
+        hits.append(MarkWinningTokens(strtokens, rule, StartPosition))
+    else:
+        WinningRuleDict[rule.RuleName] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
+
+
+def OutputWinningRules():
+    output = ""
+    for rulename in WinningRuleDict:
+        rule, hits = WinningRuleDict[rulename]
+        output += json.dumps({' rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}, ensure_ascii=False) + "\n"
+
+    return output
 
 #Every token in ruleTokens must match each token in strTokens, from head.
 def HeadMatch(strTokens, ruleTokens):
@@ -14,15 +66,21 @@ def HeadMatch(strTokens, ruleTokens):
 
     GoneInStrTokens = 0
     for i in range(len(ruleTokens)):
+        if i + GoneInStrTokens >= len(strTokens):
+            return False  # got to the end of the string
         try:
             #Ignore the "Gone" tokens.
             while strTokens[i+GoneInStrTokens].Gone :
                 GoneInStrTokens += 1
-                if i+GoneInStrTokens == len(strTokens):
+                if i+GoneInStrTokens >= len(strTokens):
                     return False    #got to the end of the string
             if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
                 return False  #  this rule does not fit for this string
         except Exception as e:
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
+            logging.error(e)
+            #raise
+        except IndexError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
             #raise
@@ -92,6 +150,7 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule, StartPosition):
     logging.info("Applying Winning Rule:" + rule.RuleName)
+    StoreWinningRule(strtokens, rule, StartPosition)
     GoneInStrTokens = 0
     for i in range(len(rule.Tokens)):
         while strtokens[StartPosition + i + GoneInStrTokens].Gone:
@@ -181,13 +240,28 @@ def MultiLevelSegmentation(Sentence):
     Nodes = Tokenization.Tokenize(Sentence)
     logging.debug("-Start ApplyLexiconToNodes")
     Lexicon.ApplyLexiconToNodes(Nodes)
+
+    JSnode = Tokenization.SentenceNode('')
+    Nodes = [JSnode] + Nodes
+    if Nodes[-1].word != ".":
+        JWnode = Tokenization.SentenceNode('')
+        Nodes = Nodes + [JWnode]
+    Nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
+    Nodes[1].features.add(FeatureOntology.GetFeatureID('JS2'))
+    Nodes[-1].features.add(FeatureOntology.GetFeatureID('JM'))
+
     logging.debug("-Start MatchAndApplyRuleFile")
     MatchAndApplyRuleFile(Nodes, "0defLexX.txt")
     logging.debug("-Start LexiconLookup")
     Lexicon.LexiconLookup(Nodes)
+
+    #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
+
     logging.debug("-Start MatchAndApplyRuleFile 2 rules")
     MatchAndApplyRuleFile(Nodes, "mainX2.txt")
     MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
+    MatchAndApplyRuleFile(Nodes, "10compound.txt")
+    MatchAndApplyRuleFile(Nodes, "180NPx.txt")
     logging.debug("-End MultiLevelSegmentation")
     return Nodes
 
@@ -205,19 +279,18 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
 
-    logging.info("Parameter is:" + str(LoadCommonRules))
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
-        #Rules.LoadRules("../temp/800VGy.txt.compiled")
-        #Rules.LoadRules("../temp/900NPy.xml.compiled")
-        #Rules.LoadRules("../temp/1800VPy.xml.compiled")
-        #Rules.LoadRules("../../fsa/Y/900NPy.xml")
-        #Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+        # Rules.LoadRules("../../fsa/Y/800VGy.txt")
+        # Rules.LoadRules("../../fsa/Y/900NPy.xml")
+        # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
         # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
-        #Rules.LoadRules("../../fsa/Y/100y.txt")
-        # Rules.LoadRules("../../fsa/X/180NPx.txt")
+        # Rules.LoadRules("../../fsa/Y/100y.txt")
+        Rules.LoadRules("../../fsa/X/10compound.txt")
+        Rules.LoadRules("../../fsa/X/180NPx.txt")
+
         # Rules.LoadRules("../../fsa/X/270VPx.txt")
 
         Rules.ExpandRuleWildCard()
@@ -225,7 +298,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.ExpandRuleWildCard()
 
         Rules.OutputRuleFiles("../temp/")
-        print(Lexicon.OutputLexicon(False))
+        #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
@@ -250,3 +323,5 @@ if __name__ == "__main__":
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 
     print(OutputStringTokens_oneliner(nodes))
+
+    print("Winning rules:\n" + OutputWinningRules())
