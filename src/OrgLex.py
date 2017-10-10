@@ -34,6 +34,7 @@ paraLex = dir_path + '/../../fsa/X/LexX.txt'
 paraDef = dir_path + '/../../fsa/X/defLexX.txt'
 paraMain = dir_path + '/../../fsa/X/main2017.txt'
 newPlus = dir_path + "/../../fsa/X/LexXplus.txt"
+paraDefPlus = dir_path + "/../../fsa/X/defPlus.txt"
 
 def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
@@ -391,9 +392,16 @@ def GenerateLexPlus():
                     newNode.features = startwithFirstDict.get(char).features
                     _LexiconDictDefPlus.update({newWord: newNode})
 
+                    newWord = word[1] + word[0] + char
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + char + second + char
+                    newNode.features = startwithFirstDict.get(char).features
+                    _LexiconDictDefPlus.update({newWord: newNode})
+
 
 
     logging.debug("lexx plus size is " + str(len(_LexiconDictPlus)))
+    logging.debug("def lexx plus size is " + str(len(_LexiconDictDefPlus)))
 
 
 def LexStartWithChar(startingChar):
@@ -409,7 +417,6 @@ def LexStartWithChar(startingChar):
 def printLexPlus(loc, _LexiconDictTemp):
     s = sorted(_LexiconDictTemp.keys(), key=lambda x: (RealLength(x), x))
     with open(loc, 'w',encoding='utf-8') as file:
-
         for word in s:
             output = word + ": "
             node = _LexiconDictTemp.get(word)
@@ -441,9 +448,7 @@ def printLexPlus(loc, _LexiconDictTemp):
                 output += node.comment
             file.write(output + "\n")
 
-def addDefPlus():
-    for word in _LexiconDictDefPlus.keys():
-        _LexiconDictDefX.update({word: _LexiconDictDefPlus.get(word)})
+
 
 
 
@@ -526,14 +531,11 @@ if __name__ == "__main__":
     printNewLex(_CommentDictI4,_LexiconDictI4, paraI4)
 
     printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLex)
-
-
+    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
 
     GenerateLexPlus()
     printLexPlus(newPlus, _LexiconDictPlus)
-
-    addDefPlus()
-    printLexPlus(paraDef, _LexiconDictDefX)
+    printLexPlus(paraDefPlus, _LexiconDictDefPlus)
 
 
 
