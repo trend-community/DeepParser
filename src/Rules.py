@@ -117,7 +117,7 @@ class Rule:
                 return
 
         if self.IsExpertLexicon:
-            RuleBlocks = re.search("(.+)::(.+)$", ruleString, re.DOTALL)
+            RuleBlocks = re.match("(.+)::(.+)$", ruleString, re.DOTALL)
         else:
             RuleBlocks = re.match("(.+)==(.+)$", ruleString, re.DOTALL)
 
@@ -126,7 +126,7 @@ class Rule:
 
         if ID != 1:
             self.ID = ID
-        self.RuleName = RuleBlocks[1].strip()
+        self.RuleName = RuleBlocks.group(1).strip()
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
             RuleContent = ProcessMacro(blocks[1],
                                        MacroDict)  # Process the whole code, not to worry about comment and unit test
@@ -138,7 +138,7 @@ class Rule:
 
         try:
             remaining = ''
-            RuleContent, remaining = SeparateRules(RuleBlocks[2].strip())
+            RuleContent, remaining = SeparateRules(RuleBlocks.group(2).strip())
             if remaining:
                 self.Origin = self.Origin.replace(remaining, '').strip()
             RuleCode, self.comment = SeparateComment(RuleContent)

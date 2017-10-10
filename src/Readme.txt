@@ -23,7 +23,10 @@ Environment:
 
 
 1, Initial install:
+cd git/parser
 pip install -r requirements.txt
+cd git/multisegmental
+mvn package
 
 
 2, Background service:
