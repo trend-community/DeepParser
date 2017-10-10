@@ -22,6 +22,8 @@ _LexiconDictDefX = {}
 _LexiconDictPlus = {}
 _CommentDictPlus = {}
 
+_LexiconDictDefPlus = {}
+
 _LexiconDictDefPlusX = {}
 _LexiconDictLexPlusX = {}
 
@@ -292,13 +294,16 @@ def GenerateLexPlus():
                 newNode.word = newWord
                 newNode.features = featuresID
                 newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
-                if len(word)==2 and word[1]=="出":
+                if len(newWord) >= 5:
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    _LexiconDictDefPlus.update({newWord: newNode})
 
+                if len(word)==2 and word[1]=="出":
                     newWord = word[0] + "得" + word[1] + "来"
                     newNode.features = featuresID
                     newNode.norm = newWord
-                    _LexiconDictPlus.update({newWord: newNode})
+                    _LexiconDictDefPlus.update({newWord: newNode})
 
                 newWord = first + "不" + first + "得" + second
                 featuresID.add(orQID)
@@ -307,10 +312,20 @@ def GenerateLexPlus():
                 newNode.norm = newWord
                 _LexiconDictPlus.update({newWord: newNode})
 
+                newWord = first + "不" + first + "的" + second
+                newNode.word = newWord
+                newNode.norm = newWord
+                _LexiconDictPlus.update({newWord: newNode})
+
                 newWord = first + "没" + first + "得" + second
                 featuresID.add(perfectID)
                 newNode.word = newWord
                 newNode.features = featuresID
+                newNode.norm = newWord
+                _LexiconDictPlus.update({newWord: newNode})
+
+                newWord = first + "没" + first + "的" + second
+                newNode.word = newWord
                 newNode.norm = newWord
                 _LexiconDictPlus.update({newWord: newNode})
 
@@ -323,13 +338,17 @@ def GenerateLexPlus():
                 newNode.word = newWord
                 newNode.features = featuresID
                 newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
+                if len(newWord) >= 5:
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    _LexiconDictDefPlus.update({newWord: newNode})
+
                 if len(word)==2 and word[1]=="出":
                     newWord = word[0] + "不" + word[1] + "来"
                     newNode.word = newWord
                     newNode.features = featuresID
                     newNode.norm = newNode.word
-                    _LexiconDictPlus.update({newWord: newNode})
+                    _LexiconDictDefPlus.update({newWord: newNode})
 
                 if notDeID not in featuresID:
                     featuresID.remove(cannotPBID)
@@ -338,13 +357,16 @@ def GenerateLexPlus():
                     newNode.word = newWord
                     newNode.features = featuresID
                     newNode.norm = newWord
-                    _LexiconDictPlus.update({newWord: newNode})
+                    if len(newWord) >= 5:
+                        _LexiconDictPlus.update({newWord: newNode})
+                    else:
+                        _LexiconDictDefPlus.update({newWord: newNode})
                     if len(word) == 2 and word[1] == "出":
                         newWord = word[0] + "的" + word[1] + "来"
                         newNode.word = newWord
                         newNode.features = featuresID
                         newNode.norm = newNode.word
-                        _LexiconDictPlus.update({newWord: newNode})
+                        _LexiconDictDefPlus.update({newWord: newNode})
 
             if abID in featuresID and len(word)==2:
                 first = word[0]
@@ -367,7 +389,7 @@ def GenerateLexPlus():
                     newNode = LexiconNode(newWord)
                     newNode.stem = first + char + second + char
                     newNode.features = startwithFirstDict.get(char).features
-                    _LexiconDictPlus.update({newWord: newNode})
+                    _LexiconDictDefPlus.update({newWord: newNode})
 
 
 
@@ -384,12 +406,13 @@ def LexStartWithChar(startingChar):
                 res.update({word[1]:newNode})
     return res
 
-def printPlus():
-    with open(newPlus, 'w',encoding='utf-8') as file:
+def printLexPlus(loc, _LexiconDictTemp):
+    s = sorted(_LexiconDictTemp.keys(), key=lambda x: (RealLength(x), x))
+    with open(loc, 'w',encoding='utf-8') as file:
 
-        for word in _LexiconDictPlus.keys():
+        for word in s:
             output = word + ": "
-            node = _LexiconDictPlus.get(word)
+            node = _LexiconDictTemp.get(word)
             featuresCopy = node.features.copy()
             for feature in node.features:
                 nodes = SearchFeatureOntology(feature)
@@ -417,6 +440,11 @@ def printPlus():
             if hasattr(node, "comment"):
                 output += node.comment
             file.write(output + "\n")
+
+def addDefPlus():
+    for word in _LexiconDictDefPlus.keys():
+        _LexiconDictDefX.update({word: _LexiconDictDefPlus.get(word)})
+
 
 
 
@@ -499,10 +527,13 @@ if __name__ == "__main__":
 
     printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLex)
 
-    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
+
 
     GenerateLexPlus()
-    printPlus()
+    printLexPlus(newPlus, _LexiconDictPlus)
+
+    addDefPlus()
+    printLexPlus(paraDef, _LexiconDictDefX)
 
 
 
