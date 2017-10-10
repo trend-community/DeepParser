@@ -152,6 +152,10 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     logging.info("Applying Winning Rule:" + rule.RuleName)
     StoreWinningRule(strtokens, rule, StartPosition)
     GoneInStrTokens = 0
+    if len(rule.Tokens) == 0:
+        logging.error("Lenth = 0, error! Need to revisit the parsing process")
+        logging.error(str(rule))
+        raise(RuntimeError("Rule error"))
     for i in range(len(rule.Tokens)):
         while strtokens[StartPosition + i + GoneInStrTokens].Gone:
             GoneInStrTokens += 1
@@ -203,7 +207,12 @@ def MatchAndApplyRuleFile(strtokens, FileName):
                         WinningRule = rule
 
         if WinningRule:
-            skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
+            try:
+                skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
+            except RuntimeError as e:
+                if e.args and e.args[0] == "Rule error":
+                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + FileName)
+                    rulegroup.ExpertLexicon.remove(WinningRule)
             i += skiptokennum - 1  # go to the next word
             WinningRules.append(WinningRule.RuleName)
             i += 1
@@ -218,7 +227,12 @@ def MatchAndApplyRuleFile(strtokens, FileName):
                     else:
                         WinningRule = rule
         if WinningRule:
-            skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
+            try:
+                skiptokennum = ApplyWinningRule(strtokens, WinningRule, StartPosition=i)
+            except RuntimeError as e:
+                if e.args and e.args[0] == "Rule error":
+                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + FileName)
+                    rulegroup.RuleList.remove(WinningRule)
             i += skiptokennum - 1  # go to the next word
             WinningRules.append(WinningRule.RuleName)
 
