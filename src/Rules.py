@@ -424,7 +424,7 @@ def ProcessMacro(ruleContent, MacroDict):
     # return ruleContent
 
     macros = re.findall("@\w*", ruleContent)
-    for macro in macros:
+    for macro in sorted(macros, key=lambda x: len(x), reverse=True):
         if macro in MacroDict:
             ruleContent = ruleContent.replace(macro, MacroDict[macro].RuleContent)
         else:
@@ -727,6 +727,14 @@ def _ProcessOrBlock(Content, orIndex):
         if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
             logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
             rightBlock = rightBlock[1:-1]
+    else:
+        if "[" not in originBlock :
+            if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
+                logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+                leftBlock = leftBlock[1:-1]
+            if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
+                logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+                rightBlock = rightBlock[1:-1]
 
     return originBlock, leftBlock, rightBlock
 

@@ -161,7 +161,11 @@ def SearchToEnd(string, Reverse=False):
 #Return the word before the first "_";
 # If there is no "_", return the whole word
 def GetPrefix(Name):
-    return re.findall("(.*?)_", Name+"_")[0]
+    match = re.findall("(.*?)_\d", Name)
+    if match:
+        return match[0]
+    else:
+        return Name
 
 
 def OutputStringTokens_json(strTokens):
