@@ -2,6 +2,9 @@ import logging, sys, os
 import ProcessSentence, Rules
 from utils import *
 
+import singleton
+me = singleton.SingleInstance()
+
 if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
