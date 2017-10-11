@@ -233,6 +233,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + FileName)
                     rulegroup.RuleList.remove(WinningRule)
+                    skiptokennum = 0
             i += skiptokennum - 1  # go to the next word
             WinningRules.append(WinningRule.RuleName)
 
@@ -305,11 +306,12 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/10compound.txt")
         Rules.LoadRules("../../fsa/X/180NPx.txt")
 
-        # Rules.LoadRules("../../fsa/X/270VPx.txt")
+        #Rules.LoadRules("../../fsa/X/270VPx.txt")
 
         Rules.ExpandRuleWildCard()
         Rules.ExpandParenthesisAndOrBlock()
         Rules.ExpandRuleWildCard()
+        Rules.PreProcess_CheckFeatures()
 
         Rules.OutputRuleFiles("../temp/")
         #print(Lexicon.OutputLexicon(False))
@@ -317,7 +319,7 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
     target = "八十五分不等于五分。 "

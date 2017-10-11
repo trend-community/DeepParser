@@ -102,7 +102,7 @@ class Rule:
         self.comment = ''
 
     def SetRule(self, ruleString, MacroDict={}, ID=1):
-        self.Origin = ruleString
+        self.Origin = ruleString.strip()
         code, comment = SeparateComment(ruleString)
         if not code:
             return
@@ -299,14 +299,14 @@ def ProcessTokens(Tokens):
             node.word = node.word.rstrip("*")
             node.repeat = [0, 3]
 
-        repeatMatch = re.match("(.*[\]\"')])(\d+)\*(\d+)$", node.word)
+        repeatMatch = re.match("(.*[\]\"')])(\d+)\*(\d+)$", node.word, re.DOTALL)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             node.repeat = [int(repeatMatch.group(2)), int(repeatMatch.group(3))]
 
-        repeatMatch = re.match("(.+)\*(\d*)$", node.word)
+        repeatMatch = re.match("(.+)\*(\d*)$", node.word, re.DOTALL)
         if not repeatMatch:
-            repeatMatch = re.match("(.*[\])\"'])(\d+)$", node.word)
+            repeatMatch = re.match("(.*[\])\"'])(\d+)$", node.word, re.DOTALL)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             repeatMax = 3  # default as 3
@@ -314,12 +314,12 @@ def ProcessTokens(Tokens):
                 repeatMax = int(repeatMatch.group(2))
             node.repeat = [0, repeatMax]
 
-        pointerMatch = re.match("\^(\w*)\[(.+)\]$", node.word)
+        pointerMatch = re.match("\^(\w*)\[(.+)\]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
 
-        pointerMatch = re.match("\^(.+)$", node.word)
+        pointerMatch = re.match("\^(.+)$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = ''
@@ -334,12 +334,12 @@ def ProcessTokens(Tokens):
                     node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
                 else:  # no "()" sign, and no "|" sign
                     # using (.*):, not (.+): , because the word can be blank (means matching everything)
-                    actionMatch = re.match("\[(.*):(.+)\]$", node.word)
+                    actionMatch = re.match("\[(.*):(.+)\]$", node.word, re.DOTALL)
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
 
-        priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
+        priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word, re.DOTALL)
         if priorityMatch:
             node.word = "[" + priorityMatch.group(2) + "]"
             node.priority = int(priorityMatch.group(1))
@@ -866,6 +866,11 @@ def PreProcess_CheckFeatures():
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
 def _PreProcess_CheckFeatures(OneList):
     for rule in OneList:
+        if len(rule.Tokens) == 0:
+            logging.error("This rule has zero token.")
+            logging.error("Lenth = 0, error! Need to revisit the parsing process")
+            logging.error(str(rule))
+            OneList.remove(rule)
         for token in rule.Tokens:
             word = token.word
             if len(word) <= 2:

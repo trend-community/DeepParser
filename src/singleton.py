@@ -32,7 +32,7 @@ class SingleInstance:
     """
 
     def __init__(self, flavor_id="", level=2):
-        import sys
+
         self.initialized = False
         if level == 0:
             target = os.path.basename(__file__)
@@ -54,7 +54,7 @@ class SingleInstance:
                     os.unlink(self.lockfile)
                 self.fd = os.open(self.lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
             except OSError:
-                type, e, tb = sys.exc_info()
+                _, e, tb = sys.exc_info()
                 if e.errno == 13:
                     logger.error("Another instance is already running, quitting.")
                     sys.exit(-1)
@@ -71,8 +71,7 @@ class SingleInstance:
         self.initialized = True
 
     def __del__(self):
-        import sys
-        import os
+
         if not self.initialized:
             return
         try:
@@ -133,4 +132,3 @@ logger.addHandler(logging.StreamHandler())
 if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     unittest.main()
-	
