@@ -16,6 +16,9 @@ _LexiconDictI4 = {}
 _CommentDictLexX = {}
 _LexiconDictLexX = {}
 
+_LexiconDictLexXOrig = {}
+_LexiconDictDefXOrig = {}
+
 _CommentDictDefX = {}
 _LexiconDictDefX = {}
 
@@ -164,11 +167,12 @@ def AlignMain():
 
 
 def AddDefandLexX():
-    logging.debug(len(_LexiconDictDefX))
+
+
     for word in _LexiconDictDefPlusX.keys():
         _LexiconDictDefX.update({word:_LexiconDictDefPlusX.get(word)})
     logging.debug(len(_LexiconDictDefX))
-    logging.debug(len(_LexiconDictLexX))
+
     for word in _LexiconDictLexPlusX.keys():
         _LexiconDictLexX.update({word:_LexiconDictLexPlusX.get(word)})
     logging.debug(len(_LexiconDictLexX))
@@ -264,6 +268,8 @@ def FeaturesMorethanFour():
     #printLexSum()
 
 def GenerateLexPlus():
+    logging.debug("size of original def is " +  str(len(_LexiconDictDefXOrig)))
+    logging.debug("size of original lex is " + str(len(_LexiconDictLexXOrig)))
     cpbID = GetFeatureID("cPB")
     canPBID = GetFeatureID("canPB")
     cannotPBID = GetFeatureID("cannotPB")
@@ -285,76 +291,16 @@ def GenerateLexPlus():
                 else:
                     first = word[0:1]
                     second = word[1:len(word)]
-                newNode = LexiconNode(word)
-                newNode.stem = first + second
 
                 # canPB feature
                 featuresID.remove(cpbID)
                 featuresID.add(canPBID)
                 newWord = first + "得" + second
-                newNode.word = newWord
-                newNode.features = featuresID
-                newNode.norm = newWord
-                if len(newWord) >= 5:
-                    _LexiconDictPlus.update({newWord: newNode})
-                else:
-                    _LexiconDictDefPlus.update({newWord: newNode})
-
-                if len(word)==2 and word[1]=="出":
-                    newWord = word[0] + "得" + word[1] + "来"
-                    newNode.features = featuresID
-                    newNode.norm = newWord
-                    _LexiconDictDefPlus.update({newWord: newNode})
-
-                newWord = first + "不" + first + "得" + second
-                featuresID.add(orQID)
-                newNode.word = newWord
-                newNode.features = featuresID
-                newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
-
-                newWord = first + "不" + first + "的" + second
-                newNode.word = newWord
-                newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
-
-                newWord = first + "没" + first + "得" + second
-                featuresID.add(perfectID)
-                newNode.word = newWord
-                newNode.features = featuresID
-                newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
-
-                newWord = first + "没" + first + "的" + second
-                newNode.word = newWord
-                newNode.norm = newWord
-                _LexiconDictPlus.update({newWord: newNode})
-
-                # cannotPB feature
-                newWord = first + "不" + second
-                featuresID.remove(canPBID)
-                featuresID.remove(orQID)
-                featuresID.remove(perfectID)
-                featuresID.add(cannotPBID)
-                newNode.word = newWord
-                newNode.features = featuresID
-                newNode.norm = newWord
-                if len(newWord) >= 5:
-                    _LexiconDictPlus.update({newWord: newNode})
-                else:
-                    _LexiconDictDefPlus.update({newWord: newNode})
-
-                if len(word)==2 and word[1]=="出":
-                    newWord = word[0] + "不" + word[1] + "来"
-                    newNode.word = newWord
-                    newNode.features = featuresID
-                    newNode.norm = newNode.word
-                    _LexiconDictDefPlus.update({newWord: newNode})
-
-                if notDeID not in featuresID:
-                    featuresID.remove(cannotPBID)
-                    featuresID.add(canPBID)
-                    newWord = first + "的" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    if newWord == "差得多":
+                        logging.debug("差得多")
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + second
                     newNode.word = newWord
                     newNode.features = featuresID
                     newNode.norm = newWord
@@ -362,22 +308,151 @@ def GenerateLexPlus():
                         _LexiconDictPlus.update({newWord: newNode})
                     else:
                         _LexiconDictDefPlus.update({newWord: newNode})
-                    if len(word) == 2 and word[1] == "出":
-                        newWord = word[0] + "的" + word[1] + "来"
+                else:
+                    logging.debug("duplicate1 :" + newWord)
+
+                if len(word)==2 and word[1]=="出":
+                    newWord = word[0] + "得" + word[1] + "来"
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictDefXOrig.keys()):
+                        newNode = LexiconNode(newWord)
+                        newNode.stem = first + second
+                        newNode.word = newWord
+                        newNode.features = featuresID
+                        newNode.norm = newWord
+                        _LexiconDictDefPlus.update({newWord: newNode})
+                    else:
+                        logging.debug("duplicate2 :" + newWord)
+
+                newWord = first + "不" + first + "得" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + second
+                    featuresID.add(orQID)
+                    newNode.word = newWord
+                    newNode.features = featuresID
+                    newNode.norm = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate3 :" + newWord)
+
+                newWord = first + "不" + first + "的" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + second
+                    newNode.word = newWord
+                    newNode.norm = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate4 :" + newWord)
+
+                newWord = first + "没" + first + "得" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + second
+                    featuresID.add(perfectID)
+                    newNode.word = newWord
+                    newNode.features = featuresID
+                    newNode.norm = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate5 :" + newWord)
+
+                newWord = first + "没" + first + "的" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + second
+                    newNode.word = newWord
+                    newNode.norm = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate6 :" + newWord)
+
+                # cannotPB feature
+                newWord = first + "不" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    newNode = LexiconNode(newWord)
+                    newNode.stem = first + second
+                    if canPBID in featuresID:
+                        featuresID.remove(canPBID)
+                    if orQID in featuresID:
+                        featuresID.remove(orQID)
+                    if perfectID in featuresID:
+                        featuresID.remove(perfectID)
+                    featuresID.add(cannotPBID)
+                    newNode.word = newWord
+                    newNode.features = featuresID
+                    newNode.norm = newWord
+                    if len(newWord) >= 5:
+                        _LexiconDictPlus.update({newWord: newNode})
+                    else:
+                        _LexiconDictDefPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate7 :" + newWord)
+
+                if len(word)==2 and word[1]=="出":
+                    newWord = word[0] + "不" + word[1] + "来"
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictDefXOrig.keys()):
+                        newNode = LexiconNode(newWord)
+                        newNode.stem = first + second
                         newNode.word = newWord
                         newNode.features = featuresID
                         newNode.norm = newNode.word
                         _LexiconDictDefPlus.update({newWord: newNode})
+                    else:
+                        logging.debug("duplicate8 :" + newWord)
+
+                if notDeID not in featuresID:
+                    if cannotPBID in featuresID:
+                        featuresID.remove(cannotPBID)
+                    featuresID.add(canPBID)
+                    newWord = first + "的" + second
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictDefXOrig.keys()):
+                        newNode = LexiconNode(newWord)
+                        newNode.stem = first + second
+                        newNode.word = newWord
+                        newNode.features = featuresID
+                        newNode.norm = newWord
+                        if len(newWord) >= 5:
+                            _LexiconDictPlus.update({newWord: newNode})
+                        else:
+                            _LexiconDictDefPlus.update({newWord: newNode})
+                    else:
+                        logging.debug("duplicate9 :" + newWord)
+
+                    if len(word) == 2 and word[1] == "出":
+                        newWord = word[0] + "的" + word[1] + "来"
+                        if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                        (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                        (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                            newWord not in _LexiconDictDefXOrig.keys()):
+                            newNode = LexiconNode(newWord)
+                            newNode.stem = first + second
+                            newNode.word = newWord
+                            newNode.features = featuresID
+                            newNode.norm = newNode.word
+                            _LexiconDictDefPlus.update({newWord: newNode})
+                        else:
+                            logging.debug("duplicate10 :" + newWord)
 
             if abID in featuresID and len(word)==2:
                 first = word[0]
                 second = word[1]
                 newWord = first + first + second + second
-                newNode = LexiconNode(newWord)
-                featuresID.remove(abID)
-                featuresID.add(aabbID)
-                newNode.features = featuresID
-                _LexiconDictPlus.update({newWord: newNode})
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    newNode = LexiconNode(newWord)
+                    featuresID.remove(abID)
+                    featuresID.add(aabbID)
+                    newNode.features = featuresID
+                    _LexiconDictPlus.update({newWord: newNode})
 
             if xyID in featuresID and len(word) == 2:
                 first = word[0]
@@ -387,16 +462,27 @@ def GenerateLexPlus():
                 commonpart = set(startwithFirstDict.keys()).intersection(set(startwithSecondDict.keys()))
                 for char in commonpart:
                     newWord = word + char
-                    newNode = LexiconNode(newWord)
-                    newNode.stem = first + char + second + char
-                    newNode.features = startwithFirstDict.get(char).features
-                    _LexiconDictDefPlus.update({newWord: newNode})
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictDefXOrig.keys()):
+                        newNode = LexiconNode(newWord)
+                        newNode.word = newWord
+                        newNode.stem = first + char + second + char
+                        newNode.features = startwithFirstDict.get(char).features
+                        _LexiconDictDefPlus.update({newWord: newNode})
+
 
                     newWord = word[1] + word[0] + char
-                    newNode = LexiconNode(newWord)
-                    newNode.stem = first + char + second + char
-                    newNode.features = startwithFirstDict.get(char).features
-                    _LexiconDictDefPlus.update({newWord: newNode})
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictDefXOrig.keys()):
+                        newNode = LexiconNode(newWord)
+                        newNode.word = newWord
+                        newNode.stem = first + char + second + char
+                        newNode.features = startwithFirstDict.get(char).features
+                        _LexiconDictDefPlus.update({newWord: newNode})
 
 
 
@@ -515,7 +601,8 @@ if __name__ == "__main__":
     compareLex(_LexiconDictDefX, _LexiconDictI4, lexXandOther=True)
     compareLex(_LexiconDictDefX, _LexiconDictLexX, lexXandOther=True)
 
-
+    _LexiconDictDefXOrig = _LexiconDictDefX.copy()
+    _LexiconDictLexXOrig = _LexiconDictLexX.copy()
 
     AddDefandLexX()
 
