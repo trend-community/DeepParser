@@ -937,8 +937,7 @@ def _PreProcess_CheckFeatures(OneList):
                     token.word = re.sub("\|$", "]", token.word)
                 elif " " in word and "|" not in word and "[" not in word:
                     # be aware of ['and|or|of|that|which'|PP|CM]
-                    AndBlocks = word.split(" ")
-
+                    AndBlocks = word.split()
                     token.word = "["
                     for AndBlock in AndBlocks:
                         _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")

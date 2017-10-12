@@ -22,3 +22,5 @@ do
     outputfile="$OUTPUTFOLDER/$filename"
     python MultiLevelSegment.pyc "$f" Debug > "$outputfile_feature.txt" 2>> ../log/ProcessFolder_feature.log &
 done
+
+wait        #wait for all child process to complete.
