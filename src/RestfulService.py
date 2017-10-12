@@ -9,6 +9,10 @@ app.config['CACHE_TYPE'] = 'simple'
 app.cache = Cache(app)
 
 
+import singleton
+me = singleton.SingleInstance()
+
+
 @app.route("/SearchLexicon/<word>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def SearchLexicon(word):
