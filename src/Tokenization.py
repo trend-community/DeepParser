@@ -25,6 +25,8 @@ class SentenceNode(object):
         self.features = set()
         self.lexicon = None
         self.Gone = False
+        self.StartTrunk = 0
+        self.EndTrunk = 0
 
     def __str__(self):
         output = "[" + self.word + "] "

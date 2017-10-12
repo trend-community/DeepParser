@@ -182,9 +182,13 @@ def OutputStringTokens_oneliner(strTokens, NoFeature=False):
             continue
         if output:
             output += "/"
+
+        for _ in range(token.StartTrunk):
+            output += "<"
         if NoFeature:
             output += token.stem
         else:
             output += token.oneliner()
-
+        for _ in range(token.EndTrunk):
+            output += ">"
     return output

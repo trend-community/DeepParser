@@ -82,9 +82,8 @@ def SeparateRules(multilineString):
 
 class RuleToken(object):
     def __init__(self):
-        self.EndTrunk = 0
         self.StartTrunk = 0
-
+        self.EndTrunk = 0
 
 class Rule:
     idCounter = 0
@@ -406,7 +405,7 @@ def _SearchToEnd_OrBlock(string, Reverse=False):
 def ProcessMacro(ruleContent, MacroDict):
     macros_with_parameters = re.findall("#\w*\(.+\)", ruleContent)
     for macro in macros_with_parameters:
-        macroName = re.match("^(#.*)\(", macro)[0]
+        macroName = re.match("^(#.*)\(", macro).group(0)
         for MacroName in MacroDict:
             if MacroName.startswith(macroName):
                 MacroParameters = re.findall("(\d+)=(\$\w+)", MacroName)
@@ -718,22 +717,22 @@ def _ProcessOrBlock(Content, orIndex):
     leftBlock = Content[start:orIndex]
     rightBlock = Content[orIndex + 1:end + 1]
 
-    #if left/right block is enclosed by (), and it is part of a block , then the () can be removed:
+    #if left/right block is enclosed by (), and it is part of one token , then the () can be removed:
     # write out in log as confirmation.
     if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content)-2:
         if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-            logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+            #logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
             leftBlock = leftBlock[1:-1]
         if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-            logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+            #logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
             rightBlock = rightBlock[1:-1]
     else:
         if "[" not in originBlock :
             if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-                logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+                #logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
                 leftBlock = leftBlock[1:-1]
             if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-                logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+                #logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
                 rightBlock = rightBlock[1:-1]
 
     return originBlock, leftBlock, rightBlock
@@ -945,7 +944,7 @@ def _PreProcess_CheckFeatures(OneList):
                             token.word += "'" + AndBlock + "' "
                         else:
                             token.word += AndBlock + " "
-                    token.word = re.sub("\|$", "]", token.word)
+                    token.word = re.sub(" $", "]", token.word)
 
 
 def OutputRules(rulegroup, style="details"):

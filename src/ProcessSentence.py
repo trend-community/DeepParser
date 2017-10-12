@@ -83,8 +83,12 @@ def HeadMatch(strTokens, ruleTokens):
         except Exception as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
-            #raise
+            raise
         except IndexError as e:
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
+            logging.error(e)
+            raise
+        except RuntimeError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
             #raise
@@ -165,6 +169,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             GoneInStrTokens += 1
             if i + GoneInStrTokens == len(strtokens):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
+        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk = rule.Tokens[i].StartTrunk
+        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk = rule.Tokens[i].EndTrunk
+
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
             logging.debug("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
@@ -245,9 +252,11 @@ def MatchAndApplyRuleFile(strtokens, FileName):
     return WinningRules
 
 
-def MatchAndApplyAllRules(strtokens):
+def MatchAndApplyAllRules(strtokens, ExcludeList=[]):
     WinningRules = []
     for RuleFileName in Rules.RuleGroupDict:
+        if RuleFileName in ExcludeList:
+            continue
         logging.info("Applying:" + RuleFileName)
         WinningRules.extend(MatchAndApplyRuleFile(strtokens, RuleFileName))
 
@@ -276,11 +285,9 @@ def MultiLevelSegmentation(Sentence):
 
     #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
 
-    logging.debug("-Start MatchAndApplyRuleFile 2 rules")
-    MatchAndApplyRuleFile(Nodes, "mainX2.txt")
-    MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
-    MatchAndApplyRuleFile(Nodes, "10compound.txt")
-    MatchAndApplyRuleFile(Nodes, "180NPx.txt")
+    logging.debug("-Start MatchAndApplyRuleFile rules except 0defLexX")
+    MatchAndApplyAllRules(Nodes, ExcludeList=["0defLexX.txt"])
+
     logging.debug("-End MultiLevelSegmentation")
     return Nodes
 
@@ -288,7 +295,7 @@ def MultiLevelSegmentation(Sentence):
 def LoadCommon(LoadCommonRules=False):
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')

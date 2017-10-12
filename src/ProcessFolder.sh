@@ -13,7 +13,7 @@ for f in $INPUTFILES
 do
     echo "Processing $f file..."
     filename=$(basename "$f")
-    outputfile="TEMPFOLDER/$filename"
+    outputfile="$TEMPFOLDER/$filename"
     python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> ../log/ProcessFolder.log &
 done
 
@@ -21,7 +21,7 @@ for f in $INPUTFILES
 do
     echo "Processing $f file..."
     filename=$(basename "$f")
-    outputfile="TEMPFOLDER/$filename"
+    outputfile="$TEMPFOLDER/$filename"
     python MultiLevelSegment.pyc "$f" Debug > "$outputfile$FEATUREFILE" 2>> ../log/ProcessFolder_feature.log &
 done
 
