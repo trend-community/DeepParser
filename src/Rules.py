@@ -155,7 +155,7 @@ class Rule:
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
-            logging.error("Failed to tokenize because: " + str(e))
+            logging.error("Failed to setrule because: " + str(e))
             logging.error("Rulename is: " + self.RuleName)
             self.RuleName = ""
             self.RuleContent = ""
@@ -651,7 +651,7 @@ def _ExpandParenthesis(OneList):
                 try:
                     subTokenlist = Tokenize(token.word[parenthesisIndex + 1:-parenthesisIndex - 1])
                 except Exception as e:
-                    logging.error("Failed to tokenize because: " + str(e))
+                    logging.error("Failed to _ExpandParenthesis.tokenize because: " + str(e))
                     logging.error("Rule name: " + rule.RuleName)
                     continue
 
@@ -784,7 +784,7 @@ def _ExpandOrBlock(OneList):
             try:
                 subTokenlist = Tokenize(token.word.replace(originBlock, leftBlock))
             except Exception as e:
-                logging.error("Failed to tokenize because: " + str(e))
+                logging.error("Failed to _ExpandOrBlock.left.tokenize because: " + str(e))
                 logging.error("when expanding or block:" + leftBlock + " for rule name: " + rule.RuleName)
                 continue
             if subTokenlist:
@@ -819,7 +819,7 @@ def _ExpandOrBlock(OneList):
             try:
                 subTokenlist = Tokenize(token.word.replace(originBlock, rightBlock))
             except Exception as e:
-                logging.error("Failed to tokenize because: " + str(e))
+                logging.error("Failed to _ExpandOrBlock.right.tokenize because: " + str(e))
                 logging.error("when expanding or block:" + rightBlock + " for rule name: " + rule.RuleName)
                 continue
             if subTokenlist:

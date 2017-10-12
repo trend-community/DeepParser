@@ -44,11 +44,12 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
 
 def StoreWinningRule(strtokens, rule, StartPosition):
     global WinningRuleDict
-    if rule.RuleName in WinningRuleDict:
-        _, hits = WinningRuleDict[rule.RuleName]
+
+    if rule.ID in WinningRuleDict:
+        _, hits = WinningRuleDict[rule.ID]
         hits.append(MarkWinningTokens(strtokens, rule, StartPosition))
     else:
-        WinningRuleDict[rule.RuleName] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
+        WinningRuleDict[rule.ID] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
 
 
 def OutputWinningRules():
@@ -304,7 +305,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
         Rules.LoadRules("../../fsa/X/10compound.txt")
-        #Rules.LoadRules("../../fsa/X/180NPx.txt")
+        Rules.LoadRules("../../fsa/X/180NPx.txt")
 
         #Rules.LoadRules("../../fsa/X/270VPx.txt")
 
