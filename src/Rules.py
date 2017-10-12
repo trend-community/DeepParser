@@ -935,6 +935,18 @@ def _PreProcess_CheckFeatures(OneList):
                         else:
                             token.word += OrBlock + "|"
                     token.word = re.sub("\|$", "]", token.word)
+                elif " " in word and "|" not in word and "[" not in word:
+                    # be aware of ['and|or|of|that|which'|PP|CM]
+                    AndBlocks = word.split(" ")
+
+                    token.word = "["
+                    for AndBlock in AndBlocks:
+                        _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
+                        if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
+                            token.word += "'" + AndBlock + "' "
+                        else:
+                            token.word += AndBlock + " "
+                    token.word = re.sub("\|$", "]", token.word)
 
 
 def OutputRules(rulegroup, style="details"):
@@ -987,6 +999,8 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     LoadRules("../../fsa/Y/1test_rules.txt")
+
+    #LoadRules("../../fsa/X/10compound.txt")
 
     # LoadRules("../../fsa/X/180NPx.txt")
 

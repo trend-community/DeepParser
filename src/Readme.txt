@@ -73,5 +73,5 @@ crontab for server:
 
 @reboot cd /nlpengine/parser/src && python RestfulService.pyc >> /nlpengine/parser/log/restfulservice.log  2>&1
 
-*/2  *   *   *   *   flock /tmp/nlpengine_processfile.lock -c 'cd /nlpengine && sh gitpull.sh && cd /nlpengine/parser/src && sh ProcessFolder.sh '
+*/2  *   *   *   *   flock -n /tmp/nlpengine_processfile.lock -c 'cd /nlpengine && sh gitpull.sh && cd /nlpengine/parser/src && sh ProcessFolder.sh '
 
