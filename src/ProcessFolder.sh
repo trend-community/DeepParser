@@ -6,7 +6,7 @@ FEATUREFILE="_feature.txt"
 
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 TEMPFOLDER=$OUTPUTFOLDER/$current_time
-mkdir $OUTPUTFOLDER
+mkdir $TEMPFOLDER
 echo $current_time >> ../log/ProcessFolder.sh.log
 
 for f in $INPUTFILES
