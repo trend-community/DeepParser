@@ -80,6 +80,10 @@ def HeadMatch(strTokens, ruleTokens):
                 continue
             if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
                 return False  #  this rule does not fit for this string
+        except RuntimeError as e:
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i + GoneInStrTokens].word)
+            logging.error(e)
+            # raise
         except Exception as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
@@ -88,10 +92,7 @@ def HeadMatch(strTokens, ruleTokens):
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
             raise
-        except RuntimeError as e:
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
-            logging.error(e)
-            #raise
+
     return True
 
 
