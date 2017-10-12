@@ -6,6 +6,7 @@ OUTPUTFOLDER=../../fsa/test/output
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 OUTPUTFOLDER=$OUTPUTFOLDER/$current_time
 mkdir $OUTPUTFOLDER
+echo $current_time >> ../log/ProcessFolder.log
 
 for f in $INPUTFILES
 do
@@ -24,3 +25,6 @@ do
 done
 
 wait        #wait for all child process to complete.
+
+end_time=$(date "+%Y.%m.%d-%H.%M.%S")
+echo "$current_time - end at: $end_time " >> ../log/ProcessFolder.log
