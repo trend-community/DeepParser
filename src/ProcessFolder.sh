@@ -5,6 +5,7 @@ OUTPUTFOLDER=../../fsa/test/output
 
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 OUTPUTFOLDER=$OUTPUTFOLDER/$current_time
+mkdir $OUTPUTFOLDER
 
 for f in $INPUTFILES
 do
