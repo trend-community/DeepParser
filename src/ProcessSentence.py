@@ -75,6 +75,9 @@ def HeadMatch(strTokens, ruleTokens):
                 GoneInStrTokens += 1
                 if i+GoneInStrTokens >= len(strTokens):
                     return False    #got to the end of the string
+            if not strTokens[i+GoneInStrTokens].word:
+                #logging.warning("Got to " + str(i+GoneInStrTokens) + "th word of tokens:" + strTokens[0].word)
+                continue
             if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
                 return False  #  this rule does not fit for this string
         except Exception as e:
