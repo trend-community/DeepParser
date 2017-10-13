@@ -1,7 +1,7 @@
 import logging, re, json
 
 url = "http://localhost:5001"
-url_ch = "http://localhost:8080"
+url_ch = "http://10.15.252.3:8080"
 
 
 # return -1 if failed. Should throw error?

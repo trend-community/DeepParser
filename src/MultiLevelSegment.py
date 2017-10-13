@@ -1,5 +1,5 @@
 import logging, sys, os
-import ProcessSentence, Rules
+import ProcessSentence, Rules, FeatureOntology
 from utils import *
 
 import singleton
@@ -9,6 +9,7 @@ if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
     level = logging.INFO
+    UnitTestFileName = ''
     if len(sys.argv) > 1:
         UnitTestFileName = sys.argv[1]
         if len(sys.argv) > 2:
@@ -63,3 +64,4 @@ if __name__ == "__main__":
         print(OutputStringTokens_oneliner(nodes, NoFeature))
 
     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
+    print(FeatureOntology.OutputMissingFeatureSet())

@@ -120,5 +120,5 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon(LoadCommonRules=True)
     print("Running in port " + str(port))
-    app.run(port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
     #app.test_client().get('/')

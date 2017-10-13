@@ -77,7 +77,7 @@ def HeadMatch(strTokens, ruleTokens):
                     return False    #got to the end of the string
             if not strTokens[i+GoneInStrTokens].word:
                 #logging.warning("Got to " + str(i+GoneInStrTokens) + "th word of tokens:" + strTokens[0].word)
-                continue
+                return False
             if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
                 return False  #  this rule does not fit for this string
         except RuntimeError as e:
@@ -296,7 +296,7 @@ def MultiLevelSegmentation(Sentence):
 def LoadCommon(LoadCommonRules=False):
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
@@ -353,3 +353,5 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
+
+    print(FeatureOntology.OutputMissingFeatureSet())

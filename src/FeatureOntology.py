@@ -149,31 +149,31 @@ def LoadFullFeatureList_Deprecate(featureListLocation):
     _FeatureDict = {f:ID for ID,f in enumerate(sorted(_FeatureSet))}
 
 
-def PrintFeatureSet():
-    print("// ***Feature Set***")
+def OutputFeatureSet():
+    output = "// ***Feature Set***" + "\n"
     for feature in sorted(_FeatureSet):
-        print( feature )
-    print("// ***Alias***")
+        output += feature
+    output += "// ***Alias***" + "\n"
     for key in sorted(_AliasDict):
-        print( key )
+        output += key  + "\n"
+    return output
 
-
-def PrintMissingFeatureSet():
+def OutputMissingFeatureSet():
     if _MissingFeatureSet:
-        print("//  ***Features that are not included in FullFeatureList***")
+        output ="//  ***Features that are not included in FullFeatureList***" + "\n"
         for feature in sorted(_MissingFeatureSet):
-            print(feature)
+            output += feature + "\n"
+    return output
 
-
-def PrintFeatureOntology():
-    print("//***Ontology***")
+def OutputFeatureOntology():
+    output = "//***Ontology***" + "\n"
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
         if node.ancestors:
-            print(node)
-    print("//***Alias***")
+            output += node + "\n"
+    output += "//***Alias***" + "\n"
     for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
-        print( _FeatureList[_AliasDict[key]] + "=" + key )
-
+        output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"
+    return output
 
 
 def LoadFeatureOntology(featureOncologyLocation):
@@ -271,13 +271,13 @@ if __name__ == "__main__":
     if command == "CreateFeatureList":
         #_CreateFeatureList = True
         LoadFeatureSet(dir_path + '/../../fsa/Y/feature.txt')
-        PrintFeatureSet()
+        print(OutputFeatureSet())
 
     elif command == "CreateFeatureOntology":
         #LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         #_CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        PrintFeatureOntology()
+        print(OutputFeatureOntology())
         #PrintFeatureSet()
 
     else:
