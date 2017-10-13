@@ -272,7 +272,7 @@ def MultiLevelSegmentation(Sentence):
 
     JSnode = Tokenization.SentenceNode('')
     Nodes = [JSnode] + Nodes
-    if Nodes[-1].word != ".":
+    if Nodes[-1].word != "." or FeatureOntology.GetFeatureID('punc') not in Nodes[-1].features:
         JWnode = Tokenization.SentenceNode('')
         Nodes = Nodes + [JWnode]
     Nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
