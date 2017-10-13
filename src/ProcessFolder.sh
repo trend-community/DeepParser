@@ -22,7 +22,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    python MultiLevelSegment.pyc "$f" Debug > "$outputfile$FEATUREFILE" 2>> ../log/ProcessFolder_feature.log &
+    python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> ../log/ProcessFolder_feature.log &
 done
 
 wait        #wait for all child process to complete.
