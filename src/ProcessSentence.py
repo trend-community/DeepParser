@@ -146,6 +146,9 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         NewStems.append( StrTokens[i].stem)     # or StrTokens[i].lexicon.stem?
         StrTokens[i].Gone = True
 
+    StrTokens[StrStartPos].StartTrunk -= 1
+    StrTokens[StrEndPos].EndTrunk -= 1
+
     if IsAscii(NewStems):
         NewStem = " ".join(NewStems)
     else:

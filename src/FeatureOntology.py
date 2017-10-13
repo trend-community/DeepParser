@@ -159,6 +159,7 @@ def OutputFeatureSet():
     return output
 
 def OutputMissingFeatureSet():
+    output = ""
     if _MissingFeatureSet:
         output ="//  ***Features that are not included in FullFeatureList***" + "\n"
         for feature in sorted(_MissingFeatureSet):
@@ -234,7 +235,7 @@ def GetFeatureID(feature):
     if feature in _FeatureDict:
         return _FeatureDict[feature]
 
-    logging.info("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
+    #logging.info("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
 
