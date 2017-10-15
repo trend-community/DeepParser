@@ -8,7 +8,13 @@ import singleton
 me = singleton.SingleInstance()
 
 def SentenceSegmentation(Doc):
-    Sentences = [x.strip() for x in re.split("[。；！]", Doc) if x]
+    Sentences = [x.strip() for x in re.split("([。；！])", Doc) if x]
+    #combine the sign with previous one.
+    for i in range(len(Sentences)-1, -1, -1):
+        if Sentences[i] in "。；！" and i>0:
+            Sentences[i-1] += Sentences[i]
+            del Sentences[i]
+
     return Sentences
 
 
