@@ -1,6 +1,7 @@
 import shutil
 from FeatureOntology import *
 from Lexicon import *
+from shutil import copyfile
 
 _CommentDictB = {}
 _LexiconDictB = {}
@@ -34,7 +35,9 @@ dictList = [_LexiconDictLexX,_LexiconDictL,_LexiconDictDefX,_LexiconDictB,_Lexic
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 paraLex = dir_path + '/../../fsa/X/LexX.txt'
+paraLexTemp = dir_path + '/../../temp/X/LexX.txt'
 paraDef = dir_path + '/../../fsa/X/defLexX.txt'
+paraDefTemp = dir_path + '/../../temp/X/defLexX.txt'
 paraMain = dir_path + '/../../fsa/X/main2017.txt'
 newPlus = dir_path + "/../../fsa/X/LexXplus.txt"
 paraDefPlus = dir_path + "/../../fsa/X/defPlus.txt"
@@ -550,14 +553,19 @@ if __name__ == "__main__":
 
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
     paraB = dir_path + '/../../fsa/X/brandX.txt'
+    paraBTemp = dir_path + '/../../temp/X/brandX.txt'
     OrganizeLex(paraB, _CommentDictB,_LexiconDictB)
     paraP = dir_path + '/../../fsa/X/perX.txt'
+    paraPTemp = dir_path + '/../../temp/X/perX.txt'
     OrganizeLex(paraP, _CommentDictP, _LexiconDictP)
     paraL = dir_path + '/../../fsa/X/locX.txt'
+    paraLTemp = dir_path + '/../../temp/X/locX.txt'
     OrganizeLex(paraL, _CommentDictL, _LexiconDictL)
     paraI = dir_path + '/../../fsa/X/idiomX.txt'
+    paraITemp = dir_path + '/../../temp/X/idiomX.txt'
     OrganizeLex(paraI, _CommentDictI, _LexiconDictI)
     paraI4 = dir_path + '/../../fsa/X/idiom4X.txt'
+    paraI4Temp = dir_path + '/../../temp/X/idiom4X.txt'
     OrganizeLex(paraI4, _CommentDictI4, _LexiconDictI4)
     OrganizeLex(paraLex, _CommentDictLexX, _LexiconDictLexX)
     OrganizeLex(paraDef, _CommentDictDefX, _LexiconDictDefX)
@@ -607,18 +615,27 @@ if __name__ == "__main__":
     AddDefandLexX()
 
     FeaturesMorethanFour()
-    printNewLex(_CommentDictB, _LexiconDictB, paraB)
+    printNewLex(_CommentDictB, _LexiconDictB, paraBTemp)
 
-    printNewLex(_CommentDictP,_LexiconDictP, paraP)
+    printNewLex(_CommentDictP,_LexiconDictP, paraPTemp)
 
-    printNewLex(_CommentDictL,_LexiconDictL, paraL)
+    printNewLex(_CommentDictL,_LexiconDictL, paraLTemp)
 
-    printNewLex(_CommentDictI,_LexiconDictI, paraI)
+    printNewLex(_CommentDictI,_LexiconDictI, paraITemp)
 
-    printNewLex(_CommentDictI4,_LexiconDictI4, paraI4)
+    printNewLex(_CommentDictI4,_LexiconDictI4, paraI4Temp)
 
-    printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLex)
-    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
+    printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLexTemp)
+    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDefTemp)
+
+    copyfile(paraBTemp,paraB)
+    copyfile(paraPTemp, paraP)
+    copyfile(paraLTemp, paraL)
+    copyfile(paraITemp, paraI)
+    copyfile(paraI4Temp, paraI4)
+    copyfile(paraLexTemp, paraLex)
+    copyfile(paraDefTemp, paraDef)
+
 
     GenerateLexPlus()
     printLexPlus(newPlus, _LexiconDictPlus)
