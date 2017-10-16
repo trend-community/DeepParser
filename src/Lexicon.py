@@ -326,7 +326,7 @@ def ApplyLexicon(node):
         _ApplyWordStem(node, node.lexicon)
 
     ApplyWordLengthFeature(node)
-    #node.lexicon = None
+    node.lexicon = None
     return node
 
 
