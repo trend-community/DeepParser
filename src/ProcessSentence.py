@@ -53,10 +53,12 @@ def StoreWinningRule(strtokens, rule, StartPosition):
 
 
 def OutputWinningRules():
+    from collections import OrderedDict
     output = ""
+
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += json.dumps({' rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}, ensure_ascii=False) + "\n"
+        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), ensure_ascii=False) + "\n"
 
     return output
 
