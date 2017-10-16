@@ -82,9 +82,8 @@ def SeparateRules(multilineString):
 
 class RuleToken(object):
     def __init__(self):
-        self.EndTrunk = 0
         self.StartTrunk = 0
-
+        self.EndTrunk = 0
 
 class Rule:
     idCounter = 0
@@ -102,7 +101,7 @@ class Rule:
         self.comment = ''
 
     def SetRule(self, ruleString, MacroDict={}, ID=1):
-        self.Origin = ruleString
+        self.Origin = ruleString.strip()
         code, comment = SeparateComment(ruleString)
         if not code:
             return
@@ -155,7 +154,7 @@ class Rule:
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
-            logging.error("Failed to tokenize because: " + str(e))
+            logging.error("Failed to setrule because: " + str(e))
             logging.error("Rulename is: " + self.RuleName)
             self.RuleName = ""
             self.RuleContent = ""
@@ -299,14 +298,14 @@ def ProcessTokens(Tokens):
             node.word = node.word.rstrip("*")
             node.repeat = [0, 3]
 
-        repeatMatch = re.match("(.*[\]\"')])(\d+)\*(\d+)$", node.word)
+        repeatMatch = re.match("(.*[\]\"')])(\d+)\*(\d+)$", node.word, re.DOTALL)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             node.repeat = [int(repeatMatch.group(2)), int(repeatMatch.group(3))]
 
-        repeatMatch = re.match("(.+)\*(\d*)$", node.word)
+        repeatMatch = re.match("(.+)\*(\d*)$", node.word, re.DOTALL)
         if not repeatMatch:
-            repeatMatch = re.match("(.*[\])\"'])(\d+)$", node.word)
+            repeatMatch = re.match("(.*[\])\"'])(\d+)$", node.word, re.DOTALL)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             repeatMax = 3  # default as 3
@@ -314,12 +313,12 @@ def ProcessTokens(Tokens):
                 repeatMax = int(repeatMatch.group(2))
             node.repeat = [0, repeatMax]
 
-        pointerMatch = re.match("\^(\w*)\[(.+)\]$", node.word)
+        pointerMatch = re.match("\^(\w*)\[(.+)\]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
 
-        pointerMatch = re.match("\^(.+)$", node.word)
+        pointerMatch = re.match("\^(.+)$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = ''
@@ -334,12 +333,12 @@ def ProcessTokens(Tokens):
                     node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
                 else:  # no "()" sign, and no "|" sign
                     # using (.*):, not (.+): , because the word can be blank (means matching everything)
-                    actionMatch = re.match("\[(.*):(.+)\]$", node.word)
+                    actionMatch = re.match("\[(.*):(.+)\]$", node.word, re.DOTALL)
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
 
-        priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word)
+        priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word, re.DOTALL)
         if priorityMatch:
             node.word = "[" + priorityMatch.group(2) + "]"
             node.priority = int(priorityMatch.group(1))
@@ -406,7 +405,7 @@ def _SearchToEnd_OrBlock(string, Reverse=False):
 def ProcessMacro(ruleContent, MacroDict):
     macros_with_parameters = re.findall("#\w*\(.+\)", ruleContent)
     for macro in macros_with_parameters:
-        macroName = re.match("^(#.*)\(", macro)[0]
+        macroName = re.match("^(#.*)\(", macro).group(0)
         for MacroName in MacroDict:
             if MacroName.startswith(macroName):
                 MacroParameters = re.findall("(\d+)=(\$\w+)", MacroName)
@@ -651,7 +650,7 @@ def _ExpandParenthesis(OneList):
                 try:
                     subTokenlist = Tokenize(token.word[parenthesisIndex + 1:-parenthesisIndex - 1])
                 except Exception as e:
-                    logging.error("Failed to tokenize because: " + str(e))
+                    logging.error("Failed to _ExpandParenthesis.tokenize because: " + str(e))
                     logging.error("Rule name: " + rule.RuleName)
                     continue
 
@@ -718,22 +717,22 @@ def _ProcessOrBlock(Content, orIndex):
     leftBlock = Content[start:orIndex]
     rightBlock = Content[orIndex + 1:end + 1]
 
-    #if left/right block is enclosed by (), and it is part of a block , then the () can be removed:
+    #if left/right block is enclosed by (), and it is part of one token , then the () can be removed:
     # write out in log as confirmation.
     if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content)-2:
         if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-            logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+            #logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
             leftBlock = leftBlock[1:-1]
         if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-            logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+            #logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
             rightBlock = rightBlock[1:-1]
     else:
         if "[" not in originBlock :
             if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-                logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+                #logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
                 leftBlock = leftBlock[1:-1]
             if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-                logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+                #logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
                 rightBlock = rightBlock[1:-1]
 
     return originBlock, leftBlock, rightBlock
@@ -784,7 +783,7 @@ def _ExpandOrBlock(OneList):
             try:
                 subTokenlist = Tokenize(token.word.replace(originBlock, leftBlock))
             except Exception as e:
-                logging.error("Failed to tokenize because: " + str(e))
+                logging.error("Failed to _ExpandOrBlock.left.tokenize because: " + str(e))
                 logging.error("when expanding or block:" + leftBlock + " for rule name: " + rule.RuleName)
                 continue
             if subTokenlist:
@@ -819,7 +818,7 @@ def _ExpandOrBlock(OneList):
             try:
                 subTokenlist = Tokenize(token.word.replace(originBlock, rightBlock))
             except Exception as e:
-                logging.error("Failed to tokenize because: " + str(e))
+                logging.error("Failed to _ExpandOrBlock.right.tokenize because: " + str(e))
                 logging.error("when expanding or block:" + rightBlock + " for rule name: " + rule.RuleName)
                 continue
             if subTokenlist:
@@ -866,6 +865,11 @@ def PreProcess_CheckFeatures():
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
 def _PreProcess_CheckFeatures(OneList):
     for rule in OneList:
+        if len(rule.Tokens) == 0:
+            logging.error("This rule has zero token.")
+            logging.error("Lenth = 0, error! Need to revisit the parsing process")
+            logging.error(str(rule))
+            OneList.remove(rule)
         for token in rule.Tokens:
             word = token.word
             if len(word) <= 2:
@@ -930,6 +934,17 @@ def _PreProcess_CheckFeatures(OneList):
                         else:
                             token.word += OrBlock + "|"
                     token.word = re.sub("\|$", "]", token.word)
+                elif " " in word and "|" not in word and "[" not in word:
+                    # be aware of ['and|or|of|that|which'|PP|CM]
+                    AndBlocks = word.split()
+                    token.word = "["
+                    for AndBlock in AndBlocks:
+                        _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
+                        if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
+                            token.word += "'" + AndBlock + "' "
+                        else:
+                            token.word += AndBlock + " "
+                    token.word = re.sub(" $", "]", token.word)
 
 
 def OutputRules(rulegroup, style="details"):
@@ -982,6 +997,8 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     LoadRules("../../fsa/Y/1test_rules.txt")
+
+    #LoadRules("../../fsa/X/10compound.txt")
 
     # LoadRules("../../fsa/X/180NPx.txt")
 

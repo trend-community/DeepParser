@@ -63,3 +63,15 @@ Note: The error message and standard output are showing in the screen. If you wa
 The ProcessSentence program apply all rule files, after MultiLevelSegment.
 The rules keep changing, you can modify the list in LoadCommon() of "ProcessSentence.py".
 Replace "MultiLevelSegment" with "ProcessSentence" for the commands in Section 4, you now have all commands you need to process test sentences.
+
+
+Extra:
+crontab for server:
+
+
+@reboot cd /nlpengine/multisegmental && mvn exec:java >> /nlpengine/multisegmental/log/restfulservice.log 2>&1
+
+@reboot cd /nlpengine/parser/src && python RestfulService.pyc >> /nlpengine/parser/log/restfulservice.log  2>&1
+
+*/2  *   *   *   *   flock -n /tmp/nlpengine_processfile.lock -c 'cd /nlpengine && sh gitpull.sh && cd /nlpengine/parser/src && sh ProcessFolder.sh '
+

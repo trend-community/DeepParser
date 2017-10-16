@@ -44,18 +44,21 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
 
 def StoreWinningRule(strtokens, rule, StartPosition):
     global WinningRuleDict
-    if rule.RuleName in WinningRuleDict:
-        _, hits = WinningRuleDict[rule.RuleName]
+
+    if rule.ID in WinningRuleDict:
+        _, hits = WinningRuleDict[rule.ID]
         hits.append(MarkWinningTokens(strtokens, rule, StartPosition))
     else:
-        WinningRuleDict[rule.RuleName] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
+        WinningRuleDict[rule.ID] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
 
 
 def OutputWinningRules():
+    from collections import OrderedDict
     output = ""
+
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += json.dumps({' rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}, ensure_ascii=False) + "\n"
+        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), ensure_ascii=False) + "\n"
 
     return output
 
@@ -74,16 +77,24 @@ def HeadMatch(strTokens, ruleTokens):
                 GoneInStrTokens += 1
                 if i+GoneInStrTokens >= len(strTokens):
                     return False    #got to the end of the string
+            if not strTokens[i+GoneInStrTokens].word:
+                #logging.warning("Got to " + str(i+GoneInStrTokens) + "th word of tokens:" + strTokens[0].word)
+                return False
             if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
                 return False  #  this rule does not fit for this string
+        except RuntimeError as e:
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i + GoneInStrTokens].word)
+            logging.error(e)
+            # raise
         except Exception as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
-            #raise
+            raise
         except IndexError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i+GoneInStrTokens].word )
             logging.error(e)
-            #raise
+            raise
+
     return True
 
 
@@ -137,6 +148,9 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         NewStems.append( StrTokens[i].stem)     # or StrTokens[i].lexicon.stem?
         StrTokens[i].Gone = True
 
+    StrTokens[StrStartPos].StartTrunk -= 1
+    StrTokens[StrEndPos].EndTrunk -= 1
+
     if IsAscii(NewStems):
         NewStem = " ".join(NewStems)
     else:
@@ -161,6 +175,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             GoneInStrTokens += 1
             if i + GoneInStrTokens == len(strtokens):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
+        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk = rule.Tokens[i].StartTrunk
+        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk = rule.Tokens[i].EndTrunk
+
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
             logging.debug("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
@@ -233,6 +250,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + FileName)
                     rulegroup.RuleList.remove(WinningRule)
+                    skiptokennum = 0
             i += skiptokennum - 1  # go to the next word
             WinningRules.append(WinningRule.RuleName)
 
@@ -240,9 +258,11 @@ def MatchAndApplyRuleFile(strtokens, FileName):
     return WinningRules
 
 
-def MatchAndApplyAllRules(strtokens):
+def MatchAndApplyAllRules(strtokens, ExcludeList=[]):
     WinningRules = []
     for RuleFileName in Rules.RuleGroupDict:
+        if RuleFileName in ExcludeList:
+            continue
         logging.info("Applying:" + RuleFileName)
         WinningRules.extend(MatchAndApplyRuleFile(strtokens, RuleFileName))
 
@@ -257,7 +277,7 @@ def MultiLevelSegmentation(Sentence):
 
     JSnode = Tokenization.SentenceNode('')
     Nodes = [JSnode] + Nodes
-    if Nodes[-1].word != ".":
+    if Nodes[-1].word != "." and FeatureOntology.GetFeatureID('punc') not in Nodes[-1].features:
         JWnode = Tokenization.SentenceNode('')
         Nodes = Nodes + [JWnode]
     Nodes[0].features.add(FeatureOntology.GetFeatureID('JS'))
@@ -271,11 +291,9 @@ def MultiLevelSegmentation(Sentence):
 
     #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
 
-    logging.debug("-Start MatchAndApplyRuleFile 2 rules")
-    MatchAndApplyRuleFile(Nodes, "mainX2.txt")
-    MatchAndApplyRuleFile(Nodes, "ruleLexiconX.txt")
-    MatchAndApplyRuleFile(Nodes, "10compound.txt")
-    MatchAndApplyRuleFile(Nodes, "180NPx.txt")
+    logging.debug("-Start MatchAndApplyRuleFile rules except 0defLexX")
+    MatchAndApplyAllRules(Nodes, ExcludeList=["0defLexX.txt"])
+
     logging.debug("-End MultiLevelSegmentation")
     return Nodes
 
@@ -305,11 +323,12 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/10compound.txt")
         Rules.LoadRules("../../fsa/X/180NPx.txt")
 
-        # Rules.LoadRules("../../fsa/X/270VPx.txt")
+        #Rules.LoadRules("../../fsa/X/270VPx.txt")
 
         Rules.ExpandRuleWildCard()
         Rules.ExpandParenthesisAndOrBlock()
         Rules.ExpandRuleWildCard()
+        Rules.PreProcess_CheckFeatures()
 
         Rules.OutputRuleFiles("../temp/")
         #print(Lexicon.OutputLexicon(False))
@@ -317,7 +336,7 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
     target = "八十五分不等于五分。 "
@@ -339,3 +358,5 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
+
+    print(FeatureOntology.OutputMissingFeatureSet())

@@ -4,6 +4,9 @@ import ProcessSentence, Rules
 import requests, json, jsonpickle
 from utils import *
 
+import singleton
+me = singleton.SingleInstance()
+
 
 if __name__ == "__main__":
     DebugMode = False

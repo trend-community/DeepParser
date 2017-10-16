@@ -9,6 +9,10 @@ app.config['CACHE_TYPE'] = 'simple'
 app.cache = Cache(app)
 
 
+import singleton
+me = singleton.SingleInstance()
+
+
 @app.route("/SearchLexicon/<word>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def SearchLexicon(word):
@@ -25,6 +29,12 @@ def GetFeatureID(word):
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def GetFeatureName(FeatureID):
     return jsonpickle.encode(FeatureOntology.GetFeatureName(int(FeatureID)))
+
+
+@app.route("/GetFeatureList")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
+def GetFeatureList():
+    return jsonpickle.encode(FeatureOntology._FeatureDict)
 
 
 @app.route("/Tokenize/<Sentence>")
@@ -110,5 +120,5 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon(LoadCommonRules=True)
     print("Running in port " + str(port))
-    app.run(port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
     #app.test_client().get('/')
