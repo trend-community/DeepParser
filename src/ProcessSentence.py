@@ -263,7 +263,6 @@ def MatchAndApplyAllRules(strtokens, ExcludeList=[]):
     for RuleFileName in Rules.RuleGroupDict:
         if RuleFileName in ExcludeList:
             continue
-        logging.info("Applying:" + RuleFileName)
         WinningRules.extend(MatchAndApplyRuleFile(strtokens, RuleFileName))
 
     return WinningRules
@@ -339,7 +338,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "八十五分不等于五分。 "
+    target = "八十五分不多少等于five 分。 "
     nodes = MultiLevelSegmentation(target)
 
     for node in nodes:
@@ -348,7 +347,7 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes))
 
     logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
-    RuleNames = MatchAndApplyAllRules(nodes)
+    RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt", "1test_rules.txt"])
     print("After match:")
     for node in nodes:
         print(str(node))
