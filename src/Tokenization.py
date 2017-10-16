@@ -27,6 +27,8 @@ class SentenceNode(object):
         self.Gone = False
         self.StartTrunk = 0
         self.EndTrunk = 0
+        self.StartOffset = -1
+        self.EndOffset = -1
 
     def __str__(self):
         output = "[" + self.word + "] "
@@ -57,6 +59,7 @@ class SentenceNode(object):
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return featureString
 
+
 def Tokenize_space(sentence):
     StartToken = True
     StartPosition = 0
@@ -73,7 +76,8 @@ def Tokenize_space(sentence):
 
         if (prevc.isalnum() and not c.isalnum()) or (not prevc.isalnum() and not prevc.isspace()):
             Element = SentenceNode(sentence[StartPosition:i])
-            Element.position = StartPosition
+            Element.StartOffset = StartPosition
+            Element.EndOffset = i
             Tokens.append(Element)
             StartToken = False
 
@@ -84,7 +88,8 @@ def Tokenize_space(sentence):
 
     if StartToken:  #wrap up the last one
         Element = SentenceNode(sentence[StartPosition:])
-        Element.position = StartPosition
+        Element.StartOffset = StartPosition
+        Element.EndOffset = len(sentence)
         Tokens.append(Element)
 
     return Tokens

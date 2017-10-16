@@ -91,7 +91,7 @@ class OntologyNode:
             realnode.openWordID = realfeatureId
             _FeatureOntology.append(realnode)
 
-        features = re.split("[,; ]", code)    # the first feature is the last alias.
+        features = [x.strip() for x in re.split("[,; ]", code) if x]    # the first feature is the last alias.
         lastalias = features[0]
         for alias in blocks[1:-1] + [lastalias]:
             aliasnode = SearchFeatureOntology(GetFeatureID(alias))
@@ -170,7 +170,7 @@ def OutputFeatureOntology():
     output = "//***Ontology***" + "\n"
     for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
         if node.ancestors:
-            output += node + "\n"
+            output += str(node) + "\n"
     output += "//***Alias***" + "\n"
     for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
         output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"

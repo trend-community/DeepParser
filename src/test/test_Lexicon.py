@@ -5,6 +5,7 @@ from Lexicon import *
 dir_path = os.path.dirname(os.path.realpath(__file__))
 LoadFeatureOntology(dir_path + '/../../../fsa/Y/feature.txt')
 LoadLexicon(dir_path + '/../../../fsa/Y/lexY.txt')
+LoadLexicon(dir_path + '/../../../fsa/Y/compoundY.txt')
 
 class LexiconTest(unittest.TestCase):
     def test_lexicon(self):

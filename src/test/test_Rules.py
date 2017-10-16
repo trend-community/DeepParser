@@ -362,14 +362,15 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(left, "abc")
         self.assertEqual(right, "def")
 
+        # if left/right block is enclosed by (), and it is part of one token , then the () can be removed:
         whole, left, right = _ProcessOrBlock("(abc)|'def'|ghi", 5)
         self.assertEqual(whole, "(abc)|'def'")
-        self.assertEqual(left, "(abc)")
+        self.assertEqual(left, "abc")
         self.assertEqual(right, "'def'")
 
         whole, left, right = _ProcessOrBlock("(abc)|def|ghi", 5)
         self.assertEqual(whole, "(abc)|def")
-        self.assertEqual(left, "(abc)")
+        self.assertEqual(left, "abc")
         self.assertEqual(right, "def")
 
         whole, left, right = _ProcessOrBlock("/abc/|def|ghi", 5)
@@ -391,11 +392,12 @@ class RuleTest(unittest.TestCase):
 
         ResetRules(rulegroup)
         InsertRuleInList("""abc ==
-        <[DT|PDT|( [PRPP:^.M] | (one:^.M POS) ):^.M]  [NE:NP]>
+        <DT|PDT|( [PRPP:^.M] | [one:^.M POS])   [NE:NP]>
         """, rulegroup)
         self.assertEqual(len(rulegroup.RuleList), 1)
 
-        _ExpandOrBlock(rulegroup.RuleList)
+        #_ExpandOrBlock(rulegroup.RuleList)
+        ExpandParenthesisAndOrBlock()
         #OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 4)
 

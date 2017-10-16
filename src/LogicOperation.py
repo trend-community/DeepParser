@@ -49,7 +49,9 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
             word = strToken.norm
         else:
             word = strToken.word
-        if rule.lower() == word.lower():
+        if rule.lower() == word.lower() \
+                or rule.endswith('-') and word.startswith(rule[:-1])\
+                or rule.startswith('-') and word.endswith(rule[1:]):
             return True
         else:
             return False

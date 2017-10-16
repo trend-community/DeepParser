@@ -34,8 +34,8 @@ class FeatureTest(unittest.TestCase):
 
     def test_alias(self):
         node = OntologyNode()
-        rest = node.ProcessAlias("A=B=C, D, E, F")
-        self.assertEqual(rest, "A, D, E, F")
+        rest = node.ProcessAliasInFeatureFile("A=B=C, D, E, F")
+        self.assertEqual(rest, "A,D,E,F")
 
     def test_setrule(self):
         node = OntologyNode()
