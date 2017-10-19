@@ -326,6 +326,7 @@ def ApplyLexicon(node):
         _ApplyWordStem(node, node.lexicon)
 
     ApplyWordLengthFeature(node)
+    node.lexicon = None
     return node
 
 
@@ -426,6 +427,6 @@ if __name__ == "__main__":
     else:
         Englishflag = True
     print(OutputLexicon(Englishflag))
-    PrintMissingFeatureSet()
+    print(OutputMissingFeatureSet())
 
 
