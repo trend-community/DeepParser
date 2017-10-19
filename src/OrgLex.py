@@ -1,5 +1,4 @@
 import shutil
-from FeatureOntology import *
 from Lexicon import *
 from shutil import copyfile
 
@@ -31,7 +30,7 @@ _LexiconDictDefPlus = {}
 _LexiconDictDefPlusX = {}
 _LexiconDictLexPlusX = {}
 
-dictList = [_LexiconDictLexX,_LexiconDictL,_LexiconDictDefX,_LexiconDictB,_LexiconDictI,_LexiconDictI4,_LexiconDictP]
+dictList = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 paraLex = dir_path + '/../../fsa/X/LexX.txt'
@@ -41,6 +40,7 @@ paraDefTemp = dir_path + '/../../temp/X/defLexX.txt'
 paraMain = dir_path + '/../../fsa/X/main2017.txt'
 newPlus = dir_path + "/../../fsa/X/LexXplus.txt"
 paraDefPlus = dir_path + "/../../fsa/X/defPlus.txt"
+
 
 def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
@@ -58,11 +58,11 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                 continue
             newNode = False
             node = SearchLexicon(blocks[0], 'origin')
-            #node = None
+            # node = None
             if not node:
                 newNode = True
                 node = LexiconNode(blocks[0])
-                if "_" in node.word:            #TODO: to confirm.
+                if "_" in node.word:
                     node.forLookup = True       #for those combination words.
                 if comment:
                     node.comment = comment
@@ -80,7 +80,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                 else:
                     featureID = GetFeatureID(feature)
 
-                    if featureID==-1:
+                    if featureID == -1:
                         logging.debug("Missing Feature: " + feature)
                         node.missingfeature += "\\" + feature
                     node.features.add(featureID)
@@ -90,22 +90,19 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                         if ancestors:
                             node.features.update(ancestors)
 
-
-
             if newNode:
                 _LexiconDict.update({node.word: node})
-                #logging.debug(node.word)
+                # logging.debug(node.word)
             oldWord = blocks[0]
 
-
-
     logging.debug("Finish loading lexicon")
+
 
 def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
 
     removeWord = set()
     for word in _LexiconDict1.keys():
-        output = word
+
         if word in _LexiconDict2.keys():
 
             node1 = _LexiconDict1.get(word)
@@ -137,7 +134,7 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
 
             _LexiconDict1.update({word:node1})
 
-            if _LexiconDict1==_LexiconDictDefX:
+            if _LexiconDict1 == _LexiconDictDefX:
                 # logging.debug("def " + word)
                 _LexiconDictDefPlusX.update({word:node1})
             else:
@@ -152,7 +149,6 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
         del _LexiconDict2[word]
 
 
-
 def AlignMain():
     newloc = "outputMain.txt"
     with open(newloc, 'w',encoding='utf-8') as file:
@@ -162,15 +158,12 @@ def AlignMain():
                     file.write(line)
                     continue
                 code, comment = SeparateComment(line)
-                if (code not in _LexiconDictB.keys()) and (code not in _LexiconDictP.keys()) and ((code not in _LexiconDictL.keys())) and ((code not in _LexiconDictI.keys())) and ((code not in _LexiconDictI4.keys())) and (code not in _LexiconDictLexX.keys()) and (code not in _LexiconDictDefX.keys()):
+                if (code not in _LexiconDictB.keys()) and (code not in _LexiconDictP.keys()) and (code not in _LexiconDictL.keys()) and (code not in _LexiconDictI.keys()) and (code not in _LexiconDictI4.keys()) and (code not in _LexiconDictLexX.keys()) and (code not in _LexiconDictDefX.keys()):
                     file.write(code + comment + "\n")
     shutil.move(newloc,paraMain)
 
 
-
-
 def AddDefandLexX():
-
 
     for word in _LexiconDictDefPlusX.keys():
         _LexiconDictDefX.update({word:_LexiconDictDefPlusX.get(word)})
@@ -192,11 +185,9 @@ def printNewLex(_CommentDictTemp, _LexiconDictTemp, newloc):
         for word in s:
             if oldWord in _CommentDictTemp.keys():
                 output += _CommentDictTemp[oldWord]
-                oldWord = word
             output += _LexiconDictTemp.get(word).entry() + "\n"
             oldWord = word
         file.write(output+"\n")
-
 
 
 def FeaturesMorethanFour():
@@ -226,7 +217,7 @@ def FeaturesMorethanFour():
                     featureSorted.add(featureName)
 
             featureSorted = sorted(featureSorted)
-            features = featureSorted
+
             if len(featureSorted) >= 4:
                 logging.debug("length is larger than 4 " + word)
                 _LexiconDictLexX.update({word: lex.get(word)})
@@ -268,10 +259,8 @@ def FeaturesMorethanFour():
         del _LexiconDictDefX[word]
 
 
-    #printLexSum()
-
 def GenerateLexPlus():
-    logging.debug("size of original def is " +  str(len(_LexiconDictDefXOrig)))
+    logging.debug("size of original def is " + str(len(_LexiconDictDefXOrig)))
     logging.debug("size of original lex is " + str(len(_LexiconDictLexXOrig)))
     cpbID = GetFeatureID("cPB")
     canPBID = GetFeatureID("canPB")
@@ -299,7 +288,7 @@ def GenerateLexPlus():
                 featuresID.remove(cpbID)
                 featuresID.add(canPBID)
                 newWord = first + "得" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     if newWord == "差得多":
                         logging.debug("差得多")
                     newNode = LexiconNode(newWord)
@@ -314,11 +303,11 @@ def GenerateLexPlus():
                 else:
                     logging.debug("duplicate1 :" + newWord)
 
-                if len(word)==2 and word[1]=="出":
+                if len(word) == 2 and word[1] == "出":
                     newWord = word[0] + "得" + word[1] + "来"
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
-                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
-                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                    newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
+                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
                         newNode.stem = first + second
@@ -330,7 +319,7 @@ def GenerateLexPlus():
                         logging.debug("duplicate2 :" + newWord)
 
                 newWord = first + "不" + first + "得" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     newNode.stem = first + second
                     featuresID.add(orQID)
@@ -342,7 +331,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate3 :" + newWord)
 
                 newWord = first + "不" + first + "的" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     newNode.stem = first + second
                     newNode.word = newWord
@@ -352,7 +341,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate4 :" + newWord)
 
                 newWord = first + "没" + first + "得" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     newNode.stem = first + second
                     featuresID.add(perfectID)
@@ -364,7 +353,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate5 :" + newWord)
 
                 newWord = first + "没" + first + "的" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     newNode.stem = first + second
                     newNode.word = newWord
@@ -375,7 +364,7 @@ def GenerateLexPlus():
 
                 # cannotPB feature
                 newWord = first + "不" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     newNode.stem = first + second
                     if canPBID in featuresID:
@@ -395,10 +384,10 @@ def GenerateLexPlus():
                 else:
                     logging.debug("duplicate7 :" + newWord)
 
-                if len(word)==2 and word[1]=="出":
+                if len(word) == 2 and word[1] == "出":
                     newWord = word[0] + "不" + word[1] + "来"
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
-                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
+                    (newWord not in _LexiconDictL.keys())) and (newWord not in _LexiconDictI.keys()) and (
                     (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
@@ -416,8 +405,8 @@ def GenerateLexPlus():
                     featuresID.add(canPBID)
                     newWord = first + "的" + second
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
-                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
-                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                    newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
+                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
                         newNode.stem = first + second
@@ -434,8 +423,8 @@ def GenerateLexPlus():
                     if len(word) == 2 and word[1] == "出":
                         newWord = word[0] + "的" + word[1] + "来"
                         if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
-                        (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
-                        (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
+                        newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                             newWord not in _LexiconDictDefXOrig.keys()):
                             newNode = LexiconNode(newWord)
                             newNode.stem = first + second
@@ -446,11 +435,11 @@ def GenerateLexPlus():
                         else:
                             logging.debug("duplicate10 :" + newWord)
 
-            if abID in featuresID and len(word)==2:
+            if abID in featuresID and len(word) == 2:
                 first = word[0]
                 second = word[1]
                 newWord = first + first + second + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and ((newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and ((newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     featuresID.remove(abID)
                     featuresID.add(aabbID)
@@ -460,34 +449,25 @@ def GenerateLexPlus():
             if xyID in featuresID and len(word) == 2:
                 first = word[0]
                 second = word[1]
-                startwithFirstDict =  LexStartWithChar(first)
-                startwithSecondDict =  LexStartWithChar(second)
+                startwithFirstDict = LexStartWithChar(first)
+                startwithSecondDict = LexStartWithChar(second)
                 commonpart = set(startwithFirstDict.keys()).intersection(set(startwithSecondDict.keys()))
                 for char in commonpart:
                     newWord = word + char
-                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
-                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
-                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
-                        newWord not in _LexiconDictDefXOrig.keys()):
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
                         newNode.word = newWord
                         newNode.stem = first + char + second + char
                         newNode.features = startwithFirstDict.get(char).features
                         _LexiconDictDefPlus.update({newWord: newNode})
-
 
                     newWord = word[1] + word[0] + char
-                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
-                    (newWord not in _LexiconDictL.keys())) and ((newWord not in _LexiconDictI.keys())) and (
-                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
-                        newWord not in _LexiconDictDefXOrig.keys()):
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
                         newNode.word = newWord
                         newNode.stem = first + char + second + char
                         newNode.features = startwithFirstDict.get(char).features
                         _LexiconDictDefPlus.update({newWord: newNode})
-
-
 
     logging.debug("lexx plus size is " + str(len(_LexiconDictPlus)))
     logging.debug("def lexx plus size is " + str(len(_LexiconDictDefPlus)))
@@ -497,15 +477,16 @@ def LexStartWithChar(startingChar):
     res = {}
     for lexDic in dictList:
         for word in lexDic.keys():
-            if len(word) == 2 and word[0] == startingChar and word[1]!= startingChar:
+            if len(word) == 2 and word[0] == startingChar and word[1] != startingChar:
                 newNode = LexiconNode(word[1])
                 newNode.features = lexDic.get(word).features
-                res.update({word[1]:newNode})
+                res.update({word[1]: newNode})
     return res
+
 
 def printLexPlus(loc, _LexiconDictTemp):
     s = sorted(_LexiconDictTemp.keys(), key=lambda x: (RealLength(x), x))
-    with open(loc, 'w',encoding='utf-8') as file:
+    with open(loc, 'w', encoding='utf-8') as file:
         for word in s:
             output = word + ": "
             node = _LexiconDictTemp.get(word)
@@ -538,13 +519,9 @@ def printLexPlus(loc, _LexiconDictTemp):
             file.write(output + "\n")
 
 
-
-
-
-
 if __name__ == "__main__":
 
-    logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
     if len(sys.argv) != 1:
         print("Usage: python OrgLex.py")
@@ -554,7 +531,7 @@ if __name__ == "__main__":
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
     paraB = dir_path + '/../../fsa/X/brandX.txt'
     paraBTemp = dir_path + '/../../temp/X/brandX.txt'
-    OrganizeLex(paraB, _CommentDictB,_LexiconDictB)
+    OrganizeLex(paraB, _CommentDictB, _LexiconDictB)
     paraP = dir_path + '/../../fsa/X/perX.txt'
     paraPTemp = dir_path + '/../../temp/X/perX.txt'
     OrganizeLex(paraP, _CommentDictP, _LexiconDictP)
@@ -572,7 +549,6 @@ if __name__ == "__main__":
 
     AlignMain()
 
-
     compareLex(_LexiconDictB, _LexiconDictP)
     compareLex(_LexiconDictB, _LexiconDictL)
     compareLex(_LexiconDictB, _LexiconDictI)
@@ -586,14 +562,6 @@ if __name__ == "__main__":
     compareLex(_LexiconDictL, _LexiconDictI4)
 
     compareLex(_LexiconDictI, _LexiconDictI4)
-
-
-    # printNewLex(paraB, _LexiconDictB, newB)
-    # printNewLex(paraP, _LexiconDictP, newP)
-    # printNewLex(paraL, _LexiconDictL, newL)
-    # printNewLex(paraI, _LexiconDictI, newI)
-    # printNewLex(paraI4, _LexiconDictI4, newI4)
-
 
     compareLex(_LexiconDictLexX, _LexiconDictB, lexXandOther=True)
     compareLex(_LexiconDictLexX, _LexiconDictP, lexXandOther=True)
@@ -617,18 +585,18 @@ if __name__ == "__main__":
     FeaturesMorethanFour()
     printNewLex(_CommentDictB, _LexiconDictB, paraBTemp)
 
-    printNewLex(_CommentDictP,_LexiconDictP, paraPTemp)
+    printNewLex(_CommentDictP, _LexiconDictP, paraPTemp)
 
-    printNewLex(_CommentDictL,_LexiconDictL, paraLTemp)
+    printNewLex(_CommentDictL, _LexiconDictL, paraLTemp)
 
-    printNewLex(_CommentDictI,_LexiconDictI, paraITemp)
+    printNewLex(_CommentDictI, _LexiconDictI, paraITemp)
 
-    printNewLex(_CommentDictI4,_LexiconDictI4, paraI4Temp)
+    printNewLex(_CommentDictI4, _LexiconDictI4, paraI4Temp)
 
     printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLexTemp)
     printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDefTemp)
 
-    copyfile(paraBTemp,paraB)
+    copyfile(paraBTemp, paraB)
     copyfile(paraPTemp, paraP)
     copyfile(paraLTemp, paraL)
     copyfile(paraITemp, paraI)
@@ -636,13 +604,7 @@ if __name__ == "__main__":
     copyfile(paraLexTemp, paraLex)
     copyfile(paraDefTemp, paraDef)
 
-
     GenerateLexPlus()
     printLexPlus(newPlus, _LexiconDictPlus)
     printLexPlus(paraDefPlus, _LexiconDictDefPlus)
-
-
-
-
-
 
