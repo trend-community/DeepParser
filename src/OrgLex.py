@@ -33,10 +33,8 @@ _LexiconDictLexPlusX = {}
 dictList = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-paraLex = dir_path + '/../../fsa/X/LexX.txt'
-paraLexTemp = dir_path + '/../../temp/X/LexX.txt'
-paraDef = dir_path + '/../../fsa/X/defLexX.txt'
-paraDefTemp = dir_path + '/../../temp/X/defLexX.txt'
+
+
 paraMain = dir_path + '/../../fsa/X/main2017.txt'
 newPlus = dir_path + "/../../fsa/X/LexXplus.txt"
 paraDefPlus = dir_path + "/../../fsa/X/defPlus.txt"
@@ -528,21 +526,36 @@ if __name__ == "__main__":
         exit(0)
     command = sys.argv[0]
 
-    LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
     paraB = dir_path + '/../../fsa/X/brandX.txt'
-    paraBTemp = dir_path + '/../../temp/X/brandX.txt'
-    OrganizeLex(paraB, _CommentDictB, _LexiconDictB)
+    paraBTemp = dir_path + '/../../temp/X/brandX_copy.txt'
     paraP = dir_path + '/../../fsa/X/perX.txt'
-    paraPTemp = dir_path + '/../../temp/X/perX.txt'
-    OrganizeLex(paraP, _CommentDictP, _LexiconDictP)
+    paraPTemp = dir_path + '/../../temp/X/perX_copy.txt'
     paraL = dir_path + '/../../fsa/X/locX.txt'
-    paraLTemp = dir_path + '/../../temp/X/locX.txt'
-    OrganizeLex(paraL, _CommentDictL, _LexiconDictL)
+    paraLTemp = dir_path + '/../../temp/X/locX_copy.txt'
     paraI = dir_path + '/../../fsa/X/idiomX.txt'
-    paraITemp = dir_path + '/../../temp/X/idiomX.txt'
-    OrganizeLex(paraI, _CommentDictI, _LexiconDictI)
+    paraITemp = dir_path + '/../../temp/X/idiomX_copy.txt'
     paraI4 = dir_path + '/../../fsa/X/idiom4X.txt'
-    paraI4Temp = dir_path + '/../../temp/X/idiom4X.txt'
+    paraI4Temp = dir_path + '/../../temp/X/idiom4X_copy.txt'
+    paraLex = dir_path + '/../../fsa/X/LexX.txt'
+    paraLexTemp = dir_path + '/../../temp/X/LexX_copy.txt'
+    paraDef = dir_path + '/../../fsa/X/defLexX.txt'
+    paraDefTemp = dir_path + '/../../temp/X/defLexX_copy.txt'
+
+    copyfile(paraB, paraBTemp)
+    copyfile(paraP, paraPTemp)
+    copyfile(paraL, paraLTemp)
+    copyfile(paraI, paraITemp)
+    copyfile(paraI4, paraI4Temp)
+    copyfile(paraLex, paraLexTemp)
+    copyfile(paraDef, paraDefTemp)
+
+
+    LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+
+    OrganizeLex(paraB, _CommentDictB, _LexiconDictB)
+    OrganizeLex(paraP, _CommentDictP, _LexiconDictP)
+    OrganizeLex(paraL, _CommentDictL, _LexiconDictL)
+    OrganizeLex(paraI, _CommentDictI, _LexiconDictI)
     OrganizeLex(paraI4, _CommentDictI4, _LexiconDictI4)
     OrganizeLex(paraLex, _CommentDictLexX, _LexiconDictLexX)
     OrganizeLex(paraDef, _CommentDictDefX, _LexiconDictDefX)
@@ -583,26 +596,20 @@ if __name__ == "__main__":
     AddDefandLexX()
 
     FeaturesMorethanFour()
-    printNewLex(_CommentDictB, _LexiconDictB, paraBTemp)
+    printNewLex(_CommentDictB, _LexiconDictB, paraB)
 
-    printNewLex(_CommentDictP, _LexiconDictP, paraPTemp)
+    printNewLex(_CommentDictP, _LexiconDictP, paraP)
 
-    printNewLex(_CommentDictL, _LexiconDictL, paraLTemp)
+    printNewLex(_CommentDictL, _LexiconDictL, paraL)
 
-    printNewLex(_CommentDictI, _LexiconDictI, paraITemp)
+    printNewLex(_CommentDictI, _LexiconDictI, paraI)
 
-    printNewLex(_CommentDictI4, _LexiconDictI4, paraI4Temp)
+    printNewLex(_CommentDictI4, _LexiconDictI4, paraI4)
 
-    printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLexTemp)
-    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDefTemp)
+    printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLex)
+    printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
 
-    copyfile(paraBTemp, paraB)
-    copyfile(paraPTemp, paraP)
-    copyfile(paraLTemp, paraL)
-    copyfile(paraITemp, paraI)
-    copyfile(paraI4Temp, paraI4)
-    copyfile(paraLexTemp, paraLex)
-    copyfile(paraDefTemp, paraDef)
+
 
     GenerateLexPlus()
     printLexPlus(newPlus, _LexiconDictPlus)
