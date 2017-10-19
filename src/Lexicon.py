@@ -272,31 +272,37 @@ def ApplyWordLengthFeature(node):
     if IsAscii(node.stem):
         return
 
+    C1ID = GetFeatureID('c1')
+    C2ID = GetFeatureID('c2')
+    C3ID = GetFeatureID('c3')
+    C4ID = GetFeatureID('c4')
+    C4plusID = GetFeatureID('c4plus')
+
     # Below is for None-English only:
-    if GetFeatureID('c1') in node.features:
-        node.features.remove(GetFeatureID('c1'))
-    if GetFeatureID('c2') in node.features:
-        node.features.remove(GetFeatureID('c2'))
-    if GetFeatureID('c3') in node.features:
-        node.features.remove(GetFeatureID('c3'))
-    if GetFeatureID('c4') in node.features:
-        node.features.remove(GetFeatureID('c4'))
-    if GetFeatureID('c4plus') in node.features:
-        node.features.remove(GetFeatureID('c4plus'))
+    if C1ID in node.features:
+        node.features.remove(C1ID)
+    if C2ID in node.features:
+        node.features.remove(C2ID)
+    if C3ID in node.features:
+        node.features.remove(C3ID)
+    if C4ID in node.features:
+        node.features.remove(C4ID)
+    if C4plusID in node.features:
+        node.features.remove(C4plusID)
 
     wordlength = len(node.stem)
     if wordlength<1:
         pass
     elif wordlength == 1:
-        node.features.add(GetFeatureID('c1'))
+        node.features.add(C1ID)
     elif wordlength == 2:
-        node.features.add(GetFeatureID('c2'))
+        node.features.add(C2ID)
     elif wordlength == 3:
-        node.features.add(GetFeatureID('c3'))
+        node.features.add(C3ID)
     elif wordlength == 4:
-        node.features.add(GetFeatureID('c4'))
+        node.features.add(C4ID)
     else:
-        node.features.add(GetFeatureID('c4plus'))
+        node.features.add(C4plusID)
 
     return
 
@@ -334,7 +340,7 @@ def ApplyLexicon(node):
 # (1) refresh with the lexical features;
 # (2) void the combined tokens with FEATURE:Gone
 def ChunkingLexicon(strtokens, length, lexicon):
-    logging.debug("Start chucking lexicon " + lexicon.word)
+    logging.debug("Start chunking lexicon " + lexicon.word)
     NewStems = []
     for i in range(length):
         NewStems.append( strtokens[i].stem)     # or StrTokens[i].lexicon.stem?

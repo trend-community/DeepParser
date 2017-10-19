@@ -111,7 +111,8 @@ def Tokenize(Sentence):
         TokenizeURL = url_ch + "/Tokenize/"
         #ret_t = requests.get(TokenizeURL + Sentence)
         data = {'Sentence': Sentence}
-        segmented = requests.get(TokenizeURL, params=data).text
+        ret = requests.get(TokenizeURL, params=data)
+        segmented = ret.text
         #segmented = jsonpickle.decode(segmented)
         segmented = segmented.replace("\/", IMPOSSIBLESTRING)
         blocks = segmented.split("/")

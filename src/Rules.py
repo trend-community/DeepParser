@@ -197,7 +197,7 @@ class Rule:
             for _ in range(token.StartTrunk):
                 output += "<"
             if hasattr(token, 'pointer'):
-                output += "^" + token.pointer
+                output += token.pointer
             t = token.word
             if hasattr(token, 'action'):
                 t = t.replace("]", ":" + token.action + "]")
@@ -313,7 +313,7 @@ def ProcessTokens(Tokens):
                 repeatMax = int(repeatMatch.group(2))
             node.repeat = [0, repeatMax]
 
-        pointerMatch = re.match("\^(\w*)\[(.+)\]$", node.word, re.DOTALL)
+        pointerMatch = re.match("(\^\w*)\[(.+)\]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
@@ -321,7 +321,7 @@ def ProcessTokens(Tokens):
         pointerMatch = re.match("\^(.+)$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(1) + "]"
-            node.pointer = ''
+            node.pointer = '^'
 
         if "(" not in node.word and ":" in node.word:
             orblocks = re.split("\|\[", node.word)

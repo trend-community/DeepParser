@@ -33,22 +33,86 @@ def CheckPrefix(word, matchtype):
 
     return prefix+word, matchtype
 
+#In rule, start from RulePosition, seach for pointer:
+#   Start from left side, if not found, seach right side.
+# After that is found, use the offset to locate the token in StrTokens
+#  compare the pointertoken to the current token (both in StrTokens),
+#   return the compare result.
+def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='stem'):
+    RulePointerPos = RulePosition
+    while RulePointerPos >= 0:
+        if hasattr(RuleTokens[RulePointerPos], 'pointer'):
+            if RuleTokens[RulePointerPos].pointer == Pointer:
+                break   #found pointer!
+        RulePointerPos -= 1
 
-def LogicMatch(rule, strToken, matchtype="unknown"):
+    if RulePointerPos < 0:
+        RulePointerPos = RulePosition
+        while RulePointerPos < len(RuleTokens):
+            if hasattr(RuleTokens[RulePointerPos], 'pointer'):
+                if RuleTokens[RulePointerPos].pointer == Pointer:
+                    break  # found pointer!
+            RulePointerPos += 1
+        if RulePointerPos >= len(RuleTokens):
+            logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
+            logging.error(RuleTokens[0].word)
+            raise RuntimeError("Can't find specified pointer in rule!")
+    # Now we have the pointer location in Rule
+    GoneInStrTokens = 0
+    Offset = RulePointerPos - RulePosition  #might be positive, or negative
+
+    if Offset < 0:
+        for i in range(-Offset):
+            while StrTokens[StrPosition - i - GoneInStrTokens].Gone:
+                GoneInStrTokens += 1
+                if StrPosition - i - GoneInStrTokens < 0:
+                    raise EOFError("Reached the start of the String!")
+        StrPointerPos = StrPosition+Offset-GoneInStrTokens
+    elif Offset>0:
+        for i in range(Offset):
+            while StrTokens[StrPosition+GoneInStrTokens].Gone:
+                GoneInStrTokens += 1
+                if StrPosition+GoneInStrTokens > len(StrTokens):
+                    raise EOFError("Reached the end of the String!")
+        StrPointerPos = StrPosition+Offset+GoneInStrTokens
+    else:
+        logging.error("Rule token:" + str(RuleTokens[RulePosition]))
+        raise RuntimeError("Logically the pointer should not be itself. Please check syntax!")
+
+    if matchtype == "stem":
+        return StrTokens[StrPointerPos].stem == StrTokens[StrPosition].stem
+    elif matchtype == "word":
+        return StrTokens[StrPointerPos].word == StrTokens[StrPosition].word
+    elif matchtype == "norm":
+        return StrTokens[StrPointerPos].norm == StrTokens[StrPosition].norm
+    else:
+        logging.error("Rule token:" + str(RuleTokens[RulePosition]))
+        raise RuntimeError("The matchtype should be stem/word/norm. Please check syntax!")
+
+
+def LogicMatch(StrTokens, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown"):
     if not rule:  # "[]", not sure what that is.
         return False
 
+    strToken = StrTokens[StrPosition]
     rule, matchtype = CheckPrefix(rule, matchtype)
     if matchtype == "unknown":
-        return LogicMatchFeatures(rule, strToken)
+        return LogicMatchFeatures(StrTokens, StrPosition, rule, RuleTokens, RulePosition)
 
     if not re.search('[| !]', rule):
-        if matchtype == "stem" and strToken.lexicon:
+        if rule.startswith("^"):
+
+            #This is a pointer!
+            return PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
+            #pass
+            #strToken = SearchPointer(StrTokens, StrPosition, Pointer=rule)
+        if matchtype == "stem":
             word = strToken.stem
-        elif matchtype == "norm" and strToken.lexicon:
+        elif matchtype == "norm":
             word = strToken.norm
         else:
             word = strToken.word
+
         if rule.lower() == word.lower() \
                 or rule.endswith('-') and word.startswith(rule[:-1])\
                 or rule.startswith('-') and word.endswith(rule[1:]):
@@ -60,16 +124,16 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatch(AndBlock, strToken, matchtype)
+            Result = Result and LogicMatch(StrTokens, StrPosition, AndBlock, RuleTokens, RulePosition, matchtype)
     else:
         if rule[0] == "!":      #Not
-            Result = not LogicMatch(rule[1:], strToken, matchtype)
+            Result = not LogicMatch(StrTokens, StrPosition, rule[1:], RuleTokens, RulePosition, matchtype)
         else:
             Result = False
             OrBlocks = SeparateOrBlocks(rule)
             if len(OrBlocks) >= 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatch(OrBlock, strToken, matchtype)
+                    Result = Result or LogicMatch(StrTokens, StrPosition, OrBlock, RuleTokens, RulePosition, matchtype)
             else:
                 raise RuntimeError("Why OrBlock is none?")
 
@@ -78,20 +142,21 @@ def LogicMatch(rule, strToken, matchtype="unknown"):
 
 # If the rule has not quotes, but it is not a feature,
 #   then it is treated as stem.
-def LogicMatchFeatures(rule, strToken):
+def LogicMatchFeatures(strTokens, StrPosition, rule, RuleTokens, RulePosition):
     if not rule:
         return True # for the comparison of "[]", can match anything
 
+    strToken = strTokens[StrPosition]
     rule, matchtype = CheckPrefix(rule, 'feature')
     if matchtype != "feature":
-        return LogicMatch(rule, strToken, matchtype)
+        return LogicMatch(strTokens, StrPosition, rule, RuleTokens, RulePosition, matchtype)
 
     if not re.search('[| !]', rule):
         if -1 in strToken.features:
             strToken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
-            return LogicMatch(rule, strToken, "stem")
+            return LogicMatch(strTokens, StrPosition, rule, RuleTokens, RulePosition, "stem")
         else:
             if featureID and featureID in strToken.features:
                 return True
@@ -102,19 +167,20 @@ def LogicMatchFeatures(rule, strToken):
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatchFeatures(AndBlock, strToken)
+            Result = Result and LogicMatchFeatures(strTokens, StrPosition, AndBlock, RuleTokens, RulePosition)
     else:
         if rule[0] == "!":      #Not
-            Result = not LogicMatchFeatures(rule[1:], strToken)
+            Result = not LogicMatchFeatures(strTokens, StrPosition, rule[1:], RuleTokens, RulePosition)
         else:
             Result = False
             OrBlocks = SeparateOrBlocks(rule)
             if len(OrBlocks) >= 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatchFeatures(OrBlock, strToken)
+                    Result = Result or LogicMatchFeatures(strTokens, StrPosition, OrBlock, RuleTokens, RulePosition)
             else:
                 raise RuntimeError("Why OrBlock is none?")
     return Result
+
 
 def SeparateOrBlocks(OrString):
     if "|" not in OrString:

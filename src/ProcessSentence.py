@@ -80,7 +80,7 @@ def HeadMatch(strTokens, ruleTokens):
             if not strTokens[i+GoneInStrTokens].word:
                 #logging.warning("Got to " + str(i+GoneInStrTokens) + "th word of tokens:" + strTokens[0].word)
                 return False
-            if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
+            if not LogicMatch(strTokens, i+GoneInStrTokens, ruleTokens[i].word, ruleTokens, i):
                 return False  #  this rule does not fit for this string
         except RuntimeError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i + GoneInStrTokens].word)
@@ -157,6 +157,9 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         NewStem = "".join(NewStems)
     StrTokens[StrPosition].stem = NewStem
     StrTokens[StrPosition].Gone = False
+    StrTokens[StrPosition].StartOffset = StrTokens[StrStartPos].StartOffset
+    StrTokens[StrPosition].EndOffset = StrTokens[StrEndPos].EndOffset
+
     Lexicon.ApplyWordLengthFeature(StrTokens[StrPosition])
 
 
@@ -188,10 +191,31 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 strtokens[StartPosition + i + GoneInStrTokens].features = set()
             for Action in Actions:
                 if Action == "NEW":
-                    continue
+                    continue        #already process before.
+
                 if Action == "+++":
                     ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
                     continue
+
+                if Action.endswith("-"):
+                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
+                    if FeatureID in strtokens[StartPosition + i + GoneInStrTokens].features:
+                        strtokens[StartPosition + i + GoneInStrTokens].features.remove(FeatureID)
+                    continue
+
+                if Action.endswith("+"):
+                    MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
+                    if Action.strip("+") in MajorPOSFeatures:
+                        for conflictfeature in MajorPOSFeatures:
+                            conflictfeatureid = FeatureOntology.GetFeatureID(conflictfeature)
+                            if conflictfeatureid in strtokens[StartPosition + i + GoneInStrTokens].features:
+                                strtokens[StartPosition + i + GoneInStrTokens].features.remove(conflictfeatureid)
+                                #TODO: Might also remove the child features of them. Check spec.
+
+                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
+                    ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, FeatureID)
+                    continue
+
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
                     strtokens[StartPosition + i + GoneInStrTokens].Gone = True
@@ -300,7 +324,7 @@ def MultiLevelSegmentation(Sentence):
 def LoadCommon(LoadCommonRules=False):
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
@@ -315,7 +339,7 @@ def LoadCommon(LoadCommonRules=False):
         # Rules.LoadRules("../../fsa/Y/800VGy.txt")
         # Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
