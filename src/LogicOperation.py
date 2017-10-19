@@ -15,19 +15,22 @@ def CheckPrefix(word, matchtype):
 
     if word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
         word = word[1:-1]   #remove redundant []
+        if word == "":
+            return "", matchtype
 
     prefix = ""
 
-    if word.startswith("!"):
+
+    if word[0] == "!":
         prefix = "!"
         word = word.lstrip("!")
-    if word.startswith("\"") and SearchPair(word[1:], "\"\"") == len(word)-2 :  # word  comparison
+    if word[0] == "\"" and SearchPair(word[1:], "\"\"") == len(word)-2 :  # word  comparison
         word = word.strip("\"")
         matchtype = "word"      # case insensitive
-    elif word.startswith("'") and SearchPair(word[1:], "''") == len(word)-2 :
+    elif [0] == "'" and SearchPair(word[1:], "''") == len(word)-2 :
         word = word.strip("'")
         matchtype = "stem"      # case insensitive
-    elif word.startswith("/") and SearchPair(word[1:], "//") == len(word)-2 :
+    elif word[0] == "/" and SearchPair(word[1:], "//") == len(word)-2 :
         word = word.strip("/")
         matchtype = "norm"      # case insensitive
 
@@ -66,6 +69,8 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
             while StrTokens[StrPosition - i - GoneInStrTokens].Gone:
                 GoneInStrTokens += 1
                 if StrPosition - i - GoneInStrTokens < 0:
+                    #Logically wrong. There must be a token matched the RulePointerToken
+                    # since the RulePointerToken is on the left side.
                     raise EOFError("Reached the start of the String!")
         StrPointerPos = StrPosition+Offset-GoneInStrTokens
     elif Offset>0:
@@ -73,7 +78,8 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
             while StrTokens[StrPosition+GoneInStrTokens].Gone:
                 GoneInStrTokens += 1
                 if StrPosition+GoneInStrTokens > len(StrTokens):
-                    raise EOFError("Reached the end of the String!")
+                    return False    #this rule does not fit this sentence.
+                    #raise EOFError("Reached the end of the String!")
         StrPointerPos = StrPosition+Offset+GoneInStrTokens
     else:
         logging.error("Rule token:" + str(RuleTokens[RulePosition]))

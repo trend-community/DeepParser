@@ -12,6 +12,7 @@ from FeatureOntology import *
 # url_ch = "http://localhost:8080"
 
 _LexiconDict = {}
+_LexiconLookupSet = set()
 _LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
 _CommentDict = {}
@@ -133,7 +134,7 @@ def OutputLexicon(EnglishFlag):
     return Output
 
 def LoadLexicon(lexiconLocation, forLookup = False):
-    global _LexiconDict, _LexiconLookupDict
+    global _LexiconDict, _LexiconLookupSet
     global _CommentDict
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
@@ -190,7 +191,8 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                 _LexiconDict.update({node.word: node})
                 if forLookup \
                         or "_" in node.word:    #
-                    _LexiconLookupDict.update({node.word: node})
+                    #_LexiconLookupDict.update({node.word: node})
+                    _LexiconLookupSet.add(node.word)
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -202,6 +204,21 @@ def LoadLexicon(lexiconLocation, forLookup = False):
         _ApplyWordStem(node, node)
 
     logging.debug("Finish loading lexicon")
+
+    GenerateLookupDict(_LexiconLookupSet)
+
+
+def GenerateLookupDict(lookupset):
+    global _LexiconLookupDict
+    for word in lookupset:
+        partialword = ""
+        for character in word:
+            partialword += character
+            if partialword in _LexiconLookupDict:
+                _LexiconLookupDict[partialword].add(word)
+            else:
+                _LexiconLookupDict[partialword] = {word}
+
 
 
 def _ApplyWordStem(NewNode, lexiconnode):
@@ -398,10 +415,8 @@ def LexiconLookup(strTokens):
             continue
 
         WinningLexicon = None
-        for word in _LexiconLookupDict:
-            #if _LexiconDict.get(word).forLookup:
-                if not word.startswith(localstem):
-                    continue
+        if localstem in _LexiconLookupDict:
+            for word in _LexiconLookupDict[localstem]:
                 MatchLength = HeadMatchLexicon(strTokens[i:], word)
                 if MatchLength > 0:
                     if WinningLexicon and len(WinningLexicon.word) >= len(word):

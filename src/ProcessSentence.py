@@ -58,7 +58,7 @@ def OutputWinningRules():
 
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), ensure_ascii=False) + "\n"
+        output += json.dumps({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}, sort_keys=False, ensure_ascii=False) + "\n"
 
     return output
 
@@ -339,7 +339,7 @@ def LoadCommon(LoadCommonRules=False):
         # Rules.LoadRules("../../fsa/Y/800VGy.txt")
         # Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")

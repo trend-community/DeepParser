@@ -1,9 +1,47 @@
 import logging, sys, os
 import ProcessSentence, Rules, FeatureOntology
 from utils import *
+import cProfile, pstats
 
 import singleton
 me = singleton.SingleInstance()
+
+def EverythingExceptLoadCommon(FileName):
+    UnitTest = []
+    if not os.path.exists(FileName):
+        print("Unit Test file " + FileName + " does not exist.")
+        exit(0)
+
+    with open(FileName, encoding="utf-8") as RuleFile:
+        for line in RuleFile:
+            if line.strip():
+                RuleName, TestSentence = SeparateComment(line.strip())
+                if not TestSentence:  # For the testfile that only have test sentence, not rule name
+                    TestSentence = RuleName
+                    RuleName = ""
+                unittest = Rules.UnitTestNode(RuleName, TestSentence)
+                UnitTest.append(unittest)
+
+    for unittestnode in UnitTest:
+        ExtraMessageIndex = unittestnode.TestSentence.find(">")
+        if ExtraMessageIndex > 0:
+            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
+        else:
+            TestSentence = unittestnode.TestSentence
+        TestSentence = TestSentence.strip("/")
+        if DebugMode:
+            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
+
+        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
+
+        if DebugMode:
+            for node in nodes:
+                print(node)
+        print(OutputStringTokens_oneliner(nodes, NoFeature))
+
+    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
+    print(FeatureOntology.OutputMissingFeatureSet())
+
 
 if __name__ == "__main__":
     DebugMode = False
@@ -30,38 +68,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
     ProcessSentence.LoadCommon(True)
+    cProfile.run("EverythingExceptLoadCommon(UnitTestFileName)", 'restats')
 
-    UnitTest = []
-    if not os.path.exists(UnitTestFileName):
-        print("Unit Test file " + UnitTestFileName + " does not exist.")
-        exit(0)
 
-    with open(UnitTestFileName, encoding="utf-8") as RuleFile:
-        for line in RuleFile:
-            if line.strip():
-                RuleName, TestSentence = SeparateComment(line.strip())
-                if not TestSentence:    # For the testfile that only have test sentence, not rule name
-                    TestSentence = RuleName
-                    RuleName = ""
-                unittest = Rules.UnitTestNode( RuleName, TestSentence)
-                UnitTest.append(unittest)
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(100)
 
-    for unittestnode in UnitTest:
-        ExtraMessageIndex = unittestnode.TestSentence.find(">")
-        if ExtraMessageIndex>0:
-            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
-        else:
-            TestSentence = unittestnode.TestSentence
-        TestSentence = TestSentence.strip("/")
-        if DebugMode:
-            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
-
-        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
-
-        if DebugMode:
-            for node in nodes:
-                print(node)
-        print(OutputStringTokens_oneliner(nodes, NoFeature))
-
-    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
-    print(FeatureOntology.OutputMissingFeatureSet())
