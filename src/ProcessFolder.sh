@@ -30,8 +30,13 @@ wait        #wait for all child process to complete.
 end_time=$(date "+%Y.%m.%d-%H.%M.%S")
 echo "$current_time - end at: $end_time " >> ../log/ProcessFolder.sh.log
 
-mv $TEMPFOLDER/* $OUTPUTFOLDER
-rmdir $TEMPFOLDER
+#
+#mv $TEMPFOLDER/* $OUTPUTFOLDER
+#rmdir $TEMPFOLDER
+
+#remove folder that is 1 week old
+find $OUTPUTFOLDER/* -type d -ctime +7 -exec rm -rf {} \;
+
 
 end_time=$(date "+%Y.%m.%d-%H.%M.%S")
 echo "$current_time - end at: $end_time " >> ../log/ProcessFolder.sh.log

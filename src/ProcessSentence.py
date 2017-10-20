@@ -58,7 +58,7 @@ def OutputWinningRules():
 
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += json.dumps({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}, sort_keys=False, ensure_ascii=False) + "\n"
+        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), sort_keys=False, ensure_ascii=False) + "\n"
 
     return output
 
@@ -178,8 +178,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             GoneInStrTokens += 1
             if i + GoneInStrTokens == len(strtokens):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
-        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk = rule.Tokens[i].StartTrunk
-        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk = rule.Tokens[i].EndTrunk
+        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk += rule.Tokens[i].StartTrunk
+        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk += rule.Tokens[i].EndTrunk
 
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
@@ -197,13 +197,13 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
                     continue
 
-                if Action.endswith("-"):
+                if Action[-1] == "-":
                     FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
                     if FeatureID in strtokens[StartPosition + i + GoneInStrTokens].features:
                         strtokens[StartPosition + i + GoneInStrTokens].features.remove(FeatureID)
                     continue
 
-                if Action.endswith("+"):
+                if Action[-1] == "+":
                     MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
                     if Action.strip("+") in MajorPOSFeatures:
                         for conflictfeature in MajorPOSFeatures:
@@ -214,6 +214,10 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
                     FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
                     ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, FeatureID)
+                    continue
+
+                if Action[0] == "^":
+                    #TODO: linked the str tokens.
                     continue
 
                 ActionID = FeatureOntology.GetFeatureID(Action)
@@ -362,7 +366,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "经典宝马MINI造型操作灵活动力足够保证家用 "
+    target = "这事儿较之前的确有进步 "
     nodes = MultiLevelSegmentation(target)
 
     for node in nodes:
