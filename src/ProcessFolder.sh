@@ -31,7 +31,7 @@ end_time=$(date "+%Y.%m.%d-%H.%M.%S")
 echo "$current_time - end at: $end_time " >> ../log/ProcessFolder.sh.log
 
 #
-#mv $TEMPFOLDER/* $OUTPUTFOLDER
+cp $TEMPFOLDER/* $OUTPUTFOLDER
 #rmdir $TEMPFOLDER
 
 #remove folder that is 1 week old
