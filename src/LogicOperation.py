@@ -27,7 +27,7 @@ def CheckPrefix(word, matchtype):
     if word[0] == "\"" and SearchPair(word[1:], "\"\"") == len(word)-2 :  # word  comparison
         word = word.strip("\"")
         matchtype = "word"      # case insensitive
-    elif [0] == "'" and SearchPair(word[1:], "''") == len(word)-2 :
+    elif word[0] == "'" and SearchPair(word[1:], "''") == len(word)-2 :
         word = word.strip("'")
         matchtype = "stem"      # case insensitive
     elif word[0] == "/" and SearchPair(word[1:], "//") == len(word)-2 :

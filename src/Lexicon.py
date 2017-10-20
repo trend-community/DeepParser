@@ -174,18 +174,18 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                     node.norm = feature.strip('/')
                 elif re.search(u'[\u4e00-\u9fff]', feature):
                     node.stem = feature
-                    continue
                 else:
                     featureID = GetFeatureID(feature)
                     if featureID==-1:
                         logging.debug("Missing Feature: " + feature)
                         node.missingfeature += "\\" + feature
-                    node.features.add(featureID)
-                    ontologynode = SearchFeatureOntology(featureID)
-                    if ontologynode:
-                        ancestors = ontologynode.ancestors
-                        if ancestors:
-                            node.features.update(ancestors)
+                    else:
+                        node.features.add(featureID)
+                        ontologynode = SearchFeatureOntology(featureID)
+                        if ontologynode:
+                            ancestors = ontologynode.ancestors
+                            if ancestors:
+                                node.features.update(ancestors)
 
             if newNode:
                 _LexiconDict.update({node.word: node})

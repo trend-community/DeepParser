@@ -1,7 +1,6 @@
 import logging, sys, os
 import ProcessSentence, Rules, FeatureOntology
 from utils import *
-import cProfile, pstats
 
 import singleton
 me = singleton.SingleInstance()
@@ -68,9 +67,14 @@ if __name__ == "__main__":
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
     ProcessSentence.LoadCommon(True)
-    cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
 
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        p = pstats.Stats('restats')
-        p.sort_stats('time').print_stats(100)
+    if not logging.getLogger().isEnabledFor(logging.DEBUG):
+        ProcessFile(UnitTestFileName)
+    else:   #debugging mode
+        pass
+        # import cProfile, pstats
+        # cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
+        # p = pstats.Stats('restats')
+        # p.sort_stats('time').print_stats(100)
+
 

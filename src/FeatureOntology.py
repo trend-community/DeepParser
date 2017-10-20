@@ -219,7 +219,7 @@ def GetFeatureID(feature):
     if feature in GetFeatureID_Cache:
         return GetFeatureID_Cache[feature]
 
-    if len(_FeatureList) == 0:
+    if not _FeatureList:
         try:
             GetFeatureIDURL = url + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
@@ -228,12 +228,13 @@ def GetFeatureID(feature):
         GetFeatureID_Cache[feature] = int(ret.text)
         return int(ret.text)
 
-    if re.search(u'[\u4e00-\u9fff]', feature):
-        return -1   # Chinese is not a feature.
     if feature in _AliasDict:
         return _AliasDict[feature]
     if feature in _FeatureDict:
         return _FeatureDict[feature]
+
+    if re.search(u'[\u4e00-\u9fff]', feature):
+        return -1   # Chinese is not a feature.
 
     #logging.info("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
