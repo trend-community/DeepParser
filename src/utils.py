@@ -169,7 +169,7 @@ def GetPrefix(Name):
 
 
 def OutputStringTokens_json(strTokens):
-    output = json.dumps([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem], ensure_ascii=False)
+    output = json.dumps([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem], sort_keys=False, ensure_ascii=False)
 
     return output
 

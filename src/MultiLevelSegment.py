@@ -6,7 +6,7 @@ import cProfile, pstats
 import singleton
 me = singleton.SingleInstance()
 
-def EverythingExceptLoadCommon(FileName):
+def ProcessFile(FileName):
     UnitTest = []
     if not os.path.exists(FileName):
         print("Unit Test file " + FileName + " does not exist.")
@@ -68,9 +68,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
     ProcessSentence.LoadCommon(True)
-    cProfile.run("EverythingExceptLoadCommon(UnitTestFileName)", 'restats')
+    cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
 
-
-    p = pstats.Stats('restats')
-    p.sort_stats('time').print_stats(100)
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        p = pstats.Stats('restats')
+        p.sort_stats('time').print_stats(100)
 

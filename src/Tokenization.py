@@ -23,7 +23,7 @@ class SentenceNode(object):
         self.stem = word
         self.norm = word
         self.features = set()
-        self.lexicon = None
+        #self.lexicon = None
         self.Gone = False
         self.StartTrunk = 0
         self.EndTrunk = 0

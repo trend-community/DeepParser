@@ -324,7 +324,7 @@ def MultiLevelSegmentation(Sentence):
 def LoadCommon(LoadCommonRules=False):
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
@@ -362,7 +362,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "八十五分不多少等于five 分。 "
+    target = "经典宝马MINI造型操作灵活动力足够保证家用 "
     nodes = MultiLevelSegmentation(target)
 
     for node in nodes:

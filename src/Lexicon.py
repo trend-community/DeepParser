@@ -324,11 +324,13 @@ def ApplyWordLengthFeature(node):
     return
 
 
-def ApplyLexicon(node):
-    if not node.lexicon:    # If lexicon is assigned before, then don't do the search
-                            #  because the node.word is not as reliable as stem.
-        node.lexicon = SearchLexicon(node.word)
-    if node.lexicon is None:
+def ApplyLexicon(node, lex=None):
+    if not lex:
+        lex = SearchLexicon(node.word)
+    # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
+    #                         #  because the node.word is not as reliable as stem.
+    #     node.lexicon = SearchLexicon(node.word)
+    if lex is None:
         if IsCD(node.word):
             node.features.add(GetFeatureID('CD'))
         elif node.word in string.punctuation:
@@ -337,19 +339,18 @@ def ApplyLexicon(node):
             node.features.add(GetFeatureID('NNP'))
             node.features.add(GetFeatureID('OOV'))
     else:
-        node.stem = node.lexicon.stem
-        node.norm = node.lexicon.norm
+        node.stem = lex.stem
+        node.norm = lex.norm
         NEWFeatureID = GetFeatureID("NEW")
-        if NEWFeatureID in node.lexicon.features:
+        if NEWFeatureID in lex.features:
             node.features = set()
-            node.features.update(node.lexicon.features)
+            node.features.update(lex.features)
             node.features.remove(NEWFeatureID)
         else:
-            node.features.update(node.lexicon.features)
-        _ApplyWordStem(node, node.lexicon)
+            node.features.update(lex.features)
+        _ApplyWordStem(node, lex)
 
     ApplyWordLengthFeature(node)
-    node.lexicon = None
     return node
 
 
@@ -371,8 +372,8 @@ def ChunkingLexicon(strtokens, length, lexicon):
     strtokens[0].stem = NewStem
     #strtokens[0].word = NewStem
     strtokens[0].Gone = False
-    strtokens[0].lexicon = lexicon
-    ApplyLexicon(strtokens[0])      #including features and stems
+    #strtokens[0].lexicon = lexicon
+    ApplyLexicon(strtokens[0], lexicon)      #including features and stems
 
 
 # return the how many tokens combined together as the "word".
