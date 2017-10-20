@@ -193,3 +193,10 @@ def OutputStringTokens_oneliner(strTokens, NoFeature=False):
         for _ in range(token.EndTrunk):
             output += ">"
     return output
+
+
+#Replace % and & sign before using "GET" to query webservice.
+def URLEncoding(Sentence):
+    Sentence = Sentence.replace("%", "%25")
+    Sentence = Sentence.replace("&", "%26")
+    return Sentence
