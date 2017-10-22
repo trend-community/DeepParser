@@ -71,6 +71,7 @@ if __name__ == "__main__":
     if not logging.getLogger().isEnabledFor(logging.DEBUG):
         ProcessFile(UnitTestFileName)
     else:   #debugging mode
+        ProcessFile(UnitTestFileName)
         pass
         # import cProfile, pstats
         # cProfile.run("ProcessFile(UnitTestFileName)", 'restats')

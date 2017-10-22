@@ -35,7 +35,9 @@ class SentenceNode(object):
     def populatedefaultvalue(self):
         self.stem = self.word
         self.norm = self.word
-        self.features = set(self.features)
+        self.features = set()
+        for featurename in self.featurenames:
+            self.features.add(FeatureOntology.GetFeatureID(featurename))
         #self.lexicon = None
         self.Gone = False
         self.StartTrunk = 0
