@@ -1,11 +1,11 @@
 import os,sys
 
 def sortTest(testLocation):
-    testList =  []
+    testList = set()
     with open(testLocation, encoding='utf-8') as test:
         for line in test:
             # print(line,end="")
-            testList.append(line)
+            testList.add(line)
     testList = sorted(testList,key=lambda x: len(x))
     for line in testList:
         print(line,end="")
