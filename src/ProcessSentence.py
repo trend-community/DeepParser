@@ -58,7 +58,7 @@ def OutputWinningRules():
 
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), ensure_ascii=False) + "\n"
+        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), sort_keys=False, ensure_ascii=False) + "\n"
 
     return output
 
@@ -80,7 +80,7 @@ def HeadMatch(strTokens, ruleTokens):
             if not strTokens[i+GoneInStrTokens].word:
                 #logging.warning("Got to " + str(i+GoneInStrTokens) + "th word of tokens:" + strTokens[0].word)
                 return False
-            if not LogicMatch(ruleTokens[i].word, strTokens[i+GoneInStrTokens]):
+            if not LogicMatch(strTokens, i+GoneInStrTokens, ruleTokens[i].word, ruleTokens, i):
                 return False  #  this rule does not fit for this string
         except RuntimeError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokens[i + GoneInStrTokens].word)
@@ -157,6 +157,9 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         NewStem = "".join(NewStems)
     StrTokens[StrPosition].stem = NewStem
     StrTokens[StrPosition].Gone = False
+    StrTokens[StrPosition].StartOffset = StrTokens[StrStartPos].StartOffset
+    StrTokens[StrPosition].EndOffset = StrTokens[StrEndPos].EndOffset
+
     Lexicon.ApplyWordLengthFeature(StrTokens[StrPosition])
 
 
@@ -175,8 +178,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             GoneInStrTokens += 1
             if i + GoneInStrTokens == len(strtokens):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
-        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk = rule.Tokens[i].StartTrunk
-        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk = rule.Tokens[i].EndTrunk
+        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk += rule.Tokens[i].StartTrunk
+        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk += rule.Tokens[i].EndTrunk
 
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
@@ -188,10 +191,35 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 strtokens[StartPosition + i + GoneInStrTokens].features = set()
             for Action in Actions:
                 if Action == "NEW":
-                    continue
+                    continue        #already process before.
+
                 if Action == "+++":
                     ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
                     continue
+
+                if Action[-1] == "-":
+                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
+                    if FeatureID in strtokens[StartPosition + i + GoneInStrTokens].features:
+                        strtokens[StartPosition + i + GoneInStrTokens].features.remove(FeatureID)
+                    continue
+
+                if Action[-1] == "+":
+                    MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
+                    if Action.strip("+") in MajorPOSFeatures:
+                        for conflictfeature in MajorPOSFeatures:
+                            conflictfeatureid = FeatureOntology.GetFeatureID(conflictfeature)
+                            if conflictfeatureid in strtokens[StartPosition + i + GoneInStrTokens].features:
+                                strtokens[StartPosition + i + GoneInStrTokens].features.remove(conflictfeatureid)
+                                #TODO: Might also remove the child features of them. Check spec.
+
+                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
+                    ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, FeatureID)
+                    continue
+
+                if Action[0] == "^":
+                    #TODO: linked the str tokens.
+                    continue
+
                 ActionID = FeatureOntology.GetFeatureID(Action)
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
                     strtokens[StartPosition + i + GoneInStrTokens].Gone = True
@@ -338,7 +366,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "八十五分不多少等于five 分。 "
+    target = "这事儿较之前的确有进步 "
     nodes = MultiLevelSegmentation(target)
 
     for node in nodes:

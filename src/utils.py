@@ -1,7 +1,7 @@
 import logging, re, json
 
 url = "http://localhost:5001"
-url_ch = "http://10.15.252.3:8080"
+url_ch = "http://localhost:8080"
 
 
 # return -1 if failed. Should throw error?
@@ -169,7 +169,8 @@ def GetPrefix(Name):
 
 
 def OutputStringTokens_json(strTokens):
-    output = json.dumps([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem], ensure_ascii=False)
+    from collections import OrderedDict
+    output = json.dumps(OrderedDict([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem]), sort_keys=False, ensure_ascii=False)
 
     return output
 
@@ -192,3 +193,10 @@ def OutputStringTokens_oneliner(strTokens, NoFeature=False):
         for _ in range(token.EndTrunk):
             output += ">"
     return output
+
+
+#Replace % and & sign before using "GET" to query webservice.
+def URLEncoding(Sentence):
+    Sentence = Sentence.replace("%", "%25")
+    Sentence = Sentence.replace("&", "%26")
+    return Sentence

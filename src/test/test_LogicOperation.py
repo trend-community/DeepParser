@@ -15,33 +15,33 @@ class FeatureTest(unittest.TestCase):
         node =  Tokenization.SentenceNode('')
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
-        self.assertTrue(LogicMatchFeatures("NN", node))
+        self.assertTrue(LogicMatchFeatures([node], 0, "NN"))
     def test_And(self):
         node =  Tokenization.SentenceNode("abc")
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
-        self.assertFalse(LogicMatchFeatures("NN percent", node))
+        self.assertFalse(LogicMatchFeatures([node], 0, "NN percent"))
 
         node.features.add(FeatureOntology.GetFeatureID('percent'))
-        self.assertTrue(LogicMatchFeatures("NN percent", node))
+        self.assertTrue(LogicMatchFeatures([node], 0, "NN percent"))
     def test_Or(self):
         node = Tokenization.SentenceNode('')
         node.features = set()
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
-        self.assertTrue(LogicMatchFeatures("NN|percent", node))
+        self.assertTrue(LogicMatchFeatures([node], 0, "NN|percent"))
         node.features.add(FeatureOntology.GetFeatureID('percent'))
-        self.assertTrue(LogicMatchFeatures("NP|percent", node))
-        self.assertFalse(LogicMatchFeatures("NP", node))
+        self.assertTrue(LogicMatchFeatures([node], 0, "NP|percent"))
+        self.assertFalse(LogicMatchFeatures([node], 0, "NP"))
     def test_NotOr(self):
         node = Tokenization.SentenceNode('')
         node.features = set()
         node.features.add(FeatureOntology.GetFeatureID('NN'))
 
-        self.assertFalse(LogicMatchFeatures("!NN|percent", node))
+        self.assertFalse(LogicMatchFeatures([node], 0, "!NN|percent"))
         node.features.add(FeatureOntology.GetFeatureID('percent'))
-        self.assertFalse(LogicMatchFeatures("!NP|percent", node))
-        self.assertTrue(LogicMatchFeatures("!NP", node))
+        self.assertFalse(LogicMatchFeatures([node], 0, "!NP|percent"))
+        self.assertTrue(LogicMatchFeatures([node], 0, "!NP"))
 
 
 class RuleTest(unittest.TestCase):

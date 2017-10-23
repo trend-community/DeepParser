@@ -12,6 +12,7 @@ from FeatureOntology import *
 # url_ch = "http://localhost:8080"
 
 _LexiconDict = {}
+_LexiconLookupSet = set()
 _LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
 _CommentDict = {}
@@ -133,7 +134,7 @@ def OutputLexicon(EnglishFlag):
     return Output
 
 def LoadLexicon(lexiconLocation, forLookup = False):
-    global _LexiconDict, _LexiconLookupDict
+    global _LexiconDict, _LexiconLookupSet
     global _CommentDict
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
@@ -173,24 +174,25 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                     node.norm = feature.strip('/')
                 elif re.search(u'[\u4e00-\u9fff]', feature):
                     node.stem = feature
-                    continue
                 else:
                     featureID = GetFeatureID(feature)
                     if featureID==-1:
                         logging.debug("Missing Feature: " + feature)
                         node.missingfeature += "\\" + feature
-                    node.features.add(featureID)
-                    ontologynode = SearchFeatureOntology(featureID)
-                    if ontologynode:
-                        ancestors = ontologynode.ancestors
-                        if ancestors:
-                            node.features.update(ancestors)
+                    else:
+                        node.features.add(featureID)
+                        ontologynode = SearchFeatureOntology(featureID)
+                        if ontologynode:
+                            ancestors = ontologynode.ancestors
+                            if ancestors:
+                                node.features.update(ancestors)
 
             if newNode:
                 _LexiconDict.update({node.word: node})
                 if forLookup \
                         or "_" in node.word:    #
-                    _LexiconLookupDict.update({node.word: node})
+                    #_LexiconLookupDict.update({node.word: node})
+                    _LexiconLookupSet.add(node.word)
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -202,6 +204,21 @@ def LoadLexicon(lexiconLocation, forLookup = False):
         _ApplyWordStem(node, node)
 
     logging.debug("Finish loading lexicon")
+
+    GenerateLookupDict(_LexiconLookupSet)
+
+
+def GenerateLookupDict(lookupset):
+    global _LexiconLookupDict
+    for word in lookupset:
+        partialword = ""
+        for character in word:
+            partialword += character
+            if partialword in _LexiconLookupDict:
+                _LexiconLookupDict[partialword].add(word)
+            else:
+                _LexiconLookupDict[partialword] = {word}
+
 
 
 def _ApplyWordStem(NewNode, lexiconnode):
@@ -272,40 +289,48 @@ def ApplyWordLengthFeature(node):
     if IsAscii(node.stem):
         return
 
+    C1ID = GetFeatureID('c1')
+    C2ID = GetFeatureID('c2')
+    C3ID = GetFeatureID('c3')
+    C4ID = GetFeatureID('c4')
+    C4plusID = GetFeatureID('c4plus')
+
     # Below is for None-English only:
-    if GetFeatureID('c1') in node.features:
-        node.features.remove(GetFeatureID('c1'))
-    if GetFeatureID('c2') in node.features:
-        node.features.remove(GetFeatureID('c2'))
-    if GetFeatureID('c3') in node.features:
-        node.features.remove(GetFeatureID('c3'))
-    if GetFeatureID('c4') in node.features:
-        node.features.remove(GetFeatureID('c4'))
-    if GetFeatureID('c4plus') in node.features:
-        node.features.remove(GetFeatureID('c4plus'))
+    if C1ID in node.features:
+        node.features.remove(C1ID)
+    if C2ID in node.features:
+        node.features.remove(C2ID)
+    if C3ID in node.features:
+        node.features.remove(C3ID)
+    if C4ID in node.features:
+        node.features.remove(C4ID)
+    if C4plusID in node.features:
+        node.features.remove(C4plusID)
 
     wordlength = len(node.stem)
     if wordlength<1:
         pass
     elif wordlength == 1:
-        node.features.add(GetFeatureID('c1'))
+        node.features.add(C1ID)
     elif wordlength == 2:
-        node.features.add(GetFeatureID('c2'))
+        node.features.add(C2ID)
     elif wordlength == 3:
-        node.features.add(GetFeatureID('c3'))
+        node.features.add(C3ID)
     elif wordlength == 4:
-        node.features.add(GetFeatureID('c4'))
+        node.features.add(C4ID)
     else:
-        node.features.add(GetFeatureID('c4plus'))
+        node.features.add(C4plusID)
 
     return
 
 
-def ApplyLexicon(node):
-    if not node.lexicon:    # If lexicon is assigned before, then don't do the search
-                            #  because the node.word is not as reliable as stem.
-        node.lexicon = SearchLexicon(node.word)
-    if node.lexicon is None:
+def ApplyLexicon(node, lex=None):
+    if not lex:
+        lex = SearchLexicon(node.word)
+    # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
+    #                         #  because the node.word is not as reliable as stem.
+    #     node.lexicon = SearchLexicon(node.word)
+    if lex is None:
         if IsCD(node.word):
             node.features.add(GetFeatureID('CD'))
         elif node.word in string.punctuation:
@@ -314,19 +339,18 @@ def ApplyLexicon(node):
             node.features.add(GetFeatureID('NNP'))
             node.features.add(GetFeatureID('OOV'))
     else:
-        node.stem = node.lexicon.stem
-        node.norm = node.lexicon.norm
+        node.stem = lex.stem
+        node.norm = lex.norm
         NEWFeatureID = GetFeatureID("NEW")
-        if NEWFeatureID in node.lexicon.features:
+        if NEWFeatureID in lex.features:
             node.features = set()
-            node.features.update(node.lexicon.features)
+            node.features.update(lex.features)
             node.features.remove(NEWFeatureID)
         else:
-            node.features.update(node.lexicon.features)
-        _ApplyWordStem(node, node.lexicon)
+            node.features.update(lex.features)
+        _ApplyWordStem(node, lex)
 
     ApplyWordLengthFeature(node)
-    node.lexicon = None
     return node
 
 
@@ -334,7 +358,7 @@ def ApplyLexicon(node):
 # (1) refresh with the lexical features;
 # (2) void the combined tokens with FEATURE:Gone
 def ChunkingLexicon(strtokens, length, lexicon):
-    logging.debug("Start chucking lexicon " + lexicon.word)
+    logging.debug("Start chunking lexicon " + lexicon.word)
     NewStems = []
     for i in range(length):
         NewStems.append( strtokens[i].stem)     # or StrTokens[i].lexicon.stem?
@@ -348,8 +372,8 @@ def ChunkingLexicon(strtokens, length, lexicon):
     strtokens[0].stem = NewStem
     #strtokens[0].word = NewStem
     strtokens[0].Gone = False
-    strtokens[0].lexicon = lexicon
-    ApplyLexicon(strtokens[0])      #including features and stems
+    #strtokens[0].lexicon = lexicon
+    ApplyLexicon(strtokens[0], lexicon)      #including features and stems
 
 
 # return the how many tokens combined together as the "word".
@@ -392,10 +416,8 @@ def LexiconLookup(strTokens):
             continue
 
         WinningLexicon = None
-        for word in _LexiconLookupDict:
-            #if _LexiconDict.get(word).forLookup:
-                if not word.startswith(localstem):
-                    continue
+        if localstem in _LexiconLookupDict:
+            for word in _LexiconLookupDict[localstem]:
                 MatchLength = HeadMatchLexicon(strTokens[i:], word)
                 if MatchLength > 0:
                     if WinningLexicon and len(WinningLexicon.word) >= len(word):

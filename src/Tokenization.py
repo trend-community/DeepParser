@@ -23,12 +23,27 @@ class SentenceNode(object):
         self.stem = word
         self.norm = word
         self.features = set()
-        self.lexicon = None
+        #self.lexicon = None
         self.Gone = False
         self.StartTrunk = 0
         self.EndTrunk = 0
         self.StartOffset = -1
         self.EndOffset = -1
+
+        #From webservice, only word/StartOffset/features are set,
+        #    and the features are "list", need to change to "set"
+    def populatedefaultvalue(self):
+        self.stem = self.word
+        self.norm = self.word
+        self.features = set()
+        for featurename in self.featurenames:
+            self.features.add(FeatureOntology.GetFeatureID(featurename))
+        #self.lexicon = None
+        self.Gone = False
+        self.StartTrunk = 0
+        self.EndTrunk = 0
+        self.StartOffset = -1
+        self.EndOffset = self.StartOffset + len(self.word)
 
     def __str__(self):
         output = "[" + self.word + "] "
@@ -49,7 +64,7 @@ class SentenceNode(object):
 
     def GetFeatures(self):
         featureString = ""
-        for feature in self.features:
+        for feature in sorted(self.features):
             f = FeatureOntology.GetFeatureName(feature)
             if f:
                 if featureString:
@@ -95,7 +110,6 @@ def Tokenize_space(sentence):
     return Tokens
 
 
-
 IMPOSSIBLESTRING = "@#$%!"
 def Tokenize(Sentence):
     Sentence = Sentence.strip()
@@ -108,25 +122,35 @@ def Tokenize(Sentence):
         # ret_t = requests.post(TokenizeURL, data=Sentence)
         # nodes_t = jsonpickle.decode(ret_t.text)
     else:
-        TokenizeURL = url_ch + "/Tokenize/"
+        TokenizeURL = url_ch + "/TokenizeJson/"
         #ret_t = requests.get(TokenizeURL + Sentence)
-        data = {'Sentence': Sentence}
-        segmented = requests.get(TokenizeURL, params=data).text
-        #segmented = jsonpickle.decode(segmented)
-        segmented = segmented.replace("\/", IMPOSSIBLESTRING)
-        blocks = segmented.split("/")
-        Tokens = []
-        for block in blocks:
-            block = block.replace(IMPOSSIBLESTRING, "/")
-            WordPropertyPair = block.split(":")
-            Element = SentenceNode(WordPropertyPair[0])
-            if len(WordPropertyPair)>1:
-                features = WordPropertyPair[1]
-                for feature in features.split():
-                    featureid = FeatureOntology.GetFeatureID(feature)
-                    Element.features.add(featureid)
 
-            Tokens.append(Element)
+        data = {'Sentence': URLEncoding(Sentence)}
+        ret = requests.get(TokenizeURL, params=data)
+        segmented = ret.text
+        Tokens = jsonpickle.decode(segmented)
+
+        #logging.info("segmented text=\n" + segmented)
+
+        # Tokens = []
+        for token in Tokens:
+            token.populatedefaultvalue()
+
+        #logging.info("Tokens encode text=\n" + jsonpickle.encode(Tokens))
+        # segmented = segmented.replace("\/", IMPOSSIBLESTRING)
+        # blocks = segmented.split("/")
+        # Tokens = []
+        # for block in blocks:
+        #     block = block.replace(IMPOSSIBLESTRING, "/")
+        #     WordPropertyPair = block.split(":")
+        #     Element = SentenceNode(WordPropertyPair[0])
+        #     if len(WordPropertyPair)>1:
+        #         features = WordPropertyPair[1]
+        #         for feature in features.split():
+        #             featureid = FeatureOntology.GetFeatureID(feature)
+        #             Element.features.add(featureid)
+        #
+        #     Tokens.append(Element)
     return Tokens
 
 

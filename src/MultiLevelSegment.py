@@ -5,6 +5,43 @@ from utils import *
 import singleton
 me = singleton.SingleInstance()
 
+def ProcessFile(FileName):
+    UnitTest = []
+    if not os.path.exists(FileName):
+        print("Unit Test file " + FileName + " does not exist.")
+        exit(0)
+
+    with open(FileName, encoding="utf-8") as RuleFile:
+        for line in RuleFile:
+            if line.strip():
+                RuleName, TestSentence = SeparateComment(line.strip())
+                if not TestSentence:  # For the testfile that only have test sentence, not rule name
+                    TestSentence = RuleName
+                    RuleName = ""
+                unittest = Rules.UnitTestNode(RuleName, TestSentence)
+                UnitTest.append(unittest)
+
+    for unittestnode in UnitTest:
+        ExtraMessageIndex = unittestnode.TestSentence.find(">")
+        if ExtraMessageIndex > 0:
+            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
+        else:
+            TestSentence = unittestnode.TestSentence
+        TestSentence = TestSentence.strip("/")
+        if DebugMode:
+            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
+
+        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
+
+        if DebugMode:
+            for node in nodes:
+                print(node)
+        print(OutputStringTokens_oneliner(nodes, NoFeature))
+
+    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
+    print(FeatureOntology.OutputMissingFeatureSet())
+
+
 if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
@@ -31,37 +68,14 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon(True)
 
-    UnitTest = []
-    if not os.path.exists(UnitTestFileName):
-        print("Unit Test file " + UnitTestFileName + " does not exist.")
-        exit(0)
+    if not logging.getLogger().isEnabledFor(logging.DEBUG):
+        ProcessFile(UnitTestFileName)
+    else:   #debugging mode
+        ProcessFile(UnitTestFileName)
+        pass
+        # import cProfile, pstats
+        # cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
+        # p = pstats.Stats('restats')
+        # p.sort_stats('time').print_stats(100)
 
-    with open(UnitTestFileName, encoding="utf-8") as RuleFile:
-        for line in RuleFile:
-            if line.strip():
-                RuleName, TestSentence = SeparateComment(line.strip())
-                if not TestSentence:    # For the testfile that only have test sentence, not rule name
-                    TestSentence = RuleName
-                    RuleName = ""
-                unittest = Rules.UnitTestNode( RuleName, TestSentence)
-                UnitTest.append(unittest)
 
-    for unittestnode in UnitTest:
-        ExtraMessageIndex = unittestnode.TestSentence.find(">")
-        if ExtraMessageIndex>0:
-            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
-        else:
-            TestSentence = unittestnode.TestSentence
-        TestSentence = TestSentence.strip("/")
-        if DebugMode:
-            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
-
-        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
-
-        if DebugMode:
-            for node in nodes:
-                print(node)
-        print(OutputStringTokens_oneliner(nodes, NoFeature))
-
-    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
-    print(FeatureOntology.OutputMissingFeatureSet())
