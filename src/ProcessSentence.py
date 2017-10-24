@@ -53,12 +53,11 @@ def StoreWinningRule(strtokens, rule, StartPosition):
 
 
 def OutputWinningRules():
-    from collections import OrderedDict
     output = ""
 
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += json.dumps(OrderedDict({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}), sort_keys=False, ensure_ascii=False) + "\n"
+        output += str({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}) + "\n"
 
     return output
 
@@ -169,7 +168,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
         raise(RuntimeError("wrong string to apply rule?"))
-    logging.info("Applying Winning Rule:" + rule.RuleName +" to " + strtokens[0].word)
+    if len(strtokens) > 2:
+        logging.info("Applying Winning Rule:" + rule.RuleName +" to "
+                     + strtokens[1].word + strtokens[2].word + "...")
     StoreWinningRule(strtokens, rule, StartPosition)
     GoneInStrTokens = 0
     if len(rule.Tokens) == 0:
@@ -177,12 +178,16 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
     for i in range(len(rule.Tokens)):
-        while strtokens[StartPosition + i + GoneInStrTokens].Gone:
-            GoneInStrTokens += 1
-            if i + GoneInStrTokens == len(strtokens):
-                raise RuntimeError("Can't be applied: " + rule.RuleName)
-        strtokens[StartPosition + i + GoneInStrTokens].StartTrunk += rule.Tokens[i].StartTrunk
-        strtokens[StartPosition + i + GoneInStrTokens].EndTrunk += rule.Tokens[i].EndTrunk
+        try:
+            while strtokens[StartPosition + i + GoneInStrTokens].Gone:
+                GoneInStrTokens += 1
+                if i + GoneInStrTokens == len(strtokens):
+                    raise RuntimeError("Can't be applied: " + rule.RuleName)
+            strtokens[StartPosition + i + GoneInStrTokens].StartTrunk += rule.Tokens[i].StartTrunk
+            strtokens[StartPosition + i + GoneInStrTokens].EndTrunk += rule.Tokens[i].EndTrunk
+        except IndexError as e:
+            logging.error(str(e))
+            return len(rule.Tokens)
 
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
@@ -289,7 +294,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
     return WinningRules
 
 
-def MatchAndApplyAllRules(strtokens, ExcludeList=[]):
+def MatchAndApplyAllRules(strtokens, ExcludeList=["0defLexX.txt"]):
     WinningRules = []
     for RuleFileName in Rules.RuleGroupDict:
         if RuleFileName in ExcludeList:
@@ -379,7 +384,7 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes))
 
     logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
-    RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt", "1test_rules.txt"])
+    RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
     print("After match:")
     for node in nodes:
         print(str(node))

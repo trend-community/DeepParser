@@ -89,6 +89,8 @@ def IsAscii(Sentence):
         Sentence.encode(encoding='utf-8').decode('ascii')
     except UnicodeDecodeError:
         return False
+    except UnicodeEncodeError:
+        return False
     else:
         return True
 
@@ -173,6 +175,7 @@ def OutputStringTokens_json(strTokens):
     output = json.dumps(OrderedDict([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem]), sort_keys=False, ensure_ascii=False)
 
     return output
+
 
 def OutputStringTokens_oneliner(strTokens, NoFeature=False):
     output = ""

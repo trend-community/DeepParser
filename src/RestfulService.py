@@ -3,10 +3,22 @@ import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request
 from flask_cache import Cache
+import viterbi1
+import argparse
+import utils
 
 app = Flask(__name__)
 app.config['CACHE_TYPE'] = 'simple'
 app.cache = Cache(app)
+
+# for processing leading slash as in:
+#  https://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash#24001029
+from werkzeug.routing import PathConverter
+
+class EverythingConverter(PathConverter):
+    regex = '.*?'
+
+app.url_map.converters['everything'] = EverythingConverter
 
 
 import singleton
@@ -91,7 +103,7 @@ def OutputRules(Mode="concise"):
 
 
 #Following the instruction in pipelineX.txt
-@app.route("/MultiLevelSegmentation/<Sentence>")
+@app.route("/MultiLevelSegmentation/<everything:Sentence>")
 @app.cache.cached(timeout=10)  # cache this view for 10 seconds
 def MultiLevelSegmentation(Sentence):
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
@@ -103,22 +115,32 @@ def MultiLevelSegmentation(Sentence):
 # def OutputWinningRules():
 #     return ProcessSentence.OutputWinningRules()
 
+@app.route("/QuerySegment/<sentence>")
+def QuerySegment(sentence):
+    norm = viterbi1.normalize(sentence)
+    return ''.join(viterbi1.viterbi1(norm, len(norm)))
+
+
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--thisport", default=5001, help="The port for this server")
+    parser.add_argument("--querydict", default="../data/g1.words.P", help="The port for this server")
+    # parser.add_argument("--segmentserviceport", default=8080, type=int, help="The port of the Jave Segmentation Server")
+    # parser.add_argument("--segmentserverlink", default="http://localhost",
+    #                     help="The link to the Jave Segmentation Server")
+    args = parser.parse_args()
+
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-    jsonpickle.set_encoder_options('json', ensure_ascii=False);
+    jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
-    port = 5001
-    if  len(sys.argv) == 2:
-        try:
-            port = int(sys.argv[1])
-        except ValueError:
-            print("Usage: python RestfulService.py [port number (default=5001)]")
-            exit(0)
+    viterbi1.LoadDictFromPickle(args.querydict)
 
     ProcessSentence.LoadCommon(LoadCommonRules=True)
-    print("Running in port " + str(port))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    # utils.url_ch = args.segmentserverlink + ":" + str(args.segmentserviceport)
+
+    print("Running in port " + str(args.thisport))
+    app.run(host="0.0.0.0", port=args.thisport, debug=False)
     #app.test_client().get('/')

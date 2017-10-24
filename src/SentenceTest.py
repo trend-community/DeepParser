@@ -15,30 +15,34 @@ if __name__ == "__main__":
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
     ProcessSentence.LoadCommon(True)
 
-    for unittestnode in Rules.UnitTest:
-        ExtraMessageIndex = unittestnode.TestSentence.find(">")
-        if ExtraMessageIndex>0:
-            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
-        else:
-            TestSentence = unittestnode.TestSentence
-        print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
+    for RuleFile in Rules.RuleGroupDict:
+        print("Working on tests of " + RuleFile)
+        rg = Rules.RuleGroupDict[RuleFile]
+        for unittestnode in rg.UnitTest:
+            ExtraMessageIndex = unittestnode.TestSentence.find(">")
+            if ExtraMessageIndex>0:
+                TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
+            else:
+                TestSentence = unittestnode.TestSentence
+            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
+            nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
 
-        if DebugMode:
-            for node in nodes:
-                print(node)
+            if DebugMode:
+                for node in nodes:
+                    print(node)
 
-        WinningRules, _ = ProcessSentence.MatchAndApplyRules(nodes)
-        for WinningRule in WinningRules:
-            if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
-                print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
+            WinningRules = ProcessSentence.MatchAndApplyAllRules(nodes)
+            for WinningRule in WinningRules:
+                if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
+                    print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
 
-        if DebugMode:
-            for node in nodes:
-                print(node)
+            if DebugMode:
+                for node in nodes:
+                    print(node)
+    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
 

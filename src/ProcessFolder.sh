@@ -1,7 +1,7 @@
 #!/bin/bash
 # loop through a folder to do MultiLevelSegment.py
-INPUTFILES=../../fsa/test/input/*
-OUTPUTFOLDER=../../fsa/test/output
+INPUTFILES="../../fsa/test/input/*"
+OUTPUTFOLDER="../../fsa/test/output"
 FEATUREFILE="_feature.txt"
 
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
@@ -24,6 +24,8 @@ do
     outputfile="$TEMPFOLDER/$filename"
     python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> ../log/ProcessFolder_feature.log &
 done
+
+python SentenceTest.pyc > "$TEMPFOLDER/SentenceTest.txt" 2>> ../log/ProcessFolder.log &
 
 wait        #wait for all child process to complete.
 
