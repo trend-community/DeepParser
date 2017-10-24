@@ -1,7 +1,7 @@
 #!/bin/sh
 
-for ((i=5002;i<=5062;i++));
+for ((i=6000;i<=6010;i++));
 do
-  python RestfulService.py $i
+  python RestfulService.py $i > ../log/restfulservice.log &
 
 done
