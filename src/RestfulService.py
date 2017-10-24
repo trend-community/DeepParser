@@ -21,8 +21,8 @@ class EverythingConverter(PathConverter):
 app.url_map.converters['everything'] = EverythingConverter
 
 
-import singleton
-me = singleton.SingleInstance()
+# import singleton
+# me = singleton.SingleInstance()
 
 
 @app.route("/SearchLexicon/<word>")
