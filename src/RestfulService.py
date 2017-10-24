@@ -142,5 +142,5 @@ if __name__ == "__main__":
     # utils.url_ch = args.segmentserverlink + ":" + str(args.segmentserviceport)
 
     print("Running in port " + str(args.thisport))
-    app.run(host="0.0.0.0", port=args.thisport, debug=False)
+    app.run(host="0.0.0.0", port=args.thisport, debug=False, threaded=True)
     #app.test_client().get('/')
