@@ -166,7 +166,10 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule, StartPosition):
-    logging.info("Applying Winning Rule:" + rule.RuleName)
+    if not strtokens:
+        logging.error("The strtokens to ApplyWinningRule is blank!")
+        raise(RuntimeError("wrong string to apply rule?"))
+    logging.info("Applying Winning Rule:" + rule.RuleName +" to " + strtokens[0].word)
     StoreWinningRule(strtokens, rule, StartPosition)
     GoneInStrTokens = 0
     if len(rule.Tokens) == 0:
@@ -336,6 +339,7 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
     Lexicon.LoadLexicon('../../fsa/X/locX.txt')
     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
+    Lexicon.LoadLexicon('../../fsa/X/defPlus.txt')
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
 
     if LoadCommonRules:
@@ -366,7 +370,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "这事儿较之前的确有进步 "
+    target = "苹果4手机壳25%56漂亮&便宜/方便 "
     nodes = MultiLevelSegmentation(target)
 
     for node in nodes:
