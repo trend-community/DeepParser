@@ -42,7 +42,6 @@ class SentenceNode(object):
         self.Gone = False
         self.StartTrunk = 0
         self.EndTrunk = 0
-        self.StartOffset = -1
         self.EndOffset = self.StartOffset + len(self.word)
 
     def __str__(self):

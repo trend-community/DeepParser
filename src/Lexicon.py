@@ -17,6 +17,13 @@ _LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
 _CommentDict = {}
 
+C1ID = GetFeatureID('c1')
+C2ID = GetFeatureID('c2')
+C3ID = GetFeatureID('c3')
+C4ID = GetFeatureID('c4')
+C4plusID = GetFeatureID('c4plus')
+
+
 class LexiconNode(object):
     def __init__(self, word=''):
         self.word = word
@@ -288,12 +295,6 @@ def ApplyLexiconToNodes(nodes):
 def ApplyWordLengthFeature(node):
     if IsAscii(node.stem):
         return
-
-    C1ID = GetFeatureID('c1')
-    C2ID = GetFeatureID('c2')
-    C3ID = GetFeatureID('c3')
-    C4ID = GetFeatureID('c4')
-    C4plusID = GetFeatureID('c4plus')
 
     # Below is for None-English only:
     if C1ID in node.features:

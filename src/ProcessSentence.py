@@ -57,7 +57,7 @@ def OutputWinningRules():
 
     for rulename in WinningRuleDict:
         rule, hits = WinningRuleDict[rulename]
-        output += str({'rule file': rule.FileName,  'rule origin': rule.Origin, 'Hits_num': len(hits), 'hits:': hits}) + "\n"
+        output += '[Rule file]' + rule.FileName +  ' [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
 
     return output
 
@@ -303,9 +303,13 @@ def MatchAndApplyAllRules(strtokens, ExcludeList=["0defLexX.txt"]):
 
     return WinningRules
 
+invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
+
 
 def MultiLevelSegmentation(Sentence):
     logging.debug("-Start MultiLevelSegmentation: tokenize")
+
+    Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
     Nodes = Tokenization.Tokenize(Sentence)
     logging.debug("-Start ApplyLexiconToNodes")
     Lexicon.ApplyLexiconToNodes(Nodes)
@@ -357,6 +361,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
         Rules.LoadRules("../../fsa/X/10compound.txt")
+        Rules.LoadRules("../../fsa/X/20VG.txt")
         Rules.LoadRules("../../fsa/X/180NPx.txt")
 
         #Rules.LoadRules("../../fsa/X/270VPx.txt")
@@ -372,26 +377,29 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "苹果4手机壳25%56漂亮&便宜/方便 "
+    target = "弗咯米👌iPhone7/7plus手机壳/保护套 苹果7plus 超薄全包硅胶透明电镀软壳5.5英寸 炫亮黑炫亮电镀"
     nodes = MultiLevelSegmentation(target)
 
-    for node in nodes:
-        print(str(node))
+    # for node in nodes:
+    #     print(str(node))
 
     print(OutputStringTokens_oneliner(nodes))
 
     logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
     RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
     print("After match:")
-    for node in nodes:
-        print(str(node))
+    # for node in nodes:
+    #     print(str(node))
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 
+    print(OutputStringTokens_oneliner(nodes, NoFeature=True))
     print(OutputStringTokens_oneliner(nodes))
+    jsonpickle.set_encoder_options('json', ensure_ascii=False)
+    print(jsonpickle.encode(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
 
