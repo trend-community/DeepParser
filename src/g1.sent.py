@@ -67,7 +67,7 @@ for line in fin:
 		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
 	else:
 		resultPhrase = resultPhrases[0]
-	fout.write(resultPhrases)
+	fout.write(resultPhrase)
 	#
 	# for chunk in sent.split():
 	# 	phrase = normalize(chunk)
