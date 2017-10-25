@@ -60,10 +60,13 @@ for line in fin:
 		sent = line
 
 	resultPhrases = viterbi1(normalize(sent.strip()), len(sent))
+	if not resultPhrases:
+		print("wrong line?" + line)
+		continue
 	if len(resultPhrases) > 1:
 		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
 	else:
-		resultPhrase = resultPhrases
+		resultPhrase = resultPhrases[0]
 	fout.write(resultPhrases)
 	#
 	# for chunk in sent.split():
