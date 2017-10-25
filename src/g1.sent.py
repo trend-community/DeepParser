@@ -64,7 +64,8 @@ for line in fin:
 		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
 	else:
 		resultPhrase = resultPhrases
-    #
+	fout.write(resultPhrases)
+	#
 	# for chunk in sent.split():
 	# 	phrase = normalize(chunk)
 	# 	fout.write( ' '.join( viterbi1(phrase.strip(), maxPhraseLen, args.recursive) ) + ' ')
