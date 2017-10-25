@@ -58,9 +58,16 @@ for line in fin:
 			continue
 	else:
 		sent = line
-	for chunk in sent.split():
-		phrase = normalize(chunk)
-		fout.write( ' '.join( viterbi1(phrase.strip(), maxPhraseLen, args.recursive) ) + ' ')
+
+	resultPhrases = viterbi1(normalize(sent.strip()), len(sent))
+	if len(resultPhrases) > 1:
+		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
+	else:
+		resultPhrase = resultPhrases
+    #
+	# for chunk in sent.split():
+	# 	phrase = normalize(chunk)
+	# 	fout.write( ' '.join( viterbi1(phrase.strip(), maxPhraseLen, args.recursive) ) + ' ')
 	if args.query: fout.write('\t' + freqstring)
 	fout.write('\n')
 fout.close()

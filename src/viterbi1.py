@@ -51,7 +51,7 @@ def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
 			if isRecursive:
 				subPhrases = viterbi1(bestPhrase[i], bestPhraseLen[i] - 1, isRecursive)
 				if len(subPhrases)>1:
-					bestPhrase[i] = ''.join( ['<'] + subPhrases + ['>'] )
+					bestPhrase[i] = '<' + ' '.join(subPhrases) + '>'
 				else:
 					bestPhrase[i] = ''.join( subPhrases )
 			else:
@@ -99,4 +99,12 @@ def LoadDictFromPickle(dictpath="../data/g1.words.P"):
 
 if __name__ == "__main__":
 	LoadDictFromPickle()
-	print(viterbi1(normalize("鼠标和苹果手机")))
+	resultPhrases = viterbi1(normalize("鼠标和小米手机"))
+
+	if len(resultPhrases) > 1:
+		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
+	else:
+		resultPhrase = resultPhrases
+
+	print(resultPhrase)
+

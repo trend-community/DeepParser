@@ -41,8 +41,9 @@ for line in fin:
 			phrase = normalize(chunk)
 			querydict[phrase] = querydict.get(phrase, 0) + freq
 			N = N + freq
-	except:
+	except Exception as e:
 		print("error in processing \n\t" + line)
+		print(str(e))
 		continue
 fin.close()
 
