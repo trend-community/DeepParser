@@ -49,11 +49,15 @@ def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
 		## recursion
 		if bestPhraseLen[i] > 2:
 			if isRecursive:
-				bestPhrase[i] = ''.join( ['<'] + viterbi1(bestPhrase[i], bestPhraseLen[i] - 1, isRecursive) + ['}'] )
+				subPhrases = viterbi1(bestPhrase[i], bestPhraseLen[i] - 1, isRecursive)
+				if len(subPhrases)>1:
+					bestPhrase[i] = ''.join( ['<'] + subPhrases + ['>'] )
+				else:
+					bestPhrase[i] = ''.join( subPhrases )
 			else:
 				bestPhrase[i] = ''.join( ['\['] + bestPhrase[i] + ['\]'] )
-		elif bestPhraseLen[i] == 2:
-			bestPhrase[i] = '<' + ''.join(sent[i-bestPhraseLen[i]+1 : i+1]) + '>'
+		elif bestPhraseLen[i] == 2:	#one word. leave it be.
+			bestPhrase[i] = ''.join(sent[i+1-2 : i+1])
 		else:
 			bestPhrase[i] =  bestPhrase[i]
 
