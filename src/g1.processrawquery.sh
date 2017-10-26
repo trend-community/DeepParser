@@ -20,4 +20,4 @@ python g1.norm.py $1 /tmp/dictoutput.txt $2
 python g1.sent.py /tmp/wordlist.txt /tmp/notcleanrule.txt $2
 python g1.generatelexicon.py /tmp/notcleanrule.txt $4
 echo -e "QueryRule ==  \\ $1 \n"   > $3
-grep -v "<" /tmp/notcleanrule.txt >> $3
+grep "<" /tmp/notcleanrule.txt >> $3
