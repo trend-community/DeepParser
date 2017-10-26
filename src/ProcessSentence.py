@@ -380,7 +380,7 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
     target = "弗咯米👌iPhone7/7plus手机壳/保护套 苹果7plus 超薄全包硅胶透明电镀软壳5.5英寸 炫亮黑炫亮电镀"

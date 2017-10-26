@@ -185,6 +185,10 @@ def LoadFeatureOntology(featureOncologyLocation):
     #         _FeatureOntology = pickle.load(pk)
     #     return
 
+    if featureOncologyLocation.startswith("."):
+        featureOncologyLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  featureOncologyLocation)
+
+
     LoadFeatureSet(featureOncologyLocation)
 
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:

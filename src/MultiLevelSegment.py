@@ -6,6 +6,8 @@ import singleton
 me = singleton.SingleInstance()
 
 def ProcessFile(FileName):
+    if FileName.startswith("."):
+        FileName = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FileName)
     UnitTest = []
     if not os.path.exists(FileName):
         print("Unit Test file " + FileName + " does not exist.")
