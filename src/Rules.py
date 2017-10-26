@@ -449,6 +449,9 @@ def LoadRules(RuleLocation):
     # global UnitTest, RuleFileList
     global RuleGroupDict
 
+    if RuleLocation.startswith("."):
+        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
+
     RuleFileName = os.path.basename(RuleLocation)
     logging.debug("Start Loading Rule " + RuleFileName)
     rulegroup = RuleGroup(RuleFileName)

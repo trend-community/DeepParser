@@ -143,6 +143,8 @@ def OutputLexicon(EnglishFlag):
 def LoadLexicon(lexiconLocation, forLookup = False):
     global _LexiconDict, _LexiconLookupSet
     global _CommentDict
+    if lexiconLocation.startswith("."):
+        lexiconLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  lexiconLocation)
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
 
