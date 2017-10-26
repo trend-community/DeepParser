@@ -1,4 +1,4 @@
-import logging, sys, re, jsonpickle
+import logging, sys, re, jsonpickle, os
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request
@@ -126,6 +126,9 @@ def init(querydict = "../data/g1.words.P"):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
+
+    if querydict.startswith("."):
+        querydict = os.path.join(os.path.dirname(os.path.realpath(__file__)),  querydict)
     viterbi1.LoadDictFromPickle(querydict)
 
     ProcessSentence.LoadCommon(LoadCommonRules=True)
