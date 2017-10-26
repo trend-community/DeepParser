@@ -59,15 +59,7 @@ for line in fin:
 	else:
 		sent = line
 
-	resultPhrases = viterbi1(normalize(sent.strip()), len(sent))
-	if not resultPhrases:
-		print("wrong line?" + line)
-		continue
-	if len(resultPhrases) > 1:
-		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
-	else:
-		resultPhrase = resultPhrases[0]
-	fout.write(resultPhrase)
+	fout.write(QuerySegment(sent))
 	#
 	# for chunk in sent.split():
 	# 	phrase = normalize(chunk)

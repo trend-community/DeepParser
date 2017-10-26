@@ -67,6 +67,18 @@ def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
 	## return
 	return listPhrases
 
+
+def QuerySegment(Sentence):
+	resultPhraseList = viterbi1(normalize(Sentence.strip()), len(Sentence))
+
+	if not resultPhraseList:
+		return ''
+	if len(resultPhraseList) > 1:
+		resultPhrase = '<' + ' '.join(resultPhraseList) + '>'
+	else:
+		resultPhrase = resultPhraseList[0]
+	return resultPhrase
+
 #==============================================================
 # isNonHanzi()
 #==============================================================
@@ -99,12 +111,7 @@ def LoadDictFromPickle(dictpath="../data/g1.words.P"):
 
 if __name__ == "__main__":
 	LoadDictFromPickle()
-	resultPhrases = viterbi1(normalize("鼠标和小米手机"))
 
-	if len(resultPhrases) > 1:
-		resultPhrase = '<' + ' '.join(resultPhrases) + '>'
-	else:
-		resultPhrase = resultPhrases
 
-	print(resultPhrase)
+	print(QuerySegment("鼠标和小米手机"))
 
