@@ -84,8 +84,11 @@ def QuerySegment(Sentence):
 #==============================================================
 def isNonHanzi(s): return all( (ord(c) < 0x4e00 or ord(c) > 0x9fff) for c in s)
 
+
 #==============================================================
-# add space
+# normalize queries by taking space delimited chunks as phrases
+# and by adding spaces in between 'words'
+# Here a 'word' is defined as English word or single Chinese character
 #==============================================================
 def normalize(sentence):
 	phrase = ''
