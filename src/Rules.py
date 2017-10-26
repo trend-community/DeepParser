@@ -456,27 +456,30 @@ def LoadRules(RuleLocation):
     logging.debug("Start Loading Rule " + RuleFileName)
     rulegroup = RuleGroup(RuleFileName)
 
-    with open(RuleLocation, encoding="utf-8") as RuleFile:
-        rule = ""
-        for line in RuleFile:
-            # commentLocation = line.find("//")
-            # if commentLocation>=0:
-            #     line = line[:commentLocation]   #remove anything after //
+    try:
+        with open(RuleLocation, encoding="utf-8") as RuleFile:
+            rule = ""
+            for line in RuleFile:
+                # commentLocation = line.find("//")
+                # if commentLocation>=0:
+                #     line = line[:commentLocation]   #remove anything after //
 
-            line = line.strip()
-            if not line:
-                continue
+                line = line.strip()
+                if not line:
+                    continue
 
-            code, _ = SeparateComment(line)
-            if code.find("::") >= 0 or code.find("==") >= 0:
-                if rule:
-                    InsertRuleInList(rule, rulegroup)
-                    rule = ""
-            rule += "\n" + line
+                code, _ = SeparateComment(line)
+                if code.find("::") >= 0 or code.find("==") >= 0:
+                    if rule:
+                        InsertRuleInList(rule, rulegroup)
+                        rule = ""
+                rule += "\n" + line
 
-        if rule:
-            InsertRuleInList(rule, rulegroup)
-
+            if rule:
+                InsertRuleInList(rule, rulegroup)
+    except UnicodeError as e:
+        logging.error("Error when processing " + RuleFileName)
+        logging.error("Currently rule=" + rule)
     UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
     if os.path.exists(UnitTestFileName):
         # First delete the unit test of current file to have clean plate
