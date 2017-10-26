@@ -15,7 +15,7 @@
 #Usage:
 #bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilelocation, lexiconfilelocation
 
-sed -e "s/^H\|^F\|^A.*//g" $1 > /tmp/wordlist.txt
+sed -e "s/\|\|.*//g" $1 > /tmp/wordlist.txt
 python g1.norm.py $1 /tmp/dictoutput.txt $2
 python g1.sent.py /tmp/wordlist.txt /tmp/notcleanrule.txt $2
 python g1.generatelexicon.py /tmp/notcleanrule.txt $4
