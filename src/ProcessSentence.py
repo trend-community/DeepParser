@@ -341,6 +341,8 @@ def LoadCommon(LoadCommonRules=False):
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
+    Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
+
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
     Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
@@ -350,7 +352,6 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
     Lexicon.LoadLexicon('../../fsa/X/defPlus.txt')
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
-    #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
 
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
@@ -365,8 +366,8 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/20VG.txt")
         Rules.LoadRules("../../fsa/X/180NPx.txt")
         #Rules.LoadRules("../../fsa/X/QueryRule.txt")
-        # Rules.LoadRules("../temp/xab")
-        # Rules.LoadRules("../temp/xac")
+        Rules.LoadRules("../temp/xab")
+        Rules.LoadRules("../temp/xac")
 
         #Rules.LoadRules("../../fsa/X/270VPx.txt")
 

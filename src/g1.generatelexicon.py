@@ -28,6 +28,7 @@ for line in fin:
 print("Start writing to " + args.output)
 for word in sorted(LexiconSet, key=lambda x: (len(x), x)):
     if len(word) > 1:
+        word = word.replace(":", "\:")
         fout.write(word + "\n")
 
 fout.close()

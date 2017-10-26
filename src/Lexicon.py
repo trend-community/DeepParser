@@ -7,6 +7,7 @@ import string
 
 from utils import *
 from FeatureOntology import *
+import Tokenization
 
 # url = "http://localhost:5001"
 # url_ch = "http://localhost:8080"
@@ -158,43 +159,42 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                     _CommentDict.update({oldWord: line})
                 continue
             code, comment = SeparateComment(line)
+
+            code = code.replace("\:", Tokenization.IMPOSSIBLESTRING)
             blocks = [x.strip() for x in re.split(":", code) if x]
-            if len(blocks) != 2:
-                #logging.warn("line is not in [word]:[features] format:\n\t" + line)
+            if not blocks:
                 continue
             newNode = False
-            node = SearchLexicon(blocks[0], 'origin')
+            word = blocks[0].replace(Tokenization.IMPOSSIBLESTRING, ":")
+            node = SearchLexicon(word, 'origin')
             #node = None
             if not node:
                 newNode = True
-                node = LexiconNode(blocks[0])
-                # node.forLookup = forLookup
-                # if "_" in node.word:            #TODO: to confirm.
-                #     node.forLookup = True       #for those combination words.
+                node = LexiconNode(word)
                 if comment:
                     node.comment = comment
-            # else:
-            #     logging.debug("This word is repeated in lexicon: %s" % blocks[0])
-            features = SplitFeatures(blocks[1]) # blocks[1].split()
-            for feature in features:
-                if re.match('^\'.*\'$', feature):
-                    node.stem = feature.strip('\'')
-                elif re.match('^/.*/$', feature):
-                    node.norm = feature.strip('/')
-                elif re.search(u'[\u4e00-\u9fff]', feature):
-                    node.stem = feature
-                else:
-                    featureID = GetFeatureID(feature)
-                    if featureID==-1:
-                        logging.debug("Missing Feature: " + feature)
-                        node.missingfeature += "\\" + feature
+            if len(blocks) == 2:
+                # there should be no "\:" on the right side.
+                features = SplitFeatures(blocks[1]) # blocks[1].split()
+                for feature in features:
+                    if re.match('^\'.*\'$', feature):
+                        node.stem = feature.strip('\'')
+                    elif re.match('^/.*/$', feature):
+                        node.norm = feature.strip('/')
+                    elif re.search(u'[\u4e00-\u9fff]', feature):
+                        node.stem = feature
                     else:
-                        node.features.add(featureID)
-                        ontologynode = SearchFeatureOntology(featureID)
-                        if ontologynode:
-                            ancestors = ontologynode.ancestors
-                            if ancestors:
-                                node.features.update(ancestors)
+                        featureID = GetFeatureID(feature)
+                        if featureID==-1:
+                            logging.debug("Missing Feature: " + feature)
+                            node.missingfeature += "\\" + feature
+                        else:
+                            node.features.add(featureID)
+                            ontologynode = SearchFeatureOntology(featureID)
+                            if ontologynode:
+                                ancestors = ontologynode.ancestors
+                                if ancestors:
+                                    node.features.update(ancestors)
 
             if newNode:
                 _LexiconDict.update({node.word: node})
