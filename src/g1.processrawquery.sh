@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #Usage for query data:
 # Step 1, Generate wordlist.txt by removing special characters and the frequency
 # : (Ust Ctrl-V-H to input ^H

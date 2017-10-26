@@ -120,7 +120,18 @@ def QuerySegment(sentence):
     norm = viterbi1.normalize(sentence)
     return ''.join(viterbi1.viterbi1(norm, len(norm)))
 
+def init(querydict = "../data/g1.words.P"):
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
+    viterbi1.LoadDictFromPickle(querydict)
+
+    ProcessSentence.LoadCommon(LoadCommonRules=True)
+
+
+init()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -131,14 +142,6 @@ if __name__ == "__main__":
     #                     help="The link to the Jave Segmentation Server")
     args = parser.parse_args()
 
-    for handler in logging.root.handlers[:]:
-        logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-    jsonpickle.set_encoder_options('json', ensure_ascii=False)
-
-    viterbi1.LoadDictFromPickle(args.querydict)
-
-    ProcessSentence.LoadCommon(LoadCommonRules=True)
     # utils.url_ch = args.segmentserverlink + ":" + str(args.segmentserviceport)
 
     print("Running in port " + str(args.thisport))
