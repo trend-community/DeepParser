@@ -19,5 +19,6 @@ sed -e "s/\|\|.*//g" $1 > /tmp/wordlist.txt
 python g1.norm.py $1 /tmp/dictoutput.txt $2
 python g1.sent.py /tmp/wordlist.txt /tmp/notcleanrule.txt $2
 python g1.generatelexicon.py /tmp/notcleanrule.txt $4
+python g1.generatewordlist.py /tmp $2
 echo  "QueryRule ==  // $1 \n"   > $3
 grep "<" /tmp/notcleanrule.txt >> $3
