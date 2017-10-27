@@ -47,7 +47,7 @@ def ProcessFile(FileName):
 if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
-    level = logging.INFO
+    level = logging.WARN
     UnitTestFileName = ''
     if len(sys.argv) > 1:
         UnitTestFileName = sys.argv[1]
@@ -70,14 +70,14 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon(True)
 
-    if not logging.getLogger().isEnabledFor(logging.DEBUG):
-        ProcessFile(UnitTestFileName)
-    else:   #debugging mode
-        # ProcessFile(UnitTestFileName)
-        # pass
-        import cProfile, pstats
-        cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
-        p = pstats.Stats('restats')
-        p.sort_stats('time').print_stats(100)
+    # if not logging.getLogger().isEnabledFor(logging.DEBUG):
+    #     ProcessFile(UnitTestFileName)
+    # else:   #debugging mode
+    #     # ProcessFile(UnitTestFileName)
+    #     # pass
+    import cProfile, pstats
+    cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(100)
 
 

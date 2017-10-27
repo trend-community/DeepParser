@@ -9,6 +9,9 @@ from utils import *
 #   Sometimes it is like:  'a|b|c'
 #   sometimes it is like:  a|'b'|c
 # so CheckPrefix() is being called from both LogicMatch() and LogicMatchFeatures()
+from functools import lru_cache
+# return -1 if failed. Should throw error?
+@lru_cache(100000)
 def CheckPrefix(word, matchtype):
     if len(word) < 2:
         return word, matchtype
@@ -187,7 +190,7 @@ def LogicMatchFeatures(strTokens, StrPosition, rule, RuleTokens, RulePosition):
                 raise RuntimeError("Why OrBlock is none?")
     return Result
 
-
+@lru_cache(100000)
 def SeparateOrBlocks(OrString):
     if "|" not in OrString:
         return OrString

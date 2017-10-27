@@ -369,7 +369,6 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/180NPx.txt")
         #Rules.LoadRules("../../fsa/X/QueryRule.txt")
         #Rules.LoadRules("../temp/xaa")
-        # Rules.LoadRules("../temp/xac")
 
         #Rules.LoadRules("../../fsa/X/270VPx.txt")
 

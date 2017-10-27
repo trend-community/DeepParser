@@ -23,8 +23,9 @@ def _SearchPair_old(string, tagpair):
     raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
-
+from functools import lru_cache
 # return -1 if failed. Should throw error?
+@lru_cache(1000000)
 def SearchPair(string, tagpair, Reverse=False):
     depth = 0
     if Reverse:
