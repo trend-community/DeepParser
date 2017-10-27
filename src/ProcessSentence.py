@@ -192,8 +192,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
             logging.debug("Word:" + strtokens[StartPosition + i + GoneInStrTokens].word)
-            logging.debug("Before applying actions:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
-            logging.debug("The actions are:" + str(Actions))
 
             if "NEW" in Actions:
                 strtokens[StartPosition + i + GoneInStrTokens].features = set()
@@ -234,7 +232,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID != -1:
                     ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, ActionID)
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
-            logging.debug("After applying feature:" + str(strtokens[StartPosition + i + GoneInStrTokens].features))
 
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
