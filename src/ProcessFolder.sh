@@ -14,7 +14,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-#    nice 18 python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
+    nice 18 python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
 done
 
 for f in $INPUTFILES
