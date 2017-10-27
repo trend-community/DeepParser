@@ -242,6 +242,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 def MatchAndApplyRuleFile(strtokens, FileName):
     WinningRules = []
     i = 0
+    logging.debug("Matching using file:" + FileName)
 
     while i < len(strtokens):
         if strtokens[i].Gone:
@@ -341,7 +342,7 @@ def LoadCommon(LoadCommonRules=False):
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    # Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
+    #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
 
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
@@ -359,6 +360,7 @@ def LoadCommon(LoadCommonRules=False):
         # Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
         # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+        Rules.LoadRules("../../fsa/X/idiomPlus.txt")
         Rules.LoadRules("../../fsa/X/mainX2.txt")
         Rules.LoadRules("../../fsa/X/ruleLexiconX.txt")
         # Rules.LoadRules("../../fsa/Y/100y.txt")
@@ -366,7 +368,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/20VG.txt")
         Rules.LoadRules("../../fsa/X/180NPx.txt")
         #Rules.LoadRules("../../fsa/X/QueryRule.txt")
-        # Rules.LoadRules("../temp/xab")
+        #Rules.LoadRules("../temp/xaa")
         # Rules.LoadRules("../temp/xac")
 
         #Rules.LoadRules("../../fsa/X/270VPx.txt")
@@ -382,7 +384,7 @@ def LoadCommon(LoadCommonRules=False):
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
     target = "弗咯米👌iPhone7/7plus手机壳/保护套 苹果7plus 超薄全包硅胶透明电镀软壳5.5英寸 炫亮黑炫亮电镀"
