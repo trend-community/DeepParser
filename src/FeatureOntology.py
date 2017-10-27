@@ -240,7 +240,7 @@ def GetFeatureID(feature):
     if re.search(u'[\u4e00-\u9fff]', feature):
         return -1   # Chinese is not a feature.
 
-    logging.info("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
+    logging.warning("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
 

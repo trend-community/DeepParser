@@ -491,6 +491,8 @@ def LoadRules(RuleLocation):
                 rulegroup.UnitTest.append(unittest)
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
+    logging.info("Finished Loading Rule " + RuleFileName )
+    logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) + " \t Expert Lexicon Size:"+ str(len(rulegroup.ExpertLexicon)))
 
 
 def InsertRuleInList(string, rulegroup):

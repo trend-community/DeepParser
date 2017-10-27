@@ -212,7 +212,7 @@ def LoadLexicon(lexiconLocation, forLookup = False):
         node = _LexiconDict[lexicon]
         _ApplyWordStem(node, node)
 
-    logging.debug("Finish loading lexicon")
+    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconDict)))
 
     GenerateLookupDict(_LexiconLookupSet)
 
