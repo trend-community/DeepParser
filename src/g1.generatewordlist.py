@@ -21,10 +21,10 @@ import codecs, re
 for i in range(1, 15):
     fout = codecs.open(args.output+"/gram_" + str(i) + "_list.txt", 'wb', encoding='utf-8')
 
-    shorlist = [k for k in viterbi1.querydict if len(k) == i]
+    shorlist = [k for k in viterbi1.querydict if len(k.split()) == i]
     for word in sorted(shorlist):
         word = word.replace(":", "\:")
-        fout.write(word + "\n")
+        fout.write(''.join(word.split()) + "\n")
 
     fout.close()
 
