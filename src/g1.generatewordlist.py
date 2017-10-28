@@ -19,7 +19,7 @@ viterbi1.LoadDictFromPickle(args.dict)
 import codecs, re
 
 for i in range(1, 15):
-    fout = codecs.open(args.output+"/gran_" + str(i) + "_list.txt", 'wb', encoding='utf-8')
+    fout = codecs.open(args.output+"/gram_" + str(i) + "_list.txt", 'wb', encoding='utf-8')
 
     shorlist = [k for k in viterbi1.querydict if len(k) == i]
     for word in sorted(shorlist):
