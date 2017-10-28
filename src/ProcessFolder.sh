@@ -1,5 +1,10 @@
 #!/bin/bash
 # loop through a folder to do MultiLevelSegment.py
+
+exit 0
+# not to run it.
+
+
 INPUTFILES="../../fsa/test/input/*"
 OUTPUTFOLDER="../../fsa/test/output"
 FEATUREFILE="_feature.txt"
