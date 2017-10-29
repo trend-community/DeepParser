@@ -1,13 +1,17 @@
 #!/bin/bash
 # loop through a folder to do MultiLevelSegment.py
 
-exit 0
+#exit 0
 # not to run it.
 
 
 INPUTFILES="../../fsa/test/input/*"
 OUTPUTFOLDER="../../fsa/test/output"
 FEATUREFILE="_feature.txt"
+N1="1"
+N2="2"
+N3="3"
+N4="4"
 
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 TEMPFOLDER=$OUTPUTFOLDER/$current_time
@@ -19,15 +23,33 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    nice -18 python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
+    nice -18 python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log"
 done
 
 for f in $INPUTFILES
 do
     echo "Processing $f file..."
     filename=$(basename "$f")
+    outputfile="$TEMPFOLDER/$filename$N2"
+    nice -18 python MultiLevelSegment_RestfulService.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log"  &
+done
+
+for f in $INPUTFILES
+do
+    echo "Processing $f file..."
+    filename=$(basename "$f")
+    outputfile="$TEMPFOLDER/$filename$N3"
+    nice -18 python MultiLevelSegment_RestfulService.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log"
+done
+
+
+
+for f in $INPUTFILES
+do
+    echo "Processing $f file..."
+    filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    nice -19 python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
+    nice -19 python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log"
 done
 
 python SentenceTest.pyc > "$TEMPFOLDER/SentenceTest.txt" 2>> ../log/ProcessFolder.log &
