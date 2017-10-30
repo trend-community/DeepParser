@@ -24,7 +24,7 @@ mkdir -p $3
 python g1.generatewordlist.py $3 $2
 
 mkdir -p $4
-for f in "$3/*"
+for f in $3/*
 do
     echo "processing $f ..."
     filename=$(basename "$f")
