@@ -1,8 +1,7 @@
 #!/bin/bash
 # loop through a folder to do MultiLevelSegment.py
 
-exit 0
-# not to run it.
+#exit 0 # comment this line if not to run it.
 
 
 INPUTFILES="../../fsa/test/input/*"
