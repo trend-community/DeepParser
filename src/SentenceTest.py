@@ -40,6 +40,8 @@ if __name__ == "__main__":
             for WinningRule in WinningRules:
                 if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                     print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
+                else:
+                    print("Matched this non-related rule:" + WinningRule)
 
             if DebugMode:
                 for node in nodes:
