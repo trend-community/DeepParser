@@ -50,7 +50,7 @@ def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
 		if bestPhraseLen[i] > 2:
 			if isRecursive:
 				subPhrases = viterbi1(bestPhrase[i], bestPhraseLen[i] - 1, isRecursive)
-				if len(subPhrases)>1:
+				if 1 < len(subPhrases) < len(bestPhrase[i].split()):
 					bestPhrase[i] = '<' + ' '.join(subPhrases) + '>'
 				else:
 					bestPhrase[i] = ''.join( subPhrases )
