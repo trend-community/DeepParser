@@ -12,13 +12,30 @@
 #	grep -v "<" rule.txt > cleanrule.txt
 # Step 6, include lexicon file and cleanrule.txt in parser pipeline.
 
-#Usage:
-#bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilelocation, lexiconfilelocation
 
-sed -e "s/\|\|.*//g" $1 > /tmp/wordlist.txt
-python g1.norm.py $1 /tmp/dictoutput.txt $2
-python g1.sent.py /tmp/wordlist.txt /tmp/notcleanrule.txt $2
-python g1.generatelexicon.py /tmp/notcleanrule.txt $4
-python g1.generatewordlist.py /tmp $2
-echo  "QueryRule ==  // $1 \n"   > $3
-grep "<" /tmp/notcleanrule.txt >> $3
+# new steps, Oct 30.
+#Usage:
+#bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder, lexiconfilefolder
+
+sed -e "s/\|\|\|//g" $1 > /tmp/raw_wo_ctrl.txt
+python g1.norm.py /tmp/raw_wo_ctrl.txt /tmp/dictoutput.txt $2
+
+mkdir -p $3
+python g1.generatewordlist.py $3 $2
+
+mkdir -p $4
+for f in "$3/*"
+do
+    echo "processing $f ..."
+    filename=$(basename "$f")
+    outputfile="$4/NotClean_$filename"
+    python g1.sent.py  "$f" "$outputfile" $2
+
+    newlexiconname="$3/NotRule_$filename"
+    grep -v "<" $outputfile > $newlexiconname &
+
+    newrulename="$4/$filename"
+    grep "<" $outputfile > $newrulename &
+done
+
+echo "done"

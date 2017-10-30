@@ -50,6 +50,8 @@ for line in fin:
 		freq = int(freqstring)
 		for chunk in query.split():
 			phrase = normalize(chunk)
+			if len(phrase) < 2:
+				continue	#ignore one character word.
 			querydict[phrase] = querydict.get(phrase, 0) + freq
 			N = N + freq
 	except Exception as e:
