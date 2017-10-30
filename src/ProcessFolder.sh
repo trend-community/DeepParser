@@ -14,6 +14,8 @@ TEMPFOLDER=$OUTPUTFOLDER/$current_time
 mkdir $TEMPFOLDER
 echo $current_time >> ../log/ProcessFolder.sh.log
 
+python SentenceTest.pyc > "$TEMPFOLDER/SentenceTest.txt" 2>> ../log/ProcessFolder.log &
+
 for f in $INPUTFILES
 do
     echo "Processing $f file..."
@@ -28,11 +30,10 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    nice -19 python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log"
+    #nice -19 python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
 done
 
 
-python SentenceTest.pyc > "$TEMPFOLDER/SentenceTest.txt" 2>> ../log/ProcessFolder.log &
 
 wait        #wait for all child process to complete.
 
