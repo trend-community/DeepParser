@@ -1,4 +1,4 @@
-
+import jsonpickle
 import FeatureOntology
 from utils import *
 
@@ -72,7 +72,7 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
             RulePointerPos += 1
         if RulePointerPos >= len(RuleTokens):
             logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
-            logging.error(RuleTokens[0].word)
+            logging.error(jsonpickle.dumps(RuleTokens[0]))
             raise RuntimeError("Can't find specified pointer in rule!")
     # Now we have the pointer location in Rule
     GoneInStrTokens = 0

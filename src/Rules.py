@@ -577,7 +577,12 @@ def _ExpandRuleWildCard_List(OneList):
                     for tokenindex_this in range(repeat_num):
                         new_node = copy.copy(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
+                        if tokenindex_this != 0 and rule.Tokens[tokenindex].StartTrunk != 0:
+                            new_node.StartTrunk = 0 # in the copies, only the first one can be StartTrunk
+                        if tokenindex_this != repeat_num-1 and rule.Tokens[tokenindex].EndTrunk != 0:
+                            new_node.EndTrunk = 0   # in the copies, only the last one can be EndTrunk
                         newrule.Tokens.append(new_node)
+
                     NextIsStart = False
                     NextIsRestart = False
                     NextIsPointer = False

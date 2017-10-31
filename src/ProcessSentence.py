@@ -108,6 +108,7 @@ def ApplyFeature(featureList, featureID):
 # (find the starting point and ending point) into the current token stem
 # and mark the others Gone
 def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
+    ToBeGoneList = []
     RuleStartPos = RulePosition
     StrStartPos = StrPosition
     GoneInStrTokens = 0
@@ -145,7 +146,9 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         if StrTokens[i].Gone:
             continue
         NewStems.append( StrTokens[i].stem)     # or StrTokens[i].lexicon.stem?
-        StrTokens[i].Gone = True
+        if i != StrPosition:
+            ToBeGoneList.append(i)
+        #StrTokens[i].Gone = True
 
     StrTokens[StrStartPos].StartTrunk -= 1
     StrTokens[StrEndPos].EndTrunk -= 1
@@ -155,16 +158,19 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     else:
         NewStem = "".join(NewStems)
     StrTokens[StrPosition].stem = NewStem
-    StrTokens[StrPosition].Gone = False
+    #StrTokens[StrPosition].Gone = False
     StrTokens[StrPosition].StartOffset = StrTokens[StrStartPos].StartOffset
     StrTokens[StrPosition].EndOffset = StrTokens[StrEndPos].EndOffset
 
     Lexicon.ApplyWordLengthFeature(StrTokens[StrPosition])
 
+    return ToBeGoneList
+
 
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule, StartPosition):
+    ToBeGoneList = []
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
         raise(RuntimeError("wrong string to apply rule?"))
@@ -183,6 +189,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 GoneInStrTokens += 1
                 if i + GoneInStrTokens == len(strtokens):
                     raise RuntimeError("Can't be applied: " + rule.RuleName)
+            logging.debug("Before:\n" + "in position " + str(StartPosition + i + GoneInStrTokens)
+                          + " StartTrunk=" + str(strtokens[StartPosition + i + GoneInStrTokens].StartTrunk)
+                          + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
             strtokens[StartPosition + i + GoneInStrTokens].StartTrunk += rule.Tokens[i].StartTrunk
             strtokens[StartPosition + i + GoneInStrTokens].EndTrunk += rule.Tokens[i].EndTrunk
         except IndexError as e:
@@ -200,7 +209,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     continue        #already process before.
 
                 if Action == "+++":
-                    ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
+                    ToBeGoneList = ApplyChunking(strtokens, StartPosition + i + GoneInStrTokens, rule.Tokens, i)
                     continue
 
                 if Action[-1] == "-":
@@ -233,6 +242,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     ApplyFeature(strtokens[StartPosition + i + GoneInStrTokens].features, ActionID)
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
+    if ToBeGoneList:
+        for i in ToBeGoneList:
+            strtokens[i].Gone = True
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
 
@@ -406,7 +418,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "弗咯米👌iPhone7/7plus手机壳/保护套 苹果7plus 超薄全包硅胶透明电镀软壳5.5英寸 炫亮黑炫亮电镀"
+    target = "笨笨的学不学习"
     nodes = MultiLevelSegmentation(target)
 
     # for node in nodes:
@@ -414,9 +426,9 @@ if __name__ == "__main__":
 
     print(OutputStringTokens_oneliner(nodes))
 
-    logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
-    RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
-    print("After match:")
+    # logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
+    # RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
+    # print("After match:")
     # for node in nodes:
     #     print(str(node))
 
