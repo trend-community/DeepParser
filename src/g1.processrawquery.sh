@@ -15,27 +15,31 @@
 
 # new steps, Oct 30.
 #Usage:
-#bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder, lexiconfilefolder
+#bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder
 
-sed -e "s/[\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > /tmp/raw_wo_ctrl.txt
-python g1.norm.py /tmp/raw_wo_ctrl.txt /tmp/dictoutput.txt $2
+mkdir -p $5
+sed -e "s/[\x00\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
+sed -e "s/:punct:/ /g" $5/raw_wo_ctrl2.txt > $5/raw_wo_ctrl.txt
+python g1.norm.py $5/raw_wo_ctrl.txt $5/dictoutput.txt $2
 
-mkdir -p $3
+
 python g1.generatewordlist.py $3 $2
 
+mkdir -p $3
 mkdir -p $4
-for f in $3/*
+for f in $5/gram*
 do
     echo "processing $f ..."
     filename=$(basename "$f")
-    outputfile="$4/Mixed_$filename"
+    outputfile="$5/Mixed_$filename"
     python g1.sent.py  "$f" "$outputfile" $2
 
     newlexiconname="$4/CleanLexicon_$filename"
-    grep -v "<" $outputfile > $newlexiconname &
+    grep -va "<" $outputfile > $newlexiconname &
 
     newrulename="$3/CleanRule_$filename"
-    grep "<" $outputfile > $newrulename &
+    echo "$filename QRule ==  // $filename \n" > $newrulename
+    grep -a "<" $outputfile >> $newrulename &
 done
 
 echo "done"
