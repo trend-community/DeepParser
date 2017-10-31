@@ -20,8 +20,8 @@ from utils import *
 class SentenceNode(object):
     def __init__(self, word):
         self.word = word
-        self.stem = word
-        self.norm = word
+        self.stem = word.lower()
+        self.norm = word.lower()
         self.features = set()
         #self.lexicon = None
         self.Gone = False
@@ -34,8 +34,8 @@ class SentenceNode(object):
         #From webservice, only word/StartOffset/features are set,
         #    and the features are "list", need to change to "set"
     def populatedefaultvalue(self):
-        self.stem = self.word
-        self.norm = self.word
+        self.stem = self.word.lower()
+        self.norm = self.word.lower()
         self.features = set()
         for featurename in self.featurenames:
             self.features.add(FeatureOntology.GetFeatureID(featurename))

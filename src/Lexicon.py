@@ -165,7 +165,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             if not blocks:
                 continue
             newNode = False
-            word = blocks[0].replace(Tokenization.IMPOSSIBLESTRING, ":")
+            word = blocks[0].replace(Tokenization.IMPOSSIBLESTRING, ":").lower()
+            #Ditionary is case insensitive: make the words lowercase.
+
             node = SearchLexicon(word, 'origin')
             #node = None
             if not node:
@@ -405,7 +407,7 @@ def HeadMatchLexicon(strTokens, word):
         if len(CombinedString) > len(word):
             return -1
         if len(CombinedString) == len(word):
-            if CombinedString == word:
+            if CombinedString.lower() == word.lower():
                 return i+1              # Return the length
             else:
                 return -1
