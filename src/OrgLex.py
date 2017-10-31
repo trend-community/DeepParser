@@ -459,13 +459,13 @@ def GenerateLexPlus():
                         newNode.features = startwithFirstDict.get(char).features
                         _LexiconDictDefPlus.update({newWord: newNode})
 
-                    newWord = word[1] + word[0] + char
-                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                        newNode = LexiconNode(newWord)
-                        newNode.word = newWord
-                        newNode.stem = first + char + second + char
-                        newNode.features = startwithFirstDict.get(char).features
-                        _LexiconDictDefPlus.update({newWord: newNode})
+                    # newWord = word[1] + word[0] + char
+                    # if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    #     newNode = LexiconNode(newWord)
+                    #     newNode.word = newWord
+                    #     newNode.stem = first + char + second + char
+                    #     newNode.features = startwithFirstDict.get(char).features
+                    #     _LexiconDictDefPlus.update({newWord: newNode})
 
     logging.debug("lexx plus size is " + str(len(_LexiconDictPlus)))
     logging.debug("def lexx plus size is " + str(len(_LexiconDictDefPlus)))
