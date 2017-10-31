@@ -46,6 +46,17 @@ def CheckPrefix(word, matchtype):
 #   return the compare result.
 def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='stem'):
     RulePointerPos = RulePosition
+    if Pointer.startswith('-'):
+        PointerIsSuffix = True
+        Pointer = Pointer[1:]
+    else:
+        PointerIsSuffix = False
+    if Pointer.endswith('-'):
+        PointerIsPrefix = True
+        Pointer = Pointer[:-1]
+    else:
+        PointerIsPrefix = False
+
     while RulePointerPos >= 0:
         if hasattr(RuleTokens[RulePointerPos], 'pointer'):
             if RuleTokens[RulePointerPos].pointer == Pointer:
@@ -89,11 +100,17 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
         raise RuntimeError("Logically the pointer should not be itself. Please check syntax!")
 
     if matchtype == "stem":
-        return StrTokens[StrPointerPos].stem == StrTokens[StrPosition].stem
+        return StrTokens[StrPointerPos].stem == StrTokens[StrPosition].stem \
+                or (PointerIsPrefix and StrTokens[StrPointerPos].stem.startswith(StrTokens[StrPosition].stem)) \
+               or (PointerIsSuffix and StrTokens[StrPointerPos].stem.endswith(StrTokens[StrPosition].stem)  )
     elif matchtype == "word":
-        return StrTokens[StrPointerPos].word == StrTokens[StrPosition].word
+        return StrTokens[StrPointerPos].word == StrTokens[StrPosition].word \
+                or (PointerIsPrefix and StrTokens[StrPointerPos].word.startswith(StrTokens[StrPosition].word)) \
+               or (PointerIsSuffix and StrTokens[StrPointerPos].word.endswith(StrTokens[StrPosition].word)  )
     elif matchtype == "norm":
-        return StrTokens[StrPointerPos].norm == StrTokens[StrPosition].norm
+        return StrTokens[StrPointerPos].norm == StrTokens[StrPosition].norm \
+                or (PointerIsPrefix and StrTokens[StrPointerPos].norm.startswith(StrTokens[StrPosition].norm)) \
+               or (PointerIsSuffix and StrTokens[StrPointerPos].norm.endswith(StrTokens[StrPosition].norm)  )
     else:
         logging.error("Rule token:" + str(RuleTokens[RulePosition]))
         raise RuntimeError("The matchtype should be stem/word/norm. Please check syntax!")
