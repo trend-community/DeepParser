@@ -28,13 +28,13 @@ for f in $3/*
 do
     echo "processing $f ..."
     filename=$(basename "$f")
-    outputfile="$4/NotClean_$filename"
+    outputfile="$4/Mixed_$filename"
     python g1.sent.py  "$f" "$outputfile" $2
 
-    newlexiconname="$3/NotRule_$filename"
+    newlexiconname="$4/CleanLexicon_$filename"
     grep -v "<" $outputfile > $newlexiconname &
 
-    newrulename="$4/$filename"
+    newrulename="$3/CleanRule_$filename"
     grep "<" $outputfile > $newrulename &
 done
 
