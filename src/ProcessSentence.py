@@ -16,7 +16,7 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
     else:
         AddSpace = IsAscii(strtokens[1].word)
     for i in range(StartPosition):
-        if not strtokens[i].Gone:
+        if not (strtokens[i].Gone or strtokens[i].SkipRead):
             result += strtokens[i].stem
             if AddSpace:
                 result += " "
@@ -24,7 +24,7 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
     GoneInStrTokens = 0
     result += "<B>"
     for i in range(len(rule.Tokens)):
-        while strtokens[StartPosition + i + GoneInStrTokens].Gone:
+        while strtokens[StartPosition + i + GoneInStrTokens].Gone or strtokens[StartPosition + i + GoneInStrTokens].SkipRead:
             GoneInStrTokens += 1
             if i + GoneInStrTokens == len(strtokens):
                 raise RuntimeError("Can't be applied: " + rule.RuleName)
@@ -34,7 +34,7 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
     result += "</B>"
 
     for i in range(StartPosition + len(rule.Tokens) + GoneInStrTokens, len(strtokens)):
-        if not strtokens[i].Gone:
+        if not (strtokens[i].Gone or strtokens[i].SkipRead):
             result += strtokens[i].stem
             if AddSpace:
                 result += " "
@@ -72,7 +72,7 @@ def HeadMatch(strTokens, ruleTokens):
             return False  # got to the end of the string
         try:
             #Ignore the "Gone" tokens.
-            while strTokens[i+GoneInStrTokens].Gone :
+            while strTokens[i+GoneInStrTokens].Gone or strTokens[i+GoneInStrTokens].SkipRead:
                 GoneInStrTokens += 1
                 if i+GoneInStrTokens >= len(strTokens):
                     return False    #got to the end of the string
@@ -113,7 +113,7 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     StrStartPos = StrPosition
     GoneInStrTokens = 0
     while RuleStartPos >= 0:
-        while StrTokens[StrStartPos-GoneInStrTokens].Gone:
+        while StrTokens[StrStartPos-GoneInStrTokens].Gone or StrTokens[StrStartPos-GoneInStrTokens].SkipRead:
             GoneInStrTokens += 1
             if StrStartPos-GoneInStrTokens < 0:
                 raise EOFError("Reached the start of the String!")
@@ -129,7 +129,7 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     StrEndPos = StrPosition
     GoneInStrTokens = 0
     while RuleEndPos < len(RuleTokens):
-        while StrTokens[StrEndPos+GoneInStrTokens].Gone:
+        while StrTokens[StrEndPos+GoneInStrTokens].Gone or StrTokens[StrEndPos+GoneInStrTokens].SkipRead:
             GoneInStrTokens += 1
             if StrEndPos+GoneInStrTokens > len(StrTokens):
                 raise EOFError("Reached the end of the String!")
@@ -185,7 +185,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         raise(RuntimeError("Rule error"))
     for i in range(len(rule.Tokens)):
         try:
-            while strtokens[StartPosition + i + GoneInStrTokens].Gone:
+            while strtokens[StartPosition + i + GoneInStrTokens].Gone or strtokens[StartPosition + i + GoneInStrTokens].SkipRead:
                 GoneInStrTokens += 1
                 if i + GoneInStrTokens == len(strtokens):
                     raise RuntimeError("Can't be applied: " + rule.RuleName)
@@ -233,6 +233,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
                 if Action[0] == "^":
                     #TODO: linked the str tokens.
+                    strtokens[StartPosition + i + GoneInStrTokens].SkipRead = True
                     continue
 
                 ActionID = FeatureOntology.GetFeatureID(Action)
@@ -254,7 +255,7 @@ def MatchAndApplyRuleFile(strtokens, FileName):
     logging.debug("Matching using file:" + FileName)
 
     while i < len(strtokens):
-        if strtokens[i].Gone:
+        if strtokens[i].Gone or strtokens[i].SkipRead:
             i += 1
             continue
         #logging.debug("Checking tokens start from:" + strtokens[i].word)

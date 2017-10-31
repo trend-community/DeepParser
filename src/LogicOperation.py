@@ -80,7 +80,7 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
 
     if Offset < 0:
         for i in range(-Offset):
-            while StrTokens[StrPosition - i - GoneInStrTokens].Gone:
+            while StrTokens[StrPosition - i - GoneInStrTokens].Gone or StrTokens[StrPosition - i - GoneInStrTokens].SkipRead:
                 GoneInStrTokens += 1
                 if StrPosition - i - GoneInStrTokens < 0:
                     #Logically wrong. There must be a token matched the RulePointerToken
@@ -89,7 +89,7 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
         StrPointerPos = StrPosition+Offset-GoneInStrTokens
     elif Offset>0:
         for i in range(Offset):
-            while StrTokens[StrPosition+GoneInStrTokens].Gone:
+            while StrTokens[StrPosition+GoneInStrTokens].Gone or StrTokens[StrPosition+GoneInStrTokens].SkipRead:
                 GoneInStrTokens += 1
                 if StrPosition+GoneInStrTokens > len(StrTokens):
                     return False    #this rule does not fit this sentence.

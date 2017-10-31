@@ -25,6 +25,7 @@ class SentenceNode(object):
         self.features = set()
         #self.lexicon = None
         self.Gone = False
+        self.SkipRead = False
         self.StartTrunk = 0
         self.EndTrunk = 0
         self.StartOffset = -1
@@ -40,6 +41,7 @@ class SentenceNode(object):
             self.features.add(FeatureOntology.GetFeatureID(featurename))
         #self.lexicon = None
         self.Gone = False
+        self.SkipRead = False
         self.StartTrunk = 0
         self.EndTrunk = 0
         self.EndOffset = self.StartOffset + len(self.word)
