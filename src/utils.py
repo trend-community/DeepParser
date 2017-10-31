@@ -1,8 +1,9 @@
-import logging, re, json
+import logging, re, json, jsonpickle
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
 
+jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
 # return -1 if failed. Should throw error?
 def _SearchPair_old(string, tagpair):
