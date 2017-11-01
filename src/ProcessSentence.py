@@ -114,6 +114,7 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     GoneInStrTokens = 0
     while RuleStartPos >= 0:
         while StrTokens[StrStartPos-GoneInStrTokens].Gone or StrTokens[StrStartPos-GoneInStrTokens].SkipRead:
+            logging.debug(str(StrTokens[StrStartPos-GoneInStrTokens]) + " is gone!")
             GoneInStrTokens += 1
             if StrStartPos-GoneInStrTokens < 0:
                 raise EOFError("Reached the start of the String!")
@@ -124,6 +125,9 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
     if RuleStartPos == -1:
         raise EOFError("Can't find StartTrunk")
     StrStartPos = StrStartPos-GoneInStrTokens
+
+    logging.debug("set StrPosition=" + str(StrPosition) + " StrStartPos=" + str(StrStartPos) )
+    logging.debug("    GoneInStrTokens=" + str(GoneInStrTokens))
 
     RuleEndPos = RulePosition
     StrEndPos = StrPosition
@@ -141,6 +145,8 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         raise EOFError("Can't find EndTrunk")
     StrEndPos = StrEndPos+GoneInStrTokens
 
+    logging.debug("StrPosition=" + str(StrPosition) + " StrStartPos=" + str(StrStartPos) + " StrEndPos=" + str(StrEndPos))
+    logging.debug("    GoneInStrTokens=" + str(GoneInStrTokens))
     NewStems = []
     for i in range(StrStartPos, StrEndPos+1):
         if StrTokens[i].Gone:
@@ -171,12 +177,14 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
 #TODO: Apply Mark ".M", group head <, tail > ...
 def ApplyWinningRule(strtokens, rule, StartPosition):
     ToBeGoneList = []
+    ToBeSkipList = []
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
         raise(RuntimeError("wrong string to apply rule?"))
     if len(strtokens) > 2:
         logging.info("Applying Winning Rule:" + rule.RuleName +" to "
                      + strtokens[1].word + strtokens[2].word + "...")
+        logging.debug(jsonpickle.dumps(strtokens))
     StoreWinningRule(strtokens, rule, StartPosition)
     GoneInStrTokens = 0
     if len(rule.Tokens) == 0:
@@ -233,7 +241,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
                 if Action[0] == "^":
                     #TODO: linked the str tokens.
-                    strtokens[StartPosition + i + GoneInStrTokens].SkipRead = True
+                    ToBeSkipList.append(StartPosition + i + GoneInStrTokens)
+                    #strtokens[StartPosition + i + GoneInStrTokens].SkipRead = True
                     continue
 
                 ActionID = FeatureOntology.GetFeatureID(Action)
@@ -244,8 +253,14 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
     if ToBeGoneList:
+        logging.debug("Start removing these tokens:" + str(ToBeGoneList))
         for i in ToBeGoneList:
             strtokens[i].Gone = True
+    if ToBeSkipList:
+        logging.debug("Start removing these tokens:" + str(ToBeSkipList))
+        for i in ToBeSkipList:
+            strtokens[i].SkipRead = True
+    logging.debug(jsonpickle.dumps(strtokens))
     return len(rule.Tokens) #need to modify for those "forward looking rules"
 
 
@@ -363,6 +378,10 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/perX.txt')
     Lexicon.LoadLexicon('../../fsa/X/defPlus.txt')
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
+    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt')
+    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_3_list.txt')
+    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_4_list.txt')
+    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_5_list.txt')
 
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
@@ -399,6 +418,9 @@ def LoadCommon(LoadCommonRules=False):
         Rules.LoadRules("../../fsa/X/100Expert.txt")
         Rules.LoadRules("../../fsa/X/100Grammar.txt")
         Rules.LoadRules("../../fsa/X/180NPx.txt")
+        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
+        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
+        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
 
         #Rules.LoadRules("../../fsa/X/QueryRule.txt")
         #Rules.LoadRules("../temp/xaa")
@@ -419,7 +441,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "笨笨的学不学习"
+    target = "可是我只考了60分"
     nodes = MultiLevelSegmentation(target)
 
     # for node in nodes:
@@ -437,7 +459,7 @@ if __name__ == "__main__":
 
     print(OutputStringTokens_oneliner(nodes, NoFeature=True))
     print(OutputStringTokens_oneliner(nodes))
-    jsonpickle.set_encoder_options('json', ensure_ascii=False)
+
     print(jsonpickle.encode(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
