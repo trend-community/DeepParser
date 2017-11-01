@@ -142,6 +142,8 @@ def ApplyChunking(StrTokens, StrPosition, RuleTokens, RulePosition):
         StrEndPos += 1
         RuleEndPos += 1
     if RuleEndPos == len(RuleTokens):
+        logging.error("String:" + jsonpickle.dumps(StrTokens))
+        logging.error("Rule:" + jsonpickle.dumps(RuleTokens))
         raise EOFError("Can't find EndTrunk")
     StrEndPos = StrEndPos+GoneInStrTokens
 
@@ -441,7 +443,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "可是我只考了60分"
+    target = "熊大是谁"
     nodes = MultiLevelSegmentation(target)
 
     # for node in nodes:

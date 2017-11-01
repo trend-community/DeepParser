@@ -46,9 +46,9 @@ def CheckPrefix(word, matchtype):
 #   return the compare result.
 def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='stem'):
     RulePointerPos = RulePosition
-    if Pointer.startswith('-'):
+    if Pointer.startswith('^-'):
         PointerIsSuffix = True
-        Pointer = Pointer[1:]
+        Pointer = '^' + Pointer[2:]
     else:
         PointerIsSuffix = False
     if Pointer.endswith('-'):
@@ -57,6 +57,7 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
     else:
         PointerIsPrefix = False
 
+    #logging.debug("Testing pointer" + Pointer)
     while RulePointerPos >= 0:
         if hasattr(RuleTokens[RulePointerPos], 'pointer'):
             if RuleTokens[RulePointerPos].pointer == Pointer:

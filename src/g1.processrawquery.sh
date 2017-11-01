@@ -38,7 +38,7 @@ do
 
     newrulename="$3/CleanRule_$filename"
     echo "$filename QRule ==  // $filename \n" > $newrulename
-    grep -a "<" $outputfile | awk '1;!(NR%2000){print "$filename ==";}' >> $newrulename &
+    grep -a "<" $outputfile | awk '1;!(NR%2000){print "QRule ==";}' >> $newrulename &
 done
 
 echo "done"
