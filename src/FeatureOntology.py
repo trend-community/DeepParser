@@ -133,7 +133,7 @@ def LoadFeatureSet(featureOncologyLocation):
                     continue
                 _FeatureSet.add(feature)
     _FeatureList = list(sorted(_FeatureSet))
-    _FeatureDict = {f:ID for ID,f in enumerate(sorted(_FeatureSet))}
+    _FeatureDict = {f: ID for ID, f in enumerate(_FeatureList)}
 
 
 def LoadFullFeatureList_Deprecate(featureListLocation):

@@ -48,6 +48,11 @@ def GetFeatureName(FeatureID):
 def GetFeatureList():
     return jsonpickle.encode(FeatureOntology._FeatureDict)
 
+@app.route("/GetFeatureList1")
+@app.cache.cached(timeout=3600)  # cache this view for 1 hour
+def GetFeatureList1():
+    return jsonpickle.encode({ID:f for f,ID in FeatureOntology._FeatureDict.items()})
+
 
 @app.route("/Tokenize/<Sentence>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
