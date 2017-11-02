@@ -39,13 +39,25 @@ def CheckPrefix(word, matchtype):
 
     return prefix+word, matchtype
 
+
+def GetNumberPointer(Pointer):
+    PointerContent = Pointer[1:]
+    if len(PointerContent) == 0:
+        Pos = 0
+    else:
+        try:
+            Pos = int(PointerContent)
+        except ValueError:
+            Pos = -1
+    return Pos
+
+
 #In rule, start from RulePosition, seach for pointer:
 #   Start from left side, if not found, seach right side.
 # After that is found, use the offset to locate the token in StrTokens
 #  compare the pointertoken to the current token (both in StrTokens),
 #   return the compare result.
 def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='stem'):
-    RulePointerPos = RulePosition
     if Pointer.startswith('^-'):
         PointerIsSuffix = True
         Pointer = '^' + Pointer[2:]
@@ -57,24 +69,29 @@ def PointerMatch(StrTokens, StrPosition, RuleTokens, RulePosition, Pointer, matc
     else:
         PointerIsPrefix = False
 
-    #logging.debug("Testing pointer" + Pointer)
-    while RulePointerPos >= 0:
-        if hasattr(RuleTokens[RulePointerPos], 'pointer'):
-            if RuleTokens[RulePointerPos].pointer == Pointer:
-                break   #found pointer!
-        RulePointerPos -= 1
-
+    RulePointerPos = GetNumberPointer(Pointer)
     if RulePointerPos < 0:
+
         RulePointerPos = RulePosition
-        while RulePointerPos < len(RuleTokens):
+
+        #logging.debug("Testing pointer" + Pointer)
+        while RulePointerPos >= 0:
             if hasattr(RuleTokens[RulePointerPos], 'pointer'):
                 if RuleTokens[RulePointerPos].pointer == Pointer:
-                    break  # found pointer!
-            RulePointerPos += 1
-        if RulePointerPos >= len(RuleTokens):
-            logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
-            logging.error(jsonpickle.dumps(RuleTokens[0]))
-            raise RuntimeError("Can't find specified pointer in rule!")
+                    break   #found pointer!
+            RulePointerPos -= 1
+
+        if RulePointerPos < 0:
+            RulePointerPos = RulePosition
+            while RulePointerPos < len(RuleTokens):
+                if hasattr(RuleTokens[RulePointerPos], 'pointer'):
+                    if RuleTokens[RulePointerPos].pointer == Pointer:
+                        break  # found pointer!
+                RulePointerPos += 1
+            if RulePointerPos >= len(RuleTokens):
+                logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
+                logging.error(jsonpickle.dumps(RuleTokens[0]))
+                raise RuntimeError("Can't find specified pointer in rule!")
     # Now we have the pointer location in Rule
     GoneInStrTokens = 0
     Offset = RulePointerPos - RulePosition  #might be positive, or negative

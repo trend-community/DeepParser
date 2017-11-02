@@ -472,6 +472,8 @@ def LoadRules(RuleLocation):
                 if code.find("::") >= 0 or code.find("==") >= 0:
                     if rule:
                         InsertRuleInList(rule, rulegroup)
+                        logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) + " \t Expert Lexicon Size:" + str(
+                            len(rulegroup.ExpertLexicon)))
                         rule = ""
                 rule += "\n" + line
 
@@ -518,29 +520,51 @@ def InsertRuleInList(string, rulegroup):
                 #         return
                 rulegroup.ExpertLexicon.append(node)
             else:
-                for n in rulegroup.RuleList:
-                    if n.RuleName == node.RuleName:
-                        logging.warning(
-                            "This rule name " + node.RuleName + " is already used for Rule " + str(n)
-                            + " \n but now you have: " + string + "\n\n")
-                        #                       return
+                # for n in rulegroup.RuleList:
+                #     if n.RuleName == node.RuleName:
+                #         logging.warning(
+                #             "This rule name " + node.RuleName + " is already used for Rule " + str(n)
+                #             + " \n but now you have: " + string[:100] + "\n\n")
+                #         #                       return
                 rulegroup.RuleList.append(node)
 
     if remaining:
-        code, _ = SeparateComment(remaining)
-        if code:  # if not code, then ignore it.
-            RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
+        RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
+        if node.RuleContent:    #the last was one rule, so we know the rest should be
+            # one rule each line. let's not to call it recursively.
+            lines = remaining.splitlines()
+            counter = 0
+            for line in lines:
+                code, _ = SeparateComment(line)
+                if code:
+                    lineRuleName = RuleName + "_" + str(counter)
+                    if node.IsExpertLexicon:
+                        fakeString = lineRuleName + " :: " + line
+                    else:
+                        fakeString = lineRuleName + " == " + line
+                    try:
+                        InsertRuleInList(fakeString, rulegroup)
+                    except RecursionError as e:
+                        logging.error("Failed to process:" + string + "\n remaining is:" + remaining)
+                        logging.error(str(e))
+                        raise
+                    counter += 1
+        else:
+            code, _ = SeparateComment(remaining)
+            if  code:
 
-            if node.IsExpertLexicon:
-                fakeString = RuleName + " :: " + remaining
-            else:
-                fakeString = RuleName + " == " + remaining
-            try:
-                InsertRuleInList(fakeString, rulegroup)
-            except RecursionError as e:
-                logging.error("Failed to process:" + string + "\n remaining is:" + remaining)
-                logging.error(str(e))
-                raise
+                RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
+
+                if node.IsExpertLexicon:
+                    fakeString = RuleName + " :: " + remaining
+                else:
+                    fakeString = RuleName + " == " + remaining
+                try:
+                    InsertRuleInList(fakeString, rulegroup)
+                except RecursionError as e:
+                    logging.error("Failed to process:" + string + "\n remaining is:" + remaining)
+                    logging.error(str(e))
+                    raise
 
     SearchMatch = re.compile('test:(.+?)//', re.IGNORECASE | re.MULTILINE)
     # s = SearchMatch.findall(node.comment+"//")
@@ -1012,7 +1036,12 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/mainX2.txt")
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
-    LoadRules("../../fsa/Y/1test_rules.txt")
+    LoadRules("../../fsa/X/1Grammar.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_6_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_7_list.txt")
 
     #LoadRules("../../fsa/X/10compound.txt")
 
@@ -1025,4 +1054,4 @@ if __name__ == "__main__":
 
     # print (OutputRules("concise"))
     OutputRuleFiles("../temp/")
-    FeatureOntology.PrintMissingFeatureSet()
+    #print(FeatureOntology.OutputMissingFeatureSet())

@@ -167,6 +167,7 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             newNode = False
             word = blocks[0].replace(Tokenization.IMPOSSIBLESTRING, ":").lower()
             #Ditionary is case insensitive: make the words lowercase.
+            word = word.replace(" ", "").replace("~", "")
 
             node = SearchLexicon(word, 'origin')
             #node = None

@@ -44,7 +44,7 @@ class SentenceNode(object):
         self.SkipRead = False
         self.StartTrunk = 0
         self.EndTrunk = 0
-        self.EndOffset = self.StartOffset + len(self.word)
+        self.EndOffset = self.StartOffset + len(self.word) - 1
 
     def __str__(self):
         output = "[" + self.word + "] "
@@ -75,6 +75,32 @@ class SentenceNode(object):
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return featureString
 
+    def JsonOutput(self):
+        a = JsonClass()
+        a.word = self.word
+        if self.stem != self.word:
+            a.stem = self.stem
+        if self.norm != self.word:
+            a.norm = self.norm
+        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features]
+        #self.lexicon = None
+        if self.Gone:
+            a.Gone = self.Gone
+        if self.SkipRead:
+            a.SkipRead = self.SkipRead
+        if self.StartTrunk:
+            a.StartTrunk = self.StartTrunk
+        if self.EndTrunk:
+            a.EndTrunk = self.EndTrunk
+        a.StartOffset = self.StartOffset
+        a.EndOffset = self.EndOffset
+
+        return a.toJSON()
+
+class JsonClass(object):
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          sort_keys=True, ensure_ascii=False)
 
 def Tokenize_space(sentence):
     StartToken = True
@@ -128,8 +154,19 @@ def Tokenize(Sentence):
 
         data = {'Sentence': URLEncoding(Sentence)}
         ret = requests.get(TokenizeURL, params=data)
+        if ret.status_code>399:
+            logging.error("Return code:" + str(ret.status_code))
+            logging.error(data)
+            return []
         segmented = ret.text
-        Tokens = jsonpickle.decode(segmented)
+        try:
+            Tokens = jsonpickle.decode(segmented)
+        except ValueError as e:
+            logging.error("Can't be process:")
+            logging.error(segmented)
+            logging.error(data)
+            logging.error(str(e))
+            return []
 
         #logging.info("segmented text=\n" + segmented)
 
@@ -153,11 +190,6 @@ def Tokenize(Sentence):
         #
         #     Tokens.append(Element)
     return Tokens
-
-
-def DisplayDS_old(DS):
-    for ds in DS:
-        print("[word]:" + ds.word + "\t[position]:" + str(ds.position))
 
 
 if __name__ == "__main__":
