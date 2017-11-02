@@ -170,8 +170,8 @@ def EnrichFeature( _LexiconDict):
             # logging.debug("size of features" + str(len(features)))
             # logging.debug("size of stemfeatures" + str(len(stemFeatures)))
             # logging.debug("size of res" + str(len(res)))
-            node.features = res
-            _LexiconDict.update({word:node})
+                node.features = res
+                _LexiconDict.update({word:node})
     return _LexiconDict
 
 def GetStemFeatures(word):
