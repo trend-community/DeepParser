@@ -44,7 +44,7 @@ class SentenceNode(object):
         self.SkipRead = False
         self.StartTrunk = 0
         self.EndTrunk = 0
-        self.EndOffset = self.StartOffset + len(self.word)
+        self.EndOffset = self.StartOffset + len(self.word) - 1
 
     def __str__(self):
         output = "[" + self.word + "] "
@@ -154,6 +154,10 @@ def Tokenize(Sentence):
 
         data = {'Sentence': URLEncoding(Sentence)}
         ret = requests.get(TokenizeURL, params=data)
+        if ret.status_code>399:
+            logging.error("Return code:" + str(ret.status_code))
+            logging.error(data)
+            return []
         segmented = ret.text
         try:
             Tokens = jsonpickle.decode(segmented)
