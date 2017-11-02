@@ -81,6 +81,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                     if featureID == -1:
                         logging.debug("Missing Feature: " + feature)
                         node.missingfeature += "\\" + feature
+
                     node.features.add(featureID)
                     ontologynode = SearchFeatureOntology(featureID)
                     if ontologynode:
@@ -146,6 +147,41 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
             del _LexiconDict1[word]
         del _LexiconDict2[word]
 
+
+def EnrichFeature( _LexiconDict):
+    for word in _LexiconDict.keys():
+        node = _LexiconDict.get(word)
+        features = node.features
+        featureID = GetFeatureID('F')
+        if featureID in features:
+            logging.debug("words to be enriched " + word)
+            stem = node.stem
+            norm = node.norm
+            logging.debug("words to be enriched " + word + ", stem is " + stem + ", norm is " + norm)
+            stemFeatures = None
+            if stem != word:
+                stemFeatures = GetStemFeatures(stem)
+            elif norm != word:
+                stemFeatures = GetStemFeatures(norm)
+            else:
+                logging.debug("no stem or norm is labeled to enrich features")
+            if stemFeatures:
+                res = features.union(stemFeatures)
+            # logging.debug("size of features" + str(len(features)))
+            # logging.debug("size of stemfeatures" + str(len(stemFeatures)))
+            # logging.debug("size of res" + str(len(res)))
+            node.features = res
+            _LexiconDict.update({word:node})
+    return _LexiconDict
+
+def GetStemFeatures(word):
+    for dict in dictList:
+        if word in dict.keys():
+            node = dict.get(word)
+            features = node.features
+            return features
+        else:
+            logging.debug("stem does not exist" + word)
 
 def AlignMain():
     newloc = "outputMain.txt"
@@ -559,6 +595,15 @@ if __name__ == "__main__":
     OrganizeLex(paraI4, _CommentDictI4, _LexiconDictI4)
     OrganizeLex(paraLex, _CommentDictLexX, _LexiconDictLexX)
     OrganizeLex(paraDef, _CommentDictDefX, _LexiconDictDefX)
+
+    _LexiconDictI = EnrichFeature(_LexiconDictI)
+    _LexiconDictB = EnrichFeature(_LexiconDictB)
+    _LexiconDictP = EnrichFeature(_LexiconDictP)
+    _LexiconDictI4 = EnrichFeature(_LexiconDictI4)
+    _LexiconDictL = EnrichFeature(_LexiconDictL)
+    _LexiconDictLexX = EnrichFeature(_LexiconDictLexX)
+    _LexiconDictDefX = EnrichFeature(_LexiconDictDefX)
+
 
     AlignMain()
 
