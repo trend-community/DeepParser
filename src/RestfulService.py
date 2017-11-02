@@ -1,4 +1,4 @@
-import logging, sys, re, jsonpickle, os
+import logging, sys, re, jsonpickle, os, json
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request
@@ -111,6 +111,15 @@ def OutputRules(Mode="concise"):
 @app.route("/MultiLevelSegmentation/<everything:Sentence>")
 @app.cache.cached(timeout=10)  # cache this view for 10 seconds
 def MultiLevelSegmentation(Sentence):
+    nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
+    return  "[%s]" % ",\n".join(n.JsonOutput() for n in nodes)
+    #return json.dumps(nodes, default=toJSON, ensure_ascii=False).encode('utf8')
+
+
+@app.route("/Analyze", methods=['PUT', 'POST'])
+@app.cache.cached(timeout=10)  # cache this view for 10 seconds
+def Analyze(Sentence):
+    Sentence = request.form['Sentence']
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
     return jsonpickle.encode(nodes)
 

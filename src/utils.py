@@ -61,11 +61,11 @@ def _SeparateComment(line):
         return line[:SlashLocation].strip(), line[SlashLocation+2:].strip()
 
 def SeparateComment(multiline):
-    blocks = [x.strip() for x in re.split("\n", multiline) ]
+    lines = multiline.splitlines()
     content = ""
     comment = ""
-    for block in blocks:
-        _content, _comment = _SeparateComment(block)
+    for line in lines:
+        _content, _comment = _SeparateComment(line)
         if _content:
             content += "\n" + _content
         if _comment:
