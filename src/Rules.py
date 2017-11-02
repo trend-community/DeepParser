@@ -1037,10 +1037,11 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     LoadRules("../../fsa/X/1Grammar.txt")
-    LoadRules("../../fsa/X/Q/rule/xaa")
-    LoadRules("../../fsa/X/Q/rule/xab")
-    LoadRules("../../fsa/X/Q/rule/xac")
     LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_6_list.txt")
+    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_7_list.txt")
 
     #LoadRules("../../fsa/X/10compound.txt")
 
@@ -1053,4 +1054,4 @@ if __name__ == "__main__":
 
     # print (OutputRules("concise"))
     OutputRuleFiles("../temp/")
-    print(FeatureOntology.OutputMissingFeatureSet())
+    #print(FeatureOntology.OutputMissingFeatureSet())
