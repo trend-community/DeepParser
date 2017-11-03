@@ -68,7 +68,6 @@ class SentenceLinkedList:
             self.tail = node.prev
         self.size -= 1
 
-    @lru_cache(maxsize=10000)
     def get(self, index):
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't get.")

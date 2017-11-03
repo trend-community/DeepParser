@@ -53,13 +53,12 @@ class TokenizationTest(unittest.TestCase):
         print(NodeList)
 
     def testJsonOutput(self):
-        t = "中文语义识别研究"
+        t = "中历"
         NodeList = Tokenize(t)
         print(NodeList)
 
-        print(NodeList.get(1).JsonOutput().toJSON())
-        NodeList.combine(1, 2)
-        print(NodeList.get(1).JsonOutput().toJSON())
-        NodeList.combine(1, 2)
-        print(NodeList.get(1).JsonOutput().toJSON())
+        print(NodeList.get(1).CleanOutput().toJSON())
+        NodeList.combine(0, 2)
+        print(NodeList.get(0).CleanOutput().toJSON())
+
         print(NodeList.root().CleanOutput().toJSON())
