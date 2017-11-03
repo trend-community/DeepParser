@@ -67,8 +67,8 @@ class RuleTest(unittest.TestCase):
     def test_pointer(self):
         r = Rule()
         r.SetRule("rule=={^[word] ^head[word]};")
-        self.assertEqual(r.Tokens[0].pointer, "")
-        self.assertEqual(r.Tokens[1].pointer, "head")
+        self.assertEqual(r.Tokens[0].pointer, "^")
+        self.assertEqual(r.Tokens[1].pointer, "^head")
         self.assertEqual(r.Tokens[1].word, "[word]")
 
     def test_which(self):

@@ -921,7 +921,7 @@ def _PreProcess_CheckFeatures(OneList):
                 logging.error(str(e))
                 continue
 
-            if matchtype == 'stem':
+            if matchtype == 'norm':
                 if "|" in word:
                     items = re.split("\|", word.lstrip("!"))
                     if word.startswith("!"):
@@ -932,7 +932,7 @@ def _PreProcess_CheckFeatures(OneList):
                     logging.warning("The rule is: " + str(rule))
                     raise NotImplementedError("TODO: separate this as multiple token")
 
-            elif matchtype == 'word':
+            elif matchtype == 'text':
                 if "|" in word:
                     items = re.split("\|", word.lstrip("!"))
                     if word.startswith("!"):

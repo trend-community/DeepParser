@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon(True)
 
-    if not logging.getLogger().isEnabledFor(logging.DEBUG):
+    if not logging.getLogger().isEnabledFor(logging.WARNING):
         ProcessFile(UnitTestFileName)
     else:   #debugging mode
         # ProcessFile(UnitTestFileName)
