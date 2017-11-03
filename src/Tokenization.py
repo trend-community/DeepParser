@@ -190,7 +190,7 @@ class SentenceNode(object):
             output += ":" + featureString
         return output
 
-    def oneliner(self, ShowFeature = False):
+    def oneliner(self, NoFeature = True):
         output = ""
         if self.sons:
             output += "<"
@@ -199,7 +199,7 @@ class SentenceNode(object):
             output = output.strip() + ">"
         else:
             output = self.text
-        if ShowFeature:
+        if not NoFeature:
             featureString = self.GetFeatures()
             if featureString:
                 output += ":" + featureString
