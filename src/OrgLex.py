@@ -177,6 +177,7 @@ def EnrichFeature( _LexiconDict):
                 res = features.union(stemFeatures)
                 node.features = res
                 _LexiconDict.update({word:node})
+
     return _LexiconDict
 
 def GetStemFeatures(word):
@@ -185,9 +186,9 @@ def GetStemFeatures(word):
             node = dict.get(word)
             features = node.features
             return features
-        else:
-            logging.debug("stem does not exist" + word)
-            return None
+
+    logging.debug("stem does not exist" + word)
+    return None
 
 def AlignMain():
     newloc = "outputMain.txt"
