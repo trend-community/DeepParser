@@ -91,25 +91,30 @@ def ApplyFeature(featureList, featureID):
 #   compile it to two parts: presentation (for matching), and action.
 def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
     RulePos = RuleEndPosition
-    EndTrunk = RuleTokens[RuleEndPosition].EndTrunk
+    EndTrunk = 0
     while RulePos >= 0:
         #TODO: Find the head in this trunk
+        EndTrunk += RuleTokens[RulePos].EndTrunk
         EndTrunk -= RuleTokens[RulePos].StartTrunk
         if EndTrunk == 0:
             #found to start position.
             break
         if EndTrunk < 0:
+            #this is actually correct in current step.
+            break
             #Wrong in rule.
-            logging.error(str(RuleTokens))
+            logging.info("StrPosition=" + str(StrPosition) + "RuleEndPosition=" + str(RuleEndPosition))
+            logging.error("Endtrunk<0" + jsonpickle.dumps(RuleTokens))
             raise RuntimeError("Wrong in Tokens. Can not find matched trunk!")
         RulePos -= 1
     if RulePos < 0:
-        logging.error(str(RuleTokens))
+        logging.error("RulePos < 0 " + str([str(r) for r in RuleTokens]))
         raise RuntimeError("Wrong in Tokens. Can not find matched trunk until the begining of the rule!")
 
     ChunkLength = RuleEndPosition - RulePos
     StrStartPosition = StrPosition - ChunkLength
     StrTokenList.combine(StrStartPosition, ChunkLength+1)
+    return ChunkLength+1
 
 #During chunking "+++", concatenate the stem of each token of this group
 # (find the starting point and ending point) into the current token stem
@@ -259,6 +264,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 logging.debug("Before Chunking:\n" + "in position " + str(StartPosition + i)
                               + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
                 CheunkedTokenNum = ApplyChunking(strtokens, StartPosition + i, rule.Tokens, i)
+                i -= CheunkedTokenNum
         except IndexError as e:
             logging.error("Error when checking EndTrunk and apply trunking")
             logging.error(str(e))

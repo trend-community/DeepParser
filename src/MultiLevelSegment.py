@@ -36,8 +36,7 @@ def ProcessFile(FileName):
         nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
 
         if DebugMode:
-            for node in nodes:
-                print(node)
+            print(nodes)
         print(OutputStringTokens_oneliner(nodes, NoFeature))
 
     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
