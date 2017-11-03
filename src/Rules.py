@@ -85,6 +85,24 @@ class RuleToken(object):
         self.StartTrunk = 0
         self.EndTrunk = 0
 
+    def __str__(self):
+        output = ""
+        for _ in range(self.StartTrunk):
+            output += "<"
+        if hasattr(self, 'pointer'):
+            output += self.pointer
+        t = self.word
+        if hasattr(self, 'action'):
+            t = t.replace("]", ":" + self.action + "]")
+        output += t
+        if self.repeat != [1, 1]:
+            output += "*" + str(self.repeat[1])
+        for _ in range(self.EndTrunk):
+            output += ">"
+        output += " "  # should be a space. use _ in dev mode.
+        return output
+
+
 class Rule:
     idCounter = 0
     def __init__(self):
@@ -194,19 +212,7 @@ class Rule:
             output += "\t[Origin Content]=\n" + self.RuleContent + '\n'
             output += "\t[Compiled Content]=\n{"
         for token in self.Tokens:
-            for _ in range(token.StartTrunk):
-                output += "<"
-            if hasattr(token, 'pointer'):
-                output += token.pointer
-            t = token.word
-            if hasattr(token, 'action'):
-                t = t.replace("]", ":" + token.action + "]")
-            output += t
-            if token.repeat != [1, 1]:
-                output += "*" + str(token.repeat[1])
-            for _ in range(token.EndTrunk):
-                output += ">"
-            output += " "  # should be a space. use _ in dev mode.
+            output += str(token)
         output += "};"
         if self.comment:
             output += " " + self.comment
@@ -921,7 +927,7 @@ def _PreProcess_CheckFeatures(OneList):
                 logging.error(str(e))
                 continue
 
-            if matchtype == 'stem':
+            if matchtype == 'norm':
                 if "|" in word:
                     items = re.split("\|", word.lstrip("!"))
                     if word.startswith("!"):
@@ -932,7 +938,7 @@ def _PreProcess_CheckFeatures(OneList):
                     logging.warning("The rule is: " + str(rule))
                     raise NotImplementedError("TODO: separate this as multiple token")
 
-            elif matchtype == 'word':
+            elif matchtype == 'text':
                 if "|" in word:
                     items = re.split("\|", word.lstrip("!"))
                     if word.startswith("!"):

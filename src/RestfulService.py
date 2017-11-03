@@ -112,8 +112,8 @@ def OutputRules(Mode="concise"):
 @app.cache.cached(timeout=10)  # cache this view for 10 seconds
 def MultiLevelSegmentation(Sentence):
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
-    return  "[%s]" % ",\n".join(n.JsonOutput() for n in nodes if n.word)
-    #return json.dumps(nodes, default=toJSON, ensure_ascii=False).encode('utf8')
+    #return  str(nodes)
+    return nodes.root().CleanOutput().toJSON()
 
 
 @app.route("/Analyze", methods=['PUT', 'POST'])

@@ -27,15 +27,15 @@ C4plusID = None
 
 class LexiconNode(object):
     def __init__(self, word=''):
-        self.word = word
-        self.stem = word
+        self.text = word
         self.norm = word
+        self.atom = word
         self.features = set()
         self.missingfeature = ""
         #self.forLookup = False
 
     def __str__(self):
-        output = self.stem + ": "
+        output = self.text + ": "
         for feature in self.features:
             f = GetFeatureName(feature)
             if f:
@@ -45,7 +45,7 @@ class LexiconNode(object):
         return output
 
     def entry(self):
-        output = self.word + ": "
+        output = self.text + ": "
         features = sorted(self.features)
         featuresCopy = features.copy()
         #remove redundant ancestors.
@@ -64,17 +64,17 @@ class LexiconNode(object):
             if featureName:
                 featureSorted.add(featureName)
             else:
-                logging.warning("Can't find feature of " + self.word)
+                logging.warning("Can't find feature of " + self.text)
 
         featureSorted = sorted(featureSorted)
 
         for feature in featureSorted:
             output += feature +" "
 
-        if self.stem != self.word:
-            output += "'" + self.stem + "' "
-        if self.norm != self.word:
-            output += "/" + self.norm + "/ "
+        if self.norm != self.text:
+            output += "'" + self.norm + "' "
+        if self.atom != self.text:
+            output += "/" + self.atom + "/ "
         if self.missingfeature !="":
             output +=  self.missingfeature
         if hasattr(self, "comment"):
@@ -181,9 +181,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                 features = SplitFeatures(blocks[1]) # blocks[1].split()
                 for feature in features:
                     if re.match('^\'.*\'$', feature):
-                        node.stem = feature.strip('\'')
+                        node.norm = feature.strip('\'')
                     elif re.match('^/.*/$', feature):
-                        node.norm = feature.strip('/')
+                        node.atom = feature.strip('/')
                     elif re.search(u'[\u4e00-\u9fff]', feature):
                         node.stem = feature
                     else:
@@ -200,11 +200,11 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                                     node.features.update(ancestors)
 
             if newNode:
-                _LexiconDict.update({node.word: node})
+                _LexiconDict.update({node.text: node})
                 if forLookup \
-                        or "_" in node.word:    #
+                        or "_" in node.text:    #
                     #_LexiconLookupDict.update({node.word: node})
-                    _LexiconLookupSet.add(node.word)
+                    _LexiconLookupSet.add(node.text)
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -239,14 +239,14 @@ def _ApplyWordStem(NewNode, lexiconnode):
     VedFeatureID = GetFeatureID("Ved")
     VingFeatureID = GetFeatureID("Ving")
 
-    if NewNode.word != lexiconnode.stem and lexiconnode.stem in _LexiconDict:
-        stemnode = _LexiconDict[lexiconnode.stem]
-        NewNode.features.update(stemnode.features)
+    if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
+        normnode = _LexiconDict[lexiconnode.norm]
+        NewNode.features.update(normnode.features)
         if VBFeatureID in NewNode.features:
-            if NewNode.word == stemnode.word + "ed" or NewNode.word == stemnode.word + "d":
+            if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
                     NewNode.features.remove(VBFeatureID)
                     NewNode.features.add(VedFeatureID)
-            if NewNode.word == stemnode.word + "ing":
+            if NewNode.text == normnode.text + "ing":
                     NewNode.features.remove(VBFeatureID)
                     NewNode.features.add(VingFeatureID)
 
@@ -291,15 +291,17 @@ def SearchFeatures(word):
     return lexicon.features
 
 
-def ApplyLexiconToNodes(nodes):
-    for node in nodes:
+def ApplyLexiconToNodes(NodeList):
+    node = NodeList.head
+    while node:
         ApplyLexicon(node)
-    return nodes
+        node = node.next
+    return NodeList
 
 
 def ApplyWordLengthFeature(node):
     global C1ID, C2ID, C3ID, C4ID, C4plusID
-    if IsAscii(node.stem):
+    if IsAscii(node.text):
         return
     if not C1ID:
         C1ID = GetFeatureID('c1')
@@ -320,7 +322,7 @@ def ApplyWordLengthFeature(node):
     if C4plusID in node.features:
         node.features.remove(C4plusID)
 
-    wordlength = len(node.stem)
+    wordlength = len(node.text)
     if wordlength<1:
         pass
     elif wordlength == 1:
@@ -339,21 +341,21 @@ def ApplyWordLengthFeature(node):
 
 def ApplyLexicon(node, lex=None):
     if not lex:
-        lex = SearchLexicon(node.word)
+        lex = SearchLexicon(node.text)
     # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
     #                         #  because the node.word is not as reliable as stem.
     #     node.lexicon = SearchLexicon(node.word)
     if lex is None:
-        if IsCD(node.word):
+        if IsCD(node.text):
             node.features.add(GetFeatureID('CD'))
-        elif node.word in string.punctuation:
+        elif node.text in string.punctuation:
             node.features.add(GetFeatureID('punc'))
         else:
             node.features.add(GetFeatureID('NNP'))
             node.features.add(GetFeatureID('OOV'))
     else:
-        node.stem = lex.stem
         node.norm = lex.norm
+        node.atom = lex.atom
         NEWFeatureID = GetFeatureID("NEW")
         if NEWFeatureID in lex.features:
             node.features = set()
@@ -419,11 +421,11 @@ def HeadMatchLexicon(strTokens, word):
     return -1
 
 #Lookup will be used right after segmentation.
-#Assume there is no "Gone" tokens here.
+# Dynamic programming?
 def LexiconLookup(strTokens):
     i = 0
-    while i < len(strTokens):
-        localstem = strTokens[i].stem
+    while i < strTokens.size:
+        localstem = strTokens.get(i).text
         if not localstem:   #JS and other empty strings. ignore.
             i += 1
             continue
@@ -431,7 +433,7 @@ def LexiconLookup(strTokens):
         WinningLexicon = None
         if localstem in _LexiconLookupDict:
             for word in _LexiconLookupDict[localstem]:
-                MatchLength = HeadMatchLexicon(strTokens[i:], word)
+                MatchLength = 0 #HeadMatchLexicon(strTokens[i:], word)
                 if MatchLength > 0:
                     if WinningLexicon and len(WinningLexicon.word) >= len(word):
                         pass
@@ -442,8 +444,8 @@ def LexiconLookup(strTokens):
 
         if WinningLexicon:
             logging.debug("Start applying winning lexicon")
-            ChunkingLexicon(strTokens[i:], WinningLexicon_MatchLength, WinningLexicon)
-            i += WinningLexicon_MatchLength - 1
+            strTokens.combine(i, WinningLexicon_MatchLength)
+            ApplyLexicon(strTokens.get(i), WinningLexicon)
 
         i += 1
 

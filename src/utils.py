@@ -179,24 +179,31 @@ def OutputStringTokens_json(strTokens):
     return output
 
 
-def OutputStringTokens_oneliner(strTokens, NoFeature=False):
+def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
     output = ""
-    for token in strTokens:
-        if token.Gone:
-            continue
-        if not token.stem:
-            continue
+    node = strTokenList.head
+    while node:
         if output:
-            output += "/"
+            output += " "
+        output += node.oneliner(NoFeature)
+        node = node.next
 
-        for _ in range(token.StartTrunk):
-            output += "<"
-        if NoFeature:
-            output += token.stem
-        else:
-            output += token.oneliner()
-        for _ in range(token.EndTrunk):
-            output += ">"
+    # for token in strTokens:
+    #     if token.Gone:
+    #         continue
+    #     if not token.stem:
+    #         continue
+    #     if output:
+    #         output += "/"
+    #
+    #     for _ in range(token.StartTrunk):
+    #         output += "<"
+    #     if NoFeature:
+    #         output += token.stem
+    #     else:
+    #         output += token.oneliner()
+    #     for _ in range(token.EndTrunk):
+    #         output += ">"
     return output
 
 
