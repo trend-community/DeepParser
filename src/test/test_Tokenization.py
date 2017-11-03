@@ -51,3 +51,15 @@ class TokenizationTest(unittest.TestCase):
 
         NodeList.insert(SentenceNode("最后一个"), 6)
         print(NodeList)
+
+    def testJsonOutput(self):
+        t = "中文语义识别研究"
+        NodeList = Tokenize(t)
+        print(NodeList)
+
+        print(NodeList.get(1).JsonOutput().toJSON())
+        NodeList.combine(1, 2)
+        print(NodeList.get(1).JsonOutput().toJSON())
+        NodeList.combine(1, 2)
+        print(NodeList.get(1).JsonOutput().toJSON())
+        print(NodeList.root().CleanOutput().toJSON())

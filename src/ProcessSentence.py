@@ -366,6 +366,8 @@ def MultiLevelSegmentation(Sentence):
 
     if NodeList.tail.text != "." and FeatureOntology.GetFeatureID('punc') not in NodeList.tail.features:
         JMnode = Tokenization.SentenceNode('')
+        JMnode.StartOffset = NodeList.tail.EndOffset
+        JMnode.EndOffset = NodeList.tail.EndOffset
         NodeList.append(JMnode)
     NodeList.tail.features.add(FeatureOntology.GetFeatureID('JM'))
     NodeList.tail.prev.features.add(FeatureOntology.GetFeatureID('JM2'))

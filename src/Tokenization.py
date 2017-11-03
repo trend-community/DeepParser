@@ -68,6 +68,7 @@ class SentenceLinkedList:
             self.tail = node.prev
         self.size -= 1
 
+    @lru_cache(maxsize=10000)
     def get(self, index):
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't get.")
@@ -97,7 +98,19 @@ class SentenceLinkedList:
             output += str(p)
         return output
 
-    def combine(self, start, count, headindex=0):
+    def toJSON(self):
+        a = JsonClass()
+        a.text = self.text
+        if self.norm != self.text:
+            a.norm = self.norm
+        if self.atom != self.text:
+            a.atom = self.atom
+        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features]
+
+        a.StartOffset = self.StartOffset
+        a.EndOffset = self.EndOffset
+
+    def newnode(self, start, count):
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't combine.")
         if start+count > self.size:
@@ -120,10 +133,14 @@ class SentenceLinkedList:
             NewText = "".join(NewTextList)
 
         NewNode = SentenceNode(NewText)
-        NewNode.features = self.get(start+headindex).features
         NewNode.sons = sons
         NewNode.StartOffset = startnode.StartOffset
         NewNode.EndOffset = endnode.EndOffset
+        return NewNode, startnode, endnode
+
+    def combine(self, start, count, headindex=0):
+        NewNode, startnode, endnode = self.newnode(start, count)
+        NewNode.features = self.get(start+headindex).features
 
         NewNode.prev = startnode.prev
         if startnode != self.head:
@@ -138,7 +155,9 @@ class SentenceLinkedList:
 
         self.size = self.size - count + 1
 
-
+    def root(self):
+        r, _, _ = self.newnode(0, self.size)
+        return r
 
 
 class SentenceNode(object):
@@ -217,7 +236,7 @@ class SentenceNode(object):
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return featureString
 
-    def JsonOutput(self):
+    def CleanOutput(self):
         a = JsonClass()
         a.text = self.text
         if self.norm != self.text:
@@ -228,13 +247,19 @@ class SentenceNode(object):
 
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset
+        if self.UpperRelationship:
+            a.UpperRelationship = self.UpperRelationship
+        if self.sons:
+            a.sons = [s.CleanOutput() for s in self.sons]
 
-        return a.toJSON()
+        return a
+
 
 class JsonClass(object):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, ensure_ascii=False)
+                          sort_keys=False, ensure_ascii=False)
+
 
 def Tokenize_space(sentence):
     StartToken = True
