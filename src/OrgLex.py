@@ -55,6 +55,15 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
             if len(blocks) != 2:
                 continue
             newNode = False
+            if " " in blocks[0]:
+                realWordList = blocks[0].split(" ")
+                realWord = ""
+                for str in realWordList:
+                    realWord += str
+                blocks[0] = realWord
+            if "~" in blocks[0]:
+                end = blocks[0].index("~")
+                blocks[0] = blocks[0][0:end]
             node = SearchLexicon(blocks[0], 'origin')
             # node = None
             if not node:
