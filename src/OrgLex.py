@@ -154,7 +154,6 @@ def EnrichFeature( _LexiconDict):
         features = node.features
         featureID = GetFeatureID('F')
         if featureID in features:
-            logging.debug("words to be enriched " + word)
             stem = node.stem
             norm = node.norm
             logging.debug("words to be enriched " + word + ", stem is " + stem + ", norm is " + norm)
@@ -164,12 +163,9 @@ def EnrichFeature( _LexiconDict):
             elif norm != word:
                 stemFeatures = GetStemFeatures(norm)
             else:
-                logging.debug("no stem or norm is labeled to enrich features")
+                logging.debug("no stem or norm is labeled to enrich features" + word)
             if stemFeatures:
                 res = features.union(stemFeatures)
-            # logging.debug("size of features" + str(len(features)))
-            # logging.debug("size of stemfeatures" + str(len(stemFeatures)))
-            # logging.debug("size of res" + str(len(res)))
                 node.features = res
                 _LexiconDict.update({word:node})
     return _LexiconDict
@@ -182,6 +178,7 @@ def GetStemFeatures(word):
             return features
         else:
             logging.debug("stem does not exist" + word)
+            return None
 
 def AlignMain():
     newloc = "outputMain.txt"
