@@ -30,6 +30,7 @@ _LexiconDictDefPlus = {}
 _LexiconDictDefPlusX = {}
 _LexiconDictLexPlusX = {}
 
+_MissingStem = set()
 dictList = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -186,8 +187,8 @@ def GetStemFeatures(word):
             node = dict.get(word)
             features = node.features
             return features
-
     logging.debug("stem does not exist" + word)
+    _MissingStem.add(word)
     return None
 
 def AlignMain():
@@ -559,6 +560,38 @@ def printLexPlus(loc, _LexiconDictTemp):
                 output += node.comment
             file.write(output + "\n")
 
+def printMissingStem():
+    loc = dir_path + '/../../fsa/X/missingStem.txt'
+    with open(loc, 'w', encoding='utf-8') as file:
+        for word in _MissingStem:
+            file.write(word + "\n")
+
+def printSummaryLex():
+    loc = dir_path + '/../../fsa/X/summaryLex.txt'
+    summary = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP,_LexiconDictPlus, _LexiconDictDefPlus]
+    with open(loc, 'w', encoding='utf-8') as file:
+        for dict in summary:
+            if dict == _LexiconDictLexX:
+                origLoc = "LexX"
+            if dict == _LexiconDictL:
+                origLoc = "locX"
+            if dict == _LexiconDictDefX:
+                origLoc = "defLexX"
+            if dict == _LexiconDictB:
+                origLoc = "brandX"
+            if dict == _LexiconDictI:
+                origLoc = "idiomX"
+            if dict == _LexiconDictI4:
+                origLoc = "idiom4X"
+            if dict == _LexiconDictP:
+                origLoc = "perX"
+            if dict == _LexiconDictPlus:
+                origLoc = "LexXplus"
+            if dict == _LexiconDictDefPlus:
+                origLoc = "defPlus"
+            for word in dict.keys():
+                file.write(word + "\t" + origLoc + "\n")
+
 
 if __name__ == "__main__":
 
@@ -662,8 +695,10 @@ if __name__ == "__main__":
     printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
 
 
-
     GenerateLexPlus()
     printLexPlus(newPlus, _LexiconDictPlus)
     printLexPlus(paraDefPlus, _LexiconDictDefPlus)
+
+    printMissingStem()
+    printSummaryLex()
 
