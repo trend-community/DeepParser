@@ -34,6 +34,9 @@ def ProcessFile(FileName):
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
         nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
+        if not nodes:
+            logging.WARNING("The result for this sentence is None! " + TestSentence)
+            continue
 
         if DebugMode:
             print(nodes)
@@ -71,7 +74,7 @@ if __name__ == "__main__":
 
     if not logging.getLogger().isEnabledFor(logging.DEBUG):
         ProcessFile(UnitTestFileName)
-    else:   #debugging mode
+    else:   #debugging modef
         # ProcessFile(UnitTestFileName)
         # pass
         import cProfile, pstats

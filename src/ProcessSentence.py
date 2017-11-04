@@ -92,10 +92,14 @@ def ApplyFeature(featureList, featureID):
 def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
     RulePos = RuleEndPosition
     EndTrunk = 0
+    HeadIndex = 0
     while RulePos >= 0:
-        #TODO: Find the head in this trunk
+        # Find the head in this trunk: The one with not "^.M" in Action.
         EndTrunk += RuleTokens[RulePos].EndTrunk
         EndTrunk -= RuleTokens[RulePos].StartTrunk
+        if not hasattr(RuleTokens[RulePos], 'action') or '^' not in RuleTokens[RulePos].action:
+            HeadIndex = RulePos
+            logging.debug("Found Head!" + str(HeadIndex) + " rule: " + str(RuleTokens[RulePos]))
         if EndTrunk == 0:
             #found to start position.
             break
@@ -103,9 +107,9 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
             #this is actually correct in current step.
             break
             #Wrong in rule.
-            logging.info("StrPosition=" + str(StrPosition) + "RuleEndPosition=" + str(RuleEndPosition))
-            logging.error("Endtrunk<0" + jsonpickle.dumps(RuleTokens))
-            raise RuntimeError("Wrong in Tokens. Can not find matched trunk!")
+            # logging.info("StrPosition=" + str(StrPosition) + "RuleEndPosition=" + str(RuleEndPosition))
+            # logging.error("Endtrunk<0" + jsonpickle.dumps(RuleTokens))
+            # raise RuntimeError("Wrong in Tokens. Can not find matched trunk!")
         RulePos -= 1
     if RulePos < 0:
         logging.error("RulePos < 0 " + str([str(r) for r in RuleTokens]))
@@ -113,7 +117,7 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
 
     ChunkLength = RuleEndPosition - RulePos
     StrStartPosition = StrPosition - ChunkLength
-    StrTokenList.combine(StrStartPosition, ChunkLength+1)
+    StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex)
     return ChunkLength+1
 
 #During chunking "+++", concatenate the stem of each token of this group
@@ -356,6 +360,8 @@ def MultiLevelSegmentation(Sentence):
 
     Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
     NodeList = Tokenization.Tokenize(Sentence)
+    if not NodeList:
+        return None
     logging.debug("-Start ApplyLexiconToNodes")
     Lexicon.ApplyLexiconToNodes(NodeList)
 
@@ -469,8 +475,11 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "学习不学习,吃了没有?"
+    target = "洗起澡来没完没了; 于是吃起饭来; 看起电影来如痴如醉"
     nodes = MultiLevelSegmentation(target)
+    if not nodes:
+        logging.warning("The result is None!")
+        exit(1)
 
     # for node in nodes:
     #     print(str(node))
@@ -488,7 +497,7 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes, NoFeature=True))
     print(OutputStringTokens_oneliner(nodes))
 
-    print(jsonpickle.encode(nodes))
+    print(nodes.root().CleanOutput().toJSON())
 
     print("Winning rules:\n" + OutputWinningRules())
 

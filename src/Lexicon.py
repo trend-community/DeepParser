@@ -445,8 +445,10 @@ def LexiconLookup(strTokens):
         if bestScore[i]>1:
             strTokens.combine(i-bestScore[i], bestScore[i])
             i = i - bestScore[i]
+            ApplyLexicon(strTokens.get(i))
         else:
             i = i - 1
+
 
 
 
