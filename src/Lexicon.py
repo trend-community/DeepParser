@@ -423,31 +423,31 @@ def HeadMatchLexicon(strTokens, word):
 #Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens):
-    i = 0
-    while i < strTokens.size:
-        localstem = strTokens.get(i).text
-        if not localstem:   #JS and other empty strings. ignore.
-            i += 1
-            continue
-
-        WinningLexicon = None
+    sentenceLenth = strTokens.size
+    bestScore = [1 for _ in range(sentenceLenth+1)]
+    localstem = ''
+    p = strTokens.head
+    i = 1
+    while p:
+        localstem += p.text
         if localstem in _LexiconLookupDict:
-            for word in _LexiconLookupDict[localstem]:
-                MatchLength = 0 #HeadMatchLexicon(strTokens[i:], word)
-                if MatchLength > 0:
-                    if WinningLexicon and len(WinningLexicon.word) >= len(word):
-                        pass
-                    else:
-                        WinningLexicon = _LexiconDict.get(word)
-                        WinningLexicon_MatchLength = MatchLength
-                        logging.debug("Found Winning Lexicon " + str(WinningLexicon))
-
-        if WinningLexicon:
-            logging.debug("Start applying winning lexicon")
-            strTokens.combine(i, WinningLexicon_MatchLength)
-            ApplyLexicon(strTokens.get(i), WinningLexicon)
+            bestScore[i] = len(localstem)
+        else:
+            localstem = p.text
 
         i += 1
+        p = p.next
+
+    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+
+    i -= 1
+    while i>0:
+        if bestScore[i]>1:
+            strTokens.combine(i-bestScore[i], bestScore[i])
+            i = i - bestScore[i]
+        else:
+            i = i - 1
+
 
 
 if __name__ == "__main__":

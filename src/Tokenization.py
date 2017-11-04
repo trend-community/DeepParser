@@ -138,6 +138,8 @@ class SentenceLinkedList:
         return NewNode, startnode, endnode
 
     def combine(self, start, count, headindex=0):
+        if count == 1:
+            return  #we don't actually want to just wrap one word as one chunk
         NewNode, startnode, endnode = self.newnode(start, count)
         NewNode.features = self.get(start+headindex).features
 
@@ -153,6 +155,8 @@ class SentenceLinkedList:
             self.tail = NewNode
 
         self.size = self.size - count + 1
+
+        logging.debug("combined as:" + NewNode.text)
 
     def root(self):
         r, _, _ = self.newnode(0, self.size)
@@ -221,7 +225,7 @@ class SentenceNode(object):
             featureString = self.GetFeatures()
             if featureString:
                 output += ":" + featureString
-        return output
+        return output.strip()
 
     def GetFeatures(self):
         featureString = ""
