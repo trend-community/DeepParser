@@ -16,7 +16,7 @@
 # new steps, Oct 30.
 #Usage:
 #bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder
-#sh g1.processrawquery.sh /data/query/g0.raw.txt ../data/g0.P /nlpengine/fsa/X/Q/rule /nlpengine/fsa/X/Q/lexicon /nlpengine/fsa/X/Q/temp
+#  nohup sh g1.processrawquery.sh /nlpengine/queries/data/g0.raw.txt ../data/g0.P /nlpengine/fsa/X/Q/rule /nlpengine/fsa/X/Q/lexicon /nlpengine/fsa/X/Q/temp &
 
 mkdir -p $5
 sed -e "s/[\x00\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
