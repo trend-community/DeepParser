@@ -70,7 +70,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
             if not node:
                 newNode = True
                 node = LexiconNode(blocks[0])
-                if "_" in node.word:
+                if "_" in node.text:
                     node.forLookup = True       #for those combination words.
                 if comment:
                     node.comment = comment
@@ -79,11 +79,11 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
             features = SplitFeatures(blocks[1]) # blocks[1].split()
             for feature in features:
                 if re.match('^\'.*\'$', feature):
-                    node.stem = feature.strip('\'')
+                    node.norm = feature.strip('\'')
                 elif re.match('^/.*/$', feature):
-                    node.norm = feature.strip('/')
+                    node.atom = feature.strip('/')
                 elif re.search(u'[\u4e00-\u9fff]', feature):
-                    node.stem = feature
+                    node.norm = feature
                     continue
                 else:
                     featureID = GetFeatureID(feature)
@@ -100,7 +100,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                             node.features.update(ancestors)
 
             if newNode:
-                _LexiconDict.update({node.word: node})
+                _LexiconDict.update({node.text: node})
                 # logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -164,8 +164,8 @@ def EnrichFeature( _LexiconDict):
         features = node.features
         featureID = GetFeatureID('F')
         if featureID in features:
-            stem = node.stem
-            norm = node.norm
+            stem = node.norm
+            norm = node.atom
             logging.debug("words to be enriched " + word + ", stem is " + stem + ", norm is " + norm)
             stemFeatures = None
             if stem != word:
@@ -334,10 +334,10 @@ def GenerateLexPlus():
                     if newWord == "差得多":
                         logging.debug("差得多")
                     newNode = LexiconNode(newWord)
-                    newNode.stem = first + second
-                    newNode.word = newWord
+                    newNode.norm = first + second
+                    newNode.text = newWord
                     newNode.features = featuresID
-                    newNode.norm = newWord
+                    newNode.atom = newWord
                     if len(newWord) >= 5:
                         _LexiconDictPlus.update({newWord: newNode})
                     else:
@@ -352,10 +352,10 @@ def GenerateLexPlus():
                     newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
-                        newNode.stem = first + second
-                        newNode.word = newWord
+                        newNode.norm = first + second
+                        newNode.text= newWord
                         newNode.features = featuresID
-                        newNode.norm = newWord
+                        newNode.atom = newWord
                         _LexiconDictDefPlus.update({newWord: newNode})
                     else:
                         logging.debug("duplicate2 :" + newWord)
@@ -363,11 +363,11 @@ def GenerateLexPlus():
                 newWord = first + "不" + first + "得" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
-                    newNode.stem = first + second
+                    newNode.norm = first + second
                     featuresID.add(orQID)
-                    newNode.word = newWord
+                    newNode.text = newWord
                     newNode.features = featuresID
-                    newNode.norm = newWord
+                    newNode.atom = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate3 :" + newWord)
@@ -375,9 +375,9 @@ def GenerateLexPlus():
                 newWord = first + "不" + first + "的" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
-                    newNode.stem = first + second
-                    newNode.word = newWord
-                    newNode.norm = newWord
+                    newNode.norm = first + second
+                    newNode.text = newWord
+                    newNode.atom = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate4 :" + newWord)
@@ -385,11 +385,11 @@ def GenerateLexPlus():
                 newWord = first + "没" + first + "得" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
-                    newNode.stem = first + second
+                    newNode.norm = first + second
                     featuresID.add(perfectID)
-                    newNode.word = newWord
+                    newNode.text = newWord
                     newNode.features = featuresID
-                    newNode.norm = newWord
+                    newNode.atom = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate5 :" + newWord)
@@ -397,9 +397,9 @@ def GenerateLexPlus():
                 newWord = first + "没" + first + "的" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
-                    newNode.stem = first + second
-                    newNode.word = newWord
-                    newNode.norm = newWord
+                    newNode.norm = first + second
+                    newNode.text = newWord
+                    newNode.atom = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate6 :" + newWord)
@@ -408,7 +408,7 @@ def GenerateLexPlus():
                 newWord = first + "不" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
-                    newNode.stem = first + second
+                    newNode.norm = first + second
                     if canPBID in featuresID:
                         featuresID.remove(canPBID)
                     if orQID in featuresID:
@@ -416,9 +416,9 @@ def GenerateLexPlus():
                     if perfectID in featuresID:
                         featuresID.remove(perfectID)
                     featuresID.add(cannotPBID)
-                    newNode.word = newWord
+                    newNode.text = newWord
                     newNode.features = featuresID
-                    newNode.norm = newWord
+                    newNode.atom = newWord
                     if len(newWord) >= 5:
                         _LexiconDictPlus.update({newWord: newNode})
                     else:
@@ -433,10 +433,10 @@ def GenerateLexPlus():
                     (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
-                        newNode.stem = first + second
-                        newNode.word = newWord
+                        newNode.norm = first + second
+                        newNode.text = newWord
                         newNode.features = featuresID
-                        newNode.norm = newNode.word
+                        newNode.atom = newNode.text
                         _LexiconDictDefPlus.update({newWord: newNode})
                     else:
                         logging.debug("duplicate8 :" + newWord)
@@ -451,10 +451,10 @@ def GenerateLexPlus():
                     newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
-                        newNode.stem = first + second
-                        newNode.word = newWord
+                        newNode.norm = first + second
+                        newNode.text = newWord
                         newNode.features = featuresID
-                        newNode.norm = newWord
+                        newNode.atom = newWord
                         if len(newWord) >= 5:
                             _LexiconDictPlus.update({newWord: newNode})
                         else:
@@ -469,10 +469,10 @@ def GenerateLexPlus():
                         newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                             newWord not in _LexiconDictDefXOrig.keys()):
                             newNode = LexiconNode(newWord)
-                            newNode.stem = first + second
-                            newNode.word = newWord
+                            newNode.norm = first + second
+                            newNode.text = newWord
                             newNode.features = featuresID
-                            newNode.norm = newNode.word
+                            newNode.atom = newNode.text
                             _LexiconDictDefPlus.update({newWord: newNode})
                         else:
                             logging.debug("duplicate10 :" + newWord)
@@ -498,8 +498,8 @@ def GenerateLexPlus():
                     newWord = word + char
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
-                        newNode.word = newWord
-                        newNode.stem = first + char + second + char
+                        newNode.text = newWord
+                        newNode.norm = first + char + second + char
                         newNode.features = startwithFirstDict.get(char).features
                         _LexiconDictDefPlus.update({newWord: newNode})
 
@@ -550,10 +550,10 @@ def printLexPlus(loc, _LexiconDictTemp):
             featureSorted = sorted(featureSorted)
             for feature in featureSorted:
                 output += feature + " "
-            if node.stem != node.word:
-                output += "'" + node.stem + "' "
-            if node.norm != node.word:
-                output += "/" + node.norm + "/ "
+            if node.norm != node.text:
+                output += "'" + node.norm + "' "
+            if node.atom != node.text:
+                output += "/" + node.atom + "/ "
             if node.missingfeature != "":
                 output += node.missingfeature
             if hasattr(node, "comment"):
