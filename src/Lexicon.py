@@ -425,16 +425,22 @@ def HeadMatchLexicon(strTokens, word):
 def LexiconLookup(strTokens):
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth+1)]
-    localstem = ''
+    combinedText = ''
+    combinedCount = 0
     p = strTokens.head
     i = 1
-    while p:
-        localstem += p.text
-        if localstem in _LexiconLookupDict:
-            bestScore[i] = len(localstem)
-        else:
-            localstem = p.text
 
+    while p:
+        if p.text:
+            combinedText += p.text
+            combinedCount += 1
+            if combinedText in _LexiconLookupDict:
+                logging.debug("i=" + str(i) + " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+                bestScore[i] = combinedCount
+
+            else:
+                combinedText = p.text
+                combinedCount = 1
         i += 1
         p = p.next
 
@@ -448,8 +454,6 @@ def LexiconLookup(strTokens):
             ApplyLexicon(strTokens.get(i))
         else:
             i = i - 1
-
-
 
 
 if __name__ == "__main__":

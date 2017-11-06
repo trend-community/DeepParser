@@ -1,4 +1,4 @@
-
+import logging
 
 def fib_recursivive(n):
     if n <= 2:
@@ -71,8 +71,22 @@ def listtest():
             AList.append(31)
             AList.remove(x)
 
+def NotToRun():
+    global a
+    a = a*2
+    return a
+
 if __name__ == "__main__":
     #print fib_recursivive(50)
+    logging.warning("Start Logging")
+
+    a = 1
+    print("a=" + str(a))
+    NotToRun()
+    print("a=" + str(a) + "not to run=" + str(NotToRun()))
+    logging.debug("Debug level" + str(NotToRun()))
+    print("after debug a=" + str(a))
+
     listtest()
     print(fib_list(300))
     print(fib_recur_tail(300))
