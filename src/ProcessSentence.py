@@ -344,7 +344,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 
 def MatchAndApplyAllRules(strtokens, ExcludeList):
     WinningRules = []
-    for RuleFileName in Rules.RuleGroupDict:
+    for RuleFileName in sorted(Rules.RuleGroupDict, key=Rules.RuleGroupDict.get):
         if RuleFileName in ExcludeList:
             continue
         WinningRules.extend(MatchAndApplyRuleFile(strtokens, RuleFileName))
@@ -474,7 +474,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "洗起澡来没完没了; 于是吃起饭来; 看起电影来如痴如醉"
+    target = "收纳箱里面有"
     nodes = MultiLevelSegmentation(target)
     if not nodes:
         logging.warning("The result is None!")
