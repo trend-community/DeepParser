@@ -36,7 +36,7 @@ if __name__ == "__main__":
                 for node in nodes:
                     print(node)
 
-            WinningRules = ProcessSentence.MatchAndApplyAllRules(nodes)
+            WinningRules = ProcessSentence.MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
             for WinningRule in WinningRules:
                 if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
                     print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
