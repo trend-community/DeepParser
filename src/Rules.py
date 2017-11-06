@@ -118,6 +118,9 @@ class Rule:
         self.IsExpertLexicon = False
         self.comment = ''
 
+    def __lt__(self, other):
+        return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
+
     def SetRule(self, ruleString, MacroDict={}, ID=1):
         self.Origin = ruleString.strip()
         code, comment = SeparateComment(ruleString)

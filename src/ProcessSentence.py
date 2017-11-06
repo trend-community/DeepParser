@@ -46,8 +46,7 @@ def StoreWinningRule(strtokens, rule, StartPosition):
 def OutputWinningRules():
     output = ""
 
-    for rulename in sorted(WinningRuleDict):
-        rule, hits = WinningRuleDict[rulename]
+    for rule, hits in sorted(WinningRuleDict.values()):
         output += '[Rule file]' + rule.FileName +  ' [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
 
     return output
