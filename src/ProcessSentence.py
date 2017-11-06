@@ -114,9 +114,10 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
         logging.error("RulePos < 0 " + str([str(r) for r in RuleTokens]))
         raise RuntimeError("Wrong in Tokens. Can not find matched trunk until the begining of the rule!")
 
-    ChunkLength = RuleEndPosition - RulePos
+    RuleStartPosition = RulePos
+    ChunkLength = RuleEndPosition - RuleStartPosition
     StrStartPosition = StrPosition - ChunkLength
-    StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex)
+    StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition)
     return ChunkLength+1
 
 #During chunking "+++", concatenate the stem of each token of this group
@@ -355,41 +356,48 @@ invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
 
 
 def MultiLevelSegmentation(Sentence):
-    logging.debug("-Start MultiLevelSegmentation: tokenize")
+    try:
+        logging.debug("-Start MultiLevelSegmentation: tokenize")
 
-    Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
-    NodeList = Tokenization.Tokenize(Sentence)
-    if not NodeList:
+        Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
+        NodeList = Tokenization.Tokenize(Sentence)
+        if not NodeList:
+            return None
+        logging.debug("-Start ApplyLexiconToNodes")
+        Lexicon.ApplyLexiconToNodes(NodeList)
+
+        NodeList.head.features.add(FeatureOntology.GetFeatureID('JS2'))
+        JSnode = Tokenization.SentenceNode('')
+        JSnode.features.add(FeatureOntology.GetFeatureID('JS'))
+        NodeList.insert(JSnode, 0)
+
+        if NodeList.tail.text != "." and FeatureOntology.GetFeatureID('punc') not in NodeList.tail.features:
+            JMnode = Tokenization.SentenceNode('')
+            JMnode.StartOffset = NodeList.tail.EndOffset
+            JMnode.EndOffset = NodeList.tail.EndOffset
+            NodeList.append(JMnode)
+        NodeList.tail.features.add(FeatureOntology.GetFeatureID('JM'))
+        NodeList.tail.prev.features.add(FeatureOntology.GetFeatureID('JM2'))
+
+
+
+        logging.debug("-Start MatchAndApplyRuleFile")
+        MatchAndApplyRuleFile(NodeList, "0defLexX.txt")
+        logging.debug("-Start LexiconLookup")
+        Lexicon.LexiconLookup(NodeList)
+
+        #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
+
+        logging.debug("-Start MatchAndApplyRuleFile rules except 0defLexX")
+        MatchAndApplyAllRules(NodeList, ExcludeList=["0defLexX.txt"])
+
+        logging.debug("-End MultiLevelSegmentation")
+
+    except Exception as e:
+        logging.error("Overall Error in MultiLevelSegmentation:")
+        logging.error(e)
         return None
-    logging.debug("-Start ApplyLexiconToNodes")
-    Lexicon.ApplyLexiconToNodes(NodeList)
 
-    JSnode = Tokenization.SentenceNode('')
-    JSnode.features.add(FeatureOntology.GetFeatureID('JS'))
-    NodeList.insert(JSnode, 0)
-    NodeList.get(1).features.add(FeatureOntology.GetFeatureID('JS2'))
-
-    if NodeList.tail.text != "." and FeatureOntology.GetFeatureID('punc') not in NodeList.tail.features:
-        JMnode = Tokenization.SentenceNode('')
-        JMnode.StartOffset = NodeList.tail.EndOffset
-        JMnode.EndOffset = NodeList.tail.EndOffset
-        NodeList.append(JMnode)
-    NodeList.tail.features.add(FeatureOntology.GetFeatureID('JM'))
-    NodeList.tail.prev.features.add(FeatureOntology.GetFeatureID('JM2'))
-
-
-
-    logging.debug("-Start MatchAndApplyRuleFile")
-    MatchAndApplyRuleFile(NodeList, "0defLexX.txt")
-    logging.debug("-Start LexiconLookup")
-    Lexicon.LexiconLookup(NodeList)
-
-    #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
-
-    logging.debug("-Start MatchAndApplyRuleFile rules except 0defLexX")
-    MatchAndApplyAllRules(NodeList, ExcludeList=["0defLexX.txt"])
-
-    logging.debug("-End MultiLevelSegmentation")
     return NodeList
 
 
@@ -474,7 +482,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "收纳箱里面有"
+    target = "中文切词分析"
     nodes = MultiLevelSegmentation(target)
     if not nodes:
         logging.warning("The result is None!")

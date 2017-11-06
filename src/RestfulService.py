@@ -111,6 +111,10 @@ def OutputRules(Mode="concise"):
 @app.route("/MultiLevelSegmentation/<everything:Sentence>")
 @app.cache.cached(timeout=10)  # cache this view for 10 seconds
 def MultiLevelSegmentation(Sentence):
+    if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
+        Sentence = Sentence[1:-1]
+    else:
+        return "Quote your sentence in double quotes please"
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
     #return  str(nodes)
     return nodes.root().CleanOutput().toJSON()
@@ -129,9 +133,10 @@ def Analyze(Sentence):
 # def OutputWinningRules():
 #     return ProcessSentence.OutputWinningRules()
 
-@app.route("/QuerySegment/<sentence>")
-def QuerySegment(sentence):
-    norm = viterbi1.normalize(sentence)
+@app.route("/QuerySegment/<Sentence>")
+def QuerySegment(Sentence):
+
+    norm = viterbi1.normalize(Sentence)
     return ''.join(viterbi1.viterbi1(norm, len(norm)))
 
 def init(querydict = "../data/g1.words.P"):
