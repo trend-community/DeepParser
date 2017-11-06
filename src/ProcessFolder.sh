@@ -45,7 +45,7 @@ cp $TEMPFOLDER/* $OUTPUTFOLDER
 #rmdir $TEMPFOLDER
 
 #remove folder that is 1 week old
-find $OUTPUTFOLDER/* -type d -ctime +7 -exec rm -rf {} \;
+find $OUTPUTFOLDER/* -type d -mtime +7 -exec rm -rf {} \;
 
 
 end_time=$(date "+%Y.%m.%d-%H.%M.%S")

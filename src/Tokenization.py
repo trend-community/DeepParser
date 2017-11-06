@@ -68,7 +68,6 @@ class SentenceLinkedList:
             self.tail = node.prev
         self.size -= 1
 
-    @lru_cache(maxsize=10000)
     def get(self, index):
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't get.")
@@ -139,6 +138,8 @@ class SentenceLinkedList:
         return NewNode, startnode, endnode
 
     def combine(self, start, count, headindex=0):
+        if count == 1:
+            return  #we don't actually want to just wrap one word as one chunk
         NewNode, startnode, endnode = self.newnode(start, count)
         NewNode.features = self.get(start+headindex).features
 
@@ -154,6 +155,8 @@ class SentenceLinkedList:
             self.tail = NewNode
 
         self.size = self.size - count + 1
+
+        logging.debug("combined as:" + NewNode.text)
 
     def root(self):
         r, _, _ = self.newnode(0, self.size)
@@ -222,7 +225,7 @@ class SentenceNode(object):
             featureString = self.GetFeatures()
             if featureString:
                 output += ":" + featureString
-        return output
+        return output.strip()
 
     def GetFeatures(self):
         featureString = ""
@@ -258,7 +261,7 @@ class SentenceNode(object):
 class JsonClass(object):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=False, ensure_ascii=False)
+                          sort_keys=True, ensure_ascii=False)
 
 
 def Tokenize_space(sentence):

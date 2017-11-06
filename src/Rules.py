@@ -16,12 +16,18 @@ RuleGroupDict = {}
 
 
 class RuleGroup(object):
+    idCounter = 0
     def __init__(self, FileName):
+        Rule.idCounter += 1
+        self.ID = Rule.idCounter
         self.FileName = FileName
         self.RuleList = []
         self.ExpertLexicon = []
         self.MacroDict = {}
         self.UnitTest = []
+
+    def __lt__(self, other):
+        return self.ID < other.ID
 
 
 class UnitTestNode(object):
@@ -117,6 +123,9 @@ class Rule:
         # self.Actions = {}
         self.IsExpertLexicon = False
         self.comment = ''
+
+    def __lt__(self, other):
+        return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
 
     def SetRule(self, ruleString, MacroDict={}, ID=1):
         self.Origin = ruleString.strip()
