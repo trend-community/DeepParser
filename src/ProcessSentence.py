@@ -336,6 +336,7 @@ def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
+    Lexicon.LoadLexiconBlacklist('../../fsa/X/LexBlacklist.txt')
 
     Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
     Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
@@ -412,7 +413,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "见青春360左旋肉碱咖啡	2"
+    target = "不喜欢的也会拒而远之"
     nodes, winningrules = MultiLevelSegmentation(target)
     if not nodes:
         logging.warning("The result is None!")

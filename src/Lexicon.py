@@ -14,8 +14,9 @@ import Tokenization
 
 _LexiconDict = {}
 _LexiconLookupSet = set()
-_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
+#_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
+_LexiconBlacklist = []
 _CommentDict = {}
 
 C1ID = None
@@ -41,7 +42,7 @@ class LexiconNode(object):
             if f:
                 output += f + ","
             else:
-                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
+                logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return output
 
     def entry(self):
@@ -141,6 +142,16 @@ def OutputLexicon(EnglishFlag):
 
     return Output
 
+
+def LoadLexiconBlacklist(BlacklistLocation):
+    with open(BlacklistLocation, encoding="utf-8") as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if not word:
+                continue
+            _LexiconBlacklist.append(word)
+
+
 def LoadLexicon(lexiconLocation, forLookup = False):
     global _LexiconDict, _LexiconLookupSet
     global _CommentDict
@@ -168,6 +179,9 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             word = blocks[0].replace(Tokenization.IMPOSSIBLESTRING, ":").lower()
             #Ditionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "").replace("~", "")
+
+            if word in _LexiconBlacklist:
+                continue
 
             node = SearchLexicon(word, 'origin')
             #node = None
@@ -216,21 +230,6 @@ def LoadLexicon(lexiconLocation, forLookup = False):
         _ApplyWordStem(node, node)
 
     logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconDict)))
-
-    GenerateLookupDict(_LexiconLookupSet)
-
-
-def GenerateLookupDict(lookupset):
-    global _LexiconLookupDict
-    for word in lookupset:
-        partialword = ""
-        for character in word:
-            partialword += character
-            if partialword in _LexiconLookupDict:
-                _LexiconLookupDict[partialword].add(word)
-            else:
-                _LexiconLookupDict[partialword] = {word}
-
 
 
 def _ApplyWordStem(NewNode, lexiconnode):
@@ -383,7 +382,7 @@ def LexiconLookup(strTokens):
         if p.text:
             combinedText += p.text
             combinedCount += 1
-            if combinedText in _LexiconLookupDict:
+            if combinedText in _LexiconLookupSet:
                 logging.debug("i=" + str(i) + " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[i] = combinedCount
 
