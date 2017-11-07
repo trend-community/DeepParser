@@ -57,6 +57,8 @@ def LoadLexiconBlacklist(BlacklistLocation):
             _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
 
 
+from functools import lru_cache
+@lru_cache(maxsize=500000)
 def InLexiconBlacklist(word):
     for pattern in _LexiconBlacklist:
         if re.match(pattern, word):
