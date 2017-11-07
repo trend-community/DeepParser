@@ -174,7 +174,10 @@ class SentenceLinkedList:
         logging.debug("combined as:" + str(NewNode))
 
     def root(self):
-        r, _, _ = self.newnode(0, self.size)
+        length = self.size-1    #remove the first token (JS)
+        if self.tail.text == "":
+            length -= 1
+        r, _, _ = self.newnode(1, length)
         return r
 
 
