@@ -143,7 +143,7 @@ class SentenceLinkedList:
         NewNode, startnode, endnode = self.newnode(start, count)
 
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
-            NewNode.features.update(self.get(start+headindex).features)
+            NewNode.features.update([f for f in self.get(start+headindex).features if f not in FeatureOntology.NotCopyList] )
 
         JS2FeatureID = FeatureOntology.GetFeatureID("JS2")
         JM2FeatureID = FeatureOntology.GetFeatureID("JM2")
@@ -246,6 +246,8 @@ class SentenceNode(object):
     def GetFeatures(self):
         featureString = ""
         for feature in sorted(self.features):
+            if feature in FeatureOntology.NotShowList:
+                continue
             f = FeatureOntology.GetFeatureName(feature)
             if f:
                 if featureString:
@@ -262,7 +264,7 @@ class SentenceNode(object):
             a.norm = self.norm
         if self.atom != self.text:
             a.atom = self.atom
-        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features]
+        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
 
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset

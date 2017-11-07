@@ -15,7 +15,8 @@ _FeatureList = []   #this is populated from FeatureSet. to have featureID.
 _FeatureDict = {}   #this is populated from FeatureSet. for better searching
 _AliasDict = {}
 _FeatureOntology = []
-
+NotCopyList = []
+NotShowList = []
 
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
@@ -200,6 +201,27 @@ def LoadFeatureOntology(featureOncologyLocation):
 
     # with open(pickleLocation, 'wb') as pk:
     #     pickle.dump(_FeatureOntology, pk)
+
+    LoadAppendixList(featureOncologyLocation)
+
+
+def LoadAppendixList(featureOncologyLocation):
+    Folder = os.path.dirname(featureOncologyLocation)
+    NoShowFileLocation = os.path.join(Folder, "featureNotShow.txt")
+    with open(NoShowFileLocation, encoding="utf-8") as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if not word:
+                continue
+            NotShowList.append(GetFeatureID(word))
+
+    NoCopyFileLocation = os.path.join(Folder, "featureNotCopy.txt")
+    with open(NoCopyFileLocation, encoding="utf-8") as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if not word:
+                continue
+            NotCopyList.append(GetFeatureID(word))
 
 
 SearchFeatureOntology_Cache = {}

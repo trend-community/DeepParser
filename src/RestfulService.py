@@ -102,9 +102,9 @@ def MultiLevelSegmentation(Sentence):
         Sentence = Sentence[1:-1]
     # else:
     #     return "Quote your sentence in double quotes please"
-    nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
+    nodes, winningrules = ProcessSentence.MultiLevelSegmentation(Sentence)
     #return  str(nodes)
-    return nodes.root().CleanOutput().toJSON()
+    return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
 
 
 @app.route("/Analyze", methods=['PUT', 'POST'])
