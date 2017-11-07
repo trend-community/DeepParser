@@ -408,9 +408,10 @@ def LexiconLookup(strTokens):
     i -= 1
     while i>0:
         if bestScore[i]>1:
-            strTokens.combine(i-bestScore[i], bestScore[i], -1)
+            NewNode = strTokens.combine(i-bestScore[i], bestScore[i], -1)
             i = i - bestScore[i]
-            ApplyLexicon(strTokens.get(i))
+            ApplyLexicon(NewNode)
+            NewNode.sons = []   #For lookup, eliminate the sons
             logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1

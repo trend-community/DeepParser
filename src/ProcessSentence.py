@@ -1,4 +1,4 @@
-import logging, re, requests, jsonpickle
+import logging, re, requests, jsonpickle, traceback, os
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
@@ -7,7 +7,8 @@ from utils import *
 counterMatch = 0
 
 WinningRuleDict = {}
-
+invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
+PipeLine = []
 
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
@@ -53,11 +54,7 @@ def OutputWinningRules():
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
 def HeadMatch(strTokenList, StartPosition, ruleTokens):
-    Start = 0
-    if ruleTokens[0].StartTrunk:    # the first rule token is StartTrunk,
-        Start = 0  #1                   # then pretend there is one [] in fron of it, so
-                                    # the first strTokenList is matched, can skip to next one;
-    for i in range(Start, len(ruleTokens)):
+    for i in range(len(ruleTokens)):
         try:
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
                 return False  #  this rule does not fit for this string
@@ -123,6 +120,7 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
 
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
+# Return: the position of the last merged chunk
 def ApplyWinningRule(strtokens, rule, StartPosition):
 
     if not strtokens:
@@ -216,8 +214,10 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     i = 0
     logging.debug("Matching using file:" + RuleFileName)
 
-    while i < strtokenlist.size:
-        logging.debug("Checking tokens start from:" + strtokenlist.get(i).text)
+    strtoken = strtokenlist.head
+    while strtoken:
+
+        logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
@@ -243,6 +243,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             #i += skiptokennum  # go to the next word
             WinningRules.append(WinningRule.RuleName)
             i += 1
+            strtoken = strtoken.next
             continue
 
         WinningRuleSize = 0
@@ -270,6 +271,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             WinningRules.append(WinningRule.RuleName)
 
         i += 1
+        strtoken = strtoken.next
     return WinningRules
 
 
@@ -282,12 +284,28 @@ def _MatchAndApplyAllRules(strtokens, ExcludeList):
 
     return WinningRules
 
-invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
 
 
-def MultiLevelSegmentation(Sentence):
+def DynamicPipeline(NodeList):
+    WinningRules = []
+
+    for action in PipeLine:
+        if action == "segmentation":
+            continue
+        if action == "apply lexicons":
+            continue
+        if action.startswith("FSA"):
+            Rulefile = action[3:].strip()
+            WinningRules.extend(MatchAndApplyRuleFile(NodeList, Rulefile))
+
+        if action.startswith("lookup"):
+            Lexicon.LexiconLookup(NodeList)
+
+    return  WinningRules
+
+def LexicalAnalyze(Sentence):
     try:
-        logging.debug("-Start MultiLevelSegmentation: tokenize")
+        logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
         NodeList = Tokenization.Tokenize(Sentence)
@@ -309,26 +327,28 @@ def MultiLevelSegmentation(Sentence):
         NodeList.tail.features.add(FeatureOntology.GetFeatureID('JM'))
         NodeList.tail.prev.features.add(FeatureOntology.GetFeatureID('JM2'))
 
-        WinningRules = []
+        WinningRules = DynamicPipeline(NodeList)
 
-        logging.debug("-Start MatchAndApplyRuleFile")
-        WinningRules.extend(MatchAndApplyRuleFile(NodeList, "0defLexX.txt"))
-        logging.debug("-Start LexiconLookup")
-        Lexicon.LexiconLookup(NodeList)
-
-        #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
-
-        logging.debug("-Start MatchAndApplyRuleFile rules except 0defLexX")
-        WinningRules.extend(_MatchAndApplyAllRules(NodeList, ExcludeList=["0defLexX.txt"]))
-
-        logging.debug("-End MultiLevelSegmentation")
+        logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
-        logging.error("Overall Error in MultiLevelSegmentation:")
+        logging.error("Overall Error in LexicalAnalyze:")
         logging.error(e)
+        logging.error(traceback.format_exc())
         return None
 
     return NodeList, WinningRules
+
+
+def LoadPipeline(PipelineLocation):
+    if PipelineLocation.startswith("."):
+        PipelineLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  PipelineLocation)
+    with open(PipelineLocation, encoding="utf-8") as dictionary:
+        for line in dictionary:
+            action, _ = SeparateComment(line)
+            if not action:
+                continue
+            PipeLine.append(action.strip())
 
 
 def LoadCommon(LoadCommonRules=False):
@@ -336,60 +356,39 @@ def LoadCommon(LoadCommonRules=False):
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
     #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
-    Lexicon.LoadLexiconBlacklist('../../fsa/X/LexBlacklist.txt')
 
-    Lexicon.LoadLexicon('../../fsa/X/LexX.txt')
-    Lexicon.LoadLexicon('../../fsa/X/LexXplus.txt')
-    Lexicon.LoadLexicon('../../fsa/X/brandX.txt')
-    Lexicon.LoadLexicon('../../fsa/X/idiom4X.txt')
-    Lexicon.LoadLexicon('../../fsa/X/idiomX.txt')
-    Lexicon.LoadLexicon('../../fsa/X/locX.txt')
-    Lexicon.LoadLexicon('../../fsa/X/perX.txt')
-    Lexicon.LoadLexicon('../../fsa/X/defPlus.txt')
-    Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
+    XLocation = '../../fsa/X/'
+    Lexicon.LoadLexiconBlacklist(XLocation + 'LexBlacklist.txt')
+
+    Lexicon.LoadLexicon(XLocation + 'LexX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
+    Lexicon.LoadLexicon(XLocation + 'brandX.txt')
+    Lexicon.LoadLexicon(XLocation + 'idiom4X.txt')
+    Lexicon.LoadLexicon(XLocation + 'idiomX.txt')
+    Lexicon.LoadLexicon(XLocation + 'locX.txt')
+    Lexicon.LoadLexicon(XLocation + 'perX.txt')
+    Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
+    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', forLookup=True)
 
 
-    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
-    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
-    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
-    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
+    LoadPipeline(XLocation + 'pipelineX.txt')
     if LoadCommonRules:
-        Rules.LoadRules("../../fsa/X/0defLexX.txt")
+        for action in PipeLine:
+            if action.startswith("FSA"):
+                Rulefile = action[3:].strip()
+                Rulefile = XLocation + Rulefile
+                Rules.LoadRules(Rulefile)
+        # Rules.LoadRules("../../fsa/X/0defLexX.txt")
         # Rules.LoadRules("../../fsa/Y/800VGy.txt")
         # Rules.LoadRules("../../fsa/Y/900NPy.xml")
         # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
         # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
 
-        Rules.LoadRules("../../fsa/X/idiomPlus.txt")
-        Rules.LoadRules("../../fsa/X/1Expert.txt")
-        Rules.LoadRules("../../fsa/X/1Grammar.txt")
-        Rules.LoadRules("../../fsa/X/5ngramMain.txt")
-
-
-        Rules.LoadRules("../../fsa/X/8Expert.txt")
-        Rules.LoadRules("../../fsa/X/8Grammar.txt")
-        Rules.LoadRules("../../fsa/X/10Expert.txt")
-        Rules.LoadRules("../../fsa/X/10Grammar.txt")
-        Rules.LoadRules("../../fsa/X/20Expert.txt")
-        Rules.LoadRules("../../fsa/X/20Grammar.txt")
-        Rules.LoadRules("../../fsa/X/30Expert.txt")
-        Rules.LoadRules("../../fsa/X/30Grammar.txt")
-        Rules.LoadRules("../../fsa/X/40Expert.txt")
-        Rules.LoadRules("../../fsa/X/40Grammar.txt")
-        Rules.LoadRules("../../fsa/X/50Expert.txt")
-        Rules.LoadRules("../../fsa/X/50Grammar.txt")
-        Rules.LoadRules("../../fsa/X/60Expert.txt")
-        Rules.LoadRules("../../fsa/X/60Grammar.txt")
-        Rules.LoadRules("../../fsa/X/70Expert.txt")
-        Rules.LoadRules("../../fsa/X/70Grammar.txt")
-        Rules.LoadRules("../../fsa/X/80Expert.txt")
-        Rules.LoadRules("../../fsa/X/80Grammar.txt")
-        Rules.LoadRules("../../fsa/X/90Expert.txt")
-        Rules.LoadRules("../../fsa/X/90Grammar.txt")
-        Rules.LoadRules("../../fsa/X/100Expert.txt")
-        Rules.LoadRules("../../fsa/X/100Grammar.txt")
-        Rules.LoadRules("../../fsa/X/180NPx.txt")
 
         #Rules.LoadRules("../../fsa/X/Q/rule/xac")
         # Rules.LoadRules("../../fsa/X/Q/rule/xab")
@@ -414,7 +413,7 @@ if __name__ == "__main__":
     LoadCommon(True)
 
     target = "不喜欢的也会拒而远之"
-    nodes, winningrules = MultiLevelSegmentation(target)
+    nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
         exit(1)

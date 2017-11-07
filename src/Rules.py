@@ -90,6 +90,9 @@ class RuleToken(object):
     def __init__(self):
         self.StartTrunk = 0
         self.EndTrunk = 0
+        self.repeat = [1,1]
+        self.word = ''
+        self.RestartPoint = False
 
     def __str__(self):
         output = ""
@@ -187,6 +190,12 @@ class Rule:
             self.RuleContent = ""
             return remaining
         ProcessTokens(self.Tokens)
+
+        if self.Tokens[0].StartTrunk:
+            logging.warning("This rule is started as trunk! add one universal token for it!")
+            UniversalToken = RuleToken()
+            UniversalToken.word = '[]'    #make it universal
+            self.Tokens = [UniversalToken] + self.Tokens
 
         return remaining
 
@@ -302,10 +311,7 @@ def ProcessTokens(Tokens):
         if node.word.startswith("`"):
             node.word = node.word.lstrip("`")
             node.RestartPoint = True
-        else:
-            node.RestartPoint = False
 
-        node.repeat = [1, 1]
         if node.word.endswith("?"):
             node.word = node.word.rstrip("?")
             node.repeat = [0, 1]

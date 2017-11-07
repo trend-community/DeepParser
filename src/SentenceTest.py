@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 TestSentence = unittestnode.TestSentence
             print("\n***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-            nodes, WinningRules = ProcessSentence.MultiLevelSegmentation(TestSentence)
+            nodes, WinningRules = ProcessSentence.LexicalAnalyze(TestSentence)
 
             if DebugMode:
                 print(jsonpickle.dumps(nodes.root()))

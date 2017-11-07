@@ -172,6 +172,7 @@ class SentenceLinkedList:
 
 
         logging.debug("combined as:" + str(NewNode))
+        return NewNode
 
     def root(self):
         length = self.size-1    #remove the first token (JS)
@@ -192,8 +193,8 @@ class SentenceNode(object):
         # self.SkipRead = False
         # self.StartTrunk = 0
         # self.EndTrunk = 0
-        self.StartOffset = -1
-        self.EndOffset = -1
+        self.StartOffset = 0
+        self.EndOffset = 0
         self.next = None
         self.prev = None
         self.sons = []
@@ -214,7 +215,7 @@ class SentenceNode(object):
         # self.SkipRead = False
         # self.StartTrunk = 0
         # self.EndTrunk = 0
-        self.EndOffset = self.StartOffset + len(self.word) - 1
+        self.EndOffset = self.StartOffset + len(self.word)
         self.sons = []
         self.next = None
         self.prev = None
