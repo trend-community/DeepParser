@@ -51,7 +51,10 @@ def LoadLexiconBlacklist(BlacklistLocation):
             pattern, _ = utils.SeparateComment(lined)
             if not pattern:
                 continue
-            _LexiconBlacklist.append(pattern)
+            blocks = [x.strip() for x in re.split(":", pattern) if x]
+            if not blocks:
+                continue
+            _LexiconBlacklist.append(blocks[0])
 
 
 def InLexiconBlacklist(word):
@@ -76,7 +79,7 @@ for line in fin:
                 continue    #ignore one character word.
             if digitsearch.search(chunk):
                 continue    #ignore digit
-            if len(chunk) == 2 and InLexiconBlacklist(chunk):
+            if InLexiconBlacklist(chunk):
                 continue
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
