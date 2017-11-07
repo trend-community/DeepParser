@@ -348,10 +348,10 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
 
 
-    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt')
-    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_3_list.txt')
-    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_4_list.txt')
-    # Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_5_list.txt')
+    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
+    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
+    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
+    Lexicon.LoadLexicon('../../fsa/X/Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
     if LoadCommonRules:
         Rules.LoadRules("../../fsa/X/0defLexX.txt")
@@ -412,7 +412,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "LCD屏幕面层很不错"
+    target = "见青春360左旋肉碱咖啡	2"
     nodes, winningrules = MultiLevelSegmentation(target)
     if not nodes:
         logging.warning("The result is None!")
