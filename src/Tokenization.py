@@ -1,7 +1,7 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
 import logging, requests, jsonpickle
-import FeatureOntology
+import FeatureOntology, Lexicon
 from utils import *
 
 #class EmptyBase(object): pass
@@ -141,7 +141,21 @@ class SentenceLinkedList:
         if count == 1:
             return  #we don't actually want to just wrap one word as one chunk
         NewNode, startnode, endnode = self.newnode(start, count)
-        NewNode.features = self.get(start+headindex).features
+
+        if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
+            NewNode.features.update(self.get(start+headindex).features)
+
+        JS2FeatureID = FeatureOntology.GetFeatureID("JS2")
+        JM2FeatureID = FeatureOntology.GetFeatureID("JM2")
+        JMFeatureID = FeatureOntology.GetFeatureID("JM")
+
+        if JS2FeatureID in startnode.features:
+            logging.debug("Because JS2 is in startnode" + str(startnode) + ", it is added into new node" + str(NewNode) )
+            NewNode.features.add(JS2FeatureID)
+        if JM2FeatureID in endnode.features:
+            NewNode.features.add(JM2FeatureID)
+        if JMFeatureID in endnode.features:
+            NewNode.features.add(JMFeatureID)
 
         NewNode.prev = startnode.prev
         if startnode != self.head:
@@ -156,7 +170,8 @@ class SentenceLinkedList:
 
         self.size = self.size - count + 1
 
-        logging.debug("combined as:" + NewNode.text)
+
+        logging.debug("combined as:" + str(NewNode))
 
     def root(self):
         r, _, _ = self.newnode(0, self.size)
@@ -180,6 +195,7 @@ class SentenceNode(object):
         self.prev = None
         self.sons = []
         self.UpperRelationship = ''
+        Lexicon.ApplyWordLengthFeature(self)
 
         #From webservice, only word/StartOffset/features are set,
         #    and the features are "list", need to change to "set"

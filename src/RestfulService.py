@@ -86,19 +86,6 @@ def ApplyLexiconToNodes():
 #     return jsonpickle.encode(nodes)
 
 
-@app.route("/MatchAndApplyAllRules", methods=['POST'])
-def MatchAndApplyAllRules():
-    nodes = jsonpickle.decode(request.data)
-    WinningRules = ProcessSentence.MatchAndApplyAllRules(nodes)
-    return jsonpickle.encode([WinningRules, nodes])
-
-
-@app.route("/MatchAndApplyRuleFile", methods=["POST"])
-def MatchAndApplyRuleFile():
-    nodes = jsonpickle.decode(request.form["nodes"])
-    RuleFileName = jsonpickle.decode(request.form["rulefilename"])
-    WinningRules = ProcessSentence.MatchAndApplyRuleFile(nodes, RuleFileName)
-    return jsonpickle.encode([WinningRules, nodes])
 
 
 @app.route("/OutputRules/<Mode>")
@@ -113,8 +100,8 @@ def OutputRules(Mode="concise"):
 def MultiLevelSegmentation(Sentence):
     if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
         Sentence = Sentence[1:-1]
-    else:
-        return "Quote your sentence in double quotes please"
+    # else:
+    #     return "Quote your sentence in double quotes please"
     nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
     #return  str(nodes)
     return nodes.root().CleanOutput().toJSON()

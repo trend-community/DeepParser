@@ -369,57 +369,6 @@ def ApplyLexicon(node, lex=None):
     return node
 
 
-#combining some tokens into one token and
-# (1) refresh with the lexical features;
-# (2) void the combined tokens with FEATURE:Gone
-def ChunkingLexicon(strtokens, length, lexicon):
-    logging.debug("Start chunking lexicon " + lexicon.word)
-    NewStems = []
-    for i in range(length):
-        NewStems.append( strtokens[i].stem)     # or StrTokens[i].lexicon.stem?
-        strtokens[i].Gone = True
-        strtokens[i].features = set()      #remove the existing features
-
-    if IsAscii(NewStems):
-        NewStem = "_".join(NewStems)
-    else:
-        NewStem = "".join(NewStems)
-    strtokens[0].stem = NewStem
-    #strtokens[0].word = NewStem
-    strtokens[0].Gone = False
-    #strtokens[0].lexicon = lexicon
-    ApplyLexicon(strtokens[0], lexicon)      #including features and stems
-
-
-# return the how many tokens combined together as the "word".
-# -1 if not matched.
-def HeadMatchLexicon(strTokens, word):
-    i = 0
-    CombinedString = ""
-    if not word.startswith(strTokens[0].stem):
-        return -1   #verify first stem to be the starting of word.
-    while i< len(strTokens):
-        # if not strTokens[i].stem:   #JS and other empty strings. ignore.
-        #     i += 1
-        #     continue                # do this judgment before it gets in here.
-        if IsAscii(CombinedString) \
-            and CombinedString:         #ignore the first word.
-            CombinedString += "_" + strTokens[i].stem
-        else:
-            CombinedString += strTokens[i].stem
-        if len(CombinedString) > len(word):
-            return -1
-        if len(CombinedString) == len(word):
-            if CombinedString.lower() == word.lower():
-                return i+1              # Return the length
-            else:
-                return -1
-        if not word.startswith(CombinedString):
-            return -1
-        i += 1
-
-    return -1
-
 #Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens):
@@ -449,9 +398,10 @@ def LexiconLookup(strTokens):
     i -= 1
     while i>0:
         if bestScore[i]>1:
-            strTokens.combine(i-bestScore[i], bestScore[i])
+            strTokens.combine(i-bestScore[i], bestScore[i], -1)
             i = i - bestScore[i]
             ApplyLexicon(strTokens.get(i))
+            logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1
 
@@ -461,6 +411,17 @@ if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+    LoadLexicon('../../fsa/X/LexX.txt')
+    LoadLexicon('../../fsa/X/LexXplus.txt')
+    LoadLexicon('../../fsa/X/brandX.txt')
+    LoadLexicon('../../fsa/X/idiom4X.txt')
+    LoadLexicon('../../fsa/X/idiomX.txt')
+    LoadLexicon('../../fsa/X/locX.txt')
+    LoadLexicon('../../fsa/X/perX.txt')
+    LoadLexicon('../../fsa/X/defPlus.txt')
+    LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
+
+
     para = dir_path + '/../../fsa/X/perX.txt'
     LoadLexicon(para)
     para = dir_path + '/../../fsa/X/defLexX.txt'

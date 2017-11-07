@@ -120,76 +120,6 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
     StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition)
     return ChunkLength+1
 
-#During chunking "+++", concatenate the stem of each token of this group
-# (find the starting point and ending point) into the current token stem
-# and mark the others Gone
-def ApplyChunking2(StrTokens, StrPosition, RuleTokens, RulePosition):
-    ToBeGoneList = []
-    RuleStartPos = RulePosition
-    StrStartPos = StrPosition
-    GoneInStrTokens = 0
-    while RuleStartPos >= 0:
-        while StrTokens[StrStartPos-GoneInStrTokens].Gone or StrTokens[StrStartPos-GoneInStrTokens].SkipRead:
-            logging.debug(str(StrTokens[StrStartPos-GoneInStrTokens]) + " is gone!")
-            GoneInStrTokens += 1
-            if StrStartPos-GoneInStrTokens < 0:
-                raise EOFError("Reached the start of the String!")
-        if RuleTokens[RuleStartPos].StartTrunk:
-            break
-        StrStartPos -= 1
-        RuleStartPos -= 1
-    if RuleStartPos == -1:
-        raise EOFError("Can't find StartTrunk")
-    StrStartPos = StrStartPos-GoneInStrTokens
-
-    logging.debug("set StrPosition=" + str(StrPosition) + " StrStartPos=" + str(StrStartPos) )
-    logging.debug("    GoneInStrTokens=" + str(GoneInStrTokens))
-
-    RuleEndPos = RulePosition
-    StrEndPos = StrPosition
-    GoneInStrTokens = 0
-    while RuleEndPos < len(RuleTokens):
-        while StrTokens[StrEndPos+GoneInStrTokens].Gone or StrTokens[StrEndPos+GoneInStrTokens].SkipRead:
-            GoneInStrTokens += 1
-            if StrEndPos+GoneInStrTokens > len(StrTokens):
-                raise EOFError("Reached the end of the String!")
-        if RuleTokens[RuleEndPos].EndTrunk:
-            break
-        StrEndPos += 1
-        RuleEndPos += 1
-    if RuleEndPos == len(RuleTokens):
-        logging.error("String:" + jsonpickle.dumps(StrTokens))
-        logging.error("Rule:" + jsonpickle.dumps(RuleTokens))
-        raise EOFError("Can't find EndTrunk")
-    StrEndPos = StrEndPos+GoneInStrTokens
-
-    logging.debug("StrPosition=" + str(StrPosition) + " StrStartPos=" + str(StrStartPos) + " StrEndPos=" + str(StrEndPos))
-    logging.debug("    GoneInStrTokens=" + str(GoneInStrTokens))
-    NewStems = []
-    for i in range(StrStartPos, StrEndPos+1):
-        if StrTokens[i].Gone:
-            continue
-        NewStems.append( StrTokens[i].stem)     # or StrTokens[i].lexicon.stem?
-        if i != StrPosition:
-            ToBeGoneList.append(i)
-        #StrTokens[i].Gone = True
-
-    StrTokens[StrStartPos].StartTrunk -= 1
-    StrTokens[StrEndPos].EndTrunk -= 1
-
-    if IsAscii(NewStems):
-        NewStem = " ".join(NewStems)
-    else:
-        NewStem = "".join(NewStems)
-    StrTokens[StrPosition].stem = NewStem
-    #StrTokens[StrPosition].Gone = False
-    StrTokens[StrPosition].StartOffset = StrTokens[StrStartPos].StartOffset
-    StrTokens[StrPosition].EndOffset = StrTokens[StrEndPos].EndOffset
-
-    Lexicon.ApplyWordLengthFeature(StrTokens[StrPosition])
-
-    return 0
-
 
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
@@ -343,7 +273,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     return WinningRules
 
 
-def MatchAndApplyAllRules(strtokens, ExcludeList):
+def _MatchAndApplyAllRules(strtokens, ExcludeList):
     WinningRules = []
     for RuleFileName in sorted(Rules.RuleGroupDict, key=Rules.RuleGroupDict.get):
         if RuleFileName in ExcludeList:
@@ -379,17 +309,17 @@ def MultiLevelSegmentation(Sentence):
         NodeList.tail.features.add(FeatureOntology.GetFeatureID('JM'))
         NodeList.tail.prev.features.add(FeatureOntology.GetFeatureID('JM2'))
 
-
+        WinningRules = []
 
         logging.debug("-Start MatchAndApplyRuleFile")
-        MatchAndApplyRuleFile(NodeList, "0defLexX.txt")
+        WinningRules.extend(MatchAndApplyRuleFile(NodeList, "0defLexX.txt"))
         logging.debug("-Start LexiconLookup")
         Lexicon.LexiconLookup(NodeList)
 
         #MatchAndApplyRuleFile(Nodes, "1test_rules.txt")
 
         logging.debug("-Start MatchAndApplyRuleFile rules except 0defLexX")
-        MatchAndApplyAllRules(NodeList, ExcludeList=["0defLexX.txt"])
+        WinningRules.extend(_MatchAndApplyAllRules(NodeList, ExcludeList=["0defLexX.txt"]))
 
         logging.debug("-End MultiLevelSegmentation")
 
@@ -398,7 +328,7 @@ def MultiLevelSegmentation(Sentence):
         logging.error(e)
         return None
 
-    return NodeList
+    return NodeList, WinningRules
 
 
 def LoadCommon(LoadCommonRules=False):
@@ -482,22 +412,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "中文切词分析"
-    nodes = MultiLevelSegmentation(target)
+    target = "LCD屏幕面层很不错"
+    nodes, winningrules = MultiLevelSegmentation(target)
     if not nodes:
         logging.warning("The result is None!")
         exit(1)
 
-    # for node in nodes:
-    #     print(str(node))
-
-    print(OutputStringTokens_oneliner(nodes))
-
-    # logging.info("\tStart matching rules! counterMatch=%s" % counterMatch)
-    # RuleNames = MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
-    # print("After match:")
-    # for node in nodes:
-    #     print(str(node))
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 

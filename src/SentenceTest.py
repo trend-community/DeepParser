@@ -1,4 +1,4 @@
-import logging, sys, re
+import logging, sys, re, jsonpickle
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 
@@ -19,7 +19,8 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon(True)
 
-    for RuleFile in Rules.RuleGroupDict:
+    FailedList = []
+    for RuleFile in sorted(Rules.RuleGroupDict, key=Rules.RuleGroupDict.get):
         print("Working on tests of " + RuleFile)
         rg = Rules.RuleGroupDict[RuleFile]
         for unittestnode in rg.UnitTest:
@@ -28,23 +29,27 @@ if __name__ == "__main__":
                 TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
             else:
                 TestSentence = unittestnode.TestSentence
-            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
+            print("\n***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-            nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
+            nodes, WinningRules = ProcessSentence.MultiLevelSegmentation(TestSentence)
 
             if DebugMode:
-                for node in nodes:
-                    print(node)
+                print(jsonpickle.dumps(nodes.root()))
 
-            WinningRules = ProcessSentence.MatchAndApplyAllRules(nodes, ExcludeList=["0defLexX.txt"])
+            Failed = True
             for WinningRule in WinningRules:
-                if Rules.GetPrefix(WinningRule) == Rules.GetPrefix(unittestnode.RuleName):
+                if WinningRule.startswith(unittestnode.RuleName):
                     print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
+                    Failed = False
                 else:
                     print("Matched this non-related rule:" + WinningRule)
 
-            if DebugMode:
-                for node in nodes:
-                    print(node)
+            if Failed:
+                FailedList.append({unittestnode.RuleName, TestSentence, ProcessSentence.OutputStringTokens_oneliner(nodes, NoFeature=True)})
+
     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
+
+    print("Failed list:")
+    for sample in FailedList:
+        print(str(sample))
 
