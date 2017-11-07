@@ -144,6 +144,8 @@ def OutputLexicon(EnglishFlag):
 
 
 def LoadLexiconBlacklist(BlacklistLocation):
+    if BlacklistLocation.startswith("."):
+        BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
     with open(BlacklistLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             word, _ = SeparateComment(line)
