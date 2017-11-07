@@ -148,11 +148,18 @@ def LoadLexiconBlacklist(BlacklistLocation):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
     with open(BlacklistLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            word, _ = SeparateComment(line)
-            if not word:
+            pattern, _ = SeparateComment(line)
+            if not pattern:
                 continue
-            _LexiconBlacklist.append(word)
+            _LexiconBlacklist.append(pattern)
 
+
+def InLexiconBlacklist(word):
+    for pattern in _LexiconBlacklist:
+        if re.match(pattern, word):
+            logging.debug("Blacklisted:" + word)
+            return True
+    return False
 
 def LoadLexicon(lexiconLocation, forLookup = False):
     global _LexiconDict, _LexiconLookupSet
@@ -182,8 +189,10 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             #Ditionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "").replace("~", "")
 
-            if word in _LexiconBlacklist:
-                continue
+            #if InLexiconBlacklist(word):
+            #    continue
+            ### This checking is only for external dictionary.
+            ### So let's apply it to them when generating (offline)
 
             node = SearchLexicon(word, 'origin')
             #node = None
@@ -200,8 +209,8 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                         node.norm = feature.strip('\'')
                     elif re.match('^/.*/$', feature):
                         node.atom = feature.strip('/')
-                    elif re.search(u'[\u4e00-\u9fff]', feature):
-                        node.stem = feature
+                    elif re.search(u'[\u4e00-\u9fff]', feature):    #Chinese
+                        node.norm = feature
                     else:
                         featureID = GetFeatureID(feature)
                         if featureID==-1:
@@ -242,7 +251,7 @@ def _ApplyWordStem(NewNode, lexiconnode):
 
     if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
         normnode = _LexiconDict[lexiconnode.norm]
-        NewNode.features.update(normnode.features)
+        #NewNode.features.update(normnode.features)
         if VBFeatureID in NewNode.features:
             if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
                     NewNode.features.remove(VBFeatureID)

@@ -24,8 +24,7 @@ for i in range(1, 15):
     shorlist = [k for k in viterbi1.querydict if len(k.split()) == i]
     for word in sorted(shorlist):
         word = word.replace(":", "\:")
-        if re.search(r'\d', word):
-            continue
+
         fout.write(''.join(word.split()) + "\n")
 
     fout.close()
