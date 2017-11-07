@@ -62,6 +62,7 @@ def InLexiconBlacklist(word):
     return False
 
 
+LoadLexiconBlacklist("../../fsa/X/LexBlacklist.txt")
 digitsearch = re.compile(r'\d')
 N = 0
 for line in fin:
@@ -71,13 +72,13 @@ for line in fin:
         [query, freqstring] = line.split("", 2)
         freq = int(freqstring)
         for chunk in query.split():
-            phrase = normalize(chunk)
-            if len(phrase) < 2:
+            if len(chunk) < 2:
                 continue    #ignore one character word.
-            if digitsearch.search(phrase):
+            if digitsearch.search(chunk):
                 continue    #ignore digit
-            if len(phrase) == 2 and InLexiconBlacklist(phrase):
+            if len(chunk) == 2 and InLexiconBlacklist(chunk):
                 continue
+            phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
             N = N + freq
     except Exception as e:
