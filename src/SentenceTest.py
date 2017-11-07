@@ -45,11 +45,12 @@ if __name__ == "__main__":
                     print("Matched this non-related rule:" + WinningRule)
 
             if Failed:
-                FailedList.append({unittestnode.RuleName, TestSentence, ProcessSentence.OutputStringTokens_oneliner(nodes, NoFeature=True)})
+                FailedList.append([unittestnode.RuleName, TestSentence, ProcessSentence.OutputStringTokens_oneliner(nodes, NoFeature=True)])
 
     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
 
     print("Failed list:")
+    print("Rulename,  Test Sample,   Result of analyzing test sample")
     for sample in FailedList:
         print(str(sample))
 
