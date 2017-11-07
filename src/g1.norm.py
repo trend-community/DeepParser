@@ -54,7 +54,7 @@ def LoadLexiconBlacklist(BlacklistLocation):
             blocks = [x.strip() for x in re.split(":", pattern) if x]
             if not blocks:
                 continue
-            _LexiconBlacklist.append(blocks[0])
+            _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
 
 
 def InLexiconBlacklist(word):
