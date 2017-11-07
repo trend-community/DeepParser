@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
 
-    print("Failed list:")
+    print("\nFailed list:")
     print("Rulename,  Test Sample,   Result of analyzing test sample")
     for sample in FailedList:
         print(str(sample))
