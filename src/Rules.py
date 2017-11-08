@@ -192,7 +192,6 @@ class Rule:
         ProcessTokens(self.Tokens)
 
         if self.Tokens[0].StartTrunk:
-            logging.warning("This rule is started as trunk! add one universal token for it!")
             UniversalToken = RuleToken()
             UniversalToken.word = '[]'    #make it universal
             self.Tokens = [UniversalToken] + self.Tokens
