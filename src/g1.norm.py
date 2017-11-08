@@ -76,6 +76,8 @@ for line in fin:
     try:
         [query, freqstring] = line.split("", 2)
         freq = int(freqstring)
+        if freq < 3:
+            continue
         for chunk in query.split():
             l = len(chunk)
             if l < 2:
