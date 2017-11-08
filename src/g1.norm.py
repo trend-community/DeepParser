@@ -23,7 +23,7 @@ def isNonHanzi(s): return all( (ord(c) < 0x4e00 or ord(c) > 0x9fff) for c in s)
 #==============================================================
 # command line
 #==============================================================
-import argparse, os, logging
+import argparse, os, logging, traceback
 import utils
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="input query unigram file")
@@ -92,6 +92,7 @@ for line in fin:
     except Exception as e:
         print("error in processing \n\t" + line)
         print(str(e))
+        logging.error(traceback.format_exc())
         continue
 fin.close()
 
