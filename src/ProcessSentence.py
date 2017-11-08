@@ -400,7 +400,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.ExpandRuleWildCard()
         Rules.ExpandParenthesisAndOrBlock()
         Rules.ExpandRuleWildCard()
-        Rules.PreProcess_CheckFeatures()
+        #Rules.PreProcess_CheckFeatures()
 
         Rules.OutputRuleFiles("../temp/")
         #print(Lexicon.OutputLexicon(False))
@@ -411,7 +411,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "企业所得税率"
+    target = "自营咖啡"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
