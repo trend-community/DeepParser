@@ -259,7 +259,7 @@ def GetFeatureID(feature):
     if feature in _FeatureDict:
         return _FeatureDict[feature]
 
-    if re.search(u'[\u4e00-\u9fff]', feature):
+    if ChinesePattern.search(feature):
         return -1   # Chinese is not a feature.
 
     logging.warning("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")

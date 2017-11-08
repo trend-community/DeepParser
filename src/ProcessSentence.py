@@ -358,7 +358,7 @@ def LoadCommon(LoadCommonRules=False):
     #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
 
     XLocation = '../../fsa/X/'
-    Lexicon.LoadLexiconBlacklist(XLocation + 'LexBlacklist.txt')
+    # Lexicon.LoadLexiconBlacklist(XLocation + 'LexBlacklist.txt')
 
     Lexicon.LoadLexicon(XLocation + 'LexX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')

@@ -2,7 +2,7 @@ import logging, re, json, jsonpickle
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
-
+ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
 # return -1 if failed. Should throw error?
@@ -52,6 +52,7 @@ def SearchPair(string, tagpair, Reverse=False):
     #return -1
 
 
+@lru_cache(50000)
 def _SeparateComment(line):
     line = line.strip()
     SlashLocation = line.find("//")
@@ -73,6 +74,7 @@ def SeparateComment(multiline):
     return content.strip(), comment.strip()
 
 
+@lru_cache(50000)
 #Can be expand for more scenario.
 # unicode numbers (or English "one", "two"...) should be in lexicon to have "CD" feature.
 #       so not to be included in here.
@@ -97,6 +99,7 @@ def IsAscii(Sentence):
         return True
 
 
+@lru_cache(50000)
 def RemoveExcessiveSpace(Content):
     #Remove any whitespace around | sign, so it ismade as a word.
     r = re.compile("\s*\|\s*", re.MULTILINE)
