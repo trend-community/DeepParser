@@ -99,7 +99,7 @@ class RuleToken(object):
         for _ in range(self.StartTrunk):
             output += "<"
         if hasattr(self, 'pointer'):
-            output += self.pointer
+            output += "[" + self.pointer + "]"
         t = self.word
         if hasattr(self, 'action'):
             t = t.replace("]", "[ACTION]" + self.action + "]")
@@ -928,8 +928,8 @@ def _PreProcess_CheckFeatures(OneList):
             logging.error(str(rule))
             OneList.remove(rule)
         for token in rule.Tokens:
-            #_CheckFeature(token, rule.RuleName)
-            token.word = _CheckFeature_returnword(token.word)
+            _CheckFeature(token, rule.RuleName)
+            #token.word = _CheckFeature_returnword(token.word)
 
 
 def _CheckFeature(token, rulename):
@@ -1163,7 +1163,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/mainX2.txt")
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
-    LoadRules("../../fsa/X/1Grammar.txt")
+    LoadRules("../../fsa/Y/1test_rules.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")

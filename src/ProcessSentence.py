@@ -400,7 +400,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.ExpandRuleWildCard()
         Rules.ExpandParenthesisAndOrBlock()
         Rules.ExpandRuleWildCard()
-        #Rules.PreProcess_CheckFeatures()
+        Rules.PreProcess_CheckFeatures()
 
         Rules.OutputRuleFiles("../temp/")
         #print(Lexicon.OutputLexicon(False))
