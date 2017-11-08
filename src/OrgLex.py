@@ -31,6 +31,7 @@ _LexiconDictDefPlusX = {}
 _LexiconDictLexPlusX = {}
 
 _MissingStem = set()
+_FeatureNotCopy = set()
 dictList = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -39,7 +40,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 paraMain = dir_path + '/../../fsa/X/main2017.txt'
 newPlus = dir_path + "/../../fsa/X/LexXplus.txt"
 paraDefPlus = dir_path + "/../../fsa/X/defPlus.txt"
-
+paraFeatureNotCopy = dir_path + "/../../fsa/Y/FeatureNotCopy.txt"
 
 def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
@@ -106,6 +107,15 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
 
     logging.debug("Finish loading lexicon")
 
+def FeatureNotCopy():
+    with open(paraFeatureNotCopy, encoding='utf-8') as file:
+        for line in file:
+            if line.startswith("//"):
+                continue
+            line = line.strip()
+            line = GetFeatureID(line)
+            _FeatureNotCopy.add(line)
+
 
 def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
 
@@ -159,6 +169,7 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
 
 
 def EnrichFeature( _LexiconDict):
+
     for word in _LexiconDict.keys():
         node = _LexiconDict.get(word)
         features = node.features
@@ -179,6 +190,7 @@ def EnrichFeature( _LexiconDict):
                 node.features = res
                 _LexiconDict.update({word:node})
 
+
     return _LexiconDict
 
 def GetStemFeatures(word):
@@ -186,7 +198,18 @@ def GetStemFeatures(word):
         if word in dict.keys():
             node = dict.get(word)
             features = node.features
-            return features
+            copyFeatures = features.copy()
+
+            for ID in features:
+                if ID in _FeatureNotCopy:
+                    copyFeatures.remove(ID)
+                    # ontologynode = SearchFeatureOntology(ID)
+                    # if ontologynode:
+                    #     ancestors = ontologynode.ancestors
+                    #     if ancestors:
+                    #         copyFeatures = copyFeatures.difference(ancestors)
+
+            return copyFeatures
     # logging.debug("stem does not exist" + word)
     _MissingStem.add(word)
     return None
@@ -313,6 +336,7 @@ def GenerateLexPlus():
     abID = GetFeatureID("ab")
     aabbID = GetFeatureID("aabb")
     xyID = GetFeatureID("xy")
+    neutralID = GetFeatureID("NEUTRAL")
     for lexDic in dictList:
         for word in lexDic.keys():
             node = lexDic.get(word)
@@ -535,6 +559,7 @@ def GenerateLexPlus():
                         newNode.text = newWord
                         newNode.norm = first + char + second + char
                         newNode.features = startwithFirstDict.get(char).features
+                        newNode.features.add(neutralID)
                         _LexiconDictDefPlus.update({newWord: newNode})
 
                     # newWord = word[1] + word[0] + char
@@ -627,6 +652,7 @@ def printSummaryLex():
                 file.write(word + "\t" + origLoc + "\n")
 
 
+
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -661,6 +687,7 @@ if __name__ == "__main__":
 
 
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
+    FeatureNotCopy()
 
     OrganizeLex(paraB, _CommentDictB, _LexiconDictB)
     OrganizeLex(paraP, _CommentDictP, _LexiconDictP)
