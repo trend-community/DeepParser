@@ -115,8 +115,8 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
 
 
 def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown"):
-    if not rule:  # "[]", not sure what that is.
-        return False
+    if not rule:  # for the comparison of "[]", can match anything
+        return True
 
     strToken = StrTokenList.get(StrPosition)
     rule, matchtype = CheckPrefix(rule, matchtype)
