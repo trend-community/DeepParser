@@ -65,7 +65,7 @@ if __name__ == "__main__":
             if DebugMode:
                 print("*** runing sentence: " + TestSentence)
 
-            nodes = ProcessSentence.MultiLevelSegmentation(TestSentence)
+            nodes, _ = ProcessSentence.LexicalAnalyze(TestSentence)
 
             if DebugMode:
                 for node in nodes:

@@ -96,34 +96,36 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
     Offset = RulePointerPos - RulePosition  #might be positive, or negative
 
     StrPointerPos = StrPosition+Offset
+    StrPointerToken = StrTokenList.get(StrPointerPos)
+    strToken = StrTokenList.get(StrPosition)
 
     if matchtype == "text":
-        return StrTokenList.get(StrPointerPos).text == StrTokenList.get(StrPosition).text \
-                or (PointerIsPrefix and StrTokenList.get(StrPointerPos).text.startswith(StrTokenList.get(StrPosition).text)) \
-               or (PointerIsSuffix and StrTokenList.get(StrPointerPos).text.endswith(StrTokenList.get(StrPosition).text)  )
+        return StrPointerToken.text == strToken.text \
+                or (PointerIsPrefix and StrPointerToken.text.startswith(strToken.text)) \
+               or (PointerIsSuffix and StrPointerToken.text.endswith(strToken.text)  )
     elif matchtype == "norm":
-        return StrTokenList.get(StrPointerPos).norm == StrTokenList.get(StrPosition).norm \
-                or (PointerIsPrefix and StrTokenList.get(StrPointerPos).norm.startswith(StrTokenList.get(StrPosition).norm)) \
-               or (PointerIsSuffix and StrTokenList.get(StrPointerPos).norm.endswith(StrTokenList.get(StrPosition).norm)  )
+        return StrPointerToken.norm == StrTokenList.get(StrPosition).norm \
+                or (PointerIsPrefix and StrPointerToken.norm.startswith(strToken.norm)) \
+               or (PointerIsSuffix and StrPointerToken.norm.endswith(strToken.norm)  )
     elif matchtype == "atom":
-        return StrTokenList.get(StrPointerPos).atom == StrTokenList.get(StrPosition).atom \
-                or (PointerIsPrefix and StrTokenList.get(StrPointerPos).atom.startswith(StrTokenList.get(StrPosition).atom)) \
-               or (PointerIsSuffix and StrTokenList.get(StrPointerPos).atom.endswith(StrTokenList.get(StrPosition).atom)  )
+        return StrPointerToken.atom == StrTokenList.get(StrPosition).atom \
+                or (PointerIsPrefix and StrPointerToken.atom.startswith(strToken.atom)) \
+               or (PointerIsSuffix and StrPointerToken.atom.endswith(strToken.atom)  )
     else:
         logging.error("Rule token:" + str(RuleTokens[RulePosition]))
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
-
+CombinedPattern = re.compile('[| !]')
 def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown"):
-    if not rule:  # "[]", not sure what that is.
-        return False
+    if not rule:  # for the comparison of "[]", can match anything
+        return True
 
     strToken = StrTokenList.get(StrPosition)
     rule, matchtype = CheckPrefix(rule, matchtype)
     if matchtype == "unknown":
         return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition)
 
-    if not re.search('[| !]', rule):
+    if not CombinedPattern.search( rule):
         if rule.startswith("^"):
 
             #This is a pointer!

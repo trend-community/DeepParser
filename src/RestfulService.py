@@ -102,17 +102,25 @@ def MultiLevelSegmentation(Sentence):
         Sentence = Sentence[1:-1]
     # else:
     #     return "Quote your sentence in double quotes please"
-    nodes, winningrules = ProcessSentence.MultiLevelSegmentation(Sentence)
+    nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
     #return  str(nodes)
-    return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
+    #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
+    return nodes.root().CleanOutput().toJSON()
 
 
-@app.route("/Analyze", methods=['PUT', 'POST'])
+#Following the instruction in pipelineX.txt
+@app.route("/LexicalAnalyze/<everything:Sentence>")
 @app.cache.cached(timeout=10)  # cache this view for 10 seconds
-def Analyze(Sentence):
-    Sentence = request.form['Sentence']
-    nodes = ProcessSentence.MultiLevelSegmentation(Sentence)
-    return jsonpickle.encode(nodes)
+def LexicalAnalyze(Sentence):
+    if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
+        Sentence = Sentence[1:-1]
+    # else:
+    #     return "Quote your sentence in double quotes please"
+    nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
+    #return  str(nodes)
+    #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
+    return nodes.root().CleanOutput().toJSON()
+
 
 
 # @app.route("/OutputWinningRules")

@@ -14,8 +14,9 @@ import Tokenization
 
 _LexiconDict = {}
 _LexiconLookupSet = set()
-_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
+#_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
+#_LexiconBlacklist = []
 _CommentDict = {}
 
 C1ID = None
@@ -41,7 +42,7 @@ class LexiconNode(object):
             if f:
                 output += f + ","
             else:
-                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
+                logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return output
 
     def entry(self):
@@ -141,6 +142,25 @@ def OutputLexicon(EnglishFlag):
 
     return Output
 
+
+# def LoadLexiconBlacklist(BlacklistLocation):
+#     if BlacklistLocation.startswith("."):
+#         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
+#     with open(BlacklistLocation, encoding="utf-8") as dictionary:
+#         for line in dictionary:
+#             pattern, _ = SeparateComment(line)
+#             if not pattern:
+#                 continue
+#             _LexiconBlacklist.append(pattern)
+
+
+# def InLexiconBlacklist(word):
+#     for pattern in _LexiconBlacklist:
+#         if re.match(pattern, word):
+#             logging.debug("Blacklisted:" + word)
+#             return True
+#     return False
+
 def LoadLexicon(lexiconLocation, forLookup = False):
     global _LexiconDict, _LexiconLookupSet
     global _CommentDict
@@ -169,6 +189,11 @@ def LoadLexicon(lexiconLocation, forLookup = False):
             #Ditionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "").replace("~", "")
 
+            #if InLexiconBlacklist(word):
+            #    continue
+            ### This checking is only for external dictionary.
+            ### So let's apply it to them when generating (offline)
+
             node = SearchLexicon(word, 'origin')
             #node = None
             if not node:
@@ -184,8 +209,8 @@ def LoadLexicon(lexiconLocation, forLookup = False):
                         node.norm = feature.strip('\'')
                     elif re.match('^/.*/$', feature):
                         node.atom = feature.strip('/')
-                    elif re.search(u'[\u4e00-\u9fff]', feature):
-                        node.stem = feature
+                    elif ChinesePattern.search(feature):    #Chinese
+                        node.norm = feature
                     else:
                         featureID = GetFeatureID(feature)
                         if featureID==-1:
@@ -217,21 +242,6 @@ def LoadLexicon(lexiconLocation, forLookup = False):
 
     logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconDict)))
 
-    GenerateLookupDict(_LexiconLookupSet)
-
-
-def GenerateLookupDict(lookupset):
-    global _LexiconLookupDict
-    for word in lookupset:
-        partialword = ""
-        for character in word:
-            partialword += character
-            if partialword in _LexiconLookupDict:
-                _LexiconLookupDict[partialword].add(word)
-            else:
-                _LexiconLookupDict[partialword] = {word}
-
-
 
 def _ApplyWordStem(NewNode, lexiconnode):
     #VFeatureID = GetFeatureID("deverbal")
@@ -241,7 +251,7 @@ def _ApplyWordStem(NewNode, lexiconnode):
 
     if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
         normnode = _LexiconDict[lexiconnode.norm]
-        NewNode.features.update(normnode.features)
+        #NewNode.features.update(normnode.features)
         if VBFeatureID in NewNode.features:
             if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
                     NewNode.features.remove(VBFeatureID)
@@ -259,6 +269,9 @@ def SearchLexicon(word, SearchType='flexible'):
         return _LexiconDict.get(word)
 
     if SearchType != 'flexible':
+        return None
+
+    if ChinesePattern.search(word):
         return None
 
     word = word.lower()
@@ -383,7 +396,7 @@ def LexiconLookup(strTokens):
         if p.text:
             combinedText += p.text
             combinedCount += 1
-            if combinedText in _LexiconLookupDict:
+            if combinedText in _LexiconLookupSet:
                 logging.debug("i=" + str(i) + " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[i] = combinedCount
 
@@ -398,9 +411,10 @@ def LexiconLookup(strTokens):
     i -= 1
     while i>0:
         if bestScore[i]>1:
-            strTokens.combine(i-bestScore[i], bestScore[i], -1)
+            NewNode = strTokens.combine(i-bestScore[i], bestScore[i], -1)
             i = i - bestScore[i]
-            ApplyLexicon(strTokens.get(i))
+            ApplyLexicon(NewNode)
+            NewNode.sons = []   #For lookup, eliminate the sons
             logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1
