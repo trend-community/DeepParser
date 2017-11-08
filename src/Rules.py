@@ -102,7 +102,7 @@ class RuleToken(object):
             output += self.pointer
         t = self.word
         if hasattr(self, 'action'):
-            t = t.replace("]", ":" + self.action + "]")
+            t = t.replace("]", "[ACTION]" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])
@@ -928,18 +928,25 @@ def _PreProcess_CheckFeatures(OneList):
             logging.error(str(rule))
             OneList.remove(rule)
         for token in rule.Tokens:
+            #_CheckFeature(token, rule.RuleName)
+            token.word = _CheckFeature_returnword(token.word)
+
+
+def _CheckFeature(token, rulename):
             word = token.word
-            if len(word) <= 2:
-                continue
+
             try:
-                if word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
-                    word = word[1:-1]
+                if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
+                    word = word[1:-1].strip()
 
                 word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
             except RuntimeError as e:
-                logging.error("Error for rule:" + rule.RuleName)
+                logging.error("Error for rule:" + rulename)
                 logging.error(str(e))
-                continue
+                return
+
+            if not word:
+                return
 
             if matchtype == 'norm':
                 if "|" in word:
@@ -949,7 +956,18 @@ def _PreProcess_CheckFeatures(OneList):
                     else:
                         token.word = "['" + "'|'".join(items) + "']"
                 elif " " in word:  # 'this is a good': separate as multiple token.
-                    logging.warning("The rule is: " + str(rule))
+                    logging.warning("The rule is: " + rulename)
+                    raise NotImplementedError("TODO: separate this as multiple token")
+
+            elif matchtype == 'atom':
+                if "|" in word:
+                    items = re.split("\|", word.lstrip("!"))
+                    if word.startswith("!"):
+                        token.word = "[!/" + "/|/".join(items) + "/]"
+                    else:
+                        token.word = "[/" + "/|/".join(items) + "/]"
+                elif " " in word:  # 'this is a good': separate as multiple token.
+                    logging.warning("The rule is: " + rulename)
                     raise NotImplementedError("TODO: separate this as multiple token")
 
             elif matchtype == 'text':
@@ -978,9 +996,9 @@ def _PreProcess_CheckFeatures(OneList):
                             prefix = ""
                             OrBlocks = LogicOperation_SeparateOrBlocks(word)
                     except RuntimeError as e:
-                        logging.error("Error for rule:" + rule.RuleName)
+                        logging.error("Error for rule:" + rulename)
                         logging.error(str(e))
-                        continue  # not to process the rest.
+                        return  # not to process the rest.
 
                     token.word = prefix + "["
                     for OrBlock in OrBlocks:
@@ -1002,6 +1020,95 @@ def _PreProcess_CheckFeatures(OneList):
                         else:
                             token.word += AndBlock + " "
                     token.word = re.sub(" $", "]", token.word)
+
+
+
+def _CheckFeature_returnword(word):
+
+            try:
+                if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
+                    word = word[1:-1].strip()
+
+                word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+            except RuntimeError as e:
+
+                logging.error(str(e))
+                return ''
+
+            if not word:
+                return ''
+
+            if matchtype == 'norm':
+                if "|" in word:
+                    items = re.split("\|", word.lstrip("!"))
+                    if word.startswith("!"):
+                        return "[!'" + "'|'".join(items) + "']"
+                    else:
+                        return "['" + "'|'".join(items) + "']"
+                elif " " in word:  # 'this is a good': separate as multiple token.
+                    raise NotImplementedError("TODO: separate this as multiple token")
+
+            elif matchtype == 'atom':
+                if "|" in word:
+                    items = re.split("\|", word.lstrip("!"))
+                    if word.startswith("!"):
+                        return "[!/" + "/|/".join(items) + "/]"
+                    else:
+                        return "[/" + "/|/".join(items) + "/]"
+                elif " " in word:  # 'this is a good': separate as multiple token.
+                    raise NotImplementedError("TODO: separate this as multiple token")
+
+            elif matchtype == 'text':
+                if "|" in word:
+                    items = re.split("\|", word.lstrip("!"))
+                    if word.startswith("!"):
+                        return "[!\"" + "\"|\"".join(items) + "\"]"
+                    else:
+                        return "[\"" + "\"|\"".join(items) + "\"]"
+                elif " " in word:  # 'this is a good': separate as multiple token.
+                    raise NotImplementedError("TODO: separate this as multiple token")
+
+            elif matchtype == 'unknown':
+                if not re.search('[| !]', word):
+                    if FeatureOntology.GetFeatureID(word) == -1:
+                        # logging.warning("Will treat this word as a stem:" + word)
+                        return "['" + word + "']"
+                elif "|" in word and " " not in word and "[" not in word:
+                    # be aware of ['and|or|of|that|which'|PP|CM]
+                    try:
+                        if word.startswith("!"):
+                            prefix = "!"
+                            OrBlocks = LogicOperation_SeparateOrBlocks(word[1:])
+
+                        else:
+                            prefix = ""
+                            OrBlocks = LogicOperation_SeparateOrBlocks(word)
+                    except RuntimeError as e:
+                        logging.error("Error for rule:" + word )
+                        logging.error(str(e))
+                        return  # not to process the rest.
+
+                    newword = prefix + "["
+                    for OrBlock in OrBlocks:
+                        _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
+                        if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
+                            # logging.warning("Will treat this as a stem:" + OrBlock)
+                            newword += "'" + OrBlock + "'|"
+                        else:
+                            newword += OrBlock + "|"
+                    return re.sub("\|$", "]", newword)
+                elif " " in word and "|" not in word and "[" not in word:
+                    # be aware of ['and|or|of|that|which'|PP|CM]
+                    AndBlocks = word.split()
+                    newword = "["
+                    for AndBlock in AndBlocks:
+                        _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
+                        if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
+                            newword += "'" + AndBlock + "' "
+                        else:
+                            newword += AndBlock + " "
+                    return re.sub(" $", "]", newword)
+            return word
 
 
 def OutputRules(rulegroup, style="details"):
@@ -1057,11 +1164,11 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     LoadRules("../../fsa/X/1Grammar.txt")
-    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
-    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
-    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
-    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_6_list.txt")
-    LoadRules("../../fsa/X/Q/rule/CleanRule_gram_7_list.txt")
+    # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
+    # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
+    # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
+    # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_6_list.txt")
+    # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_7_list.txt")
 
     #LoadRules("../../fsa/X/10compound.txt")
 

@@ -370,11 +370,10 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', forLookup=True)
 
-
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
     if LoadCommonRules:
@@ -412,7 +411,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon(True)
 
-    target = "不喜欢的也会拒而远之"
+    target = "企业所得税率"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")

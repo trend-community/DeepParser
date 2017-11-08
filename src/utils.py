@@ -120,6 +120,7 @@ def RemoveExcessiveSpace(Content):
 SignsToIgnore = "{};"
 Pairs = ['[]', '()', '""', '\'\'', '//']
 
+@lru_cache(50000)
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
 #   close at a space, or starting of next token.
@@ -167,6 +168,7 @@ def SearchToEnd(string, Reverse=False):
 
 #Return the word before the first "_";
 # If there is no "_", return the whole word
+@lru_cache(50000)
 def GetPrefix(Name):
     match = re.findall("(.*?)_\d", Name)
     if match:
