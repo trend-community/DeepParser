@@ -1,32 +1,14 @@
 import logging, re, json, jsonpickle
+from functools import lru_cache
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
-# return -1 if failed. Should throw error?
-def _SearchPair_old(string, tagpair):
-    depth = 0
-    i = 0
-    currentTagIndex = 0
-    targetTagIndex = 1
 
-    while 0<=i<len(string):
-        if string[i] == tagpair[targetTagIndex]:
-            depth -= 1
-            if depth == -1: # found!
-                return i
-        if string[i] == tagpair[currentTagIndex]:
-            depth += 1
-        i += 1
-    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise RuntimeError(" Can't find a pair tag!" + string)
-    #return -1
-
-from functools import lru_cache
 # return -1 if failed. Should throw error?
-#@lru_cache(1000000)
+@lru_cache(1000000)
 def SearchPair(string, tagpair, Reverse=False):
     depth = 0
     if Reverse:
@@ -48,7 +30,8 @@ def SearchPair(string, tagpair, Reverse=False):
             depth += 1
         i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise RuntimeError(" Can't find a pair tag!" + string)
+    return -1
+    #raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
 
@@ -61,6 +44,7 @@ def _SeparateComment(line):
     else:
         return line[:SlashLocation].strip(), line[SlashLocation+2:].strip()
 
+@lru_cache(50000)
 def SeparateComment(multiline):
     lines = multiline.splitlines()
     content = ""
@@ -74,7 +58,7 @@ def SeparateComment(multiline):
     return content.strip(), comment.strip()
 
 
-@lru_cache(50000)
+@lru_cache(100000)
 #Can be expand for more scenario.
 # unicode numbers (or English "one", "two"...) should be in lexicon to have "CD" feature.
 #       so not to be included in here.

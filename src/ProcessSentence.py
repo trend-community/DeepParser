@@ -403,6 +403,7 @@ def LoadCommon(LoadCommonRules=False):
         Rules.PreProcess_CheckFeatures()
 
         Rules.OutputRuleFiles("../temp/")
+        Lexicon.OutputLexiconFile("../temp/")
         #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":

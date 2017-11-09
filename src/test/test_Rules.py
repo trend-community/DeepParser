@@ -1,8 +1,9 @@
 
 import unittest
 from Rules import *
-from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock, _CheckFeature
-
+from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock
+from Rules import _CheckFeature, _CheckFeature_returnword
+import FeatureOntology
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -307,6 +308,7 @@ class RuleTest(unittest.TestCase):
         _CheckFeature(r.Tokens[1], 'new')
 
     def test_CheckFeature(self):
+        FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
         rulegroup = RuleGroup("test")
         ResetRules(rulegroup)
@@ -326,7 +328,21 @@ class RuleTest(unittest.TestCase):
         InsertRuleInList("""30expert1 == < ['第-|前-' ordinal :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
         r = rulegroup.RuleList[2]
         _CheckFeature(r.Tokens[1], 'new')
-        self.assertEqual(r.Tokens[1].word, "['第-'|'前-']")
+        print(r.Tokens[1])
+
+        r.Tokens[1].word = _CheckFeature_returnword(r.Tokens[1].word)
+        print(r.Tokens[1])
+        #self.assertEqual(r.Tokens[1].word, "['第-'|'前-' ordinal]")
+
+
+        InsertRuleInList("""30expert3 ==  ['and|or|of|that|which' | PP | CM]""", rulegroup)
+        r = rulegroup.RuleList[3]
+        #_CheckFeature(r.Tokens[0], 'new')
+        print(r)
+        print(r.Tokens[0])
+        r.Tokens[0].word = _CheckFeature_returnword(r.Tokens[0].word)
+        print(r.Tokens[0])
+
 
     def test_ExpandOrBlock(self):
         rulegroup = RuleGroup("test")

@@ -23,7 +23,6 @@ def CheckPrefix(word, matchtype):
 
     prefix = ""
 
-
     if word[0] == "!":
         prefix = "!"
         word = word.lstrip("!")

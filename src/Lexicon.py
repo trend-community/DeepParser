@@ -122,7 +122,7 @@ def RealLength(x):
     return len(x)
 
 
-def OutputLexicon(EnglishFlag):
+def OutputLexicon(EnglishFlag = False):
     # print("//***Lexicon***")
     Output = ""
     if _CommentDict.get("firstCommentLine"):
@@ -141,6 +141,15 @@ def OutputLexicon(EnglishFlag):
         oldWord = word
 
     return Output
+
+
+def OutputLexiconFile(FolderLocation):
+    if FolderLocation.startswith("."):
+        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FolderLocation)
+    FileLocation = os.path.join(FolderLocation, "lexicon.txt")
+
+    with open(FileLocation, "w", encoding="utf-8") as writer:
+        writer.write(OutputLexicon())
 
 
 # def LoadLexiconBlacklist(BlacklistLocation):
