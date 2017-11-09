@@ -99,7 +99,7 @@ class RuleToken(object):
         for _ in range(self.StartTrunk):
             output += "<"
         if hasattr(self, 'pointer'):
-            output += "[" + self.pointer + "]"
+            output += self.pointer + "*"
         t = self.word
         if hasattr(self, 'action'):
             t = t.replace("]", "[ACTION]" + self.action + "]")
@@ -700,8 +700,8 @@ def _ExpandParenthesis(OneList):
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
-            if (token.word.startswith("(") and len(token.word) == 2 + SearchPair(token.word[1:], ["(", ")"])) \
-                    or (token.word.startswith("[(") and len(token.word) == 4 + SearchPair(token.word[2:], ["(", ")"])):
+            if (token.word.startswith("(") and len(token.word) == 2 + SearchPair(token.word[1:], "()")) \
+                    or (token.word.startswith("[(") and len(token.word) == 4 + SearchPair(token.word[2:], "()")):
                 # logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
                 parenthesisIndex = token.word.find("(")
                 try:
@@ -928,8 +928,8 @@ def _PreProcess_CheckFeatures(OneList):
             logging.error(str(rule))
             OneList.remove(rule)
         for token in rule.Tokens:
-            _CheckFeature(token, rule.RuleName)
-            #token.word = _CheckFeature_returnword(token.word)
+            #_CheckFeature(token, rule.RuleName)
+            token.word = _CheckFeature_returnword(token.word)
 
 
 def _CheckFeature(token, rulename):
@@ -1029,42 +1029,39 @@ def _CheckFeature_returnword(word):
                 if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
                     word = word[1:-1].strip()
 
-                word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+                _, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
             except RuntimeError as e:
 
                 logging.error(str(e))
                 return ''
 
             if not word:
-                return ''
+                return '[]'
+
+            prefix = ""
+
+            if word[0] == "!":
+                prefix = "!"
+                word = word.lstrip("!")
 
             if matchtype == 'norm':
                 if "|" in word:
-                    items = re.split("\|", word.lstrip("!"))
-                    if word.startswith("!"):
-                        return "[!'" + "'|'".join(items) + "']"
-                    else:
-                        return "['" + "'|'".join(items) + "']"
+                    items = re.split("\|", word)
+                    word =  "'|'".join(items)
                 elif " " in word:  # 'this is a good': separate as multiple token.
                     raise NotImplementedError("TODO: separate this as multiple token")
 
             elif matchtype == 'atom':
                 if "|" in word:
-                    items = re.split("\|", word.lstrip("!"))
-                    if word.startswith("!"):
-                        return "[!/" + "/|/".join(items) + "/]"
-                    else:
-                        return "[/" + "/|/".join(items) + "/]"
+                    items = re.split("\|", word)
+                    word = "/|/".join(items)
                 elif " " in word:  # 'this is a good': separate as multiple token.
                     raise NotImplementedError("TODO: separate this as multiple token")
 
             elif matchtype == 'text':
                 if "|" in word:
-                    items = re.split("\|", word.lstrip("!"))
-                    if word.startswith("!"):
-                        return "[!\"" + "\"|\"".join(items) + "\"]"
-                    else:
-                        return "[\"" + "\"|\"".join(items) + "\"]"
+                    items = re.split("\|", word)
+                    word = "\"|\"".join(items)
                 elif " " in word:  # 'this is a good': separate as multiple token.
                     raise NotImplementedError("TODO: separate this as multiple token")
 
@@ -1072,7 +1069,7 @@ def _CheckFeature_returnword(word):
                 if not re.search('[| !]', word):
                     if FeatureOntology.GetFeatureID(word) == -1:
                         # logging.warning("Will treat this word as a stem:" + word)
-                        return "['" + word + "']"
+                        word = "'" + word + "'"
                 elif "|" in word and " " not in word and "[" not in word:
                     # be aware of ['and|or|of|that|which'|PP|CM]
                     try:
@@ -1108,7 +1105,7 @@ def _CheckFeature_returnword(word):
                         else:
                             newword += AndBlock + " "
                     return re.sub(" $", "]", newword)
-            return word
+            return "[" + word + "]"
 
 
 def OutputRules(rulegroup, style="details"):
