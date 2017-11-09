@@ -101,6 +101,8 @@ def LexicalAnalyze():
     logging.info("Type=" + str(Type))
     if Type == "simple":
         return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+    elif Type == "simplefeature":
+        return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
     else:
         return nodes.root().CleanOutput().toJSON()
 
