@@ -405,7 +405,8 @@ def LoadCommon():
 
     Rules.OutputRuleFiles("../temp/")
     logging.debug("Start writing temporary lex file.")
-    Lexicon.OutputLexiconFile("../temp/")
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        Lexicon.OutputLexiconFile("../temp/")
     logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
 
