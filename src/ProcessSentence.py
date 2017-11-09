@@ -401,12 +401,13 @@ def LoadCommon():
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
     Rules.PreProcess_CheckFeatures()
-    logging.debug("Start writing temporary rule files")
 
-    Rules.OutputRuleFiles("../temp/")
-    logging.debug("Start writing temporary lex file.")
     if logging.getLogger().isEnabledFor(logging.DEBUG):
+        logging.debug("Start writing temporary rule files")
+        Rules.OutputRuleFiles("../temp/")
+        logging.debug("Start writing temporary lex file.")
         Lexicon.OutputLexiconFile("../temp/")
+
     logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
 
