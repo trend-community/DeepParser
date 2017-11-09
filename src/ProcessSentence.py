@@ -185,8 +185,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
                     token.Gone = True
                 if ActionID != -1:
-                    if Action == "+++":
-                        logging.warning("Applying +++ to:" + str(token))
                     ApplyFeature(token.features, ActionID)
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
@@ -302,7 +300,6 @@ def DynamicPipeline(NodeList):
 
         if action.startswith("lookup"):
             Lexicon.LexiconLookup(NodeList)
-
     return  WinningRules
 
 
