@@ -283,7 +283,7 @@ class SentenceNode(object):
 class JsonClass(object):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
-                          ensure_ascii=False)
+                         sort_keys=True, ensure_ascii=False)
 
 
 def Tokenize_space(sentence):

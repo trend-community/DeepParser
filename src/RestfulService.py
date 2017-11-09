@@ -91,7 +91,7 @@ def MultiLevelSegmentation(Sentence):
 def LexicalAnalyze():
     Sentence = request.args.get('Sentence')
     Type = request.args.get('Type')
-    if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
+    if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
     # else:
     #     return "Quote your sentence in double quotes please"
