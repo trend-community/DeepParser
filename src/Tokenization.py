@@ -150,7 +150,6 @@ class SentenceLinkedList:
         JMFeatureID = FeatureOntology.GetFeatureID("JM")
 
         if JS2FeatureID in startnode.features:
-            logging.debug("Because JS2 is in startnode" + str(startnode) + ", it is added into new node" + str(NewNode) )
             NewNode.features.add(JS2FeatureID)
         if JM2FeatureID in endnode.features:
             NewNode.features.add(JM2FeatureID)

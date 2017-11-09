@@ -330,9 +330,9 @@ class RuleTest(unittest.TestCase):
         _CheckFeature(r.Tokens[1], 'new')
         print(r.Tokens[1])
 
-        r.Tokens[1].word = _CheckFeature_returnword(r.Tokens[1].word)
+        r.Tokens[1].word = "[" + _CheckFeature_returnword(r.Tokens[1].word) + "]"
         print(r.Tokens[1])
-        #self.assertEqual(r.Tokens[1].word, "['第-'|'前-' ordinal]")
+        self.assertEqual(r.Tokens[1].word, "['第-'|'前-' ordinal]")
 
 
         InsertRuleInList("""30expert3 ==  ['and|or|of|that|which' | PP | CM]""", rulegroup)
@@ -343,6 +343,14 @@ class RuleTest(unittest.TestCase):
         r.Tokens[0].word = _CheckFeature_returnword(r.Tokens[0].word)
         print(r.Tokens[0])
 
+        InsertRuleInList("""2ExpertDomain ==  <[慢性:^.M] [!punc|xC|v:^.m] [sufferFrom: NP an term]> """, rulegroup)
+        r = rulegroup.RuleList[4]
+        # _CheckFeature(r.Tokens[0], 'new')
+        print(r)
+        print(r.Tokens[2])
+        r.Tokens[2].word = "[" + _CheckFeature_returnword(r.Tokens[2].word) + "]"
+        print(r.Tokens[2])
+        self.assertEqual(r.Tokens[2].word, "[!punc|xC|v]")
 
     def test_ExpandOrBlock(self):
         rulegroup = RuleGroup("test")

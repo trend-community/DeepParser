@@ -99,10 +99,10 @@ class RuleToken(object):
         for _ in range(self.StartTrunk):
             output += "<"
         if hasattr(self, 'pointer'):
-            output += self.pointer + "*"
+            output += self.pointer
         t = self.word
         if hasattr(self, 'action'):
-            t = t.replace("]", "[ACTION]" + self.action + "]")
+            t = t.replace("]", ":" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])
@@ -929,7 +929,7 @@ def _PreProcess_CheckFeatures(OneList):
             OneList.remove(rule)
         for token in rule.Tokens:
             #_CheckFeature(token, rule.RuleName)
-            token.word = _CheckFeature_returnword(token.word)
+            token.word = "[" +  _CheckFeature_returnword(token.word) + "]"
 
 
 def _CheckFeature(token, rulename):
@@ -1036,7 +1036,7 @@ def _CheckFeature_returnword(word):
                 return ''
 
             if not word:
-                return '[]'
+                return ''
 
             prefix = ""
 
@@ -1073,19 +1073,13 @@ def _CheckFeature_returnword(word):
                 elif "|" in word and " " not in word and "[" not in word:
                     # be aware of ['and|or|of|that|which'|PP|CM]
                     try:
-                        if word.startswith("!"):
-                            prefix = "!"
-                            OrBlocks = LogicOperation_SeparateOrBlocks(word[1:])
-
-                        else:
-                            prefix = ""
-                            OrBlocks = LogicOperation_SeparateOrBlocks(word)
+                        OrBlocks = LogicOperation_SeparateOrBlocks(word)
                     except RuntimeError as e:
                         logging.error("Error for rule:" + word )
                         logging.error(str(e))
                         return  # not to process the rest.
 
-                    newword = prefix + "["
+                    newword = ""
                     for OrBlock in OrBlocks:
                         _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
                         if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
@@ -1093,19 +1087,15 @@ def _CheckFeature_returnword(word):
                             newword += "'" + OrBlock + "'|"
                         else:
                             newword += OrBlock + "|"
-                    return re.sub("\|$", "]", newword)
-                elif " " in word and "|" not in word and "[" not in word:
+                    word = newword.rstrip("|")
+                elif " " in word and  "[" not in word:
                     # be aware of ['and|or|of|that|which'|PP|CM]
                     AndBlocks = word.split()
-                    newword = "["
+                    newword = ""
                     for AndBlock in AndBlocks:
-                        _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
-                        if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
-                            newword += "'" + AndBlock + "' "
-                        else:
-                            newword += AndBlock + " "
-                    return re.sub(" $", "]", newword)
-            return "[" + word + "]"
+                        newword += _CheckFeature_returnword(AndBlock) + " "
+                    word = newword.rstrip(" ")
+            return  prefix + word
 
 
 def OutputRules(rulegroup, style="details"):
