@@ -306,7 +306,6 @@ def DynamicPipeline(NodeList):
     return  WinningRules
 
 
-@lru_cache(100)
 def LexicalAnalyze(Sentence):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
