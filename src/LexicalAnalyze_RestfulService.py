@@ -58,9 +58,9 @@ if __name__ == "__main__":
         if DebugMode:
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        MultiLevelSegmentationURL = url + "/LexicalAnalyze?Type=simple&Sentence="
-        logging.debug("-request MultiLevelSegmentation")
-        ret = requests.get(MultiLevelSegmentationURL + TestSentence)
+        LexicalAnalyzeURL = url + "/LexicalAnalyze?Type=simple&Sentence="
+        logging.debug("-request LexicalAnalyze")
+        ret = requests.get(LexicalAnalyzeURL + TestSentence)
         logging.debug("-get request")
         print( ret.text )
 
