@@ -244,7 +244,7 @@ class SentenceNode(object):
         if not NoFeature:
             featureString = self.GetFeatures()
             if featureString:
-                output += ":" + featureString
+                output += ":" + featureString + ";"
         return output.strip()
 
     def GetFeatures(self):
