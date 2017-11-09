@@ -43,7 +43,7 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    ProcessSentence.LoadCommon(True)
+    ProcessSentence.LoadCommon()
 
     DocList = []
     if not os.path.exists(UnitTestFileName):

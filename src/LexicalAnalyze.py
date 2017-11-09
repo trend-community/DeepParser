@@ -63,14 +63,14 @@ if __name__ == "__main__":
 
     else:
         print(
-            "Usage: python MultiLevelSegment.py unittestfile [Debug]/[NoFeature]")
+            "Usage: python LexicalAnalyze.py unittestfile [Debug]/[NoFeature]")
         exit(0)
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    ProcessSentence.LoadCommon(True)
+    ProcessSentence.LoadCommon()
 
     if not logging.getLogger().isEnabledFor(logging.DEBUG):
         ProcessFile(UnitTestFileName)
@@ -80,6 +80,6 @@ if __name__ == "__main__":
         import cProfile, pstats
         cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
         p = pstats.Stats('restats')
-        p.sort_stats('time').print_stats(100)
+        p.sort_stats('time').print_stats(20)
 
 

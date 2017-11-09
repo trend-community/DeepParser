@@ -128,7 +128,7 @@ def init(querydict = "../data/g1.words.P"):
         querydict = os.path.join(os.path.dirname(os.path.realpath(__file__)),  querydict)
     viterbi1.LoadDictFromPickle(querydict)
 
-    ProcessSentence.LoadCommon(LoadCommonRules=True)
+    ProcessSentence.LoadCommon()
 
 
 init()

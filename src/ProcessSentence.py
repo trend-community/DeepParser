@@ -185,6 +185,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
                     token.Gone = True
                 if ActionID != -1:
+                    if Action == "+++":
+                        logging.warning("Applying +++ to:" + str(token))
                     ApplyFeature(token.features, ActionID)
                     #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
@@ -303,6 +305,8 @@ def DynamicPipeline(NodeList):
 
     return  WinningRules
 
+
+@lru_cache(100)
 def LexicalAnalyze(Sentence):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
@@ -351,7 +355,7 @@ def LoadPipeline(PipelineLocation):
             PipeLine.append(action.strip())
 
 
-def LoadCommon(LoadCommonRules=False):
+def LoadCommon():
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
@@ -376,43 +380,46 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
-    if LoadCommonRules:
-        for action in PipeLine:
-            if action.startswith("FSA"):
-                Rulefile = action[3:].strip()
-                Rulefile = XLocation + Rulefile
-                Rules.LoadRules(Rulefile)
-        # Rules.LoadRules("../../fsa/X/0defLexX.txt")
-        # Rules.LoadRules("../../fsa/Y/800VGy.txt")
-        # Rules.LoadRules("../../fsa/Y/900NPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+
+    for action in PipeLine:
+        if action.startswith("FSA"):
+            Rulefile = action[3:].strip()
+            Rulefile = XLocation + Rulefile
+            Rules.LoadRules(Rulefile)
+    # Rules.LoadRules("../../fsa/X/0defLexX.txt")
+    # Rules.LoadRules("../../fsa/Y/800VGy.txt")
+    # Rules.LoadRules("../../fsa/Y/900NPy.xml")
+    # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+    # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
 
 
-        #Rules.LoadRules("../../fsa/X/Q/rule/xac")
-        # Rules.LoadRules("../../fsa/X/Q/rule/xab")
-        # Rules.LoadRules("../../fsa/X/Q/rule/xac")
-        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
-        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
+    #Rules.LoadRules("../../fsa/X/Q/rule/xac")
+    # Rules.LoadRules("../../fsa/X/Q/rule/xab")
+    # Rules.LoadRules("../../fsa/X/Q/rule/xac")
+    # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
+    # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
 
-        #Rules.LoadRules("../../fsa/X/270VPx.txt")
+    #Rules.LoadRules("../../fsa/X/270VPx.txt")
 
-        Rules.ExpandRuleWildCard()
-        Rules.ExpandParenthesisAndOrBlock()
-        Rules.ExpandRuleWildCard()
-        Rules.PreProcess_CheckFeatures()
+    Rules.ExpandRuleWildCard()
+    Rules.ExpandParenthesisAndOrBlock()
+    Rules.ExpandRuleWildCard()
+    Rules.PreProcess_CheckFeatures()
+    logging.debug("Start writing temporary rule files")
 
-        Rules.OutputRuleFiles("../temp/")
-        Lexicon.OutputLexiconFile("../temp/")
+    Rules.OutputRuleFiles("../temp/")
+    logging.debug("Start writing temporary lex file.")
+    Lexicon.OutputLexiconFile("../temp/")
+    logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    LoadCommon(True)
+    LoadCommon()
 
-    target = "自营咖啡"
+    target = "满减活动超级划算"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
@@ -425,6 +432,7 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes))
 
     print(nodes.root().CleanOutput().toJSON())
+    print(jsonpickle.dumps(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
 

@@ -23,7 +23,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    nice -18 python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
+    nice -18 python LexicalAnalyze.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
 done
 
 
@@ -32,7 +32,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    #nice -19 python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
+    #nice -19 python LexicalAnalyze.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
 done
 
 
