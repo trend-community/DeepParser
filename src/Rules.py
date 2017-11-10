@@ -363,6 +363,8 @@ def ProcessTokens(Tokens):
         #     node.word = "[" + priorityMatch.group(2) + "]"
         #     node.priority = int(priorityMatch.group(1))
 
+        if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
+            node.word = '[0 ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
 # Avoid [(AS:action)|sjfa]
 # Good character in action:
