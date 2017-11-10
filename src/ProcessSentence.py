@@ -13,7 +13,7 @@ PipeLine = []
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
     if strtokens.size >= 3:
-        AddSpace = utils.IsAscii(strtokens.get(1).text) and utils.IsAscii(strtokens.get(strtokens.size-2).text) and IsAscii(strtokens.get(int(strtokens.size/2)).text)
+        AddSpace = utils.IsAscii(strtokens.get(1).text) and utils.IsAscii(strtokens.get(strtokens.size-2).text) and utils.IsAscii(strtokens.get(int(strtokens.size/2)).text)
     else:
         AddSpace = utils.IsAscii(strtokens.get(1).text)
 
