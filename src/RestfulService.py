@@ -103,6 +103,8 @@ def LexicalAnalyze():
         return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
     elif Type == "simplefeature":
         return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
+    elif Type == "json2":
+        return nodes.root().CleanOutput_FeatureLeave().toJSON()
     else:
         return nodes.root().CleanOutput().toJSON()
 

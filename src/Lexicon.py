@@ -45,20 +45,11 @@ class LexiconNode(object):
                 logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return output
 
+
+
     def entry(self):
         output = self.text + ": "
-        features = sorted(self.features)
-        featuresCopy = features.copy()
-        #remove redundant ancestors.
-        for feature in features:
-            nodes = SearchFeatureOntology(feature)
-            if nodes:
-                ancestors = nodes.ancestors
-                if ancestors:
-                    c = ancestors.intersection(featuresCopy)
-                    if c:
-                        for a in c:
-                            featuresCopy.remove(a)
+        featuresCopy = CopyFeatureLeaves(self.features)
         featureSorted = set()
         for feature in featuresCopy:
             featureName = GetFeatureName(feature)
@@ -69,8 +60,7 @@ class LexiconNode(object):
 
         featureSorted = sorted(featureSorted)
 
-        for feature in featureSorted:
-            output += feature +" "
+        output += " ".join(featureSorted)
 
         if self.norm != self.text:
             output += "'" + self.norm + "' "
@@ -83,6 +73,21 @@ class LexiconNode(object):
 
         return output
 
+
+def CopyFeatureLeaves(features):
+
+    copy = features.copy()
+    # remove redundant ancestors.
+    for feature in features:
+        nodes = SearchFeatureOntology(feature)
+        if nodes:
+            ancestors = nodes.ancestors
+            if ancestors:
+                c = ancestors.intersection(copy)
+                if c:
+                    for a in c:
+                        copy.remove(a)
+    return copy
 
 def SplitFeatures(FeatureString):
     StemPart = None
@@ -387,8 +392,6 @@ def ApplyLexicon(node, lex=None):
         _ApplyWordStem(node, lex)
 
     ApplyWordLengthFeature(node)
-    logging.error("Currently Feature 0 is:" + str(utils.FeatureID_0) + "FeatureID_NEW is: " + str(utils.FeatureID_NEW)
-                  + " FeatureID_JS2=" + str(utils.FeatureID_JS2))
     node.features.add(utils.FeatureID_0)
     return node
 
@@ -401,28 +404,33 @@ def LexiconLookup(strTokens):
     combinedText = ''
     combinedCount = 0
     p = strTokens.head
-    i = 1
+    i = 0
 
-    while p:
-        if p.text:
-            combinedText += p.text
+    logging.info("LexiconLookup size:" + str(len(_LexiconLookupSet)))
+
+    pi = strTokens.head
+    while pi.next:
+        i += 1
+        j = i
+        pi = pi.next
+        pj = pi
+        combinedText = pj.text
+        combinedCount = 1
+        while pj.next:
+            j += 1
+            pj = pj.next
+            combinedText += pj.text
             combinedCount += 1
             if combinedText in _LexiconLookupSet:
-                logging.debug("i=" + str(i) + " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
-                bestScore[i] = combinedCount
-
-            else:
-                combinedText = p.text
-                combinedCount = 1
-        i += 1
-        p = p.next
+                logging.debug( " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+                bestScore[j] = combinedCount
 
     logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
-    i -= 1
+    i = strTokens.size - 1
     while i>0:
         if bestScore[i]>1:
-            NewNode = strTokens.combine(i-bestScore[i], bestScore[i], -1)
+            NewNode = strTokens.combine(i-bestScore[i]+1, bestScore[i], -1)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
             NewNode.sons = []   #For lookup, eliminate the sons

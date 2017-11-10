@@ -232,3 +232,6 @@ def URLEncoding(Sentence):
     #Sentence = Sentence.replace("&", "%26")
     #Sentence = Sentence.replace("/", "%2F")
     return Sentence
+
+def TransferToGoogleChartOrg(Json):
+    raise NotImplementedError

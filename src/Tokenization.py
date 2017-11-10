@@ -111,6 +111,7 @@ class SentenceLinkedList:
         a.EndOffset = self.EndOffset
 
     def newnode(self, start, count):
+        logging.info("new node: start=" + str(start) + " count=" + str(count))
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't combine.")
         if start+count > self.size:
@@ -274,6 +275,30 @@ class SentenceNode(object):
         if self.sons:
             a.sons = [s.CleanOutput() for s in self.sons]
 
+        return a
+
+    def CleanOutput_FeatureLeave(self):
+        logging.warning("in leave only!")
+        a = JsonClass()
+        a.text = self.text
+        if self.norm != self.text:
+            a.norm = self.norm
+        if self.atom != self.text:
+            a.atom = self.atom
+        features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features)
+                        if f not in FeatureOntology.NotShowList]
+        for f in features:
+            if isinstance(f, int):
+                f = "L" + str(f)
+            setattr(self, f, '2')
+        a.StartOffset = self.StartOffset
+        a.EndOffset = self.EndOffset
+        if self.UpperRelationship:
+            a.UpperRelationship = self.UpperRelationship
+        if self.sons:
+            a.sons = [s.CleanOutput_FeatureLeave() for s in self.sons]
+
+        logging.info("in featureleave" + str(self) + "f:" + str(features))
         return a
 
 
