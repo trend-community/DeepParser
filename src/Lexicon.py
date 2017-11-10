@@ -5,7 +5,7 @@
 import logging, re, operator, sys, os, pickle, requests
 import string
 
-from utils import *
+import utils
 from FeatureOntology import *
 import Tokenization
 
@@ -369,25 +369,27 @@ def ApplyLexicon(node, lex=None):
     #     node.lexicon = SearchLexicon(node.word)
     if lex is None:
         if IsCD(node.text):
-            node.features.add(GetFeatureID('CD'))
+            node.features.add(utils.FeatureID_CD)
         elif node.text in string.punctuation:
-            node.features.add(GetFeatureID('punc'))
+            node.features.add(utils.FeatureID_punc)
         else:
-            node.features.add(GetFeatureID('NNP'))
-            node.features.add(GetFeatureID('OOV'))
+            node.features.add(utils.FeatureID_NNP)
+            node.features.add(utils.FeatureID_OOV)
     else:
         node.norm = lex.norm
         node.atom = lex.atom
-        NEWFeatureID = GetFeatureID("NEW")
-        if NEWFeatureID in lex.features:
+        if utils.FeatureID_NEW in lex.features:
             node.features = set()
             node.features.update(lex.features)
-            node.features.remove(NEWFeatureID)
+            node.features.remove(utils.FeatureID_NEW)
         else:
             node.features.update(lex.features)
         _ApplyWordStem(node, lex)
 
     ApplyWordLengthFeature(node)
+    logging.error("Currently Feature 0 is:" + str(utils.FeatureID_0) + "FeatureID_NEW is: " + str(utils.FeatureID_NEW)
+                  + " FeatureID_JS2=" + str(utils.FeatureID_JS2))
+    node.features.add(utils.FeatureID_0)
     return node
 
 

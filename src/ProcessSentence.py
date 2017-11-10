@@ -2,7 +2,7 @@ import logging, re, requests, jsonpickle, traceback, os
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
-from utils import *
+import utils
 
 counterMatch = 0
 
@@ -13,9 +13,9 @@ PipeLine = []
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
     if strtokens.size >= 3:
-        AddSpace = IsAscii(strtokens.get(1).text) and IsAscii(strtokens.get(strtokens.size-2).text) and IsAscii(strtokens.get(int(strtokens.size/2)).text)
+        AddSpace = utils.IsAscii(strtokens.get(1).text) and utils.IsAscii(strtokens.get(strtokens.size-2).text) and IsAscii(strtokens.get(int(strtokens.size/2)).text)
     else:
-        AddSpace = IsAscii(strtokens.get(1).text)
+        AddSpace = utils.IsAscii(strtokens.get(1).text)
 
     p = strtokens.head
     counter = 0
@@ -186,7 +186,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     token.Gone = True
                 if ActionID != -1:
                     ApplyFeature(token.features, ActionID)
-                    #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
+                if Action == "+++":
+                    token.features.add(utils.FeatureID_0)
+                        #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
     i = len(rule.Tokens)-1    # process from the end to start.
     while i >= 0:
@@ -345,7 +347,7 @@ def LoadPipeline(PipelineLocation):
         PipelineLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  PipelineLocation)
     with open(PipelineLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            action, _ = SeparateComment(line)
+            action, _ = utils.SeparateComment(line)
             if not action:
                 continue
             PipeLine.append(action.strip())
@@ -406,7 +408,7 @@ def LoadCommon():
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles("../temp/")
         logging.debug("Start writing temporary lex file.")
-        Lexicon.OutputLexiconFile("../temp/")
+ #       Lexicon.OutputLexiconFile("../temp/")
 
     logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
@@ -426,8 +428,8 @@ if __name__ == "__main__":
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 
-    print(OutputStringTokens_oneliner(nodes, NoFeature=True))
-    print(OutputStringTokens_oneliner(nodes))
+    print(utils.OutputStringTokens_oneliner(nodes, NoFeature=True))
+    print(utils.OutputStringTokens_oneliner(nodes))
 
     print(nodes.root().CleanOutput().toJSON())
     print(jsonpickle.dumps(nodes))

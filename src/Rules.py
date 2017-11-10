@@ -358,10 +358,10 @@ def ProcessTokens(Tokens):
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
 
-        priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word, re.DOTALL)
-        if priorityMatch:
-            node.word = "[" + priorityMatch.group(2) + "]"
-            node.priority = int(priorityMatch.group(1))
+        # priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word, re.DOTALL)
+        # if priorityMatch:
+        #     node.word = "[" + priorityMatch.group(2) + "]"
+        #     node.priority = int(priorityMatch.group(1))
 
 
 # Avoid [(AS:action)|sjfa]
@@ -492,8 +492,6 @@ def LoadRules(RuleLocation):
                 if code.find("::") >= 0 or code.find("==") >= 0:
                     if rule:
                         InsertRuleInList(rule, rulegroup)
-                        logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) + " \t Expert Lexicon Size:" + str(
-                            len(rulegroup.ExpertLexicon)))
                         rule = ""
                 rule += "\n" + line
 
@@ -1150,7 +1148,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/mainX2.txt")
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
-    LoadRules("../../fsa/Y/1test_rules.txt")
+    LoadRules("../../fsa/X/0defLexX.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
