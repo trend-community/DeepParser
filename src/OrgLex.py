@@ -651,6 +651,27 @@ def printSummaryLex():
             for word in dict.keys():
                 file.write(word + "\t" + origLoc + "\n")
 
+def printSenti(posloc, negloc):
+    summary = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4,
+               _LexiconDictP, _LexiconDictPlus, _LexiconDictDefPlus]
+    pCID = GetFeatureID("pC")
+    nCID = GetFeatureID("nC")
+    with open(posloc, 'w', encoding='utf-8') as file:
+        for dict in summary:
+            for word in dict.keys():
+                node = dict.get(word)
+                features = node.features
+                if pCID in features:
+                    file.write(word + "\n")
+    with open(negloc, 'w', encoding='utf-8') as file:
+        for dict in summary:
+            for word in dict.keys():
+                node = dict.get(word)
+                features = node.features
+                if nCID in features:
+                    file.write(word + "\n")
+
+
 
 
 if __name__ == "__main__":
@@ -762,4 +783,9 @@ if __name__ == "__main__":
 
     printMissingStem()
     printSummaryLex()
+
+    # parapos = dir_path + '/../../fsa/X/positive.txt'
+    # paraneg = dir_path + '/../../fsa/X/negative.txt'
+    # printSenti(parapos,paraneg)
+
 
