@@ -205,9 +205,11 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             return len(rule.Tokens)
         i -= 1
 
-    logging.debug(jsonpickle.dumps(strtokens))
-    #TODO: find the specific item of "last trunk" to return.
-    #or maybe the item number of "collapsed" tokens.
+    #logging.debug(jsonpickle.dumps(strtokens))
+    #: find the specific item of "last trunk" to return.
+    # or maybe the item number of "collapsed" tokens.
+    # In the upper function, always go to the "next" token to start.
+    # no need to change the sequence.
     return 0 #need to modify for those "forward looking rules"
 
 
@@ -372,10 +374,10 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', forLookup=True)
 
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
@@ -408,7 +410,7 @@ def LoadCommon():
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles("../temp/")
         logging.debug("Start writing temporary lex file.")
- #       Lexicon.OutputLexiconFile("../temp/")
+        #Lexicon.OutputLexiconFile("../temp/")
 
     logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
@@ -419,7 +421,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "满减活动超级划算"
+    target = "重点是信价比很高,难接受,难接受"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
@@ -438,3 +440,4 @@ if __name__ == "__main__":
 
     print(FeatureOntology.OutputMissingFeatureSet())
 
+    print(nodes.root().CleanOutput_FeatureLeave().toJSON())

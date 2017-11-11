@@ -288,9 +288,9 @@ class SentenceNode(object):
         features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features)
                         if f not in FeatureOntology.NotShowList]
         for f in features:
-            if isinstance(f, int):
-                f = "L" + str(f)
-            setattr(self, f, '2')
+            # if isinstance(f, int):
+            #     f = "L" + str(f)
+            setattr(a, f, '')
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset
         if self.UpperRelationship:
