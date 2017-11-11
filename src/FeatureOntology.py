@@ -203,6 +203,7 @@ def LoadFeatureOntology(featureOncologyLocation):
     #     pickle.dump(_FeatureOntology, pk)
 
     LoadAppendixList(featureOncologyLocation)
+    InitGlobalFeatureID()
 
 
 def LoadAppendixList(featureOncologyLocation):

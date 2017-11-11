@@ -2,6 +2,7 @@
 #read a file in main(), then do tokenization.
 import logging, requests, jsonpickle
 import FeatureOntology, Lexicon
+import utils    #for the Feature_...
 from utils import *
 
 #class EmptyBase(object): pass
@@ -110,6 +111,7 @@ class SentenceLinkedList:
         a.EndOffset = self.EndOffset
 
     def newnode(self, start, count):
+        logging.info("new node: start=" + str(start) + " count=" + str(count))
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't combine.")
         if start+count > self.size:
@@ -145,17 +147,13 @@ class SentenceLinkedList:
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
             NewNode.features.update([f for f in self.get(start+headindex).features if f not in FeatureOntology.NotCopyList] )
 
-        JS2FeatureID = FeatureOntology.GetFeatureID("JS2")
-        JM2FeatureID = FeatureOntology.GetFeatureID("JM2")
-        JMFeatureID = FeatureOntology.GetFeatureID("JM")
 
-        if JS2FeatureID in startnode.features:
-            logging.debug("Because JS2 is in startnode" + str(startnode) + ", it is added into new node" + str(NewNode) )
-            NewNode.features.add(JS2FeatureID)
-        if JM2FeatureID in endnode.features:
-            NewNode.features.add(JM2FeatureID)
-        if JMFeatureID in endnode.features:
-            NewNode.features.add(JMFeatureID)
+        if utils.FeatureID_JS2 in startnode.features:
+            NewNode.features.add(utils.FeatureID_JS2)
+        if utils.FeatureID_JM2 in endnode.features:
+            NewNode.features.add(utils.FeatureID_JM2)
+        if utils.FeatureID_JM in endnode.features:
+            NewNode.features.add(utils.FeatureID_JM)
 
         NewNode.prev = startnode.prev
         if startnode != self.head:
@@ -170,7 +168,7 @@ class SentenceLinkedList:
 
         self.size = self.size - count + 1
 
-
+        logging.debug("NewNode.text: " + NewNode.text + " features:" + str(NewNode.features))
         logging.debug("combined as:" + str(NewNode))
         return NewNode
 
@@ -244,7 +242,7 @@ class SentenceNode(object):
         if not NoFeature:
             featureString = self.GetFeatures()
             if featureString:
-                output += ":" + featureString
+                output += ":" + featureString + ";"
         return output.strip()
 
     def GetFeatures(self):
@@ -279,11 +277,35 @@ class SentenceNode(object):
 
         return a
 
+    def CleanOutput_FeatureLeave(self):
+        logging.warning("in leave only!")
+        a = JsonClass()
+        a.text = self.text
+        if self.norm != self.text:
+            a.norm = self.norm
+        if self.atom != self.text:
+            a.atom = self.atom
+        features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features)
+                        if f not in FeatureOntology.NotShowList]
+        for f in features:
+            # if isinstance(f, int):
+            #     f = "L" + str(f)
+            setattr(a, f, '')
+        a.StartOffset = self.StartOffset
+        a.EndOffset = self.EndOffset
+        if self.UpperRelationship:
+            a.UpperRelationship = self.UpperRelationship
+        if self.sons:
+            a.sons = [s.CleanOutput_FeatureLeave() for s in self.sons]
+
+        logging.info("in featureleave" + str(self) + "f:" + str(features))
+        return a
+
 
 class JsonClass(object):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, ensure_ascii=False)
+                         sort_keys=True, ensure_ascii=False)
 
 
 def Tokenize_space(sentence):
@@ -324,7 +346,7 @@ def Tokenize_space(sentence):
 IMPOSSIBLESTRING = "@#$%!"
 def Tokenize(Sentence):
     Sentence = Sentence.strip()
-    if IsAscii(Sentence):
+    if utils.IsAscii(Sentence):
         TokenList = Tokenize_space(Sentence)
 
         # if FeatureOntology._FeatureSet:
@@ -333,7 +355,7 @@ def Tokenize(Sentence):
         # ret_t = requests.post(TokenizeURL, data=Sentence)
         # nodes_t = jsonpickle.decode(ret_t.text)
     else:
-        TokenizeURL = url_ch + "/TokenizeJson/"
+        TokenizeURL = utils.url_ch + "/TokenizeJson/"
         #ret_t = requests.get(TokenizeURL + Sentence)
 
         data = {'Sentence': URLEncoding(Sentence)}

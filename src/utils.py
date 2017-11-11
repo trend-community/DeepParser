@@ -1,32 +1,44 @@
 import logging, re, json, jsonpickle
+from functools import lru_cache
+
 
 url = "http://localhost:5001"
 url_ch = "http://localhost:8080"
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
-# return -1 if failed. Should throw error?
-def _SearchPair_old(string, tagpair):
-    depth = 0
-    i = 0
-    currentTagIndex = 0
-    targetTagIndex = 1
+FeatureID_JS2 = None
+FeatureID_JM2 = None
+FeatureID_JM = None
+FeatureID_0 = -8
+FeatureID_CD = None
+FeatureID_punc = None
+FeatureID_NNP = None
+FeatureID_OOV = None
+FeatureID_NEW = None
 
-    while 0<=i<len(string):
-        if string[i] == tagpair[targetTagIndex]:
-            depth -= 1
-            if depth == -1: # found!
-                return i
-        if string[i] == tagpair[currentTagIndex]:
-            depth += 1
-        i += 1
-    logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise RuntimeError(" Can't find a pair tag!" + string)
-    #return -1
 
-from functools import lru_cache
+def InitGlobalFeatureID():
+    global FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0
+    global FeatureID_CD, FeatureID_punc, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW
+    if not FeatureID_JS2:
+        import FeatureOntology
+        FeatureID_JS2 = FeatureOntology.GetFeatureID("JS2")
+        FeatureID_JM2 = FeatureOntology.GetFeatureID("JM2")
+        FeatureID_JM = FeatureOntology.GetFeatureID("JM")
+        FeatureID_0 = FeatureOntology.GetFeatureID("0")
+        FeatureID_CD = FeatureOntology.GetFeatureID("CD")
+        FeatureID_punc = FeatureOntology.GetFeatureID("punc")
+        FeatureID_NNP = FeatureOntology.GetFeatureID("NNP")
+        FeatureID_OOV = FeatureOntology.GetFeatureID("OOV")
+        FeatureID_NEW = FeatureOntology.GetFeatureID("NEW")
+
+        logging.info("%d, %d, %d, %d" % (FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0))
+        logging.info("%d, %d, %d, %d last %d" % (FeatureID_CD, FeatureID_punc, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW))
+
+
 # return -1 if failed. Should throw error?
-#@lru_cache(1000000)
+@lru_cache(1000000)
 def SearchPair(string, tagpair, Reverse=False):
     depth = 0
     if Reverse:
@@ -48,7 +60,8 @@ def SearchPair(string, tagpair, Reverse=False):
             depth += 1
         i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
-    raise RuntimeError(" Can't find a pair tag!" + string)
+    return -1
+    #raise RuntimeError(" Can't find a pair tag!" + string)
     #return -1
 
 
@@ -61,6 +74,7 @@ def _SeparateComment(line):
     else:
         return line[:SlashLocation].strip(), line[SlashLocation+2:].strip()
 
+@lru_cache(50000)
 def SeparateComment(multiline):
     lines = multiline.splitlines()
     content = ""
@@ -74,7 +88,7 @@ def SeparateComment(multiline):
     return content.strip(), comment.strip()
 
 
-@lru_cache(50000)
+@lru_cache(100000)
 #Can be expand for more scenario.
 # unicode numbers (or English "one", "two"...) should be in lexicon to have "CD" feature.
 #       so not to be included in here.
@@ -120,6 +134,7 @@ def RemoveExcessiveSpace(Content):
 SignsToIgnore = "{};"
 Pairs = ['[]', '()', '""', '\'\'', '//']
 
+@lru_cache(50000)
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
 #   close at a space, or starting of next token.
@@ -167,6 +182,7 @@ def SearchToEnd(string, Reverse=False):
 
 #Return the word before the first "_";
 # If there is no "_", return the whole word
+@lru_cache(50000)
 def GetPrefix(Name):
     match = re.findall("(.*?)_\d", Name)
     if match:
@@ -216,3 +232,6 @@ def URLEncoding(Sentence):
     #Sentence = Sentence.replace("&", "%26")
     #Sentence = Sentence.replace("/", "%2F")
     return Sentence
+
+def TransferToGoogleChartOrg(Json):
+    raise NotImplementedError

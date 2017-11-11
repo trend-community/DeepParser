@@ -2,7 +2,7 @@ import logging, re, requests, jsonpickle, traceback, os
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
-from utils import *
+import utils
 
 counterMatch = 0
 
@@ -13,9 +13,9 @@ PipeLine = []
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
     if strtokens.size >= 3:
-        AddSpace = IsAscii(strtokens.get(1).text) and IsAscii(strtokens.get(strtokens.size-2).text) and IsAscii(strtokens.get(int(strtokens.size/2)).text)
+        AddSpace = utils.IsAscii(strtokens.get(1).text) and utils.IsAscii(strtokens.get(strtokens.size-2).text) and utils.IsAscii(strtokens.get(int(strtokens.size/2)).text)
     else:
-        AddSpace = IsAscii(strtokens.get(1).text)
+        AddSpace = utils.IsAscii(strtokens.get(1).text)
 
     p = strtokens.head
     counter = 0
@@ -186,7 +186,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     token.Gone = True
                 if ActionID != -1:
                     ApplyFeature(token.features, ActionID)
-                    #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
+                if Action == "+++":
+                    token.features.add(utils.FeatureID_0)
+                        #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
     i = len(rule.Tokens)-1    # process from the end to start.
     while i >= 0:
@@ -203,9 +205,11 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             return len(rule.Tokens)
         i -= 1
 
-    logging.debug(jsonpickle.dumps(strtokens))
-    #TODO: find the specific item of "last trunk" to return.
-    #or maybe the item number of "collapsed" tokens.
+    #logging.debug(jsonpickle.dumps(strtokens))
+    #: find the specific item of "last trunk" to return.
+    # or maybe the item number of "collapsed" tokens.
+    # In the upper function, always go to the "next" token to start.
+    # no need to change the sequence.
     return 0 #need to modify for those "forward looking rules"
 
 
@@ -300,8 +304,8 @@ def DynamicPipeline(NodeList):
 
         if action.startswith("lookup"):
             Lexicon.LexiconLookup(NodeList)
-
     return  WinningRules
+
 
 def LexicalAnalyze(Sentence):
     try:
@@ -345,13 +349,13 @@ def LoadPipeline(PipelineLocation):
         PipelineLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  PipelineLocation)
     with open(PipelineLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            action, _ = SeparateComment(line)
+            action, _ = utils.SeparateComment(line)
             if not action:
                 continue
             PipeLine.append(action.strip())
 
 
-def LoadCommon(LoadCommonRules=False):
+def LoadCommon():
     #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
@@ -370,49 +374,54 @@ def LoadCommon(LoadCommonRules=False):
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', forLookup=True)
 
-
     # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
     # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
     # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
     # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
-    if LoadCommonRules:
-        for action in PipeLine:
-            if action.startswith("FSA"):
-                Rulefile = action[3:].strip()
-                Rulefile = XLocation + Rulefile
-                Rules.LoadRules(Rulefile)
-        # Rules.LoadRules("../../fsa/X/0defLexX.txt")
-        # Rules.LoadRules("../../fsa/Y/800VGy.txt")
-        # Rules.LoadRules("../../fsa/Y/900NPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-        # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
+
+    for action in PipeLine:
+        if action.startswith("FSA"):
+            Rulefile = action[3:].strip()
+            Rulefile = XLocation + Rulefile
+            Rules.LoadRules(Rulefile)
+    # Rules.LoadRules("../../fsa/X/0defLexX.txt")
+    # Rules.LoadRules("../../fsa/Y/800VGy.txt")
+    # Rules.LoadRules("../../fsa/Y/900NPy.xml")
+    # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
+    # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
 
 
-        #Rules.LoadRules("../../fsa/X/Q/rule/xac")
-        # Rules.LoadRules("../../fsa/X/Q/rule/xab")
-        # Rules.LoadRules("../../fsa/X/Q/rule/xac")
-        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
-        # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
+    #Rules.LoadRules("../../fsa/X/Q/rule/xac")
+    # Rules.LoadRules("../../fsa/X/Q/rule/xab")
+    # Rules.LoadRules("../../fsa/X/Q/rule/xac")
+    # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
+    # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
 
-        #Rules.LoadRules("../../fsa/X/270VPx.txt")
+    #Rules.LoadRules("../../fsa/X/270VPx.txt")
 
-        Rules.ExpandRuleWildCard()
-        Rules.ExpandParenthesisAndOrBlock()
-        Rules.ExpandRuleWildCard()
-        Rules.PreProcess_CheckFeatures()
+    Rules.ExpandRuleWildCard()
+    Rules.ExpandParenthesisAndOrBlock()
+    Rules.ExpandRuleWildCard()
+    Rules.PreProcess_CheckFeatures()
 
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles("../temp/")
+        logging.debug("Start writing temporary lex file.")
+        #Lexicon.OutputLexiconFile("../temp/")
+
+    logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    LoadCommon(True)
+    LoadCommon()
 
-    target = "不喜欢的也会拒而远之"
+    target = "重点是信价比很高,难接受,难接受"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
@@ -421,12 +430,14 @@ if __name__ == "__main__":
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 
-    print(OutputStringTokens_oneliner(nodes, NoFeature=True))
-    print(OutputStringTokens_oneliner(nodes))
+    print(utils.OutputStringTokens_oneliner(nodes, NoFeature=True))
+    print(utils.OutputStringTokens_oneliner(nodes))
 
     print(nodes.root().CleanOutput().toJSON())
+    print(jsonpickle.dumps(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
 
     print(FeatureOntology.OutputMissingFeatureSet())
 
+    print(nodes.root().CleanOutput_FeatureLeave().toJSON())

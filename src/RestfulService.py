@@ -60,21 +60,6 @@ def Tokenize(Sentence):
     return jsonpickle.encode(Tokenization.Tokenize(Sentence))
 
 
-@app.route("/ApplyLexicon", methods=['POST'])
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def ApplyLexicon():
-    node = jsonpickle.decode(request.data)
-    Lexicon.ApplyLexicon(node)
-    return jsonpickle.encode(node)
-
-
-@app.route("/ApplyLexiconToNodes", methods=['POST'])
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def ApplyLexiconToNodes():
-    nodes = jsonpickle.decode(request.data)
-    Lexicon.ApplyLexiconToNodes(nodes)
-    return jsonpickle.encode(nodes)
-
 
 # Not recommend to use. It is not a good concept.
 # @app.route("/TokenizeAndApplyLexicon", methods=['POST'])
@@ -88,15 +73,8 @@ def ApplyLexiconToNodes():
 
 
 
-@app.route("/OutputRules/<Mode>")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def OutputRules(Mode="concise"):
-    return Rules.OutputRules(Mode)
-
-
 #Following the instruction in pipelineX.txt
 @app.route("/MultiLevelSegmentation/<everything:Sentence>")
-@app.cache.cached(timeout=10)  # cache this view for 10 seconds
 def MultiLevelSegmentation(Sentence):
     if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
         Sentence = Sentence[1:-1]
@@ -109,17 +87,26 @@ def MultiLevelSegmentation(Sentence):
 
 
 #Following the instruction in pipelineX.txt
-@app.route("/LexicalAnalyze/<everything:Sentence>")
-@app.cache.cached(timeout=10)  # cache this view for 10 seconds
-def LexicalAnalyze(Sentence):
-    if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
+@app.route("/LexicalAnalyze")
+def LexicalAnalyze():
+    Sentence = request.args.get('Sentence')
+    Type = request.args.get('Type')
+    if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
     # else:
     #     return "Quote your sentence in double quotes please"
     nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
     #return  str(nodes)
     #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
-    return nodes.root().CleanOutput().toJSON()
+    logging.info("Type=" + str(Type))
+    if Type == "simple":
+        return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+    elif Type == "simplefeature":
+        return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
+    elif Type == "json2":
+        return nodes.root().CleanOutput_FeatureLeave().toJSON()
+    else:
+        return nodes.root().CleanOutput().toJSON()
 
 
 
@@ -145,7 +132,7 @@ def init(querydict = "../data/g1.words.P"):
         querydict = os.path.join(os.path.dirname(os.path.realpath(__file__)),  querydict)
     viterbi1.LoadDictFromPickle(querydict)
 
-    ProcessSentence.LoadCommon(LoadCommonRules=True)
+    ProcessSentence.LoadCommon()
 
 
 init()

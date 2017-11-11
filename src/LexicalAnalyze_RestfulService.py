@@ -23,7 +23,7 @@ if __name__ == "__main__":
                 NoFeature = True
     else:
         print(
-            "Usage: python MultiLevelSegment_ResefulService.py unittestfile [Debug]/[NoFeature]")
+            "Usage: python LexicalAnalyze_ResefulService.py unittestfile [Debug]/[NoFeature]")
         exit(0)
 
     for handler in logging.root.handlers[:]:
@@ -58,16 +58,11 @@ if __name__ == "__main__":
         if DebugMode:
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        MultiLevelSegmentationURL = url + "/MultiLevelSegmentation/"
-        logging.debug("-request MultiLevelSegmentation")
-        ret = requests.get(MultiLevelSegmentationURL + TestSentence)
+        LexicalAnalyzeURL = url + "/LexicalAnalyze?Type=simple&Sentence="
+        logging.debug("-request LexicalAnalyze")
+        ret = requests.get(LexicalAnalyzeURL + TestSentence)
         logging.debug("-get request")
-        nodes = jsonpickle.decode(ret.text)
+        print( ret.text )
 
-        if DebugMode:
-            for node in nodes:
-                print(node)
-
-        print(OutputStringTokens_oneliner(nodes, NoFeature))
 
     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())

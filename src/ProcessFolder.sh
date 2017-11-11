@@ -14,6 +14,8 @@ TEMPFOLDER=$OUTPUTFOLDER/$current_time
 mkdir $TEMPFOLDER
 echo $current_time >> ../log/ProcessFolder.sh.log
 
+wget http://localhost:8080/Reload > /tmp/reload.html
+
 python SentenceTest.pyc > "$TEMPFOLDER/SentenceTest.txt" 2>> ../log/ProcessFolder.log &
 
 for f in $INPUTFILES
@@ -21,7 +23,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    nice -18 python MultiLevelSegment.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
+    nice -18 python LexicalAnalyze.pyc "$f" NoFeature > "$outputfile" 2>> "../log/ProcessFolder_$filename.log" &
 done
 
 
@@ -30,7 +32,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    #nice -19 python MultiLevelSegment.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
+    #nice -19 python LexicalAnalyze.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
 done
 
 

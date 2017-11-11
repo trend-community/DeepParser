@@ -5,7 +5,7 @@
 import logging, re, operator, sys, os, pickle, requests
 import string
 
-from utils import *
+import utils
 from FeatureOntology import *
 import Tokenization
 
@@ -45,20 +45,11 @@ class LexiconNode(object):
                 logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return output
 
+
+
     def entry(self):
         output = self.text + ": "
-        features = sorted(self.features)
-        featuresCopy = features.copy()
-        #remove redundant ancestors.
-        for feature in features:
-            nodes = SearchFeatureOntology(feature)
-            if nodes:
-                ancestors = nodes.ancestors
-                if ancestors:
-                    c = ancestors.intersection(featuresCopy)
-                    if c:
-                        for a in c:
-                            featuresCopy.remove(a)
+        featuresCopy = CopyFeatureLeaves(self.features)
         featureSorted = set()
         for feature in featuresCopy:
             featureName = GetFeatureName(feature)
@@ -69,8 +60,7 @@ class LexiconNode(object):
 
         featureSorted = sorted(featureSorted)
 
-        for feature in featureSorted:
-            output += feature +" "
+        output += " ".join(featureSorted)
 
         if self.norm != self.text:
             output += "'" + self.norm + "' "
@@ -83,6 +73,21 @@ class LexiconNode(object):
 
         return output
 
+
+def CopyFeatureLeaves(features):
+
+    copy = features.copy()
+    # remove redundant ancestors.
+    for feature in features:
+        nodes = SearchFeatureOntology(feature)
+        if nodes:
+            ancestors = nodes.ancestors
+            if ancestors:
+                c = ancestors.intersection(copy)
+                if c:
+                    for a in c:
+                        copy.remove(a)
+    return copy
 
 def SplitFeatures(FeatureString):
     StemPart = None
@@ -122,7 +127,7 @@ def RealLength(x):
     return len(x)
 
 
-def OutputLexicon(EnglishFlag):
+def OutputLexicon(EnglishFlag = False):
     # print("//***Lexicon***")
     Output = ""
     if _CommentDict.get("firstCommentLine"):
@@ -141,6 +146,15 @@ def OutputLexicon(EnglishFlag):
         oldWord = word
 
     return Output
+
+
+def OutputLexiconFile(FolderLocation):
+    if FolderLocation.startswith("."):
+        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FolderLocation)
+    FileLocation = os.path.join(FolderLocation, "lexicon.txt")
+
+    with open(FileLocation, "w", encoding="utf-8") as writer:
+        writer.write(OutputLexicon())
 
 
 # def LoadLexiconBlacklist(BlacklistLocation):
@@ -360,25 +374,25 @@ def ApplyLexicon(node, lex=None):
     #     node.lexicon = SearchLexicon(node.word)
     if lex is None:
         if IsCD(node.text):
-            node.features.add(GetFeatureID('CD'))
+            node.features.add(utils.FeatureID_CD)
         elif node.text in string.punctuation:
-            node.features.add(GetFeatureID('punc'))
+            node.features.add(utils.FeatureID_punc)
         else:
-            node.features.add(GetFeatureID('NNP'))
-            node.features.add(GetFeatureID('OOV'))
+            node.features.add(utils.FeatureID_NNP)
+            node.features.add(utils.FeatureID_OOV)
     else:
         node.norm = lex.norm
         node.atom = lex.atom
-        NEWFeatureID = GetFeatureID("NEW")
-        if NEWFeatureID in lex.features:
+        if utils.FeatureID_NEW in lex.features:
             node.features = set()
             node.features.update(lex.features)
-            node.features.remove(NEWFeatureID)
+            node.features.remove(utils.FeatureID_NEW)
         else:
             node.features.update(lex.features)
         _ApplyWordStem(node, lex)
 
     ApplyWordLengthFeature(node)
+    node.features.add(utils.FeatureID_0)
     return node
 
 
@@ -390,28 +404,33 @@ def LexiconLookup(strTokens):
     combinedText = ''
     combinedCount = 0
     p = strTokens.head
-    i = 1
+    i = 0
 
-    while p:
-        if p.text:
-            combinedText += p.text
+    logging.info("LexiconLookup size:" + str(len(_LexiconLookupSet)))
+
+    pi = strTokens.head
+    while pi.next:
+        i += 1
+        j = i
+        pi = pi.next
+        pj = pi
+        combinedText = pj.text
+        combinedCount = 1
+        while pj.next:
+            j += 1
+            pj = pj.next
+            combinedText += pj.text
             combinedCount += 1
             if combinedText in _LexiconLookupSet:
-                logging.debug("i=" + str(i) + " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
-                bestScore[i] = combinedCount
-
-            else:
-                combinedText = p.text
-                combinedCount = 1
-        i += 1
-        p = p.next
+                logging.debug( " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+                bestScore[j] = combinedCount
 
     logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
-    i -= 1
+    i = strTokens.size - 1
     while i>0:
         if bestScore[i]>1:
-            NewNode = strTokens.combine(i-bestScore[i], bestScore[i], -1)
+            NewNode = strTokens.combine(i-bestScore[i]+1, bestScore[i], -1)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
             NewNode.sons = []   #For lookup, eliminate the sons

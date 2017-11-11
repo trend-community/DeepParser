@@ -2,7 +2,8 @@
 import unittest
 from Rules import *
 from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock
-
+from Rules import _CheckFeature, _CheckFeature_returnword
+import FeatureOntology
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -56,7 +57,7 @@ class RuleTest(unittest.TestCase):
     def test_Rule(self):
         r = Rule()
         r.SetRule("""PassiveSimpleING == {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};""")
-        self.assertEqual(r.Tokens[1].word, "[RB]")
+        self.assertEqual(r.Tokens[2].word, "[RB]")
     def test_twolines(self):
         r = Rule()
         r.SetRule("""rule4words=={[word] [word]
@@ -196,7 +197,7 @@ class RuleTest(unittest.TestCase):
         RuleGroupDict.update({rulegroup.FileName: rulegroup})
         r = Rule()
         r.SetRule(
-            "rule_p ==  <([R:^V.R]? ^V[0 Ved:^.M] @andC)? ")
+            "rule_p ==  ([R:^V.R]? ^V[0 Ved:^.M] @andC)? ")
         self.assertEqual(len(r.Tokens), 1)
         if r.RuleName:
             rulegroup.RuleList.append(r)
@@ -303,7 +304,53 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("""single_token_NP5 == <[proNN:NP]>""", rulegroup)
         r = rulegroup.RuleList[0]
-        self.assertEqual(r.Tokens[0].word, "[proNN]")
+        self.assertEqual(r.Tokens[1].word, "[proNN]")
+        _CheckFeature(r.Tokens[1], 'new')
+
+    def test_CheckFeature(self):
+        FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList("""single_token_NP5 == < CD  分 之   [CD:fraction +++]>""", rulegroup)
+        r = rulegroup.RuleList[0]
+        self.assertEqual(r.Tokens[1].word, "CD")
+        self.assertEqual(r.Tokens[2].word, "分")
+        _CheckFeature(r.Tokens[2], 'new')
+
+        InsertRuleInList("""30expert == < ['第-|前-' :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
+        r = rulegroup.RuleList[1]
+        _CheckFeature(r.Tokens[1], 'new')
+        self.assertEqual(r.Tokens[1].word, "['第-'|'前-']")
+
+        InsertRuleInList("""30expert1 == < ['第-|前-' ordinal :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
+        r = rulegroup.RuleList[2]
+        _CheckFeature(r.Tokens[1], 'new')
+        print(r.Tokens[1])
+
+        r.Tokens[1].word = "[" + _CheckFeature_returnword(r.Tokens[1].word) + "]"
+        print(r.Tokens[1])
+        self.assertEqual(r.Tokens[1].word, "['第-'|'前-' ordinal]")
+
+
+        InsertRuleInList("""30expert3 ==  ['and|or|of|that|which' | PP | CM]""", rulegroup)
+        r = rulegroup.RuleList[3]
+        #_CheckFeature(r.Tokens[0], 'new')
+        print(r)
+        print(r.Tokens[0])
+        r.Tokens[0].word = _CheckFeature_returnword(r.Tokens[0].word)
+        print(r.Tokens[0])
+
+        InsertRuleInList("""2ExpertDomain ==  <[慢性:^.M] [!punc|xC|v:^.m] [sufferFrom: NP an term]> """, rulegroup)
+        r = rulegroup.RuleList[4]
+        # _CheckFeature(r.Tokens[0], 'new')
+        print(r)
+        print(r.Tokens[2])
+        r.Tokens[2].word = "[" + _CheckFeature_returnword(r.Tokens[2].word) + "]"
+        print(r.Tokens[2])
+        self.assertEqual(r.Tokens[2].word, "[!punc|xC|v]")
 
     def test_ExpandOrBlock(self):
         rulegroup = RuleGroup("test")
@@ -353,7 +400,7 @@ class RuleTest(unittest.TestCase):
         _ExpandParenthesis(rulegroup.RuleList)
         #OutputRules()
         r = rulegroup.RuleList[0]
-        self.assertEqual(len(r.Tokens), 1)
+        self.assertEqual(len(r.Tokens), 2)
         #OutputRules()
 
     def test_ProcessOrBlock(self):
