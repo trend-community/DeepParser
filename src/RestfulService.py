@@ -107,6 +107,7 @@ def LexicalAnalyze():
         return nodes.root().CleanOutput_FeatureLeave().toJSON()
     elif Type == "parsetree":
         svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
+        logging.info("parsetree file is written in:" + str(svgfilelocation))
         return send_file(svgfilelocation, mimetype='image/gif')
     else:
         return nodes.root().CleanOutput().toJSON()
