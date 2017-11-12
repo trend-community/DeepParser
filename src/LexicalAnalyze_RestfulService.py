@@ -48,21 +48,12 @@ if __name__ == "__main__":
                 UnitTest.append(unittest)
 
     for unittestnode in UnitTest:
-        logging.debug("-Start one unit test")
-        ExtraMessageIndex = unittestnode.TestSentence.find(">")
-        if ExtraMessageIndex>0:
-            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
-        else:
-            TestSentence = unittestnode.TestSentence
-        TestSentence = TestSentence.strip("/")
         if DebugMode:
-            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
+            print("***Test rule " + unittestnode.RuleName + " using sentence: " + unittestnode.TestSentence)
 
-        LexicalAnalyzeURL = url + "/LexicalAnalyze?Type=simple&Sentence="
+        LexicalAnalyzeURL = url + "/LexicalAnalyze?Type=simplefeature&Sentence="
         logging.debug("-request LexicalAnalyze")
-        ret = requests.get(LexicalAnalyzeURL + TestSentence)
-        logging.debug("-get request")
+        ret = requests.get(LexicalAnalyzeURL + "\"" + unittestnode.TestSentence + "\"")
+
         print( ret.text )
 
-
-    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())

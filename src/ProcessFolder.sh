@@ -4,7 +4,7 @@
 #exit 0 # comment this line if not to run it.
 
 
-INPUTFILES="../../fsa/test/input/*"
+INPUTFILES="../../fsa/test/input/*.txt"
 OUTPUTFOLDER="../../fsa/test/output"
 FEATUREFILE="_feature.txt"
 
@@ -32,7 +32,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    #nice -19 python LexicalAnalyze.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
+    nice -19 python LexicalAnalyze_Restfulservice.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
 done
 
 
