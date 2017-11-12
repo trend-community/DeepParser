@@ -313,8 +313,8 @@ def LexicalAnalyze(Sentence):
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
         NodeList = Tokenization.Tokenize(Sentence)
-        if not NodeList:
-            return None
+        if not NodeList or NodeList.size == 0:
+            return None, None
         logging.debug("-Start ApplyLexiconToNodes")
         Lexicon.ApplyLexiconToNodes(NodeList)
 
@@ -339,7 +339,7 @@ def LexicalAnalyze(Sentence):
         logging.error("Overall Error in LexicalAnalyze:")
         logging.error(e)
         logging.error(traceback.format_exc())
-        return None
+        return None, None
 
     return NodeList, WinningRules
 
@@ -362,7 +362,6 @@ def LoadCommon():
     #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
 
     XLocation = '../../fsa/X/'
-    # Lexicon.LoadLexiconBlacklist(XLocation + 'LexBlacklist.txt')
 
     Lexicon.LoadLexicon(XLocation + 'LexX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
@@ -374,10 +373,10 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', forLookup=True)
 
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
@@ -421,7 +420,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "重点是信价比很高,难接受,难接受"
+    target = "／"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
