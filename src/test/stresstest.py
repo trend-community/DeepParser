@@ -4,10 +4,11 @@
 # !/usr/bin/python2 -u
 # -*- coding: utf8 -*-
 
-timeout = 5
+timeout = 1
 nThreads = 0
-maxThreads = 20
-urlprefix = "http://10.15.252.3:5001/LexicalAnalysis?Sentence="
+maxThreads = 40
+completed = 0
+urlprefix = "http://10.15.252.3:5001/LexicalAnalyze?Sentence="
 
 import sys
 import time
@@ -21,7 +22,7 @@ lock = threading.Lock()
 
 
 def get(chunk):
-    global nThreads
+    global nThreads, completed
     with lock:
         nThreads += 1
     chunk = '"' + chunk + '"'
@@ -30,6 +31,7 @@ def get(chunk):
         try:
             response = urllib2.urlopen(url, None, timeout)
             ret = response.read()
+            completed += 1
             break
         except:
             with lock:
@@ -51,7 +53,7 @@ for line in fin:
         with lock:
             test = (nThreads > maxThreads)
         if test:
-            print   'line number = ', lNum, nThreads
+            print   'completed=', completed, ' line number = ', lNum, nThreads
             time.sleep(timeout)
         else:
             break
