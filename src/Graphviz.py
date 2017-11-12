@@ -1,7 +1,8 @@
-import os
+import os, logging
 import pydot
 import json
 import time
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -14,17 +15,17 @@ class Node(object):
 
 
 def CreateTree(inputnode):
-    text = inputnode['text']
+    text = '"'+inputnode['text']+'"'
     node = Node(text)
-    end = inputnode['EndOffset']
-    node.endOffset = end
-    start = inputnode['StartOffset']
-    node.startOffset = start
-    features = inputnode['features']
-    node.features = features
-    if 'UpperRelationship' in inputnode.keys():
-        upperRelation = inputnode['UpperRelationship']
-        node.upperRelation = upperRelation
+    # end = inputnode['EndOffset']
+    # node.endOffset = end
+    # start = inputnode['StartOffset']
+    # node.startOffset = start
+    # features = inputnode['features']
+    # node.features = features
+    # if 'UpperRelationship' in inputnode.keys():
+    #     upperRelation = inputnode['UpperRelationship']
+    #     node.upperRelation = upperRelation
     if 'sons' in inputnode.keys():
         for son in inputnode['sons']:
             node.sons.append(CreateTree(son))
@@ -41,45 +42,48 @@ def printTree(list):
 
 
 def OrgGraph():
+    graph = pydot.Dot(graph_type='digraph', fontname='SimSun', compound='true')
+
     for node in nodeList:
 
-        feature = "features: "
-        for f in node.features:
-            feature += f + " "
-        feature += '&#13;&#10;'
-        end = "EndOffset :" + str(node.endOffset) + '&#13;&#10;'
-        start = "StartOffset :" +str(node.startOffset)
-        txt = feature +  end  + start
-        lexNode = pydot.Node(node.text, fontsize=12, tooltip=txt)
+        # feature = "features: "
+        # for f in node.features:
+        #     feature += f + " "
+        # feature += '&#13;&#10;'
+        # end = "EndOffset :" + str(node.endOffset) + '&#13;&#10;'
+        # start = "StartOffset :" +str(node.startOffset)
+        # txt = feature +  end  + start
+        lexNode = pydot.Node("chinese", fontsize=12, tooltip="a")
         # lexNode.set_tooltip(txt)
         graph.add_node(lexNode)
-    for node in nodeList:
-        text = node.text
-        if node.sons:
-            hasRelation = False
-            for son in node.sons:
-                edge = pydot.Edge(text,son.text)
-                if son.upperRelation:
-                    upper = son.upperRelation[son.upperRelation.index(".")+1:]
-                    edge.set_label(upper)
-                    hasRelation = True
-                elif hasRelation:
-                    edge.set_label("H")
-                graph.add_edge(edge)
+    # for node in nodeList:
+    #     text = node.text
+    #     if node.sons:
+    #         hasRelation = False
+    #         for son in node.sons:
+    #             edge = pydot.Edge(text,son.text)
+    #             # if son.upperRelation:
+    #             #     upper = son.upperRelation[son.upperRelation.index(".")+1:]
+    #             #     edge.set_label(upper)
+    #             #     hasRelation = True
+    #             # elif hasRelation:
+    #             #     edge.set_label("H")
+    #             graph.add_edge(edge)
 
-nodes = []
-edges = []
-graph = pydot.Dot(graph_type='digraph')
+    return graph
+
 
 def showGraph(json_input):
     decoded = json.loads(json_input)
     CreateTree(decoded)
-    print("size of list is " + str(len(nodeList)))
+    print("size of nodelist is " + str(len(nodeList)))
     # printTree(nodeList)
-    OrgGraph()
+    g = OrgGraph()
     filename = os.path.join(dir_path, '../../parser/graph/' ,  time.strftime("%Y%m%d-%H%M%S")+'.svg')
     # graph.write_svg('g1.svg')
-    graph.write_svg(filename)
+    x = g.create_svg()
+    logging.warning("svg x:\n" + str(x))
+    g.write_svg("a.svg")
 
 
 if __name__ == "__main__":
