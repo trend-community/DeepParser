@@ -102,7 +102,7 @@ def LexicalAnalyze():
     #return  str(nodes)
     #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
     if nodes:
-        logging.info("Type=" + str(Type))
+        #logging.info("Type=" + str(Type))
         if Type == "simple":
             return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
         elif Type == "simplefeature":
