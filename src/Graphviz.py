@@ -64,7 +64,7 @@ def OrgGraph():
                     upper = son.upperRelation[son.upperRelation.index(".")+1:]
                     edge.set_label(upper)
                     hasRelation = True
-                elif hasRelation:
+                elif hasRelation :
                     edge.set_label("H")
                 graph.add_edge(edge)
 
@@ -87,15 +87,16 @@ def orgChart(json_input):
     nodeList[:] = []
     decoded = json.loads(json_input)
     CreateTree(decoded)
-    printTree(nodeList)
+    # printTree(nodeList)
     dataRows = []
     for node in nodeList:
         if len(nodeList) > 1:
             if node.sons:
+                hasRelation = False
                 for son in node.sons:
                     element = []
                     text = son.text
-                    hasRelation = False
+
                     if son.upperRelation:
                          relation = son.upperRelation[son.upperRelation.index(".") + 1:]
                          text = {}
@@ -106,7 +107,9 @@ def orgChart(json_input):
                          fValue = word+'<div style="color:red; font-style:italic">' + relation+'</div>'
                          text.update({f:fValue})
                          hasRelation = True
-                    elif hasRelation or len(node.sons) > 1:
+
+                    elif hasRelation:
+                        # print("hasRelation is true")
                         relation = 'H'
                         text = {}
                         word = son.text
@@ -115,6 +118,7 @@ def orgChart(json_input):
                         text.update({v: word})
                         fValue = word + '<div style="color:red; font-style:italic">' + relation + '</div>'
                         text.update({f: fValue})
+                        hasRelation = False
 
                     print(str(text))
                     parent = node.text
