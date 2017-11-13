@@ -111,7 +111,7 @@ class SentenceLinkedList:
         a.EndOffset = self.EndOffset
 
     def newnode(self, start, count):
-        logging.info("new node: start=" + str(start) + " count=" + str(count))
+        #logging.info("new node: start=" + str(start) + " count=" + str(count))
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't combine.")
         if start+count > self.size:

@@ -1,11 +1,11 @@
 import logging, sys, re, jsonpickle, os, json
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_cache import Cache
 import viterbi1
 import argparse
-import utils
+import utils, Graphviz
 
 app = Flask(__name__)
 app.config['CACHE_TYPE'] = 'simple'
@@ -105,6 +105,10 @@ def LexicalAnalyze():
         return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
     elif Type == "json2":
         return nodes.root().CleanOutput_FeatureLeave().toJSON()
+    elif Type == "parsetree":
+        svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
+        logging.info("parsetree file is written in:" + str(svgfilelocation))
+        return send_file(svgfilelocation, mimetype='image/gif')
     else:
         return nodes.root().CleanOutput().toJSON()
 
