@@ -2,7 +2,7 @@ import logging, re, json, jsonpickle
 from functools import lru_cache
 
 
-url = "http://localhost:5001"
+url = "http://10.15.252.3:5001"
 url_ch = "http://localhost:8080"
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
@@ -16,6 +16,12 @@ FeatureID_punc = None
 FeatureID_NNP = None
 FeatureID_OOV = None
 FeatureID_NEW = None
+
+from enum import Enum
+class LexiconLookupSource(Enum):
+    Exclude = 0
+    defLex = 1
+    External = 2
 
 
 def InitGlobalFeatureID():

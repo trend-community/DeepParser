@@ -11,6 +11,9 @@ app = Flask(__name__)
 app.config['CACHE_TYPE'] = 'simple'
 app.cache = Cache(app)
 
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),"chart.template.html")) as templatefile:
+    charttemplate = templatefile.read()
+
 # for processing leading slash as in:
 #  https://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash#24001029
 from werkzeug.routing import PathConverter
@@ -98,19 +101,28 @@ def LexicalAnalyze():
     nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
     #return  str(nodes)
     #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
-    logging.info("Type=" + str(Type))
-    if Type == "simple":
-        return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
-    elif Type == "simplefeature":
-        return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
-    elif Type == "json2":
-        return nodes.root().CleanOutput_FeatureLeave().toJSON()
-    elif Type == "parsetree":
-        svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
-        logging.info("parsetree file is written in:" + str(svgfilelocation))
-        return send_file(svgfilelocation, mimetype='image/gif')
+    if nodes:
+        logging.info("Type=" + str(Type))
+        if Type == "simple":
+            return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+        elif Type == "simplefeature":
+            return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
+        elif Type == "json2":
+            return nodes.root().CleanOutput_FeatureLeave().toJSON()
+        elif Type == "parsetreeviz":
+            svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
+            logging.info("parsetree file is written in:" + str(svgfilelocation))
+            return send_file(svgfilelocation, mimetype='image/gif')
+        elif Type == "parsetree":
+            orgdata = Graphviz.orgChart(nodes.root().CleanOutput().toJSON())
+            chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
+            return chart
+        else:
+            return nodes.root().CleanOutput().toJSON()
     else:
-        return nodes.root().CleanOutput().toJSON()
+        logging.error("nodes is blank")
+        return ""
+
 
 
 

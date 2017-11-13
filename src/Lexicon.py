@@ -13,7 +13,11 @@ import Tokenization
 # url_ch = "http://localhost:8080"
 
 _LexiconDict = {}
-_LexiconLookupSet = set()
+_LexiconLookupSet = dict()
+_LexiconLookupSet[LexiconLookupSource.Exclude] = set()
+_LexiconLookupSet[LexiconLookupSource.defLex] = set()
+_LexiconLookupSet[LexiconLookupSource.External] = set()
+
 #_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
 #_LexiconBlacklist = []
@@ -175,7 +179,7 @@ def OutputLexiconFile(FolderLocation):
 #             return True
 #     return False
 
-def LoadLexicon(lexiconLocation, forLookup = False):
+def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet
     global _CommentDict
     if lexiconLocation.startswith("."):
@@ -240,10 +244,10 @@ def LoadLexicon(lexiconLocation, forLookup = False):
 
             if newNode:
                 _LexiconDict.update({node.text: node})
-                if forLookup \
+                if lookupSource != LexiconLookupSource.Exclude \
                         or "_" in node.text:    #
                     #_LexiconLookupDict.update({node.word: node})
-                    _LexiconLookupSet.add(node.text)
+                    _LexiconLookupSet[lookupSource].add(node.text)
                 #logging.debug(node.word)
             oldWord = blocks[0]
 
@@ -398,7 +402,7 @@ def ApplyLexicon(node, lex=None):
 
 #Lookup will be used right after segmentation.
 # Dynamic programming?
-def LexiconLookup(strTokens):
+def LexiconLookup(strTokens, lookupsource):
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth+1)]
     combinedText = ''
@@ -406,7 +410,7 @@ def LexiconLookup(strTokens):
     p = strTokens.head
     i = 0
 
-    logging.info("LexiconLookup size:" + str(len(_LexiconLookupSet)))
+    logging.info("LexiconLookup " + lookupsource.name + "  size:" + str(len(_LexiconLookupSet[lookupsource])))
 
     pi = strTokens.head
     while pi.next:
@@ -419,9 +423,11 @@ def LexiconLookup(strTokens):
         while pj.next:
             j += 1
             pj = pj.next
+            if not pj.text:
+                continue
             combinedText += pj.text
             combinedCount += 1
-            if combinedText in _LexiconLookupSet:
+            if combinedText in _LexiconLookupSet[lookupsource]:
                 logging.debug( " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[j] = combinedCount
 
@@ -444,21 +450,22 @@ if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-    LoadLexicon('../../fsa/X/LexX.txt')
-    LoadLexicon('../../fsa/X/LexXplus.txt')
-    LoadLexicon('../../fsa/X/brandX.txt')
-    LoadLexicon('../../fsa/X/idiom4X.txt')
-    LoadLexicon('../../fsa/X/idiomX.txt')
-    LoadLexicon('../../fsa/X/locX.txt')
-    LoadLexicon('../../fsa/X/perX.txt')
-    LoadLexicon('../../fsa/X/defPlus.txt')
-    LoadLexicon('../../fsa/X/defLexX.txt', forLookup=True)
+    # LoadLexicon('../../fsa/X/LexX.txt')
+    # LoadLexicon('../../fsa/X/LexXplus.txt')
+    # LoadLexicon('../../fsa/X/brandX.txt')
+    # LoadLexicon('../../fsa/X/idiom4X.txt')
+    # LoadLexicon('../../fsa/X/idiomX.txt')
+    # LoadLexicon('../../fsa/X/locX.txt')
+    # LoadLexicon('../../fsa/X/perX.txt')
+    # LoadLexicon('../../fsa/X/defPlus.txt')
+    LoadLexicon('../../fsa/X/defLexX.txt', lookupSource=LexiconLookupSource.defLex)
+    LoadLexicon('../../fsa/X/perX.txt', lookupSource=LexiconLookupSource.External)
 
 
     para = dir_path + '/../../fsa/X/perX.txt'
     LoadLexicon(para)
     para = dir_path + '/../../fsa/X/defLexX.txt'
-    LoadLexicon(para, forLookup=True)
+    LoadLexicon(para, lookupSource=LexiconLookupSource.defLex)
     if "/fsa/X" in para:
         Englishflag = False
     else:

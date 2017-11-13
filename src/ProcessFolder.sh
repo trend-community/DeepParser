@@ -14,7 +14,7 @@ TEMPFOLDER=$OUTPUTFOLDER/$current_time
 mkdir $TEMPFOLDER
 echo $current_time >> ../log/ProcessFolder.sh.log
 
-wget http://localhost:8080/Reload > /tmp/reload.html
+wget -O /tmp/reload.html http://localhost:8080/Reload
 
 python SentenceTest.pyc > "$TEMPFOLDER/SentenceTest.txt" 2>> ../log/ProcessFolder.log &
 

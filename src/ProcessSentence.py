@@ -2,7 +2,7 @@ import logging, re, requests, jsonpickle, traceback, os
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
-import utils
+from utils import *
 
 counterMatch = 0
 
@@ -13,9 +13,9 @@ PipeLine = []
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
     if strtokens.size >= 3:
-        AddSpace = utils.IsAscii(strtokens.get(1).text) and utils.IsAscii(strtokens.get(strtokens.size-2).text) and utils.IsAscii(strtokens.get(int(strtokens.size/2)).text)
+        AddSpace = IsAscii(strtokens.get(1).text) and IsAscii(strtokens.get(strtokens.size-2).text) and utils.IsAscii(strtokens.get(int(strtokens.size/2)).text)
     else:
-        AddSpace = utils.IsAscii(strtokens.get(1).text)
+        AddSpace = IsAscii(strtokens.get(1).text)
 
     p = strtokens.head
     counter = 0
@@ -187,7 +187,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID != -1:
                     ApplyFeature(token.features, ActionID)
                 if Action == "+++":
-                    token.features.add(utils.FeatureID_0)
+                    token.features.add(FeatureID_0)
                         #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
     i = len(rule.Tokens)-1    # process from the end to start.
@@ -303,7 +303,10 @@ def DynamicPipeline(NodeList):
             WinningRules.extend(MatchAndApplyRuleFile(NodeList, Rulefile))
 
         if action.startswith("lookup"):
-            Lexicon.LexiconLookup(NodeList)
+            lookupSourceName = action[6:].strip()
+            for x in LexiconLookupSource:
+                if x.name == lookupSourceName:
+                    Lexicon.LexiconLookup(NodeList, x)
     return  WinningRules
 
 
@@ -349,7 +352,7 @@ def LoadPipeline(PipelineLocation):
         PipelineLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  PipelineLocation)
     with open(PipelineLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            action, _ = utils.SeparateComment(line)
+            action, _ = SeparateComment(line)
             if not action:
                 continue
             PipeLine.append(action.strip())
@@ -371,12 +374,12 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'locX.txt')
     Lexicon.LoadLexicon(XLocation + 'perX.txt')
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
-    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
 
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', forLookup=True)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', forLookup=True)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', forLookup=True)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', forLookup=True)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
@@ -420,7 +423,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "／"
+    target = "不过这应该是原汁原味的咖啡吧"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
@@ -429,8 +432,8 @@ if __name__ == "__main__":
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 
-    print(utils.OutputStringTokens_oneliner(nodes, NoFeature=True))
-    print(utils.OutputStringTokens_oneliner(nodes))
+    print(OutputStringTokens_oneliner(nodes, NoFeature=True))
+    print(OutputStringTokens_oneliner(nodes))
 
     print(nodes.root().CleanOutput().toJSON())
     print(jsonpickle.dumps(nodes))
