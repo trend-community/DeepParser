@@ -3,7 +3,7 @@ import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch #, LogicMatchFeatures
 from utils import *
-
+import utils
 counterMatch = 0
 
 WinningRuleDict = {}
@@ -187,7 +187,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID != -1:
                     ApplyFeature(token.features, ActionID)
                 if Action == "+++":
-                    token.features.add(FeatureID_0)
+                    token.features.add(utils.FeatureID_0)
                         #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
     i = len(rule.Tokens)-1    # process from the end to start.
