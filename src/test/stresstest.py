@@ -34,9 +34,8 @@ def get(chunk):
             completed += 1
             break
         except:
-            with lock:
-                print    sys.exc_info()[1]
-                sys.stdout.flush()
+            print    sys.exc_info()[1]
+            sys.stdout.flush()
             time.sleep(timeout)
     with lock:
         nThreads -= 1
@@ -51,10 +50,10 @@ for line in fin:
 
     while True:
         with lock:
-            test = (nThreads > maxThreads)
-        if test:
+            exceed = (nThreads > maxThreads)
+        if exceed:
             print   'completed=', completed, ' line number = ', lNum, nThreads
-            time.sleep(timeout)
+            time.sleep(timeout) #wait for the threads to decrease nThreads
         else:
             break
 
