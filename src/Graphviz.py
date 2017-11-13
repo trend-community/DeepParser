@@ -95,6 +95,7 @@ def orgChart(json_input):
                 for son in node.sons:
                     element = []
                     text = son.text
+                    hasRelation = False
                     if son.upperRelation:
                          relation = son.upperRelation[son.upperRelation.index(".") + 1:]
                          text = {}
@@ -104,6 +105,17 @@ def orgChart(json_input):
                          text.update({v:word})
                          fValue = word+'<div style="color:red; font-style:italic">' + relation+'</div>'
                          text.update({f:fValue})
+                         hasRelation = True
+                    elif hasRelation or len(node.sons) > 1:
+                        relation = 'H'
+                        text = {}
+                        word = son.text
+                        v = 'v'
+                        f = 'f'
+                        text.update({v: word})
+                        fValue = word + '<div style="color:red; font-style:italic">' + relation + '</div>'
+                        text.update({f: fValue})
+
                     print(str(text))
                     parent = node.text
                     feature = "features: "
@@ -139,7 +151,7 @@ def orgChart(json_input):
 
 
 if __name__ == "__main__":
-    json_input = '{"EndOffset": 8, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 4, "StartOffset": 0, "features": ["v", "equivN", "chg", "deverbal", "V0", "v2NN", "exercise", "N", "act", "chgLoc", "entice", "attrC"], "sons": [{"EndOffset": 2, "StartOffset": 0, "UpperRelationship": "^.M", "features": ["v", "0", "N", "advV"], "text": " française  "}, {"EndOffset": 4, "StartOffset": 2, "features": ["v", "equivN", "chg", "deverbal", "V0", "v2NN", "0", "NP", "XP", "exercise", "N", "act", "chgLoc", "entice", "attrC"], "text": "活动"}], "text": "满减活动"}, {"EndOffset": 8, "StartOffset": 4, "features": ["sent", "pt", "Pred", "A", "pred", "pro"], "sons": [{"EndOffset": 6, "StartOffset": 4, "UpperRelationship": "^.R", "features": ["0", "pt", "emph", "ptA", "A", "pEmo", "attitude", "sent", "a", "an", "passion", "property", "rank", "intensifier", "good", "daxingC"], "text": "超级"}, {"EndOffset": 8, "StartOffset": 6, "features": ["0", "pt", "A", "AP", "pred", "pro", "sent", "XP", "Pred"], "text": "划算"}], "text": "超级划算"}], "text": "满减活动超级划算"}'
+    json_input = '{"EndOffset": 8, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 4, "StartOffset": 0, "features": ["v", "equivN", "chg", "deverbal", "V0", "v2NN", "exercise", "N", "act", "chgLoc", "entice", "attrC"], "sons": [{"EndOffset": 2, "StartOffset": 0, "UpperRelationship": "^.M", "features": ["v", "0", "N", "advV"], "text": "满减"}, {"EndOffset": 4, "StartOffset": 2, "features": ["v", "equivN", "chg", "deverbal", "V0", "v2NN", "0", "NP", "XP", "exercise", "N", "act", "chgLoc", "entice", "attrC"], "text": "活动"}], "text": "满减活动"}, {"EndOffset": 8, "StartOffset": 4, "features": ["sent", "pt", "Pred", "A", "pred", "pro"], "sons": [{"EndOffset": 6, "StartOffset": 4, "UpperRelationship": "^.R", "features": ["0", "pt", "emph", "ptA", "A", "pEmo", "attitude", "sent", "a", "an", "passion", "property", "rank", "intensifier", "good", "daxingC"], "text": "超级"}, {"EndOffset": 8, "StartOffset": 6, "features": ["0", "pt", "A", "AP", "pred", "pro", "sent", "XP", "Pred"], "text": "划算"}], "text": "超级划算"}], "text": "满减活动超级划算"}'
     showGraph(json_input)
     dataRows = orgChart(json_input)
     print(str(dataRows))

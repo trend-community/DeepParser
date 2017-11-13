@@ -60,7 +60,7 @@ class LexiconNode(object):
 
         featureSorted = sorted(featureSorted)
 
-        output += " ".join(featureSorted)
+        output += " ".join(featureSorted) + " "
 
         if self.norm != self.text:
             output += "'" + self.norm + "' "
