@@ -17,7 +17,7 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    ProcessSentence.LoadCommon(True)
+    ProcessSentence.LoadCommon()
 
     FailedList = []
     for RuleFile in sorted(Rules.RuleGroupDict, key=Rules.RuleGroupDict.get):
