@@ -63,32 +63,6 @@ def Tokenize(Sentence):
     return jsonpickle.encode(Tokenization.Tokenize(Sentence))
 
 
-
-# Not recommend to use. It is not a good concept.
-# @app.route("/TokenizeAndApplyLexicon", methods=['POST'])
-# def TokenizeAndApplyLexicon():
-#     Sentence = request.data.decode("utf-8")
-#     nodes = Tokenization.Tokenize(Sentence)
-#     for node in nodes:
-#         FeatureOntology.ApplyLexicon(node)
-#     return jsonpickle.encode(nodes)
-
-
-
-
-#Following the instruction in pipelineX.txt
-@app.route("/MultiLevelSegmentation/<everything:Sentence>")
-def MultiLevelSegmentation(Sentence):
-    if len(Sentence) > 2 and Sentence.startswith("\"") and Sentence.endswith("\""):
-        Sentence = Sentence[1:-1]
-    # else:
-    #     return "Quote your sentence in double quotes please"
-    nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
-    #return  str(nodes)
-    #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
-    return nodes.root().CleanOutput().toJSON()
-
-
 #Following the instruction in pipelineX.txt
 @app.route("/LexicalAnalyze")
 def LexicalAnalyze():
@@ -98,27 +72,32 @@ def LexicalAnalyze():
         Sentence = Sentence[1:-1]
     # else:
     #     return "Quote your sentence in double quotes please"
+
     nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
     #return  str(nodes)
     #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
     if nodes:
-        #logging.info("Type=" + str(Type))
-        if Type == "simple":
-            return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
-        elif Type == "simplefeature":
-            return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
-        elif Type == "json2":
-            return nodes.root().CleanOutput_FeatureLeave().toJSON()
-        elif Type == "parsetreeviz":
-            svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
-            logging.info("parsetree file is written in:" + str(svgfilelocation))
-            return send_file(svgfilelocation, mimetype='image/gif')
-        elif Type == "parsetree":
-            orgdata = Graphviz.orgChart(nodes.root().CleanOutput().toJSON())
-            chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
-            return chart
-        else:
-            return nodes.root().CleanOutput().toJSON()
+        try:
+            #logging.info("Type=" + str(Type))
+            if Type == "simple":
+                return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+            elif Type == "simplefeature":
+                return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
+            elif Type == "json2":
+                return nodes.root().CleanOutput_FeatureLeave().toJSON()
+            elif Type == "parsetreeviz":
+                svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
+                logging.info("parsetree file is written in:" + str(svgfilelocation))
+                return send_file(svgfilelocation, mimetype='image/gif')
+            elif Type == "parsetree":
+                orgdata = Graphviz.orgChart(nodes.root().CleanOutput().toJSON())
+                chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
+                return chart
+            else:
+                return nodes.root().CleanOutput().toJSON()
+        except Exception as e:
+            logging.error(e)
+            return ""
     else:
         logging.error("nodes is blank")
         return ""
