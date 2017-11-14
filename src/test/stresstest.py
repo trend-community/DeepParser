@@ -6,7 +6,7 @@
 
 timeout = 1
 nThreads = 0
-maxThreads = 40
+maxThreads = 80
 completed = 0
 urlprefix = "http://10.15.252.3:5001/LexicalAnalyze?Sentence="
 
@@ -29,8 +29,9 @@ def get(chunk):
     url = urlprefix + urllib.quote_plus(chunk.encode('utf8'))
     while True:
         try:
-            response = urllib2.urlopen(url, None, timeout)
+            response = urllib2.urlopen(url, None, timeout*10)
             ret = response.read()
+#            print ret
             completed += 1
             break
         except:
@@ -62,3 +63,7 @@ for line in fin:
     except:
         print   'Error:', line
         sys.stdout.flush()
+
+time.sleep(10)
+print   'completed=', completed, ' line number = ', lNum, nThreads
+
