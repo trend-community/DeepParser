@@ -88,38 +88,54 @@ def orgChart(json_input):
     decoded = json.loads(json_input)
     CreateTree(decoded)
     textSet = set()
-    # printTree(nodeList)
+    printTree(nodeList)
+    print("size of nodelist is " + str(len(nodeList)))
     dataRows = []
     for node in nodeList:
+
         if len(nodeList) > 1:
             if node.sons:
+                relationExists = checkRelation(node)
                 hasRelation = False
                 for son in node.sons:
                     element = []
-                    text = son.text
-                    if not textSet.add(text): # add set not successfully due to text duplicate
-                        text = {}
-                        word = son.text + str(son.startOffset)
-                        v = 'v'
-                        f = 'f'
-                        text.update({v: word})
-                        fValue = son.text
+                    # text = son.text
+                    # if not textSet.add(text): # add set not successfully due to text duplicate
+                    # if text in textSet:
+                    text = {}
+                    word = son.text + str(son.startOffset)
+                    v = 'v'
+                    f = 'f'
+                    text.update({v: word})
+                    fValue = son.text
+                    text.update({f: fValue})
+                    if son.upperRelation:
+                        relation = son.upperRelation[son.upperRelation.index(".") + 1:]
+                        fValue +=  '<div style="color:red; font-style:italic">' + relation + '</div>'
                         text.update({f: fValue})
-                        if son.upperRelation:
-                            relation = son.upperRelation[son.upperRelation.index(".") + 1:]
-                            fValue +=  '<div style="color:red; font-style:italic">' + relation + '</div>'
-                            text.update({f: fValue})
-                            hasRelation = True
-                        elif hasRelation:
-                            # print("hasRelation is true")
-                            relation = 'H'
-                            fValue += '<div style="color:red; font-style:italic">' + relation + '</div>'
-                            text.update({f: fValue})
-                            hasRelation = False
-
+                        hasRelation = True
+                    elif hasRelation or (node.sons.index(son)==0 and relationExists) :
+                        # print("hasRelation is true")
+                        relation = 'H'
+                        fValue += '<div style="color:red; font-style:italic">' + relation + '</div>'
+                        text.update({f: fValue})
+                        hasRelation = False
+                    # else:
+                    #     textSet.add(son.text)
 
                     print(str(text))
-                    parent = node.text
+                    parent = node.text+str(node.startOffset)
+                    if parent == nodeList[-1].text + str(nodeList[-1].startOffset):
+                        parent = nodeList[-1].text
+                        rootElement = []
+                        rootElement.append(parent)
+                        rootElement.append('')
+                        feature = "features: "
+                        for f in nodeList[-1].features:
+                            feature += f + " "
+                        tooltip = feature + "EndOffset :" + str(nodeList[-1].endOffset) +" " + "StartOffset :" + str(nodeList[-1].startOffset)
+                        rootElement.append(tooltip)
+                        dataRows.append(rootElement)
                     feature = "features: "
                     for f in son.features:
                         feature += f + " "
@@ -131,6 +147,7 @@ def orgChart(json_input):
                     element.append(parent)
                     element.append(tooltip)
                     dataRows.append(element)
+
         else:
             element = []
             text = node.text
@@ -142,11 +159,18 @@ def orgChart(json_input):
             txt = feature + end + start
             tooltip = txt
             element.append(text)
+            element.append('')
             element.append(tooltip)
             dataRows.append(element)
+
     nodeList[:] = []
     return dataRows
 
+def checkRelation(node):
+    for son in node.sons:
+        if son.upperRelation:
+            return True
+    return False
 
 
 
