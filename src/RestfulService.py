@@ -70,6 +70,7 @@ def LexicalAnalyze():
     Type = request.args.get('Type')
     if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
+    logging.error(Sentence)
     # else:
     #     return "Quote your sentence in double quotes please"
 
@@ -116,16 +117,11 @@ def QuerySegment(Sentence):
     norm = viterbi1.normalize(Sentence)
     return ''.join(viterbi1.viterbi1(norm, len(norm)))
 
-def init(querydict = "../data/g1.words.P"):
+def init():
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
-
-
-    if querydict.startswith("."):
-        querydict = os.path.join(os.path.dirname(os.path.realpath(__file__)),  querydict)
-    viterbi1.LoadDictFromPickle(querydict)
 
     ProcessSentence.LoadCommon()
 
@@ -135,7 +131,6 @@ init()
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--thisport", default=5001, help="The port for this server")
-    parser.add_argument("--querydict", default="../data/g1.words.P", help="The port for this server")
     # parser.add_argument("--segmentserviceport", default=8080, type=int, help="The port of the Jave Segmentation Server")
     # parser.add_argument("--segmentserverlink", default="http://localhost",
     #                     help="The link to the Jave Segmentation Server")

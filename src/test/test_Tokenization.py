@@ -61,4 +61,12 @@ class TokenizationTest(unittest.TestCase):
         NodeList.combine(0, 2)
         print(NodeList.get(0).CleanOutput().toJSON())
 
-        print(NodeList.root().CleanOutput().toJSON())
+
+    def testGet(self):
+        t = "中文语义识别研究"
+        NodeList = Tokenize(t)
+        print(NodeList)
+        self.assertEqual(NodeList.get(0).text, "中文")
+        self.assertEqual(NodeList.get(1).text, "语义")
+        self.assertEqual(NodeList.get(2).text, "识别")
+        self.assertEqual(NodeList.get(3).text, "研究")

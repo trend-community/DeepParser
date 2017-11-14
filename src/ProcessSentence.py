@@ -129,7 +129,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if strtokens.size > 2:
         logging.info("Applying Winning Rule:" + rule.RuleName +" to "
                      + strtokens.get(1).text + strtokens.get(2).text + "...")
-        logging.debug(jsonpickle.dumps(strtokens))
+        #logging.debug(jsonpickle.dumps(strtokens))
     StoreWinningRule(strtokens, rule, StartPosition)
 
     if len(rule.Tokens) == 0:
@@ -138,14 +138,14 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         raise(RuntimeError("Rule error"))
     for i in range(len(rule.Tokens)):
         token = strtokens.get(i+StartPosition)
-        try:
-            logging.debug("Before:\n" + "in position " + str(StartPosition + i )
-                          + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
-        except IndexError as e:
-            logging.error("Wrong when trying to debug and dump. maybe the string is not long enough?")
-            logging.error(str(rule))
-            logging.error(str(e))
-            return len(rule.Tokens)
+        # try:
+        #     logging.debug("Before:\n" + "in position " + str(StartPosition + i )
+        #                   + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
+        # except IndexError as e:
+        #     logging.error("Wrong when trying to debug and dump. maybe the string is not long enough?")
+        #     logging.error(str(rule))
+        #     logging.error(str(e))
+        #     return len(rule.Tokens)
 
         if hasattr(rule.Tokens[i], 'action'):
             Actions = rule.Tokens[i].action.split()
@@ -195,8 +195,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         try:
             logging.debug("Checking " + str(i) + " while Endtrunk=" + str(rule.Tokens[i].EndTrunk))
             if rule.Tokens[i].EndTrunk:
-                logging.debug("Before Chunking:\n" + "in position " + str(StartPosition + i)
-                              + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
+                # logging.debug("Before Chunking:\n" + "in position " + str(StartPosition + i)
+                #               + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
                 CheunkedTokenNum = ApplyChunking(strtokens, StartPosition + i, rule.Tokens, i)
                 i -= CheunkedTokenNum
         except IndexError as e:
@@ -265,7 +265,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         if WinningRule:
             try:
                 skiptokennum = ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
-                logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
+                #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
@@ -423,7 +423,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "不过这应该是原汁原味的咖啡吧"
+    target = "经多方面治疗而疗效不显时怎么办"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
@@ -436,7 +436,7 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(nodes))
 
     print(nodes.root().CleanOutput().toJSON())
-    print(jsonpickle.dumps(nodes))
+    #print(jsonpickle.dumps(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
 
