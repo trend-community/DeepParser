@@ -79,12 +79,11 @@ for line in fin:
         if freq < 3:
             continue
         for chunk in query.split():
-            l = len(chunk)
-            if l < 2:
+            if len(chunk) < 2:
                 continue    #ignore one character word.
             if digitsearch.search(chunk):
                 continue    #ignore digit
-            if l <=3 and InLexiconBlacklist(chunk):
+            if  InLexiconBlacklist(chunk):
                 continue
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
