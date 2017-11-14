@@ -70,6 +70,7 @@ def LexicalAnalyze():
     Type = request.args.get('Type')
     if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
+    logging.error(Sentence)
     # else:
     #     return "Quote your sentence in double quotes please"
 

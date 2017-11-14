@@ -76,15 +76,24 @@ class SentenceLinkedList:
             logging.error(self.__str__())
             raise RuntimeError("Can't get " + str(index) + " from the sentence!")
             #return None
-        if index == self.size-1:
-            return self.tail
-        p = self.head
-        counter = 0
-        while p.next != None:
-            if counter == index:
-                return p
-            counter += 1
-            p = p.next
+
+        if (index < self.size/2):
+            p = self.head
+            counter = 0
+            while p.next != None:
+                if counter == index:
+                    return p
+                counter += 1
+                p = p.next
+        else:   # for
+            p = self.tail
+            index = self.size - index -1
+            counter = 0
+            while p.prev != None:
+                if counter == index:
+                    return p
+                counter += 1
+                p = p.prev
         logging.error(self.__str__())
         raise RuntimeError("SentenceLinkedList.get(" + str(index) + ") should not get to here.")
 
@@ -173,7 +182,10 @@ class SentenceLinkedList:
         return NewNode
 
     def root(self):
+        if self.size <= 1:
+            return None
         length = self.size-1    #remove the first token (JS)
+
         if self.tail.text == "":
             length -= 1
         r, _, _ = self.newnode(1, length)
@@ -278,7 +290,6 @@ class SentenceNode(object):
         return a
 
     def CleanOutput_FeatureLeave(self):
-        logging.warning("in leave only!")
         a = JsonClass()
         a.text = self.text
         if self.norm != self.text:
