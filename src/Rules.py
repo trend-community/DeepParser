@@ -916,6 +916,12 @@ def PreProcess_CheckFeatures():
         _PreProcess_CheckFeatures(rg.RuleList)
         _PreProcess_CheckFeatures(rg.ExpertLexicon)
 
+def SortByLength():
+    for RuleFile in RuleGroupDict:
+        logging.info("Sorting " + RuleFile)
+        rg = RuleGroupDict[RuleFile]
+        rg.RuleList = sorted(rg.RuleList, key = lambda x: len(x.Tokens), reverse=True)
+
 
 # Check the rules. If it is a stem, not a feature, but omit quote
 #   then we add quote;
@@ -1101,12 +1107,14 @@ def _CheckFeature_returnword(word):
 def OutputRules(rulegroup, style="details"):
     output = "// ****Rules**** " + rulegroup.FileName + "\n"
     output += "// * size: " + str(len(rulegroup.RuleList)) + " *\n"
-    for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
+    #for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
+    for rule in rulegroup.RuleList:
         output += rule.output(style) + "\n"
 
     output += "// ****Expert Lexicons****\n"
     output += "// * size: " + str(len(rulegroup.ExpertLexicon)) + " *\n"
-    for rule in sorted(rulegroup.ExpertLexicon, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
+    #for rule in sorted(rulegroup.ExpertLexicon, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
+    for rule in rulegroup.ExpertLexicon:
         output += rule.output(style) + "\n"
 
     output += "// ****Macros****\n"

@@ -53,7 +53,6 @@ def OutputWinningRules():
     return output
 
 
-HeadMatchCache = {}
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
 def HeadMatch(strTokenList, StartPosition, ruleTokens):
     for i in range(len(ruleTokens)):
@@ -215,6 +214,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     return 0 #need to modify for those "forward looking rules"
 
 
+HeadMatchCache = {}
+RuleSizeLimit = 6
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = []
     i = 0
@@ -222,18 +223,33 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 
     strtoken = strtokenlist.head
     while strtoken:
+        strsignature = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
         logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
         for rule in rulegroup.ExpertLexicon:
-            if i+len(rule.Tokens) > strtokenlist.size:
+            logging.debug("using rule" + str(rule.ID))
+            ruleSize = len(rule.Tokens)
+            if i+ruleSize > strtokenlist.size:
                 continue
-            if WinningRuleSize < len(rule.Tokens):
-                result = HeadMatch(strtokenlist, i, rule.Tokens)
+            if WinningRuleSize < ruleSize:
+                if ruleSize < len(strsignature):
+                    pairSignature = str([strsignature[ruleSize-1], rule.ID])
+                else:
+                    pairSignature = None
+                logging.debug("get a pairsignature:" + str(pairSignature))
+                if pairSignature in HeadMatchCache:
+                    result = HeadMatchCache[pairSignature]
+                    logging.debug("HeadMatchCache hit! " + str(result))
+                else:
+                    result = HeadMatch(strtokenlist, i, rule.Tokens)
+                    HeadMatchCache[pairSignature] = result
+                    logging.debug("\tSize of HeadMatchCache:" + str(len(HeadMatchCache)))
                 if result:
                     WinningRule = rule
+                    #break   #only need to match the first rule, as now the rule is sorted
                     WinningRuleSize = len(WinningRule.Tokens)
                     if WinningRuleSize+i >= strtokenlist.size:
                         logging.debug("Found a winning rule that matchs up to the end of the string.")
@@ -254,10 +270,22 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 
         WinningRuleSize = 0
         for rule in rulegroup.RuleList:
-            if i + len(rule.Tokens) > strtokenlist.size:
+            ruleSize = len(rule.Tokens)
+            if i+ruleSize > strtokenlist.size:
                 continue
-            if WinningRuleSize < len(rule.Tokens):
-                result = HeadMatch(strtokenlist, i, rule.Tokens)
+            if WinningRuleSize < ruleSize:
+                if ruleSize < len(strsignature):
+                    pairSignature = str([strsignature[ruleSize-1], rule.ID])
+                else:
+                    pairSignature = None
+                if pairSignature in HeadMatchCache:
+                    result = HeadMatchCache[pairSignature]
+                    # logging.debug("HeadMatchCache hit! " + str(result))
+                    # logging.debug("\tSize of HeadMatchCache:" + str(len(HeadMatchCache)))
+                else:
+                    result = HeadMatch(strtokenlist, i, rule.Tokens)
+                    if len(HeadMatchCache) < 1000000:
+                        HeadMatchCache[pairSignature] = result
                 if result:
                     WinningRule = rule
                     WinningRuleSize = len(WinningRule.Tokens)
@@ -265,9 +293,9 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                         logging.debug("Found a winning rule that matchs up to the end of the string.")
                         break
         if WinningRule:
-            rulegroup.RuleList.remove(WinningRule)
-            rulegroup.RuleList.insert(0, WinningRule)
-            logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
+            # rulegroup.RuleList.remove(WinningRule)
+            # rulegroup.RuleList.insert(0, WinningRule)
+            # logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
             try:
                 skiptokennum = ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
@@ -420,12 +448,13 @@ def LoadCommon():
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
     Rules.PreProcess_CheckFeatures()
+    Rules.SortByLength()
 
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
         logging.debug("Start writing temporary lex file.")
-        Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
+        #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
     logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
@@ -436,7 +465,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "娃儿流口水跟咳嗽,去区医院看了看,开了头孢克洛干悬剂"
+    target = "传言中所说的事儿纯属空穴来风。"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")

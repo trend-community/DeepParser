@@ -77,6 +77,8 @@ class SentenceLinkedList:
             raise RuntimeError("Can't get " + str(index) + " from the sentence!")
             #return None
 
+        if index == 0:
+            return self.head
         if (index < self.size/2):
             p = self.head
             counter = 0
@@ -118,6 +120,19 @@ class SentenceLinkedList:
 
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset
+
+    def signature(self, start, limit):
+        startnode = self.get(start)
+        p = startnode
+        sig = [ [] for _ in range(limit)]
+        accumulatesig = []
+        for i in range(limit):
+            accumulatesig.append(p.text)
+            accumulatesig.append(p.features)
+            sig[i] = accumulatesig
+            p = p.next
+
+        return sig
 
     def newnode(self, start, count):
         #logging.info("new node: start=" + str(start) + " count=" + str(count))

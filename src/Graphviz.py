@@ -88,8 +88,8 @@ def orgChart(json_input):
     decoded = json.loads(json_input)
     CreateTree(decoded)
     textSet = set()
-    printTree(nodeList)
-    print("size of nodelist is " + str(len(nodeList)))
+    #printTree(nodeList)
+    #print("size of nodelist is " + str(len(nodeList)))
     dataRows = []
     for node in nodeList:
 
@@ -123,7 +123,7 @@ def orgChart(json_input):
                     # else:
                     #     textSet.add(son.text)
 
-                    print(str(text))
+                    #print(str(text))
                     parent = node.text+str(node.startOffset)
                     if parent == nodeList[-1].text + str(nodeList[-1].startOffset):
                         parent = nodeList[-1].text

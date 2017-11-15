@@ -49,7 +49,7 @@ def ProcessFile(FileName):
 if __name__ == "__main__":
     DebugMode = False
     NoFeature = False
-    level = logging.WARN
+    level = logging.WARNING
     UnitTestFileName = ''
     if len(sys.argv) > 1:
         UnitTestFileName = sys.argv[1]
@@ -80,6 +80,6 @@ if __name__ == "__main__":
         import cProfile, pstats
         cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
         p = pstats.Stats('restats')
-        p.sort_stats('time').print_stats(20)
+        p.sort_stats('time').print_stats(60)
 
-
+    Rules.OutputRuleFiles("../temp/rule.after/")
