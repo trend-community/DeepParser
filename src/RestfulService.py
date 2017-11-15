@@ -14,19 +14,6 @@ app.cache = Cache(app)
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),"chart.template.html")) as templatefile:
     charttemplate = templatefile.read()
 
-# for processing leading slash as in:
-#  https://stackoverflow.com/questions/24000729/flask-route-using-path-with-leading-slash#24001029
-from werkzeug.routing import PathConverter
-
-class EverythingConverter(PathConverter):
-    regex = '.*?'
-
-app.url_map.converters['everything'] = EverythingConverter
-
-
-# import singleton
-# me = singleton.SingleInstance()
-
 
 @app.route("/SearchLexicon/<word>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
@@ -129,15 +116,7 @@ def init():
 init()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--thisport", default=5001, help="The port for this server")
-    # parser.add_argument("--segmentserviceport", default=8080, type=int, help="The port of the Jave Segmentation Server")
-    # parser.add_argument("--segmentserverlink", default="http://localhost",
-    #                     help="The link to the Jave Segmentation Server")
-    args = parser.parse_args()
 
-    # utils.url_ch = args.segmentserverlink + ":" + str(args.segmentserviceport)
-
-    print("Running in port " + str(args.thisport))
-    app.run(host="0.0.0.0", port=args.thisport, debug=False, threaded=True)
+    print("Running in port " + str(utils.ParserConfig.get("website", "port")))
+    app.run(host="0.0.0.0", port=int(utils.ParserConfig.get("website", "port")), debug=False, threaded=True)
     #app.test_client().get('/')

@@ -120,6 +120,8 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         return True
 
     strToken = StrTokenList.get(StrPosition)
+
+    LogicMatchKey = [strToken, rule]
     rule, matchtype = CheckPrefix(rule, matchtype)
     if matchtype == "unknown":
         return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition)

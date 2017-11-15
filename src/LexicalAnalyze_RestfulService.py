@@ -51,7 +51,7 @@ if __name__ == "__main__":
         if DebugMode:
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + unittestnode.TestSentence)
 
-        LexicalAnalyzeURL = url + "/LexicalAnalyze?Type=simplefeature&Sentence="
+        LexicalAnalyzeURL = ParserConfig.get("main", "url_larestfulservice") + "/LexicalAnalyze?Type=simplefeature&Sentence="
         logging.debug("-request LexicalAnalyze")
         ret = requests.get(LexicalAnalyzeURL + "\"" + unittestnode.TestSentence + "\"")
 

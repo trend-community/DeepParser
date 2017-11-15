@@ -7,8 +7,6 @@
 import logging, re, operator, sys, os, pickle, requests
 from utils import *
 
-url = "http://localhost:5001"
-url_ch = "http://localhost:8080"
 
 _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
@@ -248,7 +246,7 @@ def GetFeatureID(feature):
 
     if not _FeatureList:
         try:
-            GetFeatureIDURL = url + "/GetFeatureID/"
+            GetFeatureIDURL = ParserConfig.get("main", "url_larestfulservice") + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
         except IOError:
             return -1
@@ -271,7 +269,7 @@ def GetFeatureID(feature):
 def GetFeatureName(featureID):
 
     if len(_FeatureList) == 0:
-        GetFeatureNameURL = url + "/GetFeatureName/"
+        GetFeatureNameURL = ParserConfig.get("main", "url_larestfulservice") + "/GetFeatureName/"
         try:
             ret = requests.get(GetFeatureNameURL + str(featureID))
             ret.raise_for_status()

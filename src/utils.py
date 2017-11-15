@@ -1,9 +1,10 @@
-import logging, re, json, jsonpickle
+import logging, re, json, jsonpickle, configparser
 from functools import lru_cache
 
 
-url = "http://10.15.252.3:5001"
-url_ch = "http://localhost:8080"
+ParserConfig = configparser.ConfigParser()
+ParserConfig.read('config.ini')
+
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
@@ -71,7 +72,7 @@ def SearchPair(string, tagpair, Reverse=False):
     #return -1
 
 
-@lru_cache(50000)
+@lru_cache(100000)
 def _SeparateComment(line):
     line = line.strip()
     SlashLocation = line.find("//")
