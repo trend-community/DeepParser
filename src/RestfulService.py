@@ -1,4 +1,4 @@
-import logging, sys, re, jsonpickle, os, json
+import logging, sys, re, jsonpickle, os, json, configparser
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request, send_file
