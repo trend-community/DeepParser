@@ -5,6 +5,9 @@ class TokenizationTest(unittest.TestCase):
     def testToken(self):
         t = SentenceNode("good")
         print(t.oneliner())
+        NodeList = Tokenize("better")
+        NodeList.insert(t, 0)
+        self.assertEqual(NodeList.size, 2)
         #print(t.JsonOutput())
 
     def testList(self):
