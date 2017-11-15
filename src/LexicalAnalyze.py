@@ -82,4 +82,4 @@ if __name__ == "__main__":
         p = pstats.Stats('restats')
         p.sort_stats('time').print_stats(60)
 
-    Rules.OutputRuleFiles("../temp/rule.after/")
+    #Rules.OutputRuleFiles("../temp/rule.after/")
