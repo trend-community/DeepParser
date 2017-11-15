@@ -55,6 +55,7 @@ def Tokenize(Sentence):
 def LexicalAnalyze():
     Sentence = request.args.get('Sentence')
     Type = request.args.get('Type')
+    Debug = request.args.get('Debug')
     if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
     #logging.error(Sentence)
@@ -80,6 +81,12 @@ def LexicalAnalyze():
             elif Type == "parsetree":
                 orgdata = Graphviz.orgChart(nodes.root().CleanOutput().toJSON())
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
+                if Debug:
+                    winningrulestring = ""
+                    for rule in winningrules:
+                        winningrulestring += rule + ":" + winningrules[rule] + "\n"
+                    chart = chart.replace("<!-- EXTRA -->", winningrulestring)
+                    print("RestfulService: winningrules=" + str(winningrules))
                 return chart
             else:
                 return nodes.root().CleanOutput().toJSON()

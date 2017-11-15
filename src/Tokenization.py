@@ -77,25 +77,19 @@ class SentenceLinkedList:
             raise RuntimeError("Can't get " + str(index) + " from the sentence!")
             #return None
 
-        if index == 0:
-            return self.head
         if (index < self.size/2):
             p = self.head
             counter = 0
-            while p.next != None:
-                if counter == index:
-                    return p
-                counter += 1
+            for i in range(index):
                 p = p.next
+            return p
         else:   # for
             p = self.tail
             index = self.size - index -1
             counter = 0
-            while p.prev != None:
-                if counter == index:
-                    return p
-                counter += 1
+            for i in range(index):
                 p = p.prev
+            return p
         logging.error(self.__str__())
         raise RuntimeError("SentenceLinkedList.get(" + str(index) + ") should not get to here.")
 

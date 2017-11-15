@@ -115,7 +115,7 @@ def LoadDictFromPickle(dictpath="../data/g1.words.P"):
 
 def LoadDictFromLexicon(dictpath):
     global querydict
-    print("Before loading from lexicon, size:" + str(querydict.size))
+    print("Before loading from lexicon, size:" + str(len(querydict)))
     with open(dictpath) as lexicondict:
         for line in lexicondict:
             try:
@@ -123,7 +123,7 @@ def LoadDictFromLexicon(dictpath):
                 querydict[word] = 0
             except:
                 pass
-    print("After loading from lexicon, size:" + str(querydict.size))
+    print("After loading from lexicon, size:" + str(len(querydict)))
 
 if __name__ == "__main__":
     LoadDictFromPickle()

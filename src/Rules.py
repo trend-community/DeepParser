@@ -22,7 +22,6 @@ class RuleGroup(object):
         self.ID = Rule.idCounter
         self.FileName = FileName
         self.RuleList = []
-        self.ExpertLexicon = []
         self.MacroDict = {}
         self.UnitTest = []
 
@@ -43,7 +42,6 @@ class UnitTestNode(object):
 
 def ResetRules(rg):
     del rg.RuleList[:]
-    del rg.ExpertLexicon[:]
     rg.MacroDict = {}  # not sure which one to use yet
 
 
@@ -124,7 +122,6 @@ class Rule:
         self.Tokens = []
         self.MatchString = ''
         # self.Actions = {}
-        self.IsExpertLexicon = False
         self.comment = ''
 
     def __lt__(self, other):
@@ -135,21 +132,17 @@ class Rule:
         code, comment = SeparateComment(ruleString)
         if not code:
             return
-        blocks = [x.strip() for x in re.split("::", code)]
-        if len(blocks) == 2:
-            self.IsExpertLexicon = True
-        else:
-            blocks = [x.strip() for x in re.split("==", code)]
-            if len(blocks) != 2:
+        codeblocks = [x.strip() for x in re.split("::", code)]
+        if len(codeblocks) != 2:
+            codeblocks = [x.strip() for x in re.split("==", code)]
+            if len(codeblocks) != 2:
                 logging.debug(" not separated by :: or == ")
                 logging.debug("string:" + ruleString)
                 return
 
-        if self.IsExpertLexicon:
+        RuleBlocks = re.match("(.+)==(.+)$", ruleString, re.DOTALL)
+        if not RuleBlocks:
             RuleBlocks = re.match("(.+)::(.+)$", ruleString, re.DOTALL)
-        else:
-            RuleBlocks = re.match("(.+)==(.+)$", ruleString, re.DOTALL)
-
         if not RuleBlocks or RuleBlocks.lastindex != 2:
             raise RuntimeError("This rule can't be correctly parsed:\n\t" + ruleString)
 
@@ -157,7 +150,7 @@ class Rule:
             self.ID = ID
         self.RuleName = RuleBlocks.group(1).strip()
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
-            RuleContent = ProcessMacro(blocks[1],
+            RuleContent = ProcessMacro(codeblocks[1],
                                        MacroDict)  # Process the whole code, not to worry about comment and unit test
             if code.endswith(";"):
                 RuleContent = RuleContent[:-1]
@@ -207,9 +200,7 @@ class Rule:
     # style: concise, or detail
     def output(self, style="concise"):
         output = "//ID:" + str(self.ID)
-        if self.IsExpertLexicon:
-            output += "[Expert Lexicon]\n"
-        elif self.RuleName.startswith("@"):
+        if self.RuleName.startswith("@"):
             output += "[Macro]\n"
         elif self.RuleName.startswith("#"):
             output += "[Macro with parameter]\n"
@@ -217,10 +208,7 @@ class Rule:
             output += "[Rule]\n"
 
         if style == "concise":
-            if self.IsExpertLexicon:
-                output += self.RuleName + " :: {"
-            else:
-                output += self.RuleName + " == {"
+            output += self.RuleName + " == {"
 
             if len(self.Tokens) == 0:
                 output += self.RuleContent
@@ -514,7 +502,7 @@ def LoadRules(RuleLocation):
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
     logging.info("Finished Loading Rule " + RuleFileName )
-    logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) + " \t Expert Lexicon Size:"+ str(len(rulegroup.ExpertLexicon)))
+    logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
 
 
 def InsertRuleInList(string, rulegroup):
@@ -530,23 +518,7 @@ def InsertRuleInList(string, rulegroup):
                 return
             rulegroup.MacroDict.update({node.RuleName: node})
         else:
-            if node.IsExpertLexicon:
-                # It is known that the expert lexicons have multiple "rules" that have "or" relationship.
-                #    so no need to check this.
-                # for n in _ExpertLexicon:
-                #     if n.RuleName == node.RuleName:
-                #         logging.warning("This rule name " + node.RuleName + " is already used for Expert Lexicon " + str(n)
-                #                         + " \n but now you have: " + string + "\n\n")
-                #         return
-                rulegroup.ExpertLexicon.append(node)
-            else:
-                # for n in rulegroup.RuleList:
-                #     if n.RuleName == node.RuleName:
-                #         logging.warning(
-                #             "This rule name " + node.RuleName + " is already used for Rule " + str(n)
-                #             + " \n but now you have: " + string[:100] + "\n\n")
-                #         #                       return
-                rulegroup.RuleList.append(node)
+            rulegroup.RuleList.append(node)
 
     if remaining:
         RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
@@ -558,10 +530,7 @@ def InsertRuleInList(string, rulegroup):
                 code, _ = SeparateComment(line)
                 if code:
                     lineRuleName = RuleName + "_" + str(counter)
-                    if node.IsExpertLexicon:
-                        fakeString = lineRuleName + " :: " + line
-                    else:
-                        fakeString = lineRuleName + " == " + line
+                    fakeString = lineRuleName + " == " + line
                     try:
                         InsertRuleInList(fakeString, rulegroup)
                     except RecursionError as e:
@@ -572,13 +541,9 @@ def InsertRuleInList(string, rulegroup):
         else:
             code, _ = SeparateComment(remaining)
             if  code:
-
                 RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
 
-                if node.IsExpertLexicon:
-                    fakeString = RuleName + " :: " + remaining
-                else:
-                    fakeString = RuleName + " == " + remaining
+                fakeString = RuleName + " == " + remaining
                 try:
                     InsertRuleInList(fakeString, rulegroup)
                 except RecursionError as e:
@@ -613,7 +578,6 @@ def _ExpandRuleWildCard_List(OneList):
                     newrule.FileName = rule.FileName
                     newrule.Origin = rule.Origin
                     newrule.comment = rule.comment
-                    newrule.IsExpertLexicon = rule.IsExpertLexicon
                     newrule.RuleName = rule.RuleName + "_" + str(repeat_num)
                     newrule.RuleContent = rule.RuleContent
                     for tokenindex_pre in range(tokenindex):
@@ -668,7 +632,6 @@ def ExpandRuleWildCard():
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
         Modified = _ExpandRuleWildCard_List(rg.RuleList) or Modified
-        Modified = _ExpandRuleWildCard_List(rg.ExpertLexicon) or Modified
 
     if Modified:
         logging.info("ExpandRuleWildCard next level.")
@@ -679,12 +642,9 @@ def ExpandParenthesisAndOrBlock():
     Modified = False
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
-        logging.info("\tExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)) +
-                     " Size of ExpertLexicon:" + str(len(rg.ExpertLexicon)))
+        logging.info("\tExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)))
         Modified = _ExpandParenthesis(rg.RuleList) or Modified
-        Modified = _ExpandParenthesis(rg.ExpertLexicon) or Modified
         Modified = _ExpandOrBlock(rg.RuleList) or Modified
-        Modified = _ExpandOrBlock(rg.ExpertLexicon) or Modified
 
     if Modified:
         logging.info("ExpandParenthesisAndOrBlock to next level")
@@ -722,7 +682,6 @@ def _ExpandParenthesis(OneList):
                 newrule.FileName = rule.FileName
                 newrule.Origin = rule.Origin
                 newrule.comment = rule.comment
-                newrule.IsExpertLexicon = rule.IsExpertLexicon
                 newrule.RuleName = rule.RuleName + "_p" + str(tokenindex)
                 newrule.RuleContent = rule.RuleContent
                 for tokenindex_pre in range(tokenindex):
@@ -826,7 +785,6 @@ def _ExpandOrBlock(OneList):
             newrule.FileName = rule.FileName
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
-            newrule.IsExpertLexicon = rule.IsExpertLexicon
             newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
@@ -865,7 +823,6 @@ def _ExpandOrBlock(OneList):
             newrule.FileName = rule.FileName
             newrule.Origin = rule.Origin
             newrule.comment = rule.comment
-            newrule.IsExpertLexicon = rule.IsExpertLexicon
             newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
@@ -914,7 +871,6 @@ def PreProcess_CheckFeatures():
         logging.info("PreProcessing " + RuleFile)
         rg = RuleGroupDict[RuleFile]
         _PreProcess_CheckFeatures(rg.RuleList)
-        _PreProcess_CheckFeatures(rg.ExpertLexicon)
 
 def SortByLength():
     for RuleFile in RuleGroupDict:
@@ -1109,12 +1065,6 @@ def OutputRules(rulegroup, style="details"):
     output += "// * size: " + str(len(rulegroup.RuleList)) + " *\n"
     #for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
     for rule in rulegroup.RuleList:
-        output += rule.output(style) + "\n"
-
-    output += "// ****Expert Lexicons****\n"
-    output += "// * size: " + str(len(rulegroup.ExpertLexicon)) + " *\n"
-    #for rule in sorted(rulegroup.ExpertLexicon, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
-    for rule in rulegroup.ExpertLexicon:
         output += rule.output(style) + "\n"
 
     output += "// ****Macros****\n"

@@ -8,7 +8,7 @@ class TokenizationTest(unittest.TestCase):
         NodeList = Tokenize("better")
         NodeList.insert(t, 0)
         self.assertEqual(NodeList.size, 2)
-        #print(t.JsonOutput())
+
 
     def testList(self):
         t = "this is a good desk, for study"
@@ -73,3 +73,5 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(NodeList.get(1).text, "语义")
         self.assertEqual(NodeList.get(2).text, "识别")
         self.assertEqual(NodeList.get(3).text, "研究")
+        with self.assertRaises(RuntimeError):
+            NodeList.get(4)

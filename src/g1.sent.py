@@ -55,7 +55,7 @@ for line in fin:
 		try:
 			[sent, freqstring] = line.split("", 2)
 		except:
-			print("wront format:[" + line + "]")
+			print("wrong format:[" + line + "]")
 			fout.write("wrong format:[" + line + "]\n")
 			continue
 	else:
