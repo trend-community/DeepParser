@@ -1,9 +1,9 @@
-import logging, re, json, jsonpickle, configparser
+import logging, re, json, jsonpickle, configparser, os
 from functools import lru_cache
 
 
 ParserConfig = configparser.ConfigParser()
-ParserConfig.read('config.ini')
+ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
 
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)

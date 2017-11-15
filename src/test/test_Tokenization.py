@@ -1,5 +1,6 @@
 import unittest
 from Tokenization import *
+from utils import *
 
 class TokenizationTest(unittest.TestCase):
     def testToken(self):
@@ -73,3 +74,5 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(NodeList.get(1).text, "语义")
         self.assertEqual(NodeList.get(2).text, "识别")
         self.assertEqual(NodeList.get(3).text, "研究")
+        with self.assertRaises(RuntimeError):
+            NodeList.get(4)
