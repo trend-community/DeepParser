@@ -120,7 +120,8 @@ def LoadDictFromLexicon(dictpath):
         for line in lexicondict:
             try:
                 [word, _] = line.split(":", 2)
-                querydict[word] = 0
+                if len(word) >= 2:
+                    querydict[word] = -0.1
             except:
                 pass
     print("After loading from lexicon, size:" + str(len(querydict)))
