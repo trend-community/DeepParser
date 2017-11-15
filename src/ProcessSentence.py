@@ -52,6 +52,8 @@ def OutputWinningRules():
 
     return output
 
+
+HeadMatchCache = {}
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
 def HeadMatch(strTokenList, StartPosition, ruleTokens):
     for i in range(len(ruleTokens)):
@@ -263,6 +265,9 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                         logging.debug("Found a winning rule that matchs up to the end of the string.")
                         break
         if WinningRule:
+            rulegroup.RuleList.remove(WinningRule)
+            rulegroup.RuleList.insert(0, WinningRule)
+            logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
             try:
                 skiptokennum = ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
@@ -383,11 +388,19 @@ def LoadCommon():
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
+    logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
+    logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
+
+    if ParserConfig.get("main", "runtype") == "Debug":
+        RuleFolder = XLocation
+    else:
+        RuleFolder = ParserConfig.get("main", "compiledfolder")
     for action in PipeLine:
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
-            Rulefile = XLocation + Rulefile
+            Rulefile = os.path.join(RuleFolder, Rulefile)
             Rules.LoadRules(Rulefile)
+
     # Rules.LoadRules("../../fsa/X/0defLexX.txt")
     # Rules.LoadRules("../../fsa/Y/800VGy.txt")
     # Rules.LoadRules("../../fsa/Y/900NPy.xml")
@@ -408,11 +421,11 @@ def LoadCommon():
     Rules.ExpandRuleWildCard()
     Rules.PreProcess_CheckFeatures()
 
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
+    if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
-        Rules.OutputRuleFiles("../temp/")
+        Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
         logging.debug("Start writing temporary lex file.")
-        #Lexicon.OutputLexiconFile("../temp/")
+        Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
     logging.debug("Done of LoadCommon!")
         #print(Lexicon.OutputLexicon(False))
@@ -423,7 +436,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "经多方面治疗而疗效不显时怎么办"
+    target = "娃儿流口水跟咳嗽,去区医院看了看,开了头孢克洛干悬剂"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
@@ -443,3 +456,5 @@ if __name__ == "__main__":
     print(FeatureOntology.OutputMissingFeatureSet())
 
     print(nodes.root().CleanOutput_FeatureLeave().toJSON())
+
+    Rules.OutputRuleFiles("../temp/rule.after/")

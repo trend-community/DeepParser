@@ -9,8 +9,6 @@ import utils
 from FeatureOntology import *
 import Tokenization
 
-# url = "http://localhost:5001"
-# url_ch = "http://localhost:8080"
 
 _LexiconDict = {}
 _LexiconLookupSet = dict()
@@ -244,11 +242,11 @@ def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
 
             if newNode:
                 _LexiconDict.update({node.text: node})
-                if lookupSource != LexiconLookupSource.Exclude \
-                        or "_" in node.text:    #
-                    #_LexiconLookupDict.update({node.word: node})
+                if lookupSource != LexiconLookupSource.Exclude:
                     _LexiconLookupSet[lookupSource].add(node.text)
-                #logging.debug(node.word)
+                elif "_" in node.text:
+                    _LexiconLookupSet[LexiconLookupSource.defLex].add(node.text)
+
             oldWord = blocks[0]
 
     # Apply the features of stem/norm into it's variants.

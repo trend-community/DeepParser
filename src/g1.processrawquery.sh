@@ -15,8 +15,8 @@
 
 # new steps, Oct 30.
 #Usage:
-#bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder
-#  nohup sh g1.processrawquery.sh /nlpengine/queries/data/g0.raw.txt ../data/g0.P /nlpengine/fsa/X/Q/rule /nlpengine/fsa/X/Q/lexicon /nlpengine/fsa/X/Q/temp &
+#bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder systemlexiconfilelocation
+#  nohup sh g1.processrawquery.sh /nlpengine.dev/queries/data/g0.raw.txt ../data/g0.P /nlpengine.dev/fsa/X/Q/rule /nlpengine.dev/fsa/X/Q/lexicon /nlpengine.dev/fsa/X/Q/temp /nlpengine.dev/parser/compiled/lexicon.txt &
 
 mkdir -p $5
 sed -e "s/[\x00\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
@@ -33,7 +33,7 @@ do
     echo "processing $f ..."
     filename=$(basename "$f")
     outputfile="$5/Mixed_$filename"
-    python g1.sent.py  "$f" "$outputfile" $2
+    python g1.sent.py  "$f" "$outputfile" $2 $6
 
     newlexiconname="$4/CleanLexicon_$filename"
     grep -va "<" $outputfile > $newlexiconname &

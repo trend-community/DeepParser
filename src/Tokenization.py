@@ -309,7 +309,7 @@ class SentenceNode(object):
         if self.sons:
             a.sons = [s.CleanOutput_FeatureLeave() for s in self.sons]
 
-        logging.info("in featureleave" + str(self) + "f:" + str(features))
+        #logging.info("in featureleave" + str(self) + "f:" + str(features))
         return a
 
 
@@ -366,7 +366,7 @@ def Tokenize(Sentence):
         # ret_t = requests.post(TokenizeURL, data=Sentence)
         # nodes_t = jsonpickle.decode(ret_t.text)
     else:
-        TokenizeURL = utils.url_ch + "/TokenizeJson/"
+        TokenizeURL = ParserConfig.get("main", "url_ch") + "/TokenizeJson/"
         #ret_t = requests.get(TokenizeURL + Sentence)
 
         data = {'Sentence': URLEncoding(Sentence)}

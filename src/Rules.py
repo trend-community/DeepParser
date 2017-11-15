@@ -1125,7 +1125,7 @@ def OutputRuleFiles(FolderLocation):
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
         output = OutputRules(rg, "concise")
-        FileLocation = os.path.join(FolderLocation, rg.FileName + ".compiled")
+        FileLocation = os.path.join(FolderLocation, rg.FileName)
         with open(FileLocation, "w", encoding="utf-8") as writer:
             writer.write(output)
 

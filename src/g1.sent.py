@@ -32,6 +32,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("input", help="input file")
 parser.add_argument("output", help="output file")
 parser.add_argument("dict", help="pickle dict")
+parser.add_argument("lexicon", help="system lexicon")
 parser.add_argument("-r", "--recursive", default=True, help="proceed recursively")
 parser.add_argument("-q", "--query", default=False, help="process query format")
 parser.add_argument("-d", "--debug", default=False, help="debug mode")
@@ -46,6 +47,7 @@ import math
 fin = codecs.open(args.input, 'rb', encoding='utf-8')
 fout = codecs.open(args.output, 'wb', encoding='utf-8')
 LoadDictFromPickle(args.dict)
+LoadDictFromLexicon(args.lexicon)
 maxPhraseLen = 20
 for line in fin:
 	line = line.strip()
