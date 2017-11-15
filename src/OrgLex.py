@@ -57,7 +57,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
             if len(blocks) != 2:
                 continue
             newNode = False
-            
+
             node = SearchLexicon(blocks[0], 'origin')
             # node = None
             if not node:
@@ -275,7 +275,7 @@ def FeaturesMorethanFour():
 
             featureSorted = sorted(featureSorted)
 
-            if len(featureSorted) >= 4:
+            if len(featureSorted) >= 5:
                 logging.debug("length is larger than 4 " + word)
                 _LexiconDictLexX.update({word: lex.get(word)})
                 removeWord.add(word)
