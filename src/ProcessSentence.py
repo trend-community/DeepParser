@@ -214,8 +214,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     return 0 #need to modify for those "forward looking rules"
 
 
-HeadMatchCache = {}
-RuleSizeLimit = 6
+# HeadMatchCache = {}
+# RuleSizeLimit = 6
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
     i = 0
@@ -223,7 +223,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 
     strtoken = strtokenlist.head
     while strtoken:
-        strsignature = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
+        # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
         logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
@@ -234,18 +234,19 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             if i+ruleSize > strtokenlist.size:
                 continue
             if WinningRuleSize < ruleSize:
-                if ruleSize < len(strsignature):
-                    pairSignature = str([strsignature[ruleSize-1], rule.ID])
-                else:
-                    pairSignature = None
-                if pairSignature in HeadMatchCache:
-                    result = HeadMatchCache[pairSignature]
-                    # logging.debug("HeadMatchCache hit! " + str(result))
-                    # logging.debug("\tSize of HeadMatchCache:" + str(len(HeadMatchCache)))
-                else:
-                    result = HeadMatch(strtokenlist, i, rule.Tokens)
-                    if len(HeadMatchCache) < 1000000:
-                        HeadMatchCache[pairSignature] = result
+                # if ruleSize < len(strsignatures):
+                #     pairSignature = str([strsignatures[ruleSize-1], rule.ID])
+                # else:
+                #     pairSignature = None
+                # if pairSignature in HeadMatchCache:
+                #     result = HeadMatchCache[pairSignature]
+                #     # logging.debug("HeadMatchCache hit! " + str(result))
+                #     # logging.debug("\tSize of HeadMatchCache:" + str(len(HeadMatchCache)))
+                # else:
+                result = HeadMatch(strtokenlist, i, rule.Tokens)
+                    # if len(HeadMatchCache) < 1000000:
+                    #     passls
+                    #     HeadMatchCache[pairSignature] = result
                 if result:
                     WinningRule = rule
                     WinningRuleSize = len(WinningRule.Tokens)
@@ -257,7 +258,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             # rulegroup.RuleList.insert(0, WinningRule)
             # logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
             try:
-                WinningRules[WinningRule.RuleName] = MarkWinningTokens(strtokenlist, WinningRule, i)
+                #WinningRules[WinningRule.RuleName] = MarkWinningTokens(strtokenlist, WinningRule, i)
                 skiptokennum = ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
             except RuntimeError as e:
@@ -284,7 +285,6 @@ def DynamicPipeline(NodeList):
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
-            print("DynamicPipeline:" + str(WinningRules))
 
         if action.startswith("lookup"):
             lookupSourceName = action[6:].strip()
