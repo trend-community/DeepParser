@@ -258,7 +258,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             # rulegroup.RuleList.insert(0, WinningRule)
             # logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
             try:
-                #WinningRules[WinningRule.RuleName] = MarkWinningTokens(strtokenlist, WinningRule, i)
+                WinningRules[WinningRule.RuleName] = MarkWinningTokens(strtokenlist, WinningRule, i)
                 skiptokennum = ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
             except RuntimeError as e:
