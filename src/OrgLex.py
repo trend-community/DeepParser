@@ -216,7 +216,7 @@ def AlignMain():
                     continue
                 code, comment = SeparateComment(line)
                 if (code not in _LexiconDictB.keys()) and (code not in _LexiconDictP.keys()) and (code not in _LexiconDictL.keys()) and (code not in _LexiconDictI.keys()) and (code not in _LexiconDictI4.keys()) and (code not in _LexiconDictLexX.keys()) and (code not in _LexiconDictDefX.keys()):
-                    file.write(code + comment + "\n")
+                    file.write(code + " " + comment + "\n")
     shutil.move(newloc,paraMain)
 
 
