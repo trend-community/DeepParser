@@ -1,4 +1,4 @@
-import logging, sys, re, jsonpickle, os, json, configparser
+import logging, sys, re, jsonpickle, os, json
 import Tokenization, FeatureOntology, Lexicon
 import ProcessSentence, Rules
 from flask import Flask, request, send_file
@@ -117,6 +117,6 @@ init()
 
 if __name__ == "__main__":
 
-    print("Running in port " + str(utils.ParserConfig("website", "port")))
-    app.run(host="0.0.0.0", port=int(utils.ParserConfig("website", "port")), debug=False, threaded=True)
+    print("Running in port " + str(utils.ParserConfig.get("website", "port")))
+    app.run(host="0.0.0.0", port=int(utils.ParserConfig.get("website", "port")), debug=False, threaded=True)
     #app.test_client().get('/')
