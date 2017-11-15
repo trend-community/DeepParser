@@ -1,6 +1,5 @@
 import unittest
 from Tokenization import *
-from utils import *
 
 class TokenizationTest(unittest.TestCase):
     def testToken(self):
@@ -9,7 +8,7 @@ class TokenizationTest(unittest.TestCase):
         NodeList = Tokenize("better")
         NodeList.insert(t, 0)
         self.assertEqual(NodeList.size, 2)
-        #print(t.JsonOutput())
+
 
     def testList(self):
         t = "this is a good desk, for study"
