@@ -37,7 +37,7 @@ class RuleTest(unittest.TestCase):
         r = Rule()
         r.SetRule("a==   [0 a]4 [b]* [c]*7 [d]? [e]10 [f]*15 [g]12*16")
         self.assertEqual(r.Tokens[0].repeat[1], 4)
-        self.assertEqual(r.Tokens[0].word, "[a]")
+        self.assertEqual(r.Tokens[0].word, "[0 a]")
         self.assertEqual(r.Tokens[1].repeat[1], 3)
         self.assertEqual(r.Tokens[2].repeat[1], 7)
         self.assertEqual(r.Tokens[3].repeat[1], 1)
@@ -52,7 +52,7 @@ class RuleTest(unittest.TestCase):
     def test_tokenspace(self):
         r = Rule()
         r.SetRule("b==[0 a b? c:d e]")
-        self.assertEqual(r.Tokens[0].word, '[a b? c]')
+        self.assertEqual(r.Tokens[0].word, '[0 a b? c]')
         self.assertEqual(r.Tokens[0].action, 'd e')
     def test_Rule(self):
         r = Rule()

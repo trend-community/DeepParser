@@ -8,6 +8,7 @@ class WebserviceTest(unittest.TestCase):
         {"EndOffset": 7, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 2, "StartOffset": 0, "features": ["0", "V", "VN9", "vi", "attrC", "vn", "send", "Commerce"], "text": "发货"}, {"EndOffset": 3, "StartOffset": 2, "features": ["phy", "0", "perOrg", "anim", "n", "N", "per", "unit"], "text": "员"}, {"EndOffset": 5, "StartOffset": 3, "features": ["Down", "0", "modJJ", "A", "emph", "situation", "nt", "attitude", "ntA", "nEmo", "sent", "bad", "passion", "xx"], "text": "严重"}, {"EndOffset": 7, "StartOffset": 5, "features": ["vi", "0", "despise", "V", "vn", "con", "sent", "VN9", "nt"], "text": "失职"}], "text": "发货员严重失职"}
         """
         orgdata = str(Graphviz.orgChart(nodes1))
+        print(orgdata)
         self.assertEqual(orgdata, """[['发货员严重失职', '', 'features: EndOffset :7 StartOffset :0'], [{'v': '发货0', 'f': '发货'}, '发货员严重失职', 'features: 0 V VN9 vi attrC vn send Commerce EndOffset :2  StartOffset :0'], ['发货员严重失职', '', 'features: EndOffset :7 StartOffset :0'], [{'v': '员2', 'f': '员'}, '发货员严重失职', 'features: phy 0 perOrg anim n N per unit EndOffset :3  StartOffset :2'], ['发货员严重失职', '', 'features: EndOffset :7 StartOffset :0'], [{'v': '严重3', 'f': '严重'}, '发货员严重失职', 'features: Down 0 modJJ A emph situation nt attitude ntA nEmo sent bad passion xx EndOffset :5  StartOffset :3'], ['发货员严重失职', '', 'features: EndOffset :7 StartOffset :0'], [{'v': '失职5', 'f': '失职'}, '发货员严重失职', 'features: vi 0 despise V vn con sent VN9 nt EndOffset :7  StartOffset :5']]""")
 
         nodes2 = """

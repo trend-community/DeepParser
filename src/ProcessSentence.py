@@ -305,7 +305,7 @@ def PrepareJSandJM(nodes):
     while p.prev:
         if utils.FeatureID_punc not in p.features:
             # first one that is not punc. the real JM2:
-            p.ApplyFeature(FeatureID_JM2)
+            p.ApplyFeature(utils.FeatureID_JM2)
             break
         p.ApplyFeature(utils.FeatureID_JM2)
         p = p.prev
