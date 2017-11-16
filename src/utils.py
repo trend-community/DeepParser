@@ -202,7 +202,7 @@ def GetPrefix(Name):
 
 def OutputStringTokens_json(strTokens):
     from collections import OrderedDict
-    output = json.dumps(OrderedDict([{'word': token.stem, 'feature': token.GetFeatures()} for token in strTokens if token.stem]), sort_keys=False, ensure_ascii=False)
+    output = json.dumps(OrderedDict([{'word': token.text, 'feature': token.GetFeatures()} for token in strTokens if token.stem]), sort_keys=False, ensure_ascii=False)
 
     return output
 

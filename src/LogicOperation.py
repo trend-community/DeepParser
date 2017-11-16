@@ -56,7 +56,7 @@ def GetNumberPointer(Pointer):
 # After that is found, use the offset to locate the token in StrTokens
 #  compare the pointertoken to the current token (both in StrTokens),
 #   return the compare result.
-def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='stem'):
+def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
     if Pointer.startswith('^-'):
         PointerIsSuffix = True
         Pointer = '^' + Pointer[2:]
@@ -137,7 +137,10 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
                 logging.error(jsonpickle.dumps(RuleTokens[0]))
                 raise RuntimeError("Logic Error for checking feature 0")
             else:
-                word = strToken.Head0Text
+                if strToken.Head0Text:
+                    word = strToken.Head0Text
+                else:
+                    word = strToken.text
                 #logging.debug("Rule Not 0:" + rule + " of " + RuleTokens[RulePosition].word + " for: " + word)
 
         else:
@@ -197,7 +200,7 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
             strToken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
-            return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "stem")
+            return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm")
         else:
             if featureID and featureID in strToken.features:
                 return True

@@ -1,6 +1,6 @@
 import unittest, os
 from LogicOperation import *
-import Tokenization
+import Tokenization, Rules
 
 
 class FeatureTest(unittest.TestCase):
@@ -24,10 +24,10 @@ class FeatureTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "NN percent", None, 0))
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "NN percent", [Rules.RuleToken()], 0))
 
         node.features.add(FeatureOntology.GetFeatureID('percent'))
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "NN percent", None, 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "NN percent", [Rules.RuleToken()], 0))
     def test_Or(self):
         node = Tokenization.SentenceNode('')
         node.features.add(FeatureOntology.GetFeatureID('NN'))
@@ -35,11 +35,11 @@ class FeatureTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "NN|percent", None, 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "NN|percent", [Rules.RuleToken()], 0))
         node.features.add(FeatureOntology.GetFeatureID('percent'))
 
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "NP|percent", None, 0))
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "NP", None, 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "NP|percent", [Rules.RuleToken()], 0))
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "NP", [Rules.RuleToken()], 0))
 
     def test_NotOr(self):
         node = Tokenization.SentenceNode('')
@@ -47,11 +47,11 @@ class FeatureTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!NN|percent", None, 0))
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!NN|percent", [Rules.RuleToken()], 0))
 
         node.features.add(FeatureOntology.GetFeatureID('percent'))
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!NN|percent", None, 0))
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "!NP", None, 0))
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!NN|percent", [Rules.RuleToken()], 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "!NP", [Rules.RuleToken()], 0))
 
 
 class RuleTest(unittest.TestCase):
@@ -61,7 +61,7 @@ class RuleTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "being", None, 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "being", [Rules.RuleToken()], 0))
 
     def test_LogicOr(self):
         """Logic Or"""
@@ -69,7 +69,7 @@ class RuleTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "being|getting", None, 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "being|getting", [Rules.RuleToken()], 0))
 
     def test_LogicAnd(self):
         """Logic And"""
@@ -77,8 +77,10 @@ class RuleTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c d", None, 0))
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "c c", None, 0))
+        ruletokenlist = [Rules.RuleToken()]
+
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c d", ruletokenlist, 0))
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "c c", ruletokenlist, 0))
 
     def test_LogicAndOr(self):
         """Logic And/Or"""
@@ -86,9 +88,10 @@ class RuleTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d c", None, 0))
-        node.word = "c"
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "c|d c", None, 0))
+        ruletokenlist = [Rules.RuleToken()]
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d c", ruletokenlist, 0))
+        node.text = "c"
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "c|d c", ruletokenlist, 0))
 
         #self.assertTrue(LogicMatch())
 
@@ -98,23 +101,25 @@ class RuleTest(unittest.TestCase):
         strtokenlist = Tokenization.SentenceLinkedList()
         strtokenlist.append(node)
 
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!c|d|e", None, 0))
-        node.word = "f"
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "!c|d|e", None, 0))
-        node.word = "e"
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "!c d|e", None, 0))
-        node.word = "f"
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!c d|e", None, 0))
-        node.word = "c"
-        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "c|d !d|e", None, 0))
-        node.word = "d"
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d !d|e", None, 0))
-        node.word = "e"
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|e !d|f|g|e", None, 0))
-        node.word = "e"
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d !d|c", None, 0))
-        node.word = "f"
-        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d !d|e", None, 0))
+        RuleTokenList = [Rules.RuleToken()]
+
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!c|d|e", RuleTokenList, 0))
+        node.text = "f"
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "!c|d|e", RuleTokenList, 0))
+        node.text = "e"
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "!c d|e", RuleTokenList, 0))
+        node.text = "f"
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "!c d|e", RuleTokenList, 0))
+        node.text = "c"
+        self.assertTrue(LogicMatchFeatures(strtokenlist, 0, "c|d !d|e", RuleTokenList, 0))
+        node.text = "d"
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d !d|e", RuleTokenList, 0))
+        node.text = "e"
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|e !d|f|g|e", RuleTokenList, 0))
+        node.text = "e"
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d !d|c", RuleTokenList, 0))
+        node.text = "f"
+        self.assertFalse(LogicMatchFeatures(strtokenlist, 0, "c|d !d|e", RuleTokenList, 0))
 
 
     def test_LogicCombined(self):
@@ -129,11 +134,14 @@ class RuleTest(unittest.TestCase):
         blocks = SeparateOrBlocks("'a|b'|c")
         self.assertEqual(len(blocks), 2)
 
-        node =  Tokenization.SentenceNode('d')
 
-        self.assertTrue(LogicMatch("'c|d'|e", node))
+        strtokenlist = Tokenization.Tokenize('d')
+        RuleTokenList = [Rules.RuleToken()]
 
-        self.assertTrue(LogicMatch("notfeature|'d'|notfeature2", node))
+        self.assertTrue(LogicMatch(strtokenlist, 0, 'd', RuleTokenList, 0))
+
+        #strtokenlist = Tokenization.Tokenize("notfeature|'d'|notfeature2")
+        self.assertTrue(LogicMatch(strtokenlist, 0, "notfeature|'d'|notfeature2", RuleTokenList, 0))
 
     def test_CheckPrefix(self):
         word, matchtype = CheckPrefix("\"abc\"", "unknown")
