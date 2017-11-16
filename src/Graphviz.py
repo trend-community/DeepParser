@@ -110,7 +110,12 @@ def orgChart(json_input):
                     fValue = son.text
                     text.update({f: fValue})
                     if son.upperRelation:
-                        relation = son.upperRelation[son.upperRelation.index(".") + 1:]
+                        try:
+                            relation = son.upperRelation[son.upperRelation.index(".") :]
+                        except ValueError as e:
+                            relation = son.upperRelation
+                            logging.error("Value Error in" + str(son.upperRelation))
+
                         fValue +=  '<div style="color:red; font-style:italic">' + relation + '</div>'
                         text.update({f: fValue})
                         hasRelation = True
