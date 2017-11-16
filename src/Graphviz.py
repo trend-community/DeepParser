@@ -183,8 +183,8 @@ def orgChart(json_input):
                             hasFeature2 = True
                             break
 
-                    if hasCL == False and hasVP == False and hasFeature1 == False and hasFeature2 == False:
-                        fValue += '<div style="color:red; font-style:italic">' + relation + '</div>'
+                    if hasCL == False and hasVP == False and hasFeature1 == False and hasFeature2 == False and relation!="":
+                        fValue += '<div style="color:red; font-style:italic">' + "("+relation +")"+ '</div>'
 
                     text.update({f: fValue})
 
