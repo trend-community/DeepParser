@@ -287,6 +287,30 @@ def DynamicPipeline(NodeList):
     return  WinningRules
 
 
+def PrepareJSandJM(nodes):
+    nodes.head.ApplyFeature(utils.FeatureID_JS2)
+    JSnode = Tokenization.SentenceNode('')
+    JSnode.ApplyFeature(utils.FeatureID_JS)
+    JSnode.ApplyFeature(utils.FeatureID_JS2)
+    nodes.insert(JSnode, 0)
+
+    if utils.FeatureID_punc not in nodes.tail.features:
+        JMnode = Tokenization.SentenceNode('')
+        JMnode.StartOffset = nodes.tail.EndOffset
+        JMnode.EndOffset = nodes.tail.EndOffset
+        nodes.append(JMnode)
+    nodes.tail.ApplyFeature(utils.FeatureID_JM)
+    nodes.tail.ApplyFeature(utils.FeatureID_JM2)
+    p = nodes.tail.prev
+    while p.prev:
+        if utils.FeatureID_punc not in p.features:
+            # first one that is not punc. the real JM2:
+            p.ApplyFeature(FeatureID_JM2)
+            break
+        p.ApplyFeature(utils.FeatureID_JM2)
+        p = p.prev
+
+
 def LexicalAnalyze(Sentence):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
@@ -298,18 +322,7 @@ def LexicalAnalyze(Sentence):
         logging.debug("-Start ApplyLexiconToNodes")
         Lexicon.ApplyLexiconToNodes(NodeList)
 
-        NodeList.head.features.add(FeatureOntology.GetFeatureID('JS2'))
-        JSnode = Tokenization.SentenceNode('')
-        JSnode.features.add(FeatureOntology.GetFeatureID('JS'))
-        NodeList.insert(JSnode, 0)
-
-        if NodeList.tail.text != "." and FeatureOntology.GetFeatureID('punc') not in NodeList.tail.features:
-            JMnode = Tokenization.SentenceNode('')
-            JMnode.StartOffset = NodeList.tail.EndOffset
-            JMnode.EndOffset = NodeList.tail.EndOffset
-            NodeList.append(JMnode)
-        NodeList.tail.features.add(FeatureOntology.GetFeatureID('JM'))
-        NodeList.tail.prev.features.add(FeatureOntology.GetFeatureID('JM2'))
+        PrepareJSandJM(NodeList)
 
         WinningRules = DynamicPipeline(NodeList)
 
@@ -411,24 +424,24 @@ if __name__ == "__main__":
     LoadCommon()
 
     target = "abcdefgx。"
-    nodes, winningrules = LexicalAnalyze(target)
-    if not nodes:
+    m_nodes, winningrules = LexicalAnalyze(target)
+    if not m_nodes:
         logging.warning("The result is None!")
         exit(1)
 
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 
-    print(OutputStringTokens_oneliner(nodes, NoFeature=True))
-    print(OutputStringTokens_oneliner(nodes))
+    print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
+    print(OutputStringTokens_oneliner(m_nodes))
 
-    print(nodes.root().CleanOutput().toJSON())
+    print(m_nodes.root().CleanOutput().toJSON())
     #print(jsonpickle.dumps(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
 
     print(FeatureOntology.OutputMissingFeatureSet())
 
-    print(nodes.root().CleanOutput_FeatureLeave().toJSON())
+    print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
 
     Rules.OutputRuleFiles("../temp/rule.after/")
