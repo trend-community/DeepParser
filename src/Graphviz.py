@@ -131,7 +131,7 @@ def orgChart(json_input):
                             relation = son.upperRelation[son.upperRelation.index(".") + 1:]
                         except ValueError as e:
                             relation = son.upperRelation
-                            logging.error("Value Error in" + str(son.upperRelation))
+                            logging.error("The upperRelation is:" + str(son.upperRelation) + " There is no . in it. might need to check rule.")
                         # fValue += '<div style="color:red; font-style:italic">' + relation + '</div>'
                         #text.update({f: fValue})
                         hasRelation = True
