@@ -2,17 +2,20 @@ import os, logging
 import pydot
 import json
 import time
+import random
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 nodeList = []
-
+randomSet = set()
 class Node(object):
     def __init__(self,text):
         self.text = text
         self.sons = []
         self.upperRelation = None
+        self.id = 0
+
 
 
 def CreateTree(inputnode):
@@ -24,6 +27,11 @@ def CreateTree(inputnode):
     node.startOffset = start
     features = inputnode['features']
     node.features = features
+    id = random.randint(1,1001)
+    while id in randomSet:
+        id = random.randint(1,1001)
+    randomSet.add(id)
+    node.id = id
     if 'UpperRelationship' in inputnode.keys():
         upperRelation = inputnode['UpperRelationship']
         node.upperRelation = upperRelation
@@ -85,10 +93,11 @@ def showGraph(json_input):
 
 def orgChart(json_input):
     nodeList[:] = []
+    randomSet.clear()
     decoded = json.loads(json_input)
     CreateTree(decoded)
     textSet = set()
-    #printTree(nodeList)
+    printTree(nodeList)
     #print("size of nodelist is " + str(len(nodeList)))
     dataRows = []
     for node in nodeList:
@@ -103,7 +112,8 @@ def orgChart(json_input):
                     # if not textSet.add(text): # add set not successfully due to text duplicate
                     # if text in textSet:
                     text = {}
-                    word = son.text + str(son.startOffset)
+                    # word = son.text + str(son.startOffset)
+                    word = str(son.id)
                     v = 'v'
                     f = 'f'
                     text.update({v: word})
@@ -129,8 +139,10 @@ def orgChart(json_input):
                     #     textSet.add(son.text)
 
                     #print(str(text))
-                    parent = node.text+str(node.startOffset)
-                    if parent == nodeList[-1].text + str(nodeList[-1].startOffset):
+                    # parent = node.text+str(node.startOffset)
+                    parent = str(node.id)
+                    # if parent == nodeList[-1].text + str(nodeList[-1].startOffset):
+                    if parent == str(nodeList[-1].id):
                         parent = nodeList[-1].text
                         rootElement = []
                         rootElement.append(parent)
@@ -182,7 +194,7 @@ def checkRelation(node):
 
 
 if __name__ == "__main__":
-    json_input = '{"EndOffset": 18, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 2, "StartOffset": 0, "features": ["0", "sRB", "butW", "preNumC"], "text": "不过"}, {"EndOffset": 13, "StartOffset": 2, "features": ["beverage", "liquid", "material", "prod", "det0", "inanim", "artifact", "phy", "n", "N", "edible", "solution"], "sons": [{"EndOffset": 3, "StartOffset": 2, "UpperRelationship": "^.M", "features": ["xpC", "det0", "freeM", "indexicalW", "0", "xC", "DT"], "text": "这"}, {"EndOffset": 6, "StartOffset": 3, "UpperRelationship": "^.M", "features": ["linkV", "v", "info", "V", "stateV", "expression", "VG", "inanim", "freeM", "n", "symbol", "beC", "vac"], "sons": [{"EndOffset": 5, "StartOffset": 3, "UpperRelationship": "^.X", "features": ["0", "xC", "MD", "vac"], "text": "应该"}, {"EndOffset": 6, "StartOffset": 5, "features": ["linkV", "v", "info", "V", "stateV", "0", "XP", "expression", "xC", "inanim", "VG", "freeM", "n", "symbol", "beC", "vac"], "text": "是"}], "text": "应该是"}, {"EndOffset": 13, "StartOffset": 6, "features": ["liquid", "beverage", "material", "prod", "NP", "XP", "det0", "inanim", "artifact", "n", "edible", "N", "phy", "solution"], "sons": [{"EndOffset": 10, "StartOffset": 6, "UpperRelationship": "^.M", "features": ["0", "sent", "pt", "A", "an", "source", "N0", "pro"], "text": "原汁原味"}, {"EndOffset": 11, "StartOffset": 10, "UpperRelationship": "^.X", "features": ["UH", "0", "xC", "vac"], "text": "的"}, {"EndOffset": 13, "StartOffset": 11, "features": ["0", "beverage", "liquid", "material", "NP", "prod", "XP", "inanim", "artifact", "phy", "n", "N", "edible", "solution"], "text": "咖啡"}], "text": "原汁原味的咖啡"}], "text": "这应该是原汁原味的咖啡"}, {"EndOffset": 14, "StartOffset": 13, "features": ["0", "punc"], "text": ","}, {"EndOffset": 18, "StartOffset": 14, "features": ["0", "sent", "pt", "A", "an", "source", "N0", "pro"], "text": "原汁原味"}], "text": "不过这应该是原汁原味的咖啡,原汁原味"}'
+    json_input = '{"EndOffset": 6, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 6, "StartOffset": 0, "features": ["V", "chg", "succeed", "pro", "sent", "pt", "v", "stateV", "plusV"], "sons": [{"EndOffset": 2, "StartOffset": 0, "UpperRelationship": "^.R", "features": ["0", "vac", "xC", "RB"], "text": "终于"}, {"EndOffset": 6, "StartOffset": 2, "features": ["0", "idiom", "V", "chg", "succeed", "pro", "sent", "pt", "v", "stateV", "plusV"], "text": "功成名就"}], "text": "终于功成名就"}], "text": "终于功成名就"}'
     # showGraph(json_input)
     dataRows = orgChart(json_input)
     print(str(dataRows))
