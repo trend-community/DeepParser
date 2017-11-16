@@ -119,10 +119,10 @@ def LoadDictFromLexicon(dictpath):
     with open(dictpath) as lexicondict:
         for line in lexicondict:
             if len(line.strip()) >= 2:
-                    querydict[line.strip()] = -0.1
+                    querydict[normalize(line.strip())] = -0.1
     print("After loading from lexicon, size:" + str(len(querydict)))
-    print("querydict['中介']=" + str(querydict['中介']))
-    print("querydict['小米手机']=" + str(querydict['小米手机']))
+    print("querydict['中 介']=" + str(querydict['中 介']))
+    print("querydict['真 子 弹']=" + str(querydict['真 子 弹']))
 
 if __name__ == "__main__":
     LoadDictFromPickle()
