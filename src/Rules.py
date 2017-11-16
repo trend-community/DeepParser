@@ -134,7 +134,7 @@ class Rule:
             return
         codeblocks = [x.strip() for x in re.split("::", code)]
         if len(codeblocks) != 2:
-            codeblocks = [x.strip() for x in re.split("==", code)]
+            codeblocks = [x.strip() for x in code.split("==", 2)]
             if len(codeblocks) != 2:
                 logging.debug(" not separated by :: or == ")
                 logging.debug("string:" + ruleString)

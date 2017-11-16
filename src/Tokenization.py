@@ -163,8 +163,12 @@ class SentenceLinkedList:
         NewNode, startnode, endnode = self.newnode(start, count)
 
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
-            NewNode.features.update([f for f in self.get(start+headindex).features if f not in FeatureOntology.NotCopyList] )
-
+            HeadNode = self.get(start+headindex)
+            NewNode.features.update([f for f in HeadNode.features if f not in FeatureOntology.NotCopyList] )
+            if utils.FeatureID_0 in HeadNode.features:
+                NewNode.Head0Text = HeadNode.text
+            else:
+                NewNode.Head0Text = HeadNode.Head0Text
 
         if utils.FeatureID_JS2 in startnode.features:
             NewNode.features.add(utils.FeatureID_JS2)
@@ -219,6 +223,7 @@ class SentenceNode(object):
         self.sons = []
         self.UpperRelationship = ''
         Lexicon.ApplyWordLengthFeature(self)
+        self.Head0Text = ''
 
         #From webservice, only word/StartOffset/features are set,
         #    and the features are "list", need to change to "set"
@@ -240,6 +245,7 @@ class SentenceNode(object):
         self.prev = None
         self.sons = []
         self.UpperRelationship = ''
+        self.Head0Text = ''
 
     def __str__(self):
         output = "[" + self.text + "] "

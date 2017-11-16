@@ -122,7 +122,7 @@ def LoadDictFromLexicon(dictpath):
                     querydict[normalize(line.strip())] = -0.1
     print("After loading from lexicon, size:" + str(len(querydict)))
     print("querydict['中 介']=" + str(querydict['中 介']))
-    print("querydict['真 子 弹']=" + str(querydict['真 子 弹']))
+    print("querydict['军 刀 黑']=" + str(querydict['军 刀 黑']))
 
 if __name__ == "__main__":
     LoadDictFromPickle()

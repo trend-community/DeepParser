@@ -1,7 +1,7 @@
 import jsonpickle
 import FeatureOntology
 from utils import *
-
+import utils
 #not, and, or
 #compare type: word/norm/stem/feature
 
@@ -128,21 +128,35 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
 
     if not CombinedPattern.search( rule):
         if rule.startswith("^"):
-
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
-            #pass
-            #strToken = SearchPointer(StrTokens, StrPosition, Pointer=rule)
-        if matchtype == "text":
-            word = strToken.text
-        elif matchtype == "norm":
-            word = strToken.norm
+
+        if utils.FeatureID_0 not in strToken.features:
+            if RuleTokens[RulePosition].word.startswith("0") or RuleTokens[RulePosition].word.startswith("[0"):
+                logging.error("Checking feature 0 should be the first task in current rule. should not get to here")
+                logging.error(jsonpickle.dumps(RuleTokens[0]))
+                raise RuntimeError("Logic Error for checking feature 0")
+            else:
+                word = strToken.Head0Text
+                #logging.debug("Rule Not 0:" + rule + " of " + RuleTokens[RulePosition].word + " for: " + word)
+
         else:
-            word = strToken.atom
+#            if RuleTokens[RulePosition].word.startswith("0") or RuleTokens[RulePosition].word.startswith("[0"):
+#                logging.debug("Rule 0:" + rule + " of " + RuleTokens[RulePosition].word)
+            if matchtype == "text":
+                word = strToken.text
+            elif matchtype == "norm":
+                word = strToken.norm
+            else:
+                word = strToken.atom
 
         if rule.lower() == word.lower() \
                 or rule.endswith('-') and word.startswith(rule[:-1])\
                 or rule.startswith('-') and word.endswith(rule[1:]):
+            if word == strToken.Head0Text:
+                logging.error("Not an error! word == strToken.Head0Text!" + RuleTokens[RulePosition].word)
+                logging.error(str(RuleTokens))
+                logging.error(str(StrTokenList))
             return True
         else:
             return False

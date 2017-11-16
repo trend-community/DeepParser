@@ -416,7 +416,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "传言中所说的事儿纯属空穴来风。"
+    target = "太给力了 昨天下的单 今天就到了 特别愉快的一次购物!!!"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")
