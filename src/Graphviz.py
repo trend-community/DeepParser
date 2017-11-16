@@ -121,7 +121,7 @@ def orgChart(json_input):
                     text.update({f: fValue})
                     if son.upperRelation:
                         try:
-                            relation = son.upperRelation[son.upperRelation.index(".") :]
+                            relation = son.upperRelation[son.upperRelation.index(".")+1 :]
                         except ValueError as e:
                             relation = son.upperRelation
                             logging.error("Value Error in" + str(son.upperRelation))
