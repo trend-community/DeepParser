@@ -16,7 +16,7 @@ class Node(object):
         self.text = text
         self.sons = []
         self.upperRelation = None
-        self.id = 0
+        # self.id = 0
 
 
 
@@ -29,11 +29,11 @@ def CreateTree(inputnode):
     node.startOffset = start
     features = inputnode['features']
     node.features = features
-    id = random.randint(1,1001)
-    while id in randomSet:
-        id = random.randint(1,1001)
-    randomSet.add(id)
-    node.id = id
+    # id = random.randint(1,1001)
+    # while id in randomSet:
+    #     id = random.randint(1,1001)
+    # randomSet.add(id)
+    # node.id = id
     if 'UpperRelationship' in inputnode.keys():
         upperRelation = inputnode['UpperRelationship']
         node.upperRelation = upperRelation
