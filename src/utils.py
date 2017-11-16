@@ -8,6 +8,7 @@ ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'conf
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
+FeatureID_JS = None
 FeatureID_JS2 = None
 FeatureID_JM2 = None
 FeatureID_JM = None
@@ -26,10 +27,11 @@ class LexiconLookupSource(Enum):
 
 
 def InitGlobalFeatureID():
-    global FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0
+    global FeatureID_JS, FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0
     global FeatureID_CD, FeatureID_punc, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW
     if not FeatureID_JS2:
         import FeatureOntology
+        FeatureID_JS = FeatureOntology.GetFeatureID("JS")
         FeatureID_JS2 = FeatureOntology.GetFeatureID("JS2")
         FeatureID_JM2 = FeatureOntology.GetFeatureID("JM2")
         FeatureID_JM = FeatureOntology.GetFeatureID("JM")
