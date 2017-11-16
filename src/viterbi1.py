@@ -118,12 +118,8 @@ def LoadDictFromLexicon(dictpath):
     print("Before loading from lexicon, size:" + str(len(querydict)))
     with open(dictpath) as lexicondict:
         for line in lexicondict:
-            try:
-                [word, _] = line.split(":", 2)
-                if len(word) >= 2:
-                    querydict[word] = -0.1
-            except:
-                pass
+            if len(line.strip()) >= 2:
+                    querydict[line.strip()] = -0.1
     print("After loading from lexicon, size:" + str(len(querydict)))
 
 if __name__ == "__main__":
