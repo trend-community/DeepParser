@@ -121,6 +121,8 @@ def LoadDictFromLexicon(dictpath):
             if len(line.strip()) >= 2:
                     querydict[line.strip()] = -0.1
     print("After loading from lexicon, size:" + str(len(querydict)))
+    print("querydict['中介']=" + str(querydict['中介']))
+    print("querydict['小米手机']=" + str(querydict['小米手机']))
 
 if __name__ == "__main__":
     LoadDictFromPickle()
