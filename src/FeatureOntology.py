@@ -31,8 +31,8 @@ class OntologyNode:
         output = self.openWord
         if self.ancestors:
             output += ", "
-            self.ancestors = sorted(self.ancestors)
-            for i in self.ancestors:
+            ancestors = sorted(self.ancestors)
+            for i in ancestors:
                 output += GetFeatureName(i) +"; "
         if self.Comment:
             output += "\t" + self.Comment
@@ -175,6 +175,14 @@ def OutputFeatureOntology():
         output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"
     return output
 
+def OutputFeatureOntologyFile(FolderLocation):
+    if FolderLocation.startswith("."):
+        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FolderLocation)
+    FileLocation = os.path.join(FolderLocation, "featureontology.txt")
+
+    with open(FileLocation, "w", encoding="utf-8") as writer:
+        writer.write(OutputFeatureOntology())
+
 
 def LoadFeatureOntology(featureOncologyLocation):
     global _FeatureOntology
@@ -224,7 +232,7 @@ def LoadAppendixList(featureOncologyLocation):
 
 
 SearchFeatureOntology_Cache = {}
-def SearchFeatureOntology(featureID):    #Can be organized to use OpenWordID (featureID), for performance gain.
+def SearchFeatureOntology(featureID):
     #print("SearchFeatureOntology ID" + str(featureID))
     if featureID in SearchFeatureOntology_Cache:
         return SearchFeatureOntology_Cache[featureID]
@@ -305,7 +313,7 @@ if __name__ == "__main__":
         #_CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         print(OutputFeatureOntology())
-        #PrintFeatureSet()
+        OutputFeatureOntologyFile('../temp')
 
     else:
         print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology > outputfile.txt")

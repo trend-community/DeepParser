@@ -75,13 +75,6 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
     return True
 
 
-def ApplyFeature(featureList, featureID):
-    featureList.add(featureID)
-    FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
-    if  FeatureNode:
-        featureList.update(FeatureNode.ancestors)
-
-
 #search from the end. The rule position is the first one that has EndChunk
 # temporary, only do one level.
 # might need to restructure the rules.
@@ -174,7 +167,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                                 #TODO: Might also remove the child features of them. Check spec.
 
                     FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
-                    ApplyFeature(token.features, FeatureID)
+                    token.ApplyFeature( FeatureID)
                     continue
 
                 if Action[0] == "^":
@@ -186,9 +179,9 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 if ActionID == FeatureOntology.GetFeatureID("Gone"):
                     token.Gone = True
                 if ActionID != -1:
-                    ApplyFeature(token.features, ActionID)
+                    token.ApplyFeature(ActionID)
                 if Action == "+++":
-                    token.features.add(utils.FeatureID_0)
+                    token.ApplyFeature(utils.FeatureID_0)
                         #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
 
     i = len(rule.Tokens)-1    # process from the end to start.
@@ -225,7 +218,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     while strtoken:
         # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
-        logging.debug("Checking tokens start from:" + strtoken.text)
+        #logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
@@ -404,6 +397,7 @@ def LoadCommon():
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
+        FeatureOntology.OutputFeatureOntologyFile(ParserConfig.get("main", "compiledfolder"))
         logging.debug("Start writing temporary lex file.")
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
@@ -416,7 +410,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "说错了话，说了错话，说话错了，话说错了。"
+    target = "abcdefgx。"
     nodes, winningrules = LexicalAnalyze(target)
     if not nodes:
         logging.warning("The result is None!")

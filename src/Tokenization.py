@@ -233,7 +233,7 @@ class SentenceNode(object):
         self.atom = self.text.lower()
         self.features = set()
         for featurename in self.featurenames:
-            self.features.add(FeatureOntology.GetFeatureID(featurename))
+            self.ApplyFeature(FeatureOntology.GetFeatureID(featurename))
         #self.lexicon = None
         # self.Gone = False
         # self.SkipRead = False
@@ -271,6 +271,12 @@ class SentenceNode(object):
             if featureString:
                 output += ":" + featureString + ";"
         return output.strip()
+
+    def ApplyFeature(self, featureID):
+        self.features.add(featureID)
+        FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
+        if FeatureNode:
+            self.features.update(FeatureNode.ancestors)
 
     def GetFeatures(self):
         featureString = ""
