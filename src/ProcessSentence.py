@@ -320,7 +320,9 @@ def LexicalAnalyze(Sentence):
         if not NodeList or NodeList.size == 0:
             return None, None
         logging.debug("-Start ApplyLexiconToNodes")
+        print("after tokenize" + OutputStringTokens_oneliner(NodeList))
         Lexicon.ApplyLexiconToNodes(NodeList)
+        print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
         PrepareJSandJM(NodeList)
 
@@ -423,7 +425,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "abcdefgx。"
+    target = "中 国"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")
