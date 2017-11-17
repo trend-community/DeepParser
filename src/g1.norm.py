@@ -76,14 +76,14 @@ for line in fin:
     try:
         [query, freqstring] = line.split("", 2)
         freq = int(freqstring)
-        if freq < 3:
+        if freq < 10:
             continue
         for chunk in query.split():
             if len(chunk) < 2:
                 continue    #ignore one character word.
             if digitsearch.search(chunk):
                 continue    #ignore digit
-            if  InLexiconBlacklist(chunk):
+            if freq < 30 and InLexiconBlacklist(chunk):
                 continue
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
