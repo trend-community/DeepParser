@@ -16,7 +16,7 @@ class Node(object):
         self.text = text
         self.sons = []
         self.upperRelation = None
-        self.id = 0
+        # self.id = 0
 
 
 
@@ -29,11 +29,11 @@ def CreateTree(inputnode):
     node.startOffset = start
     features = inputnode['features']
     node.features = features
-    id = random.randint(1,1001)
-    while id in randomSet:
-        id = random.randint(1,1001)
-    randomSet.add(id)
-    node.id = id
+    # id = random.randint(1,1001)
+    # while id in randomSet:
+    #     id = random.randint(1,1001)
+    # randomSet.add(id)
+    # node.id = id
     if 'UpperRelationship' in inputnode.keys():
         upperRelation = inputnode['UpperRelationship']
         node.upperRelation = upperRelation
@@ -183,8 +183,8 @@ def orgChart(json_input):
                             hasFeature2 = True
                             break
 
-                    if hasCL == False and hasVP == False and hasFeature1 == False and hasFeature2 == False:
-                        fValue += '<div style="color:red; font-style:italic">' + relation + '</div>'
+                    if hasCL == False and hasVP == False and hasFeature1 == False and hasFeature2 == False and relation!="":
+                        fValue += '<div style="color:red; font-style:italic">' + "("+relation +")"+ '</div>'
 
                     text.update({f: fValue})
 
