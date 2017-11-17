@@ -366,6 +366,7 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'locX.txt')
     Lexicon.LoadLexicon(XLocation + 'perX.txt')
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
+    Lexicon.LoadLexicon(XLocation + 'ChinesePunctuate.txt')
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
 
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
@@ -425,7 +426,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "中 国"
+    target = "中,;'‘’；”“\" 国"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")
