@@ -320,9 +320,9 @@ def LexicalAnalyze(Sentence):
         if not NodeList or NodeList.size == 0:
             return None, None
         logging.debug("-Start ApplyLexiconToNodes")
-        print("after tokenize" + OutputStringTokens_oneliner(NodeList))
+        #print("after tokenize" + OutputStringTokens_oneliner(NodeList))
         Lexicon.ApplyLexiconToNodes(NodeList)
-        print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
+        #print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
         PrepareJSandJM(NodeList)
 

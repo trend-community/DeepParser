@@ -36,14 +36,14 @@ do
     python g1.sent.py  "$f" "$outputfile" $2 $6
 
     newlexiconname="$4/CleanLexicon_$filename"
-    grep -va "<" $outputfile > $newlexiconname &
+    grep -va "<" $outputfile | grep -Fxv -f $6 > $newlexiconname &
 
     newrulename="$3/CleanRule_$filename"
     echo "$filename QRule ==  // $filename \n" > $newrulename
     grep -a "<" $outputfile | awk '1;!(NR%2000){print "QRule ==";}' >> $newrulename &
 done
 
-echo "done"
+echo "done. analyzing blacklisted lexicons."
 
 grep  Blacklisted ../temp/g1.norm.error.txt | cut -f 4 -d : > ../temp/QbyLex.notsort.txt
 awk '{ print length(), $0 | "sort -n" }'  ../temp/QbyLex.notsort.txt  | cut -f 2  -d\  > ../../fsa/extra/QbyLexBlacklist.txt
