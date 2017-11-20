@@ -45,7 +45,8 @@ done
 
 echo "done"
 
-grep  Blacklisted ../temp/g1.norm.error.txt | cut -f 4 -d : > ../../fsa/extra/QbyLexBlacklist.txt
-grep -Fx -f ../../fsa/extra/featurelist.txt ../../fsa/extra/QbyLexBlacklist.txt > ../../fsa/extra/Qlexcommon.txt
+grep  Blacklisted ../temp/g1.norm.error.txt | cut -f 4 -d : > ../temp/QbyLex.notsort.txt
+awk '{ print length(), $0 | "sort -n" }'  ../temp/QbyLex.notsort.txt  | cut -f 2  -d\  > ../../fsa/extra/QbyLexBlacklist.txt
+grep -Fx -f ../../fsa/extra/lexiconlist.txt ../../fsa/extra/QbyLexBlacklist.txt > ../../fsa/extra/Qlexcommon.txt
 grep -Fxv -f ../../fsa/extra/Qlexcommon.txt ../../fsa/extra/QbyLexBlacklist.txt > ../../fsa/extra/Qlexcommon_N.txt
 

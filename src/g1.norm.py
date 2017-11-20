@@ -62,7 +62,6 @@ from functools import lru_cache
 def InLexiconBlacklist(word):
     for pattern in _LexiconBlacklist:
         if re.match(pattern, word):
-            logging.warning("Blacklisted:" + word)
             return True
     return False
 
@@ -83,10 +82,11 @@ for line in fin:
                 continue    #ignore one character word.
             if digitsearch.search(chunk):
                 continue    #ignore digit
-            if freq < 30 and InLexiconBlacklist(chunk):
-                continue
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
+            if querydict[phrase] < 30 and InLexiconBlacklist(chunk):
+                logging.warning("Blacklisted:" + chunk)
+                del querydict[phrase]
             N = N + freq
     except Exception as e:
         print("error in processing \n\t" + line)
@@ -101,3 +101,4 @@ pickle.dump( querydict, open(args.dict, "wb") )
 fout = codecs.open(args.output, 'wb', encoding='utf-8')
 for phrase in querydict: fout.write(phrase + '\t' + str(querydict[phrase]) + '\n')
 fout.close()
+print("Total freq:" + str(N))
