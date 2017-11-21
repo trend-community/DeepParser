@@ -9,7 +9,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 nodeList = []
 randomSet = set()
-featureShown1 = ['VG','AP','PP','RP','NE','DE']
+featureShown1 = ['VG','AP','PP','RP','NE','DE','NP']
 featureShown2 = ['N','V','P','A','X']
 class Node(object):
     def __init__(self,text):
