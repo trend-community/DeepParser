@@ -108,7 +108,7 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
     RuleStartPosition = RulePos
     ChunkLength = RuleEndPosition - RuleStartPosition
     StrStartPosition = StrPosition - ChunkLength
-    print("StrTokenList.combine(%d, %d, %d)"%(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition))
+    #print("StrTokenList.combine(%d, %d, %d)"%(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition))
     #StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition)
     return ChunkLength+1
 
@@ -124,7 +124,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if strtokens.size > 2:
         logging.info("Applying Winning Rule:" + rule.RuleName +" to "
                      + strtokens.get(1).text + strtokens.get(2).text + "...")
-        print(str(rule))
+        #print(str(rule))
         #logging.debug(jsonpickle.dumps(strtokens))
     StoreWinningRule(strtokens, rule, StartPosition)
 
@@ -168,7 +168,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             for chunk in rule.Chunks:
                 if chunk.ChunkLevel != ChunkLevel:
                     continue
-                print("New Chunk: strtokens.combine(%d, %d, %d)"%(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset))
+                #print("New Chunk: strtokens.combine(%d, %d, %d)"%(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset))
                 strtokens.combine(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset)
 
                 strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
