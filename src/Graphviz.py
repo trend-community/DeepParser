@@ -145,11 +145,11 @@ def orgChart(json_input):
                     # POS notation, feature 0,1,2,3
                     hasCL = False
                     for feature in son.features:
-                        if feature=='CL':
+                        if feature=="3":
                             if  relation!="":
-                                fValue += '<div style="color:red; font-style:italic">' + feature + ' (' + relation + ')'  + '</div>'
+                                fValue += '<div style="color:red; font-style:italic">' + 'CL' + ' (' + relation + ')'  + '</div>'
                             else:
-                                fValue += '<div style="color:red; font-style:italic">' + feature + '</div>'
+                                fValue += '<div style="color:red; font-style:italic">' + 'CL' + '</div>'
                             hasCL = True
                             break
 
@@ -189,20 +189,45 @@ def orgChart(json_input):
                     text.update({f: fValue})
 
                     parent = node.text+str(node.startOffset)
-                    # parent = str(node.id)
-                    # parentNode = None
-                    # if parent == nodeList[-2].text + str(nodeList[-2].startOffset):
-                    #     parentNode = nodeList[-2]
-                    # elif parent == nodeList[-1].text + str(nodeList[-1].startOffset):
-                    #     parentNode = nodeList[-1]
-                    # if parentNode != None:
-                    # if parent == str(nodeList[-1].id) and :
                     if parent == nodeList[-1].text + str(nodeList[-1].startOffset) :
                         if (nodeList[-1].text + str(nodeList[-1].startOffset)) == (nodeList[-2].text + str(nodeList[-2].startOffset)):
                             parentNode = nodeList[-2]
+                            parent = {}
+                            parent.update({'v':parentNode.text + str(parentNode.startOffset)})
+                            fValue = parentNode.text
+                            hasCL = False
+                            for feature in parentNode.features:
+                                if feature == "3":
+                                    fValue += '<div style="color:red; font-style:italic">' + 'CL' + '</div>'
+                                    hasCL = True
+                                    break
+
+                            hasVP = False
+                            for feature in parentNode.features:
+                                if feature == 'VP' and hasCL == False:
+                                    fValue += '<div style="color:red; font-style:italic">' + feature + '</div>'
+                                    hasVP = True
+                                    break
+
+                            hasFeature1 = False
+                            for feature in parentNode.features:
+                                if feature in featureShown1 and hasCL == False and hasVP == False:
+                                    fValue += '<div style="color:red; font-style:italic">' + feature + '</div>'
+                                    hasFeature1 = True
+                                    break
+
+                            hasFeature2 = False
+                            for feature in parentNode.features:
+                                if feature in featureShown2 and hasCL == False and hasVP == False and hasFeature1 == False:
+                                    fValue += '<div style="color:red; font-style:italic">' + feature + '</div>'
+                                    hasFeature2 = True
+                                    break
+
+                            parent.update({'f': fValue})
+
                         else:
                             parentNode = nodeList[-1]
-                        parent = parentNode.text
+                            parent = parentNode.text
                         rootElement = []
                         rootElement.append(parent)
                         rootElement.append('')
@@ -253,7 +278,7 @@ def checkRelation(node):
 
 
 if __name__ == "__main__":
-    json_input = '{"EndOffset": 22, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 9, "StartOffset": 0, "features": ["phy", "perOrg", "female", "N", "n", "npr"], "sons": [{"EndOffset": 2, "StartOffset": 0, "UpperRelationship": "^.X", "features": ["0", "xpC", "unit", "a", "an", "det0", "property", "DT", "xC", "indexicalW", "content"], "text": "这个"}, {"EndOffset": 4, "StartOffset": 2, "UpperRelationship": "^.M", "features": ["0", "EMO", "vSbVB", "budeliao", "A", "V0", "deBuyu", "con", "vVB", "saturated", "situation", "pred", "attitude", "nt", "nEMOc", "a", "Pred", "can", "sent", "ebla", "property"], "text": "可怜"}, {"EndOffset": 5, "StartOffset": 4, "UpperRelationship": "^.X", "atom": "de", "features": ["0", "UH", "vac", "xC"], "text": "的"}, {"EndOffset": 9, "StartOffset": 5, "features": ["NP", "phy", "perOrg", "XP", "female", "N", "n", "npr"], "sons": [{"EndOffset": 7, "StartOffset": 5, "UpperRelationship": "^.M", "features": ["sent", "0", "A", "pro", "pt"], "text": "年轻"}, {"EndOffset": 9, "StartOffset": 7, "features": ["0", "NP", "phy", "perOrg", "XP", "female", "N", "n", "npr"], "text": "女孩"}], "text": "年轻女孩"}], "text": "这个可怜的年轻女孩"}, {"EndOffset": 10, "StartOffset": 9, "features": ["punc", "0", "CM"], "text": ","}, {"EndOffset": 22, "StartOffset": 10, "features": ["V", "chg", "pro", "succeed", "pt", "sent", "v", "stateV", "plusV"], "sons": [{"EndOffset": 16, "StartOffset": 10, "UpperRelationship": "^.mannerR", "features": ["perF", "V", "Pred", "vVB", "VG", "animF", "v", "vt", "P", "saturated"], "sons": [{"EndOffset": 12, "StartOffset": 10, "features": ["0", "perF", "V", "Pred", "vVB", "VG", "animF", "v", "vt", "P", "VP", "saturated", "xC"], "text": "经过"}, {"EndOffset": 16, "StartOffset": 12, "UpperRelationship": "^.ObjV", "features": ["saturated", "perF", "V", "vi", "Pred", "VG", "animF", "v", "VP", "do", "act"], "sons": [{"EndOffset": 14, "StartOffset": 12, "UpperRelationship": "^.R", "features": ["0", "Pred", "A0", "pro", "RB", "pt", "sent", "N0", "saturated", "pred", "npr"], "text": "努力"}, {"EndOffset": 16, "StartOffset": 14, "features": ["0", "perF", "V", "xx", "vi", "animF", "v", "do", "act"], "text": "拼搏"}], "text": "努力拼搏"}], "text": "经过努力拼搏"}, {"EndOffset": 22, "StartOffset": 16, "features": ["V", "chg", "pro", "succeed", "pt", "sent", "v", "stateV", "plusV"], "sons": [{"EndOffset": 18, "StartOffset": 16, "UpperRelationship": "^.R", "features": ["0", "xC", "vac", "RB"], "text": "终于"}, {"EndOffset": 22, "StartOffset": 18, "features": ["0", "idiom", "V", "chg", "pro", "succeed", "pt", "sent", "v", "stateV", "plusV"], "text": "功成名就"}], "text": "终于功成名就"}], "text": "经过努力拼搏终于功成名就"}], "text": "这个可怜的年轻女孩,经过努力拼搏终于功成名就"}'
+    json_input = '{"EndOffset": 8, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 8, "StartOffset": 0, "features": ["vtThing", "3", "perF", "perVobj", "perfect", "saturated", "chg", "Pred", "v", "ho", "chgPoss", "VG", "take", "buy", "pred", "geiV", "act"], "sons": [{"EndOffset": 1, "StartOffset": 0, "UpperRelationship": "^.S", "features": ["0", "n", "NP", "npr", "XP", "oral", "per", "phy", "xC", "perOrg", "anim", "vac", "PRP"], "text": "我"}, {"EndOffset": 8, "StartOffset": 1, "features": ["vtThing", "3", "chgPoss", "perF", "VG", "take", "buy", "perVobj", "VP", "perfect", "saturated", "pred", "v", "chg", "Pred", "geiV", "ho", "act"], "sons": [{"EndOffset": 3, "StartOffset": 1, "features": ["vtThing", "ho", "V", "chgPoss", "perF", "VG", "take", "buy", "perVobj", "VP", "perfect", "saturated", "pred", "XP", "chg", "Pred", "geiV", "v", "act"], "sons": [{"EndOffset": 2, "StartOffset": 1, "features": ["vtThing", "0", "perF", "perVobj", "perfect", "saturated", "chg", "Pred", "v", "V", "chgPoss", "VG", "take", "buy", "pred", "XP", "geiV", "act", "vt"], "text": "买"}, {"EndOffset": 3, "StartOffset": 2, "UpperRelationship": "^.X", "features": ["0", "vac", "EX", "xC", "V0"], "text": "了"}], "text": "买了"}, {"EndOffset": 8, "StartOffset": 3, "UpperRelationship": "^.O", "features": ["chem", "n", "npr", "NP", "XP", "phy", "tool", "artifact", "solution", "prod", "inanim"], "sons": [{"EndOffset": 6, "StartOffset": 3, "UpperRelationship": "^.M", "features": ["0", "n", "npr", "phy", "org", "perOrg", "com", "group", "N", "brand", "NNP"], "text": "香奈儿"}, {"EndOffset": 8, "StartOffset": 6, "features": ["0", "chem", "n", "npr", "NP", "XP", "phy", "tool", "artifact", "solution", "N", "prod", "inanim"], "text": "眉笔"}], "text": "香奈儿眉笔"}], "text": "买了香奈儿眉笔"}], "text": "我买了香奈儿眉笔"}], "text": "我买了香奈儿眉笔"}'
     # showGraph(json_input)
     dataRows = orgChart(json_input)
     print(str(dataRows))
