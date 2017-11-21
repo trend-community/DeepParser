@@ -266,6 +266,7 @@ class Rule:
                     c.HeadOffset = c.Length
                     if hasattr(token, "action"):
                         c.Action = token.action
+                        token.action = ''
                 if not hasattr(token, "action"):
                     if c.HeadOffset == -1:
                         c.HeadOffset = c.Length
@@ -274,6 +275,7 @@ class Rule:
                         c.HeadConfidence = 2
                         c.HeadOffset = c.Length
                         c.Action = token.action
+                        token.action = ''
                 c.Length += 1
             if token.EndTrunk:
                 ChunkLevel -= token.EndTrunk
