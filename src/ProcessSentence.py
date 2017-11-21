@@ -108,7 +108,8 @@ def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
     RuleStartPosition = RulePos
     ChunkLength = RuleEndPosition - RuleStartPosition
     StrStartPosition = StrPosition - ChunkLength
-    StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition)
+    print("StrTokenList.combine(%d, %d, %d)"%(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition))
+    #StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition)
     return ChunkLength+1
 
 
@@ -123,6 +124,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if strtokens.size > 2:
         logging.info("Applying Winning Rule:" + rule.RuleName +" to "
                      + strtokens.get(1).text + strtokens.get(2).text + "...")
+        print(str(rule))
         #logging.debug(jsonpickle.dumps(strtokens))
     StoreWinningRule(strtokens, rule, StartPosition)
 
@@ -142,63 +144,34 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         #     return len(rule.Tokens)
 
         if hasattr(rule.Tokens[i], 'action'):
-            Actions = rule.Tokens[i].action.split()
-            logging.debug("Word:" + token.text)
+            token.ApplyActions(rule.Tokens[i].action)
 
-            if "NEW" in Actions:
-                token.features = set()
-            for Action in Actions:
-                if Action == "NEW":
-                    continue        #already process before.
+    # i = len(rule.Tokens)-1    # process from the end to start.
+    # while i >= 0:
+    #     try:
+    #         logging.debug("Checking " + str(i) + " while Endtrunk=" + str(rule.Tokens[i].EndTrunk))
+    #         if rule.Tokens[i].EndTrunk:
+    #             # logging.debug("Before Chunking:\n" + "in position " + str(StartPosition + i)
+    #             #               + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
+    #             CheunkedTokenNum = ApplyChunking(strtokens, StartPosition + i, rule.Tokens, i)
+    #             i -= CheunkedTokenNum
+    #     except IndexError as e:
+    #         logging.error("Error when checking EndTrunk and apply trunking")
+    #         logging.error(str(e))
+    #         return len(rule.Tokens)
+    #     i -= 1
 
-                if Action[-1] == "-":
-                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
-                    if FeatureID in token.features:
-                        token.features.remove(FeatureID)
+    if rule.Chunks:
+        MaxChunkLevelNum = max(chunk.ChunkLevel for chunk in rule.Chunks)
+        for ChunkLevel in range(1,MaxChunkLevelNum+1):
+
+            for chunk in rule.Chunks:
+                if chunk.ChunkLevel != ChunkLevel:
                     continue
+                print("New Chunk: strtokens.combine(%d, %d, %d)"%(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset))
+                strtokens.combine(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset)
 
-                if Action[-1] == "+" and Action != "+++":
-                    MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
-                    if Action.strip("+") in MajorPOSFeatures:
-                        for conflictfeature in MajorPOSFeatures:
-                            conflictfeatureid = FeatureOntology.GetFeatureID(conflictfeature)
-                            if conflictfeatureid in token.features:
-                                token.features.remove(conflictfeatureid)
-                                #TODO: Might also remove the child features of them. Check spec.
-
-                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
-                    token.ApplyFeature( FeatureID)
-                    continue
-
-                if Action[0] == "^":
-                    #TODO: linked the str tokens.
-                    token.UpperRelationship = Action
-                    continue
-
-                ActionID = FeatureOntology.GetFeatureID(Action)
-                if ActionID == FeatureOntology.GetFeatureID("Gone"):
-                    token.Gone = True
-                if ActionID != -1:
-                    token.ApplyFeature(ActionID)
-                if Action == "+++":
-                    token.ApplyFeature(utils.FeatureID_0)
-                        #strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
-
-    i = len(rule.Tokens)-1    # process from the end to start.
-    while i >= 0:
-        try:
-            logging.debug("Checking " + str(i) + " while Endtrunk=" + str(rule.Tokens[i].EndTrunk))
-            if rule.Tokens[i].EndTrunk:
-                # logging.debug("Before Chunking:\n" + "in position " + str(StartPosition + i)
-                #               + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
-                CheunkedTokenNum = ApplyChunking(strtokens, StartPosition + i, rule.Tokens, i)
-                i -= CheunkedTokenNum
-        except IndexError as e:
-            logging.error("Error when checking EndTrunk and apply trunking")
-            logging.error(str(e))
-            return len(rule.Tokens)
-        i -= 1
-
+                strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
     #logging.debug(jsonpickle.dumps(strtokens))
     #: find the specific item of "last trunk" to return.
     # or maybe the item number of "collapsed" tokens.
@@ -426,7 +399,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "中,;'‘’；”“\" 国"
+    target = "我买了香奈儿眉笔"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")

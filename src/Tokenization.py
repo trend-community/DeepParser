@@ -278,6 +278,50 @@ class SentenceNode(object):
         if FeatureNode:
             self.features.update(FeatureNode.ancestors)
 
+    def ApplyActions(self, actinstring):
+
+        Actions = actinstring.split()
+        logging.debug("Word:" + self.text)
+
+        if "NEW" in Actions:
+            self.features = set()
+        for Action in Actions:
+            if Action == "NEW":
+                continue  # already process before.
+
+            if Action[-1] == "-":
+                FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
+                if FeatureID in self.features:
+                    self.features.remove(FeatureID)
+                continue
+
+            if Action[-1] == "+" and Action != "+++":
+                MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
+                if Action.strip("+") in MajorPOSFeatures:
+                    for conflictfeature in MajorPOSFeatures:
+                        conflictfeatureid = FeatureOntology.GetFeatureID(conflictfeature)
+                        if conflictfeatureid in self.features:
+                            self.features.remove(conflictfeatureid)
+                            # TODO: Might also remove the child features of them. Check spec.
+
+                FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
+                self.ApplyFeature(FeatureID)
+                continue
+
+            if Action[0] == "^":
+                # TODO: linked the str tokens.
+                self.UpperRelationship = Action
+                continue
+
+            ActionID = FeatureOntology.GetFeatureID(Action)
+            if ActionID == FeatureOntology.GetFeatureID("Gone"):
+                self.Gone = True
+            if ActionID != -1:
+                self.ApplyFeature(ActionID)
+            if Action == "+++":
+                self.ApplyFeature(utils.FeatureID_0)
+                # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
+
     def GetFeatures(self):
         featureString = ""
         for feature in sorted(self.features):

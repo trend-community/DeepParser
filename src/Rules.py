@@ -91,6 +91,7 @@ class RuleToken(object):
         self.repeat = [1,1]
         self.word = ''
         self.RestartPoint = False
+        self.MatchType = -1     #-1:unknown/mixed 0: feature 1:text 2:norm 3:atom
 
     def __str__(self):
         output = ""
@@ -109,6 +110,15 @@ class RuleToken(object):
         output += " "  # should be a space. use _ in dev mode.
         return output
 
+class RuleChunk(object):
+    def __init__(self):
+        self.StartOffset = -1
+        self.Length = 0
+        self.HeadOffset = -1
+        self.HeadConfidence = -1
+        self.Action = ''
+        self.ChunkLevel = 1
+
 
 class Rule:
     idCounter = 0
@@ -120,8 +130,7 @@ class Rule:
         self.Origin = ''
         self.RuleContent = ''
         self.Tokens = []
-        self.MatchString = ''
-        # self.Actions = {}
+        self.Chunks = []
         self.comment = ''
 
     def __lt__(self, other):
@@ -219,12 +228,83 @@ class Rule:
         for token in self.Tokens:
             output += str(token)
         output += "};"
+        if self.Chunks:
+            output += "\n//" + jsonpickle.dumps(self.Chunks)
         if self.comment:
             output += " " + self.comment
 
         output += '\n'
         return output
 
+    def CreateChunk(self, StartOffset, StartTrunkLevel):
+        c = RuleChunk()
+        c.StartOffset = StartOffset
+        EndTrunkLevel = StartTrunkLevel
+        c.ChunkLevel = StartTrunkLevel
+        for i in range(StartOffset, len(self.Tokens)):
+            if i != StartOffset:    #ignore the first one because the level is already added in previous line.
+                c.ChunkLevel += self.Tokens[i].StartTrunk
+                EndTrunkLevel += self.Tokens[i].StartTrunk
+            EndTrunkLevel -= self.Tokens[i].EndTrunk
+            if EndTrunkLevel <= 0:
+                break
+        if EndTrunkLevel > 0:
+            logging.error("Can't find eought EndTrunk in this rule:" + str(self))
+            return None
+            raise RuntimeError("Rule compiling error" )
+
+        EndOffset = i
+
+        ChunkLevel = StartTrunkLevel
+        for i in range(StartOffset, EndOffset+1):
+            token = self.Tokens[i]
+            if i != StartOffset:
+                ChunkLevel += token.StartTrunk
+            if ChunkLevel == 1:
+                if hasattr(token, "pointer") and token.pointer == "H":
+                    token.HeadConfidence = 3
+                    c.HeadOffset = c.Length
+                    if hasattr(token, "action"):
+                        c.Action = token.action
+                if not hasattr(token, "action"):
+                    if c.HeadOffset == -1:
+                        c.HeadOffset = c.Length
+                elif "^." not in token.action:
+                    if c.HeadConfidence < 2:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = c.Length
+                        c.Action = token.action
+                c.Length += 1
+            if token.EndTrunk:
+                ChunkLevel -= token.EndTrunk
+                if ChunkLevel == 1:     #end of a chunk of the same level. head *might* be in this chunk
+                    if  c.HeadConfidence < 1:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = c.Length
+                        #TODO: find the head of this chunk to apply action
+                    c.Length += 1
+                if ChunkLevel < 1:
+                    if ChunkLevel + token.EndTrunk >1:      # ">>" to conclude current chunk of level 1. need to add this chunk as one in length.
+                        if  c.HeadConfidence < 1:
+                            c.HeadConfidence = 1             # head is in it if not already set.
+                            c.HeadOffset = c.Length
+                            # TODO: find the head of this chunk to apply action
+                        c.Length += 1
+                    break
+        if c.HeadOffset == -1:
+            logging.warning("Can't find head in this rule:")
+            logging.warning(str(self))
+
+        return c
+
+    def CompileChunk(self):
+        for i in range(len(self.Tokens)):
+            for level in range(self.Tokens[i].StartTrunk):
+                NewChunk = self.CreateChunk(i, level+1)
+                if NewChunk:
+                    self.Chunks.append(NewChunk)
+        # sort backward for applying
+        self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
 
 # Note: this tokenization is for tokenizing rule,
 #       which is different from tokenizing the normal language.
@@ -893,6 +973,7 @@ def _PreProcess_CheckFeatures(OneList):
             #_CheckFeature(token, rule.RuleName)
             token.word = "[" +  _CheckFeature_returnword(token.word) + "]"
 
+        rule.CompileChunk()
 
 def _CheckFeature(token, rulename):
             word = token.word
@@ -1108,7 +1189,9 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/mainX2.txt")
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
-    LoadRules("../../fsa/X/0defLexX.txt")
+    #LoadRules("../../fsa/X/0defLexX.txt")
+    LoadRules("../../fsa/Y/1test_rules.txt")
+
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
