@@ -4,7 +4,7 @@
 # !/usr/bin/python2 -u
 # -*- coding: utf8 -*-
 
-timeout = 1
+timeout = 2
 nThreads = 0
 maxThreads = 80
 completed = 0
@@ -23,21 +23,23 @@ lock = threading.Lock()
 
 def get(chunk):
     global nThreads, completed
+    to = timeout
     with lock:
         nThreads += 1
     chunk = '"' + chunk + '"'
     url = urlprefix + urllib.quote_plus(chunk.encode('utf8'))
     while True:
         try:
-            response = urllib2.urlopen(url, None, timeout*10)
+            response = urllib2.urlopen(url, None, to*10)
             ret = response.read()
 #            print ret
             completed += 1
             break
         except:
-            print    sys.exc_info()[1]
+            print "to=", to, ":", sys.exc_info()[1]
             sys.stdout.flush()
-            time.sleep(timeout)
+            time.sleep(to)
+            to += 1
     with lock:
         nThreads -= 1
     return
@@ -64,6 +66,6 @@ for line in fin:
         print   'Error:', line
         sys.stdout.flush()
 
-time.sleep(10)
+time.sleep(100)
 print   'completed=', completed, ' line number = ', lNum, nThreads
 
