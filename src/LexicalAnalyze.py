@@ -35,7 +35,7 @@ def ProcessFile(FileName):
 
         nodes, _ = ProcessSentence.LexicalAnalyze(TestSentence)
         if not nodes:
-            logging.WARNING("The result for this sentence is None! " + TestSentence)
+            logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
 
         if DebugMode:

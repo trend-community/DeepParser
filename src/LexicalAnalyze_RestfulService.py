@@ -21,6 +21,7 @@ if __name__ == "__main__":
                 level = logging.DEBUG
             if command == 'NoFeature':
                 NoFeature = True
+
     else:
         print(
             "Usage: python LexicalAnalyze_ResefulService.py unittestfile [Debug]/[NoFeature]")

@@ -115,16 +115,17 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 CombinedPattern = re.compile('[| !]')
-def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown"):
+def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown", strToken=None):
     if not rule:  # for the comparison of "[]", can match anything
         return True
 
-    strToken = StrTokenList.get(StrPosition)
+    if not strToken:
+        strToken = StrTokenList.get(StrPosition)
 
     LogicMatchKey = [strToken, rule]
     rule, matchtype = CheckPrefix(rule, matchtype)
     if matchtype == "unknown":
-        return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition)
+        return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, strToken=strToken)
 
     if not CombinedPattern.search( rule):
         if rule.startswith("^"):
@@ -168,16 +169,16 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatch(StrTokenList, StrPosition, AndBlock, RuleTokens, RulePosition, matchtype)
+            Result = Result and LogicMatch(StrTokenList, StrPosition, AndBlock, RuleTokens, RulePosition, matchtype, strToken=strToken)
     else:
         if rule[0] == "!":      #Not
-            Result = not LogicMatch(StrTokenList, StrPosition, rule[1:], RuleTokens, RulePosition, matchtype)
+            Result = not LogicMatch(StrTokenList, StrPosition, rule[1:], RuleTokens, RulePosition, matchtype, strToken=strToken)
         else:
             Result = False
             OrBlocks = SeparateOrBlocks(rule)
             if len(OrBlocks) >= 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatch(StrTokenList, StrPosition, OrBlock, RuleTokens, RulePosition, matchtype)
+                    Result = Result or LogicMatch(StrTokenList, StrPosition, OrBlock, RuleTokens, RulePosition, matchtype, strToken=strToken)
             else:
                 raise RuntimeError("Why OrBlock is none?")
 
@@ -186,21 +187,22 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
 
 # If the rule has not quotes, but it is not a feature,
 #   then it is treated as stem.
-def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition):
+def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, strToken=None):
     if not rule:
         return True # for the comparison of "[]", can match anything
 
-    strToken = StrTokenList.get(StrPosition)
+    if not strToken:
+        strToken = StrTokenList.get(StrPosition)
     rule, matchtype = CheckPrefix(rule, 'feature')
     if matchtype != "feature":
-        return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype)
+        return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype, strToken=strToken)
 
     if not re.search('[| !]', rule):
         if -1 in strToken.features:
             strToken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
-            return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm")
+            return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
         else:
             if featureID and featureID in strToken.features:
                 return True
@@ -211,16 +213,16 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatchFeatures(StrTokenList, StrPosition, AndBlock, RuleTokens, RulePosition)
+            Result = Result and LogicMatchFeatures(StrTokenList, StrPosition, AndBlock, RuleTokens, RulePosition, strToken=strToken)
     else:
         if rule[0] == "!":      #Not
-            Result = not LogicMatchFeatures(StrTokenList, StrPosition, rule[1:], RuleTokens, RulePosition)
+            Result = not LogicMatchFeatures(StrTokenList, StrPosition, rule[1:], RuleTokens, RulePosition, strToken=strToken)
         else:
             Result = False
             OrBlocks = SeparateOrBlocks(rule)
             if len(OrBlocks) >= 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatchFeatures(StrTokenList, StrPosition, OrBlock, RuleTokens, RulePosition)
+                    Result = Result or LogicMatchFeatures(StrTokenList, StrPosition, OrBlock, RuleTokens, RulePosition, strToken=strToken)
             else:
                 raise RuntimeError("Why OrBlock is none?")
     return Result

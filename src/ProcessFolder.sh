@@ -32,7 +32,7 @@ do
     echo "Processing $f file..."
     filename=$(basename "$f")
     outputfile="$TEMPFOLDER/$filename"
-    #nice -19 python LexicalAnalyze_Restfulservice.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
+    #nice -19 python LexicalAnalyze_RestfulService.pyc "$f"  > "$outputfile$FEATUREFILE" 2>> "../log/ProcessFolder_feature_$filename.log" &
 done
 
 

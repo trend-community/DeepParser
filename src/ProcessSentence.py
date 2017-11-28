@@ -399,7 +399,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "我买了香奈儿眉笔"
+    target = "坦克是什么"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")
