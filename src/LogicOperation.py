@@ -157,10 +157,6 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         if rule.lower() == word.lower() \
                 or rule.endswith('-') and word.startswith(rule[:-1])\
                 or rule.startswith('-') and word.endswith(rule[1:]):
-            if word == strToken.Head0Text:
-                logging.error("Not an error! word == strToken.Head0Text!" + RuleTokens[RulePosition].word)
-                logging.error(str(RuleTokens))
-                logging.error(str(StrTokenList))
             return True
         else:
             return False

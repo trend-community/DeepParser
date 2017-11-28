@@ -194,14 +194,18 @@ class SentenceLinkedList:
         logging.debug("combined as:" + str(NewNode))
         return NewNode
 
-    def root(self):
+    def root(self, KeepOrigin=False):
         if self.size <= 1:
             return None
-        length = self.size-1    #remove the first token (JS)
+        length = self.size
+        start = 0
+        if KeepOrigin==False:
+            start = 1       #remove the first token (JS)
+            if self.tail.text == "":
+                length -= 1 #remove the JM token if it is blank
 
-        if self.tail.text == "":
-            length -= 1
-        r, _, _ = self.newnode(1, length)
+        length = length - start
+        r, _, _ = self.newnode(start, length)
         return r
 
 
@@ -336,7 +340,7 @@ class SentenceNode(object):
                 logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
         return featureString
 
-    def CleanOutput(self):
+    def CleanOutput(self, KeepOriginFeature=False):
         a = JsonClass()
         a.text = self.text
         if self.norm != self.text:
@@ -345,12 +349,15 @@ class SentenceNode(object):
             a.atom = self.atom
         a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
 
+        if KeepOriginFeature:
+            a.features = [FeatureOntology.GetFeatureName(f) for f in self.features ]
+
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset
         if self.UpperRelationship:
             a.UpperRelationship = self.UpperRelationship
         if self.sons:
-            a.sons = [s.CleanOutput() for s in self.sons]
+            a.sons = [s.CleanOutput(KeepOriginFeature) for s in self.sons]
 
         return a
 

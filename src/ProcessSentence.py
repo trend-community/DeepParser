@@ -55,6 +55,7 @@ def OutputWinningRules():
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
 def HeadMatch(strTokenList, StartPosition, ruleTokens):
+
     for i in range(len(ruleTokens)):
         try:
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
@@ -411,13 +412,11 @@ if __name__ == "__main__":
     print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
     print(OutputStringTokens_oneliner(m_nodes))
 
-    print(m_nodes.root().CleanOutput().toJSON())
-    #print(jsonpickle.dumps(nodes))
 
     print("Winning rules:\n" + OutputWinningRules())
 
     print(FeatureOntology.OutputMissingFeatureSet())
 
+    print(m_nodes.root().CleanOutput().toJSON())
     print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
-
-    Rules.OutputRuleFiles("../temp/rule.after/")
+    print(m_nodes.root(True).CleanOutput(True).toJSON())
