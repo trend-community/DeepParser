@@ -86,7 +86,7 @@ def showGraph(json_input):
     decoded = json.loads(json_input)
     CreateTree(decoded)
     print("size of nodelist is " + str(len(nodeList)))
-    printTree(nodeList)
+    #printTree(nodeList)
     graph = OrgGraph()
     filename = os.path.join(dir_path, '../../parser/graph/' ,  time.strftime("%Y%m%d-%H%M%S")+'.svg')
     # graph.write_svg('g1.svg')
@@ -99,7 +99,7 @@ def orgChart(json_input):
     decoded = json.loads(json_input)
     CreateTree(decoded)
     textSet = set()
-    printTree(nodeList)
+    #printTree(nodeList)
     #print("size of nodelist is " + str(len(nodeList)))
     dataRows = []
     for node in nodeList:

@@ -43,6 +43,9 @@ def GetFeatureList():
 def GetFeatureList1():
     return jsonpickle.encode({ID:f for f,ID in FeatureOntology._FeatureDict.items()})
 
+@app.route("/gchart_loader.js")
+def gchart_loader():
+    return send_file('gchart_loader.js')
 
 @app.route("/Tokenize/<Sentence>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
