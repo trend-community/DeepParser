@@ -23,7 +23,7 @@ Environment:
 
 
 1, Initial install:
-cd git/parser
+cd git/parser/src
 pip install -r requirements.txt
 cd git/multisegmental
 mvn package
@@ -32,7 +32,10 @@ mvn package
 2, Background service:
 2.1, Run the MultiSegmental Java program as web service
     cd git/multisegmental
-    mvn exec:java
+    mvn exec:java &
+		To use part other than 8080, use command as:
+		 mvn exec:java -Dserver.port=9000
+		and change parser/src/config.ini accordingly.
 
 2.2, Run the python program as web service 
     cd git/parser/src
