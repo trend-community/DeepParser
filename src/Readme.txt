@@ -42,6 +42,7 @@ mvn package
     python RestfulService.py
 If you modify the lexicon or rule files and you want to reload them to see how they perform, you need to press Ctrl-C to stop this process, and run the same command again.
 
+2.2.2, Run
 
 3, LexicalAnalyze without program:
 In your browser visit
