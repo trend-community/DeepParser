@@ -46,11 +46,11 @@ If you modify the lexicon or rule files and you want to reload them to see how t
 	2.2.2.1, Prerequists: Apache httpd service.
 	2.2.2.2, Copy parser.conf into /etc/apache2/sites-enabled/parser.conf
 	2.2.2.3, Edit /etc/apache2/sites-enabled/parser.conf to give a user account/group for the application (line 9). It is highly suggested not to use "root".
-	2.2.2.4, Copy RestfulService.wsgi into /var/www/html/RestfulService.wsgi
-	2.2.2.5, Edit /var/www/html/RestfulService.wsgi, modify "sys.path.insert(0, '/nlpengine/parser/src')" to correct path.
-	2.2.2.6, Set the correct permission: at least allow that user account to read all files; write access in several folders:
+	2.2.2.3, Copy RestfulService.wsgi into /var/www/html/RestfulService.wsgi
+	2.2.2.4, Edit /var/www/html/RestfulService.wsgi, modify "sys.path.insert(0, '/nlpengine/parser/src')" to correct path.
+	2.2.2.5, Set the correct permission: at least allow that user account to read all files; write access in several folders:
 				parser/temp, parser/compiled, fsa/X
-	2.2.2.7, Restart apache service: 
+	2.2.2.6, Restart apache service: 
 				sudo service apache2 restart
 				
 

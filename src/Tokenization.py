@@ -115,6 +115,8 @@ class SentenceLinkedList:
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset
 
+
+
     def signature(self, start, limit):
         startnode = self.get(start)
         p = startnode
@@ -389,6 +391,8 @@ class JsonClass(object):
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                          sort_keys=True, ensure_ascii=False)
+    def fromJSON(self):
+        pass
 
 
 def Tokenize_space(sentence):
