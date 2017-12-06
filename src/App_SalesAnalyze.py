@@ -4,15 +4,14 @@
 
 
 import logging, sys, re, os, argparse
-import Tokenization, FeatureOntology, Lexicon
-import ProcessSentence, Rules
 import requests, json, jsonpickle
-from utils import *
+import utils
 
 import singleton
 me = singleton.SingleInstance()
 KeywordSales = {}
 FeatureSales = {}
+
 
 def OutputSales():
     KeywordFile = os.path.join(args.outputfolder, 'KeywordSales.txt')
@@ -24,6 +23,7 @@ def OutputSales():
     with open(FeatureFile, "w", encoding="utf-8") as writer:
         for k,v in sorted(FeatureSales.items(), key=lambda d:(d[1], d[0]), reverse = True):
             writer.write(k + "\t" + str(v) + "\n")
+
 
 # TODO: Use a database (sqlite?) to store the result. link feature/keyword to an ID for each sentence
 def AccumulateNodes(node):
@@ -58,13 +58,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-    level = logging.DEBUG
+    level = logging.INFO
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
-
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     UnitTest = {}
     if not os.path.exists(args.inputfile):
@@ -74,19 +72,17 @@ if __name__ == "__main__":
     with open(args.inputfile, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                Content, _ = SeparateComment(line.strip())
+                Content, _ = utils.SeparateComment(line.strip())
                 if  Content and '\t' in Content:    # For the testfile that only have test sentence, not rule name
                     TestSentence, Sales = Content.split('\t', 2)
                     UnitTest[TestSentence] = int(Sales)
 
-    #ProcessSentence.LoadCommon()
-
-
     for Sentence in UnitTest:
-        LexicalAnalyzeURL = ParserConfig.get("main", "url_larestfulservice") + "/LexicalAnalyze?Type=json&Sentence="
+        LexicalAnalyzeURL = utils.ParserConfig.get("main", "url_larestfulservice") + "/LexicalAnalyze?Type=json&Sentence="
         ret = requests.get(LexicalAnalyzeURL + "\"" + Sentence + "\"")
         root =  jsonpickle.decode(ret.text)
         AccumulateNodes(root)
 
     OutputSales()
+    print("Done. Please check the output files in " + args.outputfolder)
 
