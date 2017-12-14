@@ -85,7 +85,7 @@ def showGraph(json_input):
     nodeList[:] = []
     decoded = json.loads(json_input)
     CreateTree(decoded)
-    print("size of nodelist is " + str(len(nodeList)))
+    # print("size of nodelist is " + str(len(nodeList)))
     #printTree(nodeList)
     graph = OrgGraph()
     filename = os.path.join(dir_path, '../../parser/graph/' ,  time.strftime("%Y%m%d-%H%M%S")+'.svg')
@@ -100,11 +100,10 @@ def orgChart(json_input):
     CreateTree(decoded)
     textSet = set()
     #printTree(nodeList)
-    #print("size of nodelist is " + str(len(nodeList)))
+    # print("size of nodelist is " + str(len(nodeList)))
     dataRows = []
     for node in nodeList:
-
-        if len(nodeList) > 1:
+         if len(nodeList) > 1:
             if node.sons:
                 relationExists = checkRelation(node)
                 hasRelation = False
@@ -249,20 +248,20 @@ def orgChart(json_input):
                     element.append(tooltip)
                     dataRows.append(element)
 
-        else:
-            element = []
-            text = node.text
-            feature = "features: "
-            for f in node.features:
-                feature += f + " "
-            end = "EndOffset :" + str(node.endOffset)+" "
-            start = "StartOffset :" + str(node.startOffset)
-            txt = feature + end + start
-            tooltip = txt
-            element.append(text)
-            element.append('')
-            element.append(tooltip)
-            dataRows.append(element)
+            else:
+                element = []
+                text = node.text
+                feature = "features: "
+                for f in node.features:
+                    feature += f + " "
+                end = "EndOffset :" + str(node.endOffset)+" "
+                start = "StartOffset :" + str(node.startOffset)
+                txt = feature + end + start
+                tooltip = txt
+                element.append(text)
+                element.append('')
+                element.append(tooltip)
+                dataRows.append(element)
 
     nodeList[:] = []
     return dataRows
@@ -278,7 +277,7 @@ def checkRelation(node):
 
 
 if __name__ == "__main__":
-    json_input = '{"EndOffset": 8, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 8, "StartOffset": 0, "features": ["vtThing", "3", "perF", "perVobj", "perfect", "saturated", "chg", "Pred", "v", "ho", "chgPoss", "VG", "take", "buy", "pred", "geiV", "act"], "sons": [{"EndOffset": 1, "StartOffset": 0, "UpperRelationship": "^.S", "features": ["0", "n", "NP", "npr", "XP", "oral", "per", "phy", "xC", "perOrg", "anim", "vac", "PRP"], "text": "我"}, {"EndOffset": 8, "StartOffset": 1, "features": ["vtThing", "3", "chgPoss", "perF", "VG", "take", "buy", "perVobj", "VP", "perfect", "saturated", "pred", "v", "chg", "Pred", "geiV", "ho", "act"], "sons": [{"EndOffset": 3, "StartOffset": 1, "features": ["vtThing", "ho", "V", "chgPoss", "perF", "VG", "take", "buy", "perVobj", "VP", "perfect", "saturated", "pred", "XP", "chg", "Pred", "geiV", "v", "act"], "sons": [{"EndOffset": 2, "StartOffset": 1, "features": ["vtThing", "0", "perF", "perVobj", "perfect", "saturated", "chg", "Pred", "v", "V", "chgPoss", "VG", "take", "buy", "pred", "XP", "geiV", "act", "vt"], "text": "买"}, {"EndOffset": 3, "StartOffset": 2, "UpperRelationship": "^.X", "features": ["0", "vac", "EX", "xC", "V0"], "text": "了"}], "text": "买了"}, {"EndOffset": 8, "StartOffset": 3, "UpperRelationship": "^.O", "features": ["chem", "n", "npr", "NP", "XP", "phy", "tool", "artifact", "solution", "prod", "inanim"], "sons": [{"EndOffset": 6, "StartOffset": 3, "UpperRelationship": "^.M", "features": ["0", "n", "npr", "phy", "org", "perOrg", "com", "group", "N", "brand", "NNP"], "text": "香奈儿"}, {"EndOffset": 8, "StartOffset": 6, "features": ["0", "chem", "n", "npr", "NP", "XP", "phy", "tool", "artifact", "solution", "N", "prod", "inanim"], "text": "眉笔"}], "text": "香奈儿眉笔"}], "text": "买了香奈儿眉笔"}], "text": "我买了香奈儿眉笔"}], "text": "我买了香奈儿眉笔"}'
+    json_input = '{"EndOffset": 7, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 7, "StartOffset": 0, "features": ["space", "0", "NP", "modJJ", "loc", "locNE", "inanim", "n", "npr", "XP", "Politics", "phy", "country", "countryNE", "place", "N", "natural", "earth"], "text": "中华人民共和国"}], "text": "中华人民共和国"}'
     # showGraph(json_input)
     dataRows = orgChart(json_input)
     print(str(dataRows))
