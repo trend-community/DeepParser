@@ -23,7 +23,7 @@ Environment:
 
 
 1, Initial install:
-cd git/parser
+cd git/parser/src
 pip install -r requirements.txt
 cd git/multisegmental
 mvn package
@@ -32,20 +32,41 @@ mvn package
 2, Background service:
 2.1, Run the MultiSegmental Java program as web service
     cd git/multisegmental
-    mvn exec:java
+    mvn exec:java &
+		To use part other than 8080, use command as:
+		 mvn exec:java -Dserver.port=9000
+		and change parser/src/config.ini accordingly.
 
-2.2, Run the python program as web service 
+2.2.1, Run the python program as web service 
     cd git/parser/src
     python RestfulService.py
 If you modify the lexicon or rule files and you want to reload them to see how they perform, you need to press Ctrl-C to stop this process, and run the same command again.
 
+2.2.2, Run the python program as web service in Apache:
+	2.2.2.1, Prerequists: Apache httpd service.
+	2.2.2.2, Copy parser.conf into /etc/apache2/sites-enabled/parser.conf
+	2.2.2.3, Edit /etc/apache2/sites-enabled/parser.conf to give a user account/group for the application (line 9). It is highly suggested not to use "root".
+	2.2.2.3, Copy RestfulService.wsgi into /var/www/html/RestfulService.wsgi
+	2.2.2.4, Edit /var/www/html/RestfulService.wsgi, modify "sys.path.insert(0, '/nlpengine/parser/src')" to correct path.
+	2.2.2.5, Set the correct permission: at least allow that user account to read all files; write access in several folders:
+				parser/temp, parser/compiled, fsa/X
+	2.2.2.6, Restart apache service: 
+				sudo service apache2 restart
+				
 
 3, LexicalAnalyze without program:
 In your browser visit
-    http://localhost:8080/Tokenize/?Sentence=中文切词分析句子
-    http://localhost:5001/Tokenize/中文切词分析句子
+    http://localhost:8080/Tokenize?Sentence=中文切词分析句子
     http://localhost:5001/LexicalAnalyze?Sentence='中文切词分析句子'
+    http://localhost:5001/LexicalAnalyze?Type=json&Sentence='中文切词分析句子'
+    http://localhost:5001/LexicalAnalyze?Type=simple&Sentence='中文切词分析句子'
+    http://localhost:5001/LexicalAnalyze?Type=parsetree&Sentence='中文切词分析句子'
 
+	The first link is a simple segmental program to confirm that part works, not meaningful.
+	The second and third link are the same, output JSON format.
+	The forth link is for simple format.
+	The fifth link is the parse tree presentation.
+	
 
 4, Running the LexicalAnalyze program
 4.1 Prepare the source file, such as "test.txt". It is suggested to place this file in a separate folder, such as git/parser/temp folder
@@ -55,7 +76,7 @@ In your browser visit
 Note: The error message and standard output are showing in the screen. If you want them to be in separate files, please execute:
     python LexicalAnalyze_RestfulService.py  ../temp/test.txt NoFeature >../temp/output.txt 2>../temp/error.txt
 
-4.3 Run the program locally (Still require support froom the web service of MultiSegmental Java Program in port 8080)
+4.3 Run the program locally (Still require support from the web service of MultiSegmental Java Program in port 8080)
     python LexicalAnalyze.py ../temp/test.txt [NoFeature] >../temp/output.txt 2>../temp/error.txt
 
 
