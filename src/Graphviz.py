@@ -103,7 +103,7 @@ def orgChart(json_input):
     # print("size of nodelist is " + str(len(nodeList)))
     dataRows = []
     for node in nodeList:
-         if len(nodeList) > 1:
+         if len(nodeList) > 2:
             if node.sons:
                 relationExists = checkRelation(node)
                 hasRelation = False
@@ -248,20 +248,21 @@ def orgChart(json_input):
                     element.append(tooltip)
                     dataRows.append(element)
 
-            else:
-                element = []
-                text = node.text
-                feature = "features: "
-                for f in node.features:
-                    feature += f + " "
-                end = "EndOffset :" + str(node.endOffset)+" "
-                start = "StartOffset :" + str(node.startOffset)
-                txt = feature + end + start
-                tooltip = txt
-                element.append(text)
-                element.append('')
-                element.append(tooltip)
-                dataRows.append(element)
+         elif len(nodeList)==2:
+            element = []
+            node = nodeList[0]
+            text = node.text
+            feature = "features: "
+            for f in node.features:
+                feature += f + " "
+            end = "EndOffset :" + str(node.endOffset)+" "
+            start = "StartOffset :" + str(node.startOffset)
+            txt = feature + end + start
+            tooltip = txt
+            element.append(text)
+            element.append('')
+            element.append(tooltip)
+            dataRows.append(element)
 
     nodeList[:] = []
     return dataRows
