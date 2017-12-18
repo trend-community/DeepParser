@@ -446,13 +446,6 @@ def GenerateLexPlus():
                 else:
                     logging.debug("duplicate6 :" + newWord)
 
-                # cannotPB feature
-                # if canPBID in featuresID:
-                #     featuresID.remove(canPBID)
-                # if orQID in featuresID:
-                #     featuresID.remove(orQID)
-                # if perfectID in featuresID:
-                #     featuresID.remove(perfectID)
                 newWord = first + "不" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = featuresID.copy()
@@ -470,6 +463,43 @@ def GenerateLexPlus():
                         _LexiconDictDefPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate7 :" + newWord)
+
+                newWord = first + "也" + first + "不" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                    newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
+                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                    newWord not in _LexiconDictDefXOrig.keys()):
+                    copyFeatures = featuresID.copy()
+                    if cpbID in copyFeatures:
+                        copyFeatures.remove(cpbID)
+                    copyFeatures.add(cannotPBID)
+                    newNode = LexiconNode(newWord)
+                    newNode.norm = first + second
+                    newNode.text = newWord
+                    newNode.features = copyFeatures
+                    newNode.atom = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate7 :" + newWord)
+
+                newWord = first + "都" + first + "不" + second
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
+                            newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
+                            newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                            newWord not in _LexiconDictDefXOrig.keys()):
+                    copyFeatures = featuresID.copy()
+                    if cpbID in copyFeatures:
+                        copyFeatures.remove(cpbID)
+                    copyFeatures.add(cannotPBID)
+                    newNode = LexiconNode(newWord)
+                    newNode.norm = first + second
+                    newNode.text = newWord
+                    newNode.features = copyFeatures
+                    newNode.atom = newWord
+                    _LexiconDictPlus.update({newWord: newNode})
+                else:
+                    logging.debug("duplicate7 :" + newWord)
+
 
                 if len(word) == 2 and word[1] == "出":
                     newWord = word[0] + "不" + word[1] + "来"
