@@ -5,11 +5,11 @@
 # from ..\..\fsa\extra\ChineseTopCharacters.txt
 # to ..\..\fsa\X\LexBlacklist_TopChars.txt
 
-import os
+import gzip
 import utils
 
 TopCharacterFile = "..\\..\\fsa\\extra\\ChineseTopCharacters.txt"
-OutputFile = "..\\..\\fsa\X\\LexBlacklist_TopChars.txt"
+OutputFile = "..\\..\\fsa\X\\LexBlacklist_TopChars.txt.gz"
 
 def LoadTopCharacters(FileLocation):
     Top500 = ""
@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     T100, T500 = LoadTopCharacters(TopCharacterFile)
 
-    with open(OutputFile, "w", encoding="utf-8") as fout:
+    with gzip.open(OutputFile, "w", encoding="utf-8") as fout:
         for c1 in T500:
             for c2 in T500:
                 fout.write(c1 + c2 + "\n")
