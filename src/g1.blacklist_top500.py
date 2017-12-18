@@ -8,8 +8,8 @@
 import os, zipfile
 import utils
 
-TopCharacterFile = "..\\..\\fsa\\extra\\ChineseTopCharacters.txt"
-OutputFile = "..\\..\\fsa\X\\LexBlacklist_TopChars.txt"
+TopCharacterFile = "../../fsa/extra/ChineseTopCharacters.txt"
+OutputFile = "../../fsa/X/LexBlacklist_TopChars.txt"
 
 def LoadTopCharacters(FileLocation):
     Top500 = ""
