@@ -67,6 +67,7 @@ def InLexiconBlacklist(word):
 
 
 LoadLexiconBlacklist("../../fsa/X/LexBlacklist.txt")
+LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt")
 digitsearch = re.compile(r'\d')
 N = 0
 for line in fin:
