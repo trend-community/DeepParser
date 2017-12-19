@@ -48,9 +48,10 @@ def LoadLexiconBlacklist(BlacklistLocation):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
     if BlacklistLocation.endswith(".txt.zip"):
         with zipfile.ZipFile(BlacklistLocation) as z:
-            with  z.open(BlacklistLocation[:-4]) as dictionary:
+            with  z.open(os.path.basename(BlacklistLocation)[:-4]) as dictionary:
                 for lined in dictionary:
-                    pattern, _ = utils.SeparateComment(lined)
+                    line = lined.decode("utf-8", "ignore")
+                    pattern, _ = utils.SeparateComment(line)
                     if not pattern:
                         continue
                     blocks = [x.strip() for x in re.split(":", pattern) if x]
