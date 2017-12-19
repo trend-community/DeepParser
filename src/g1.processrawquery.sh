@@ -21,7 +21,7 @@
 mkdir -p $5
 sed -e "s/[\x00\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
 sed -e "s/[[:punct:]]/ /g" $5/raw_wo_ctrl2.txt > $5/raw_wo_ctrl.txt
-grep -Pv "\x01[1-9]$" $5/raw_wo_ctrl.txt > $5/raw_wo_ctrl.10plus.txt
+cat $5/raw_wo_ctrl.txt | parallel --pipe  grep -Pv "\x01[1-9]$"  > $5/raw_wo_ctrl.10plus.txt
 python g1.norm.py $5/raw_wo_ctrl.10plus.txt $5/dictoutput.txt $2 2>../temp/g1.norm.error.txt
 
 python g1.generatewordlist.py $5 $2     2>../temp/g1.generatewordlist.error.txt
