@@ -36,7 +36,7 @@ print (str(args))
 # The most useful output is the pickle'd dictionary of phrases
 # with accumulated frequencies.
 #==============================================================
-import pickle
+import pickle, zipfile
 import codecs
 fin = codecs.open(args.input, 'rb', encoding='utf-8')
 
@@ -46,15 +46,28 @@ _LexiconBlacklist = []
 def LoadLexiconBlacklist(BlacklistLocation):
     if BlacklistLocation.startswith("."):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
-    with open(BlacklistLocation, encoding="utf-8") as dictionary:
-        for lined in dictionary:
-            pattern, _ = utils.SeparateComment(lined)
-            if not pattern:
-                continue
-            blocks = [x.strip() for x in re.split(":", pattern) if x]
-            if not blocks:
-                continue
-            _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
+    if BlacklistLocation.endswith(".txt.zip"):
+        with zipfile.ZipFile(BlacklistLocation) as z:
+            with  z.open(os.path.basename(BlacklistLocation)[:-4]) as dictionary:
+                for lined in dictionary:
+                    line = lined.decode("utf-8", "ignore")
+                    pattern, _ = utils.SeparateComment(line)
+                    if not pattern:
+                        continue
+                    blocks = [x.strip() for x in re.split(":", pattern) if x]
+                    if not blocks:
+                        continue
+                    _LexiconBlacklist.append(blocks[0] + "$")  # from begin to end
+    else:
+        with open(BlacklistLocation, encoding="utf-8") as dictionary:
+            for lined in dictionary:
+                pattern, _ = utils.SeparateComment(lined)
+                if not pattern:
+                    continue
+                blocks = [x.strip() for x in re.split(":", pattern) if x]
+                if not blocks:
+                    continue
+                _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
 
 
 from functools import lru_cache
@@ -67,7 +80,7 @@ def InLexiconBlacklist(word):
 
 
 LoadLexiconBlacklist("../../fsa/X/LexBlacklist.txt")
-LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt")
+LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt.zip")
 digitsearch = re.compile(r'\d')
 N = 0
 for line in fin:

@@ -5,7 +5,7 @@
 # from ..\..\fsa\extra\ChineseTopCharacters.txt
 # to ..\..\fsa\X\LexBlacklist_TopChars.txt
 
-import os
+import os, zipfile
 import utils
 
 TopCharacterFile = "../../fsa/extra/ChineseTopCharacters.txt"
@@ -35,3 +35,7 @@ if __name__ == "__main__":
             for c2 in T100:
                 for c3 in T100:
                     fout.write(c1 + c2 + c3 + "\n")
+
+    z = zipfile.ZipFile(OutputFile + ".zip", "w", zipfile.ZIP_DEFLATED)
+    z.write(OutputFile, os.path.basename(OutputFile))
+    z.close()
