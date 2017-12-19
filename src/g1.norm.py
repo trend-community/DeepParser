@@ -58,16 +58,16 @@ def LoadLexiconBlacklist(BlacklistLocation):
                     if not blocks:
                         continue
                     _LexiconBlacklist.append(blocks[0] + "$")  # from begin to end
-
-    with open(BlacklistLocation, encoding="utf-8") as dictionary:
-        for lined in dictionary:
-            pattern, _ = utils.SeparateComment(lined)
-            if not pattern:
-                continue
-            blocks = [x.strip() for x in re.split(":", pattern) if x]
-            if not blocks:
-                continue
-            _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
+    else:
+        with open(BlacklistLocation, encoding="utf-8") as dictionary:
+            for lined in dictionary:
+                pattern, _ = utils.SeparateComment(lined)
+                if not pattern:
+                    continue
+                blocks = [x.strip() for x in re.split(":", pattern) if x]
+                if not blocks:
+                    continue
+                _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
 
 
 from functools import lru_cache
