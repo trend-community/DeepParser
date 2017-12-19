@@ -21,10 +21,10 @@
 mkdir -p $5
 sed -e "s/[\x00\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
 sed -e "s/[[:punct:]]/ /g" $5/raw_wo_ctrl2.txt > $5/raw_wo_ctrl.txt
-cat $5/raw_wo_ctrl.txt | parallel --pipe  grep -Pv "\x01[1-9]$"  > $5/raw_wo_ctrl.10plus.txt
-python g1.norm.py $5/raw_wo_ctrl.10plus.txt $5/dictoutput.txt $2 2>../temp/g1.norm.error.txt
+grep -Pv "\x01[1-9]$" $5/raw_wo_ctrl.txt  > $5/raw_wo_ctrl.10plus.txt
+python3 g1.norm.py $5/raw_wo_ctrl.10plus.txt $5/dictoutput.txt $2 2>../temp/g1.norm.error.txt
 
-python g1.generatewordlist.py $5 $2     2>../temp/g1.generatewordlist.error.txt
+python3 g1.generatewordlist.py $5 $2     2>../temp/g1.generatewordlist.error.txt
 
 mkdir -p $3
 mkdir -p $4
@@ -33,7 +33,7 @@ do
     echo "processing $f ..."
     filename=$(basename "$f")
     outputfile="$5/Mixed_$filename"
-    python g1.sent.py  "$f" "$outputfile" $2 $6
+    python3 g1.sent.py  "$f" "$outputfile" $2 $6
 
     newlexiconname="$4/CleanLexicon_$filename"
     grep -va "<" $outputfile | grep -Fxv -f $6 > $newlexiconname &
