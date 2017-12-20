@@ -67,7 +67,7 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 blocks = [x.strip() for x in re.split(":", pattern) if x]
                 if not blocks:
                     continue
-                _LexiconBlacklist.append(normalize(blocks[0])+"$") #from begin to end
+                _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
 
 
 from functools import lru_cache
@@ -98,7 +98,7 @@ for line in fin:
                 continue    #ignore digit
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
-            if querydict[phrase] < 30 and InLexiconBlacklist(chunk):
+            if querydict[phrase] < 60 and InLexiconBlacklist(chunk):
                 logging.warning("Blacklisted:" + chunk)
                 del querydict[phrase]
             N = N + freq
