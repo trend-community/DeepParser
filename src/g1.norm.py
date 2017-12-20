@@ -80,7 +80,7 @@ def InLexiconBlacklist(word):
 
 
 LoadLexiconBlacklist("../../fsa/X/LexBlacklist.txt")
-LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt.zip")
+#LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt.zip")
 digitsearch = re.compile(r'\d')
 N = 0
 for line in fin:
