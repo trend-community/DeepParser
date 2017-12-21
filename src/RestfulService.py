@@ -96,7 +96,7 @@ def LexicalAnalyze():
                     print("RestfulService: winningrules=" + str(winningrules))
                 return chart
             else:
-                return nodes.root().CleanOutput().toJSON()
+                return nodes.root().CleanOutput(KeepOriginFeature = Debug).toJSON()
         except Exception as e:
             logging.error(e)
             return ""
