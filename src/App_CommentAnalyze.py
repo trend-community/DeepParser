@@ -61,8 +61,8 @@ if __name__ == "__main__":
 
     for Sentence in CommodityName:
         LexicalAnalyzeURL = utils.ParserConfig.get("main", "url_larestfulservice") + "/LexicalAnalyze?Type=simple&Sentence="
-        #ret = requests.get(LexicalAnalyzeURL + "\"" + Sentence + "\"")
-        #foutput.write(ret.text + "\n")
+        ret = requests.get(LexicalAnalyzeURL + "\"" + Sentence + "\"")
+        foutput.write(ret.text + "\n")
 
     foutput.close()
 

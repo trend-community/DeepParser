@@ -59,6 +59,10 @@ def LexicalAnalyze():
     Sentence = request.args.get('Sentence')
     Type = request.args.get('Type')
     Debug = request.args.get('Debug')
+    if Debug:
+        Debug = True
+    else:
+        Debug = False
     if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
     #logging.error(Sentence)
@@ -82,7 +86,7 @@ def LexicalAnalyze():
                 logging.info("parsetree file is written in:" + str(svgfilelocation))
                 return send_file(svgfilelocation, mimetype='image/gif')
             elif Type == "parsetree":
-                orgdata = Graphviz.orgChart(nodes.root().CleanOutput().toJSON())
+                orgdata = Graphviz.orgChart(nodes.root().CleanOutput( KeepOriginFeature = Debug).toJSON())
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
                 if Debug:
                     winningrulestring = ""

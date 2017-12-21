@@ -420,4 +420,4 @@ if __name__ == "__main__":
 
     print(m_nodes.root().CleanOutput().toJSON())
     print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
-    print(m_nodes.root(True).CleanOutput(True).toJSON())
+    print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
