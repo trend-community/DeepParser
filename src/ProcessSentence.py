@@ -347,6 +347,7 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt', lookupSource=LexiconLookupSource.External)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
