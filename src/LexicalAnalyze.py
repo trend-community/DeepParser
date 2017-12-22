@@ -1,4 +1,4 @@
-import logging, sys, os
+import logging, sys, os, argparse
 import ProcessSentence, Rules, FeatureOntology
 from utils import *
 
@@ -40,31 +40,36 @@ def ProcessFile(FileName):
 
         if DebugMode:
             print(nodes)
-        print(OutputStringTokens_oneliner(nodes, NoFeature))
+        if args.mode == 'json':
+            print(nodes.root().CleanOutput().toJSON())
+        else:
+            print(OutputStringTokens_oneliner(nodes, NoFeature))
 
-    print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
-    print(FeatureOntology.OutputMissingFeatureSet())
+    if args.winningrules:
+        print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
+    if args.extra:
+        print(FeatureOntology.OutputMissingFeatureSet())
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("inputfile", help="input file")
+    parser.add_argument("--debug")
+    parser.add_argument("--mode", help="json/segmentation", choices=['json', 'segmentation'])
+    parser.add_argument("--winningrules")
+    parser.add_argument("--extra")
+
+    args = parser.parse_args()
+
     DebugMode = False
     NoFeature = False
     level = logging.WARNING
-    UnitTestFileName = ''
-    if len(sys.argv) > 1:
-        UnitTestFileName = sys.argv[1]
-        if len(sys.argv) > 2:
-            command = sys.argv[2]
-            if command == 'Debug':
-                DebugMode = True
-                level = logging.DEBUG
-            if command == 'NoFeature':
-                NoFeature = True
+    if args.debug:
+        DebugMode = True
+        level = logging.DEBUG
 
-    else:
-        print(
-            "Usage: python LexicalAnalyze.py unittestfile [Debug]/[NoFeature]")
-        exit(0)
+    if args.mode == 'json':
+        pass
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
@@ -73,7 +78,7 @@ if __name__ == "__main__":
     ProcessSentence.LoadCommon()
 
     if not logging.getLogger().isEnabledFor(logging.DEBUG):
-        ProcessFile(UnitTestFileName)
+        ProcessFile(args.inputfile)
     else:   #debugging modef
         # ProcessFile(UnitTestFileName)
         # pass

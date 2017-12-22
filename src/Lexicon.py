@@ -394,6 +394,8 @@ def ApplyLexicon(node, lex=None):
         else:
             node.features.update(lex.features)
         _ApplyWordStem(node, lex)
+        if len(node.features) == 0:
+            node.features.add(utils.FeatureID_OOV)
 
     ApplyWordLengthFeature(node)
     node.features.add(utils.FeatureID_0)
