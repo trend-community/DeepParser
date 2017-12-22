@@ -1,6 +1,7 @@
 #!/usr/bin/python -u
 import re
-#==============================================================
+
+# ==============================================================
 """
 viterbi1
 Find the best chunking of the given strSent as a string of space 
@@ -20,23 +21,25 @@ output:
 # bestScore[i] = best log likelihood for phrases ending at position i
 # bestPhrase[i] = best phrase ending at position i
 # bestPhraseLen[i] = number of words in bestPhrase[i]
-#==============================================================
+# ==============================================================
 import copy
-querydict = {}
-minLogPw = -21    # Zetta-words
-def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
 
+querydict = {}
+minLogPw = -21  # Zetta-words
+
+
+def viterbi1(strSent, maxPhraseLen=20, isRecursive=True):
     ## init
     sent = ['^'] + strSent.split()
     sentLen = len(sent)
     bestPhrase = copy.deepcopy(sent)
     bestPhraseLen = [1] * sentLen
-    bestScore = [0.0] + [ (minLogPw * i) for i in range(1, sentLen+1) ]
+    bestScore = [0.0] + [(minLogPw * i) for i in range(1, sentLen + 1)]
 
     ## forward path: fill up "best"
     for i in range(1, sentLen):
-        for j in range(max(0, i-maxPhraseLen), i):
-            phrase = ' '.join(sent[j+1:i+1])
+        for j in range(max(0, i - maxPhraseLen), i):
+            phrase = ' '.join(sent[j + 1:i + 1])
             LogPw = querydict.get(phrase, 0)
             if LogPw != 0 and LogPw + bestScore[j] > bestScore[i]:
                 bestPhrase[i] = phrase
@@ -44,7 +47,8 @@ def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
                 bestScore[i] = LogPw + bestScore[j]
 
     ## backward path: collect "best"
-    listPhrases = []; i = sentLen - 1
+    listPhrases = [];
+    i = sentLen - 1
     while i > 0:
         ## recursion
         if bestPhraseLen[i] > 2:
@@ -53,15 +57,15 @@ def viterbi1(strSent,  maxPhraseLen=20, isRecursive=True):
                 if 1 < len(subPhrases) < len(bestPhrase[i].split()):
                     bestPhrase[i] = '<' + ' '.join(subPhrases) + '>'
                 else:
-                    bestPhrase[i] = ''.join( subPhrases )
+                    bestPhrase[i] = ''.join(subPhrases)
             else:
-                bestPhrase[i] = ''.join( ['\['] + bestPhrase[i] + ['\]'] )
-        elif bestPhraseLen[i] == 2:    #one word. leave it be.
-            bestPhrase[i] = ''.join(sent[i+1-2 : i+1])
+                bestPhrase[i] = ''.join(['\['] + bestPhrase[i] + ['\]'])
+        elif bestPhraseLen[i] == 2:  # one word. leave it be.
+            bestPhrase[i] = ''.join(sent[i + 1 - 2: i + 1])
         else:
-            bestPhrase[i] =  bestPhrase[i]
+            bestPhrase[i] = bestPhrase[i]
 
-        listPhrases[0:0] = [ bestPhrase[i] ]
+        listPhrases[0:0] = [bestPhrase[i]]
         i = i - bestPhraseLen[i]
 
     ## return
@@ -79,17 +83,18 @@ def QuerySegment(Sentence):
         resultPhrase = resultPhraseList[0]
     return resultPhrase
 
-#==============================================================
+
+# ==============================================================
 # isNonHanzi()
-#==============================================================
-def isNonHanzi(s): return all( (ord(c) < 0x4e00 or ord(c) > 0x9fff) for c in s)
+# ==============================================================
+def isNonHanzi(s): return all((ord(c) < 0x4e00 or ord(c) > 0x9fff) for c in s)
 
 
-#==============================================================
+# ==============================================================
 # normalize queries by taking space delimited chunks as phrases
 # and by adding spaces in between 'words'
 # Here a 'word' is defined as English word or single Chinese character
-#==============================================================
+# ==============================================================
 def normalize(sentence):
     phrase = ''
     word_prev = ''
@@ -103,15 +108,15 @@ def LoadDictFromPickle(dictpath="../data/g1.words.P"):
     global querydict
     import pickle
 
-    #==============================================================
+    # ==============================================================
     # unigram tokenization
-    #==============================================================
+    # ==============================================================
     import math
-    querydict = pickle.load( open(dictpath, "rb") )
-    logN = math.log10( querydict[''] )
-    for word in querydict:         
+    querydict = pickle.load(open(dictpath, "rb"))
+    logN = math.log10(querydict[''])
+    for word in querydict:
+        querydict[word] = math.log10(querydict[word]) - logN
 
-        querydict[word] = math.log10( querydict[word] ) - logN
 
 def LoadDictFromLexicon(dictpath):
     global querydict
@@ -119,14 +124,13 @@ def LoadDictFromLexicon(dictpath):
     with open(dictpath) as lexicondict:
         for line in lexicondict:
             if len(line.strip()) >= 2:
-                    querydict[normalize(line.strip())] = -0.1
+                querydict[normalize(line.strip())] = -0.1
     print("After loading from lexicon, size:" + str(len(querydict)))
     print("querydict['中 介']=" + str(querydict['中 介']))
     print("querydict['军 刀 黑']=" + str(querydict['军 刀 黑']))
 
+
 if __name__ == "__main__":
     LoadDictFromPickle()
 
-
     print(QuerySegment("鼠标和小米手机"))
-
