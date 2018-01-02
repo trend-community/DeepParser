@@ -1,7 +1,10 @@
 ## This is for analyzing feature/keywords of sales data.
 ## input file format: sentence\tsalesnum
 ## output: 2 files: KeywordSales.txt, FeatureSales.txt
+# cut -d ',' -f 5,8 '1627被子20171111_20171212171010[10756].csv'
+# awk -F',' '{print($2,"\t",$1)}' 1627sale.txt  > 1627sale2.txt
 
+# cut -d ',' -f 5,8 '7052婴幼奶粉20171111_20171212170000[10757].csv' | awk -F',' '{print($2,"\t",$1)}'   > 7052sale2.txt
 
 import logging, sys, re, os, argparse
 import requests, json, jsonpickle
@@ -75,13 +78,16 @@ if __name__ == "__main__":
                 Content, _ = utils.SeparateComment(line.strip())
                 if  Content and '\t' in Content:    # For the testfile that only have test sentence, not rule name
                     TestSentence, Sales = Content.split('\t', 2)
-                    UnitTest[TestSentence] = int(Sales)
+                    UnitTest[TestSentence] = int(float(Sales))
 
     for Sentence in UnitTest:
         LexicalAnalyzeURL = utils.ParserConfig.get("main", "url_larestfulservice") + "/LexicalAnalyze?Type=json&Sentence="
         ret = requests.get(LexicalAnalyzeURL + "\"" + Sentence + "\"")
         root =  jsonpickle.decode(ret.text)
-        AccumulateNodes(root)
+        for s in root['sons']:  # ignore the root
+            AccumulateNodes(s)
+
+        #AccumulateNodes(root)
 
     OutputSales()
     print("Done. Please check the output files in " + args.outputfolder)

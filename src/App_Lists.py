@@ -16,7 +16,7 @@ def CollectFeatures(node, KeywordSet, FeatureSet, IsRoot):
                          'boundM', 'an', 'hb', '3', 'cNf', 'fNm', 'c1clear', 'Up', 'enDo', 'doSum', 'VNPPPto', 'cn', 'buyuC', 'Down',
                          'sh', 'preNumc', 'notMod', 'V0', 'vt', 'vn', 'vi', 'A0', '1unit']
     featurelist = node['features']
-    if 'punc' in featurelist or len(node['text'].strip()) == 0:
+    if 'punc' in featurelist or len(node['text'].strip()) == 0 or IsRoot:
         pass
     else:
         for feature in featurelist:
@@ -25,7 +25,7 @@ def CollectFeatures(node, KeywordSet, FeatureSet, IsRoot):
 
             if feature not in FeatureSet:
                 FeatureSet.add(feature)
-        if node['text'] not in KeywordSet and not IsRoot:
+        if node['text'] not in KeywordSet :
             KeywordSet.add(node['text'])
 
 
@@ -87,9 +87,6 @@ if __name__ == "__main__":
         for f in sorted(FeatureSet):
             ffeature.write(str(ID) + "\t" + f + "\n")
 
-        x += 1
-        if x>3:
-            break
 
     print("Done. Please check the output files in " + args.outputfolder)
 
