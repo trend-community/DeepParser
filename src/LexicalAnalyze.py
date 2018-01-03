@@ -43,7 +43,7 @@ def ProcessFile(FileName):
         if args.mode == 'json':
             print(nodes.root().CleanOutput().toJSON())
         else:
-            print(OutputStringTokens_oneliner(nodes, NoFeature))
+            print(OutputStringTokens_oneliner(nodes, NoFeature=True))
 
     if args.winningrules:
         print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
@@ -62,7 +62,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     DebugMode = False
-    NoFeature = False
     level = logging.WARNING
     if args.debug:
         DebugMode = True
