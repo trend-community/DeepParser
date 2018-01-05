@@ -238,6 +238,21 @@ class Rule:
         output += '\n'
         return output
 
+    #For head (son) node, only apply negative action, and
+    #   features after "NEW".
+    @staticmethod
+    def ExtractSonActions( actinstring):
+        actions = actinstring.split("NEW", 1)
+        NegativeActions = []
+        for a in actions[0].split():
+            if a[0] == '-':
+                NegativeActions.append(a)
+        NegativeActionString = " ".join(NegativeActions)
+        if len(actions)>1:
+            NegativeActionString +=  " NEW " + actions[1].strip()
+
+        return NegativeActionString
+
     def CreateChunk(self, StartOffset, StartTrunkLevel):
         c = RuleChunk()
         c.StartOffset = StartOffset
@@ -268,8 +283,7 @@ class Rule:
                     c.HeadOffset = c.Length
                     if hasattr(token, "action"):
                         c.Action = token.action
-                        if "+++" in token.action:
-                            token.action = ''
+                        token.action = self.ExtractSonActions(token.action)
                 if not hasattr(token, "action"):
                     if c.HeadOffset == -1:
                         c.HeadOffset = c.Length
@@ -278,8 +292,7 @@ class Rule:
                         c.HeadConfidence = 2
                         c.HeadOffset = c.Length
                         c.Action = token.action
-                        if "+++" in token.action:
-                            token.action = ''
+                        token.action = self.ExtractSonActions(token.action)
                 c.Length += 1
             if token.EndTrunk:
                 ChunkLevel -= token.EndTrunk

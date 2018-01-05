@@ -692,3 +692,13 @@ third line};""")
    """, rulegroup)
         PreProcess_CheckFeatures()
         OutputRules(rulegroup)
+
+    def test_ExtractSonActions(self):
+        a = Rule.ExtractSonActions("a b -c NEW x y")
+        self.assertEqual(a, "-c NEW x y")
+
+        a = Rule.ExtractSonActions("a b -c ")
+        self.assertEqual(a, "-c")
+        a = Rule.ExtractSonActions("a b")
+        self.assertEqual(a, "")
+
