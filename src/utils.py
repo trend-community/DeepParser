@@ -19,6 +19,12 @@ FeatureID_NNP = None
 FeatureID_OOV = None
 FeatureID_NEW = None
 
+IMPOSSIBLESTRING = "@#$%@impossible@"
+IMPOSSIBLESTRINGLP = "@#$%@leftparenthesis@"
+IMPOSSIBLESTRINGRP = "@#$%@rightparenthesis@"
+IMPOSSIBLESTRINGSQ = "@#$%@singlequote@"
+IMPOSSIBLESTRINGCOLN = "@#$%@coln@"
+
 from enum import Enum
 class LexiconLookupSource(Enum):
     Exclude = 0

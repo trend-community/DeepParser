@@ -517,6 +517,28 @@ class RuleTest(unittest.TestCase):
         self.assertFalse(":" in word)
         #self.assertEqual(len(rulegroup.RuleList), 1)
 
+    def test_Actions_parenthesis(self):
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        InsertRuleInList(
+            """precontext_IN_no_det_NP(Top) ==
+
+                 <[NNP:NE] ['\(':^.X] [OOV:^.EQ] ['\)':^.X]> // Test: 卡雷尼奥.杜兰（Carrenoduran）
+
+                 """, rulegroup)
+        ExpandRuleWildCard()
+        ExpandParenthesisAndOrBlock()
+        ExpandRuleWildCard()
+
+        # OutputRules("concise")
+        word = rulegroup.RuleList[0].Tokens[0].word
+        self.assertFalse(":" in word)
+        word = rulegroup.RuleList[0].Tokens[1].word
+        self.assertFalse(":" in word)
+        # self.assertEqual(len(rulegroup.RuleList), 1)
+
     def test_Expanding_VNPAP2(self):
         rulegroup = RuleGroup("test")
         ResetRules(rulegroup)

@@ -404,7 +404,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "每年自1月1日起至12月31日止"
+    target = "卡雷尼奥.杜兰（Carrenoduran）"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")

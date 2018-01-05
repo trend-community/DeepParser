@@ -430,7 +430,6 @@ def Tokenize_space(sentence):
     return TokenList
 
 
-IMPOSSIBLESTRING = "@#$%!"
 def Tokenize(Sentence):
     Sentence = Sentence.strip()
     if utils.IsAscii(Sentence):

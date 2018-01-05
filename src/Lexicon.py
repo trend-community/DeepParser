@@ -196,12 +196,12 @@ def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
                 continue
             code, comment = SeparateComment(line)
 
-            code = code.replace("\:", Tokenization.IMPOSSIBLESTRING)
+            code = code.replace("\:", utils.IMPOSSIBLESTRING)
             blocks = [x.strip() for x in re.split(":", code) if x]
             if not blocks:
                 continue
             newNode = False
-            word = blocks[0].replace(Tokenization.IMPOSSIBLESTRING, ":").lower()
+            word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":").lower()
             #Ditionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "").replace("~", "")
 
@@ -460,19 +460,19 @@ if __name__ == "__main__":
     # LoadLexicon('../../fsa/X/locX.txt')
     # LoadLexicon('../../fsa/X/perX.txt')
     # LoadLexicon('../../fsa/X/defPlus.txt')
-    LoadLexicon('../../fsa/X/defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-    LoadLexicon('../../fsa/X/perX.txt', lookupSource=LexiconLookupSource.External)
-
-
-    para = dir_path + '/../../fsa/X/perX.txt'
-    LoadLexicon(para)
-    para = dir_path + '/../../fsa/X/defLexX.txt'
-    LoadLexicon(para, lookupSource=LexiconLookupSource.defLex)
-    if "/fsa/X" in para:
-        Englishflag = False
-    else:
-        Englishflag = True
-    print(OutputLexicon(Englishflag))
+    LoadLexicon('../../fsa/X/ChinesePunctuate.txt', lookupSource=LexiconLookupSource.defLex)
+    # LoadLexicon('../../fsa/X/perX.txt', lookupSource=LexiconLookupSource.External)
+    #
+    #
+    # para = dir_path + '/../../fsa/X/perX.txt'
+    # LoadLexicon(para)
+    # para = dir_path + '/../../fsa/X/defLexX.txt'
+    # LoadLexicon(para, lookupSource=LexiconLookupSource.defLex)
+    # if "/fsa/X" in para:
+    #     Englishflag = False
+    # else:
+    #     Englishflag = True
+    # print(OutputLexicon(Englishflag))
     print(OutputMissingFeatureSet())
 
 

@@ -100,7 +100,7 @@ class RuleToken(object):
         if hasattr(self, 'pointer'):
             output += self.pointer
         t = self.word
-        if hasattr(self, 'action'):
+        if hasattr(self, 'action') and self.action:
             t = t.replace("]", ":" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
@@ -385,6 +385,7 @@ def Tokenize(RuleContent):
 
 def ProcessTokens(Tokens):
     for node in Tokens:
+        node.word = node.word.replace("\(", IMPOSSIBLESTRINGLP).replace("\)", IMPOSSIBLESTRINGRP).replace("\'", IMPOSSIBLESTRINGSQ).replace("\:", IMPOSSIBLESTRINGCOLN)
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]
@@ -452,6 +453,8 @@ def ProcessTokens(Tokens):
 
         if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[0 ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
+
+        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":")
 
 # Avoid [(AS:action)|sjfa]
 # Good character in action:
@@ -573,7 +576,7 @@ def LoadRules(RuleLocation):
                 # if commentLocation>=0:
                 #     line = line[:commentLocation]   #remove anything after //
 
-                line = line.strip()
+                line = line.strip().replace("：", ":")
                 if not line:
                     continue
 
