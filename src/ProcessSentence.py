@@ -60,6 +60,8 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
         try:
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
                 return False  #  this rule does not fit for this string
+            if hasattr(ruleTokens[i], "SubtreePointer"):
+                i -= 1  #do not skip to next strToken, if this Subtree Rule is matched.
         except RuntimeError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i).word)
             logging.error(e)
@@ -404,7 +406,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "卡雷尼奥.杜兰（Carrenoduran）"
+    target = "软毛,短柄"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")

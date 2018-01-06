@@ -385,7 +385,7 @@ def Tokenize(RuleContent):
 
 def ProcessTokens(Tokens):
     for node in Tokens:
-        node.word = node.word.replace("\(", IMPOSSIBLESTRINGLP).replace("\)", IMPOSSIBLESTRINGRP).replace("\'", IMPOSSIBLESTRINGSQ).replace("\:", IMPOSSIBLESTRINGCOLN)
+        node.word = node.word.replace("\(", IMPOSSIBLESTRINGLP).replace("\)", IMPOSSIBLESTRINGRP).replace("\'", IMPOSSIBLESTRINGSQ).replace("\:", IMPOSSIBLESTRINGCOLN).replace("\=", IMPOSSIBLESTRINGEQUAL)
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]
@@ -431,6 +431,11 @@ def ProcessTokens(Tokens):
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = '^'
 
+        pointerSubtreeMatch = re.search("(\^(.+)=)", node.word, re.DOTALL)    # Subtree Pattern
+        if pointerSubtreeMatch:
+            node.word = node.word.replace(pointerMatch.group(1), "")
+            node.SubtreePointer = pointerMatch.group(2)
+
         if "(" not in node.word and ":" in node.word:
             orblocks = re.split("\|\[", node.word)
             if len(orblocks) > 1:
@@ -454,7 +459,7 @@ def ProcessTokens(Tokens):
         if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[0 ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
-        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":")
+        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
 
 # Avoid [(AS:action)|sjfa]
 # Good character in action:
