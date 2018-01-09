@@ -217,11 +217,7 @@ class SentenceNode(object):
         self.norm = word.lower()
         self.atom = word.lower()
         self.features = set()
-        #self.lexicon = None
-        # self.Gone = False
-        # self.SkipRead = False
-        # self.StartTrunk = 0
-        # self.EndTrunk = 0
+
         self.StartOffset = 0
         self.EndOffset = 0
         self.next = None
@@ -240,11 +236,7 @@ class SentenceNode(object):
         self.features = set()
         for featurename in self.featurenames:
             self.ApplyFeature(FeatureOntology.GetFeatureID(featurename))
-        #self.lexicon = None
-        # self.Gone = False
-        # self.SkipRead = False
-        # self.StartTrunk = 0
-        # self.EndTrunk = 0
+
         self.EndOffset = self.StartOffset + len(self.word)
         self.sons = []
         self.next = None
@@ -255,9 +247,6 @@ class SentenceNode(object):
 
     def __str__(self):
         output = "[" + self.text + "] "
-        # output += self.norm
-        # if self.Gone:
-        #     output += '(Gone)'
         featureString = self.GetFeatures()
         if featureString:
             output += ":" + featureString

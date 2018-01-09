@@ -78,44 +78,6 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
     return True
 
 
-#search from the end. The rule position is the first one that has EndChunk
-# temporary, only do one level.
-# might need to restructure the rules.
-#   compile it to two parts: presentation (for matching), and action.
-def ApplyChunking(StrTokenList, StrPosition, RuleTokens, RuleEndPosition):
-    RulePos = RuleEndPosition
-    EndTrunk = 0
-    HeadIndex = 0
-    while RulePos >= 0:
-        # Find the head in this trunk: The one with not "^.M" in Action.
-        EndTrunk += RuleTokens[RulePos].EndTrunk
-        EndTrunk -= RuleTokens[RulePos].StartTrunk
-        if not hasattr(RuleTokens[RulePos], 'action') or '^' not in RuleTokens[RulePos].action:
-            HeadIndex = RulePos
-            logging.debug("Found Head!" + str(HeadIndex) + " rule: " + str(RuleTokens[RulePos]))
-        if EndTrunk == 0:
-            #found to start position.
-            break
-        if EndTrunk < 0:
-            #this is actually correct in current step.
-            break
-            #Wrong in rule.
-            # logging.info("StrPosition=" + str(StrPosition) + "RuleEndPosition=" + str(RuleEndPosition))
-            # logging.error("Endtrunk<0" + jsonpickle.dumps(RuleTokens))
-            # raise RuntimeError("Wrong in Tokens. Can not find matched trunk!")
-        RulePos -= 1
-    if RulePos < 0:
-        logging.error("RulePos < 0 " + str([str(r) for r in RuleTokens]))
-        raise RuntimeError("Wrong in Tokens. Can not find matched trunk until the begining of the rule!")
-
-    RuleStartPosition = RulePos
-    ChunkLength = RuleEndPosition - RuleStartPosition
-    StrStartPosition = StrPosition - ChunkLength
-    #print("StrTokenList.combine(%d, %d, %d)"%(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition))
-    #StrTokenList.combine(StrStartPosition, ChunkLength+1, HeadIndex-RuleStartPosition)
-    return ChunkLength+1
-
-
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 # Return: the position of the last merged chunk
@@ -149,21 +111,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         if hasattr(rule.Tokens[i], 'action'):
             token.ApplyActions(rule.Tokens[i].action)
 
-    # i = len(rule.Tokens)-1    # process from the end to start.
-    # while i >= 0:
-    #     try:
-    #         logging.debug("Checking " + str(i) + " while Endtrunk=" + str(rule.Tokens[i].EndTrunk))
-    #         if rule.Tokens[i].EndTrunk:
-    #             # logging.debug("Before Chunking:\n" + "in position " + str(StartPosition + i)
-    #             #               + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
-    #             CheunkedTokenNum = ApplyChunking(strtokens, StartPosition + i, rule.Tokens, i)
-    #             i -= CheunkedTokenNum
-    #     except IndexError as e:
-    #         logging.error("Error when checking EndTrunk and apply trunking")
-    #         logging.error(str(e))
-    #         return len(rule.Tokens)
-    #     i -= 1
-
     if rule.Chunks:
         MaxChunkLevelNum = max(chunk.ChunkLevel for chunk in rule.Chunks)
         for ChunkLevel in range(1,MaxChunkLevelNum+1):
@@ -171,15 +118,12 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             for chunk in rule.Chunks:
                 if chunk.ChunkLevel != ChunkLevel:
                     continue
+
                 #print("New Chunk: strtokens.combine(%d, %d, %d)"%(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset))
-                strtokens.combine(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset)
+                strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
 
                 strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
-    #logging.debug(jsonpickle.dumps(strtokens))
-    #: find the specific item of "last trunk" to return.
-    # or maybe the item number of "collapsed" tokens.
-    # In the upper function, always go to the "next" token to start.
-    # no need to change the sequence.
+
     return 0 #need to modify for those "forward looking rules"
 
 
@@ -194,7 +138,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     while strtoken:
         # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
-        #logging.debug("Checking tokens start from:" + strtoken.text)
+        logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
@@ -406,7 +350,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "软毛,短柄"
+    target = "手毛,短柄"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")

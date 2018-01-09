@@ -86,8 +86,8 @@ def SeparateRules(multilineString):
 
 class RuleToken(object):
     def __init__(self):
-        self.StartTrunk = 0
-        self.EndTrunk = 0
+        self.StartChunk = 0
+        self.EndChunk = 0
         self.repeat = [1,1]
         self.word = ''
         self.RestartPoint = False
@@ -95,7 +95,7 @@ class RuleToken(object):
 
     def __str__(self):
         output = ""
-        for _ in range(self.StartTrunk):
+        for _ in range(self.StartChunk):
             output += "<"
         if hasattr(self, 'pointer'):
             output += self.pointer
@@ -105,7 +105,7 @@ class RuleToken(object):
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])
-        for _ in range(self.EndTrunk):
+        for _ in range(self.EndChunk):
             output += ">"
         output += " "  # should be a space. use _ in dev mode.
         return output
@@ -113,7 +113,8 @@ class RuleToken(object):
 class RuleChunk(object):
     def __init__(self):
         self.StartOffset = -1
-        self.Length = 0
+        self.Length = 0             # how many rule tokens;
+        self.StringChunkLength = 0  # how many string tokens this chunk apply to
         self.HeadOffset = -1
         self.HeadConfidence = -1
         self.Action = ''
@@ -193,7 +194,7 @@ class Rule:
             return remaining
         ProcessTokens(self.Tokens)
 
-        if self.Tokens[0].StartTrunk:
+        if self.Tokens[0].StartChunk:
             UniversalToken = RuleToken()
             UniversalToken.word = '[]'    #make it universal
             self.Tokens = [UniversalToken] + self.Tokens
@@ -253,30 +254,35 @@ class Rule:
 
         return NegativeActionString
 
-    def CreateChunk(self, StartOffset, StartTrunkLevel):
+    def CreateChunk(self, StartOffset, StartChunkLevel):
         c = RuleChunk()
         c.StartOffset = StartOffset
-        EndTrunkLevel = StartTrunkLevel
-        c.ChunkLevel = StartTrunkLevel
+        EndChunkLevel = StartChunkLevel
+        c.ChunkLevel = StartChunkLevel
         for i in range(StartOffset, len(self.Tokens)):
             if i != StartOffset:    #ignore the first one because the level is already added in previous line.
-                c.ChunkLevel += self.Tokens[i].StartTrunk
-                EndTrunkLevel += self.Tokens[i].StartTrunk
-            EndTrunkLevel -= self.Tokens[i].EndTrunk
-            if EndTrunkLevel <= 0:
+                c.ChunkLevel += self.Tokens[i].StartChunk
+                EndChunkLevel += self.Tokens[i].StartChunk
+            EndChunkLevel -= self.Tokens[i].EndChunk
+            if EndChunkLevel <= 0:
                 break
-        if EndTrunkLevel > 0:
-            logging.error("Can't find eought EndTrunk in this rule:" + str(self))
+        if EndChunkLevel > 0:
+            logging.error("Can't find eought EndChunk in this rule:" + str(self))
             return None
-            raise RuntimeError("Rule compiling error" )
+            #raise RuntimeError("Rule compiling error" )
 
         EndOffset = i
 
-        ChunkLevel = StartTrunkLevel
+        ChunkLevel = StartChunkLevel
+        VirtualTokenNum = 0  #Those "^V=xxx" is virtual token that does not apply to real string token
+        
         for i in range(StartOffset, EndOffset+1):
             token = self.Tokens[i]
+            if hasattr(token, "SubtreePointer"):
+                VirtualTokenNum += 1
+
             if i != StartOffset:
-                ChunkLevel += token.StartTrunk
+                ChunkLevel += token.StartChunk
             if ChunkLevel == 1:
                 if hasattr(token, "pointer") and token.pointer == "H":
                     token.HeadConfidence = 3
@@ -294,8 +300,8 @@ class Rule:
                         c.Action = token.action
                         token.action = self.ExtractSonActions(token.action)
                 c.Length += 1
-            if token.EndTrunk:
-                ChunkLevel -= token.EndTrunk
+            if token.EndChunk:
+                ChunkLevel -= token.EndChunk
                 if ChunkLevel == 1:     #end of a chunk of the same level. head *might* be in this chunk
                     if  c.HeadConfidence < 1:
                         c.HeadConfidence = 1
@@ -303,7 +309,7 @@ class Rule:
                         #TODO: find the head of this chunk to apply action
                     c.Length += 1
                 if ChunkLevel < 1:
-                    if ChunkLevel + token.EndTrunk >1:      # ">>" to conclude current chunk of level 1. need to add this chunk as one in length.
+                    if ChunkLevel + token.EndChunk >1:      # ">>" to conclude current chunk of level 1. need to add this chunk as one in length.
                         if  c.HeadConfidence < 1:
                             c.HeadConfidence = 1             # head is in it if not already set.
                             c.HeadOffset = c.Length
@@ -314,11 +320,13 @@ class Rule:
             logging.warning("Can't find head in this rule:")
             logging.warning(str(self))
 
+        c.StringChunkLength = c.Length - VirtualTokenNum
+
         return c
 
     def CompileChunk(self):
         for i in range(len(self.Tokens)):
-            for level in range(self.Tokens[i].StartTrunk):
+            for level in range(self.Tokens[i].StartChunk):
                 NewChunk = self.CreateChunk(i, level+1)
                 if NewChunk:
                     self.Chunks.append(NewChunk)
@@ -389,11 +397,11 @@ def ProcessTokens(Tokens):
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]
-            node.StartTrunk += 1
+            node.StartChunk += 1
 
         while node.word.endswith(">"):
             node.word = node.word[:-1]
-            node.EndTrunk += 1
+            node.EndChunk += 1
 
         if node.word.startswith("`"):
             node.word = node.word.lstrip("`")
@@ -433,8 +441,8 @@ def ProcessTokens(Tokens):
 
         pointerSubtreeMatch = re.search("(\^(.+)=)", node.word, re.DOTALL)    # Subtree Pattern
         if pointerSubtreeMatch:
-            node.word = node.word.replace(pointerMatch.group(1), "")
-            node.SubtreePointer = pointerMatch.group(2)
+            node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
+            node.SubtreePointer = pointerSubtreeMatch.group(2)
 
         if "(" not in node.word and ":" in node.word:
             orblocks = re.split("\|\[", node.word)
@@ -450,11 +458,6 @@ def ProcessTokens(Tokens):
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
-
-        # priorityMatch = re.match("^\[(\d+) (.+)\]$", node.word, re.DOTALL)
-        # if priorityMatch:
-        #     node.word = "[" + priorityMatch.group(2) + "]"
-        #     node.priority = int(priorityMatch.group(1))
 
         if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[0 ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
@@ -692,10 +695,10 @@ def _ExpandRuleWildCard_List(OneList):
                     for tokenindex_this in range(repeat_num):
                         new_node = copy.copy(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
-                        if tokenindex_this != 0 and rule.Tokens[tokenindex].StartTrunk != 0:
-                            new_node.StartTrunk = 0 # in the copies, only the first one can be StartTrunk
-                        if tokenindex_this != repeat_num-1 and rule.Tokens[tokenindex].EndTrunk != 0:
-                            new_node.EndTrunk = 0   # in the copies, only the last one can be EndTrunk
+                        if tokenindex_this != 0 and rule.Tokens[tokenindex].StartChunk != 0:
+                            new_node.StartChunk = 0 # in the copies, only the first one can be StartChunk
+                        if tokenindex_this != repeat_num-1 and rule.Tokens[tokenindex].EndChunk != 0:
+                            new_node.EndChunk = 0   # in the copies, only the last one can be EndChunk
                         newrule.Tokens.append(new_node)
 
                     NextIsStart = False
@@ -703,11 +706,11 @@ def _ExpandRuleWildCard_List(OneList):
                     NextIsPointer = False
                     if repeat_num == 0:  # this token is removed. some features need to copy to others
                         origin_node = rule.Tokens[tokenindex]
-                        if origin_node.StartTrunk:
+                        if origin_node.StartChunk:
                             NextIsStart = True
-                        if origin_node.EndTrunk:
+                        if origin_node.EndChunk:
                             lastToken = newrule.Tokens[-1]
-                            lastToken.EndTrunk = origin_node.EndTrunk
+                            lastToken.EndChunk = origin_node.EndChunk
                         if origin_node.RestartPoint:
                             NextIsRestart = True
                         if hasattr(origin_node, "pointer"):
@@ -717,7 +720,7 @@ def _ExpandRuleWildCard_List(OneList):
                         new_node = copy.copy(rule.Tokens[tokenindex_post])
                         if tokenindex_post == tokenindex + 1:
                             if NextIsStart:
-                                new_node.StartTrunk = origin_node.StartTrunk
+                                new_node.StartChunk = origin_node.StartChunk
                             if NextIsRestart:
                                 new_node.RestartPoint = True
                             if NextIsPointer and NextPointer:
@@ -782,8 +785,8 @@ def _ExpandParenthesis(OneList):
                     ProcessTokens(subTokenlist)
                     if hasattr(token, "pointer"):
                         subTokenlist[0].pointer = token.pointer
-                    subTokenlist[0].StartTrunk = token.StartTrunk
-                    subTokenlist[-1].EndTrunk = token.EndTrunk
+                    subTokenlist[0].StartChunk = token.StartChunk
+                    subTokenlist[-1].EndChunk = token.EndChunk
 
                 newrule = Rule()
                 newrule.FileName = rule.FileName
@@ -912,8 +915,8 @@ def _ExpandOrBlock(OneList):
                 ProcessTokens(subTokenlist)
                 if hasattr(token, "pointer"):
                     subTokenlist[0].pointer = token.pointer
-                subTokenlist[0].StartTrunk = token.StartTrunk
-                subTokenlist[-1].EndTrunk = token.EndTrunk
+                subTokenlist[0].StartChunk = token.StartChunk
+                subTokenlist[-1].EndChunk = token.EndChunk
                 if hasattr(token, "action"):
                     if len(subTokenlist) > 1:
                         logging.warning("The block has action before Or expand!")
@@ -946,8 +949,8 @@ def _ExpandOrBlock(OneList):
                 ProcessTokens(subTokenlist)
                 if hasattr(token, "pointer"):
                     subTokenlist[0].pointer = token.pointer
-                subTokenlist[0].StartTrunk = token.StartTrunk
-                subTokenlist[-1].EndTrunk = token.EndTrunk
+                subTokenlist[0].StartChunk = token.StartChunk
+                subTokenlist[-1].EndChunk = token.EndChunk
                 if hasattr(token, "action"):
                     if len(subTokenlist) > 1:
                         logging.warning("The block has action before Or expand!")

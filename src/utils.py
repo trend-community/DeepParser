@@ -222,23 +222,6 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
             output += " "
         output += node.oneliner(NoFeature)
         node = node.next
-
-    # for token in strTokens:
-    #     if token.Gone:
-    #         continue
-    #     if not token.stem:
-    #         continue
-    #     if output:
-    #         output += "/"
-    #
-    #     for _ in range(token.StartTrunk):
-    #         output += "<"
-    #     if NoFeature:
-    #         output += token.stem
-    #     else:
-    #         output += token.oneliner()
-    #     for _ in range(token.EndTrunk):
-    #         output += ">"
     return output
 
 

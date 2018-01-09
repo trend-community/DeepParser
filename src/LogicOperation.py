@@ -114,11 +114,8 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
 
 
 def FindSubtree(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer):
-
     tree = Pointer.split(".")
-    thisroot = tree[0]
-
-
+    thisroot = "^" + tree[0]
 
     RulePointerPos = RulePosition
     #logging.debug("Testing pointer" + Pointer)
@@ -153,7 +150,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         return True
 
     if hasattr(RuleTokens[RulePosition], "SubtreePointer"):
-        SubtreePointer = rule.SubtreePointer
+        SubtreePointer = RuleTokens[RulePosition].SubtreePointer
         logging.warning("Start looking for Subtree: " + SubtreePointer)
         if not strToken:
             strToken = FindSubtree(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
