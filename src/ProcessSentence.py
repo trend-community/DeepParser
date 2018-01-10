@@ -190,7 +190,10 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
                     rulegroup.RuleList.remove(WinningRule)
-
+            except IndexError as e:
+                logging.error("Failed to apply this rule:")
+                logging.error(str(WinningRule))
+                logging.error(str(e))
         i += 1
         strtoken = strtoken.next
     return WinningRules
@@ -341,7 +344,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "苹果公司昨天发布了新款iPhone X"
+    target = "没啥特别感觉"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")
