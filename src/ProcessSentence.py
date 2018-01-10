@@ -19,7 +19,7 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
 
     p = strtokens.head
     counter = 0
-    StopPosition = StartPosition+len(rule.Tokens) - 1
+    StopPosition = StartPosition+rule.StrTokenLength - 1
     while p:
         if counter == StartPosition:
             result += "<em>"
@@ -52,6 +52,13 @@ def OutputWinningRules():
 
     return output
 
+def RemoveTempPointer(StrList):
+    x = StrList.head
+    while x:
+        if hasattr(x, "TempPointer"):
+            delattr(x, "TempPointer")
+        x = x.next
+
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
 def HeadMatch(strTokenList, StartPosition, ruleTokens):
@@ -59,9 +66,12 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
     for i in range(len(ruleTokens)):
         try:
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
+                RemoveTempPointer(strTokenList)
                 return False  #  this rule does not fit for this string
+            if hasattr(ruleTokens[i], "pointer"):
+                strTokenList.get(i+StartPosition).TempPointer = ruleTokens[i].pointer
             if hasattr(ruleTokens[i], "SubtreePointer"):
-                i -= 1  #do not skip to next strToken, if this Subtree Rule is matched.
+                StartPosition -= 1  # do not skip to next strToken, if this Subtree Rule is matched.
         except RuntimeError as e:
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i).word)
             logging.error(e)
@@ -74,7 +84,7 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i).word )
             logging.error(e)
             raise
-
+    RemoveTempPointer(strTokenList)
     return True
 
 
@@ -143,10 +153,9 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
         for rule in rulegroup.RuleList:
-            ruleSize = len(rule.Tokens)
-            if i+ruleSize > strtokenlist.size:
+            if i+rule.StrTokenLength > strtokenlist.size:
                 continue
-            if WinningRuleSize < ruleSize:
+            if WinningRuleSize < len(rule.Tokens):
                 # if ruleSize < len(strsignatures):
                 #     pairSignature = str([strsignatures[ruleSize-1], rule.ID])
                 # else:
@@ -175,15 +184,12 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     WinningRules[WinningRule.RuleName] = MarkWinningTokens(strtokenlist, WinningRule, i)
                 else:
                     WinningRules[WinningRule.RuleName] += " " + MarkWinningTokens(strtokenlist, WinningRule, i)
-                skiptokennum = ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
+                ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
                     rulegroup.RuleList.remove(WinningRule)
-                    skiptokennum = 0
-            #i += skiptokennum - 1  # go to the next word
-
 
         i += 1
         strtoken = strtoken.next
@@ -313,21 +319,6 @@ def LoadCommon():
             Rulefile = os.path.join(RuleFolder, Rulefile)
             Rules.LoadRules(Rulefile)
 
-    # Rules.LoadRules("../../fsa/X/0defLexX.txt")
-    # Rules.LoadRules("../../fsa/Y/800VGy.txt")
-    # Rules.LoadRules("../../fsa/Y/900NPy.xml")
-    # Rules.LoadRules("../../fsa/Y/1800VPy.xml")
-    # Rules.LoadRules("../../fsa/Y/1test_rules.txt")
-
-
-    #Rules.LoadRules("../../fsa/X/Q/rule/xac")
-    # Rules.LoadRules("../../fsa/X/Q/rule/xab")
-    # Rules.LoadRules("../../fsa/X/Q/rule/xac")
-    # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
-    # Rules.LoadRules("../../fsa/X/Q/rule/CleanRule_gram_5_list.txt")
-
-    #Rules.LoadRules("../../fsa/X/270VPx.txt")
-
     Rules.ExpandRuleWildCard()
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
@@ -350,12 +341,11 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "手毛,短柄"
+    target = "苹果公司昨天发布了新款iPhone X"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")
         exit(1)
-
 
     logging.info("\tDone! counterMatch=%s" % counterMatch)
 

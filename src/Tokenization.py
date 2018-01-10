@@ -305,7 +305,7 @@ class SentenceNode(object):
 
             if Action[0] == "^":
                 # TODO: linked the str tokens.
-                self.UpperRelationship = Action
+                self.UpperRelationship = Action.split(".", 1)[1]
                 continue
 
             ActionID = FeatureOntology.GetFeatureID(Action)

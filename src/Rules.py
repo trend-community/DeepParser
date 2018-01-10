@@ -131,8 +131,16 @@ class Rule:
         self.Origin = ''
         self.RuleContent = ''
         self.Tokens = []
+        self.StrTokenLength = -1
         self.Chunks = []
         self.comment = ''
+
+    def SetStrTokenLength(self):
+        VirtualTokenNum = 0  #Those "^V=xxx" is virtual token that does not apply to real string token
+        for t in self.Tokens:
+            if hasattr(t, "SubtreePointer"):
+                VirtualTokenNum += 1
+        self.StrTokenLength = len(self.Tokens) - VirtualTokenNum
 
     def __lt__(self, other):
         return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
@@ -199,6 +207,7 @@ class Rule:
             UniversalToken.word = '[]'    #make it universal
             self.Tokens = [UniversalToken] + self.Tokens
 
+        self.SetStrTokenLength()
         return remaining
 
     def __str__(self):
@@ -284,7 +293,7 @@ class Rule:
             if i != StartOffset:
                 ChunkLevel += token.StartChunk
             if ChunkLevel == 1:
-                if hasattr(token, "pointer") and token.pointer == "H":
+                if hasattr(token, "pointer") :#and token.pointer == "H":
                     token.HeadConfidence = 3
                     c.HeadOffset = c.Length
                     if hasattr(token, "action"):
@@ -726,6 +735,8 @@ def _ExpandRuleWildCard_List(OneList):
                             if NextIsPointer and NextPointer:
                                 new_node.pointer = NextPointer
                         newrule.Tokens.append(new_node)
+
+                    newrule.SetStrTokenLength()
                     OneList.append(newrule)
                     Expand = True
             if Expand:
@@ -800,6 +811,7 @@ def _ExpandParenthesis(OneList):
                     newrule.Tokens.append(subtoken)
                 for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                newrule.SetStrTokenLength()
                 OneList.append(newrule)
                 Expand = True
                 # logging.warning("\tExpand Parentheses is true, because of " + rule.RuleName)
@@ -926,6 +938,7 @@ def _ExpandOrBlock(OneList):
 
             for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+            newrule.SetStrTokenLength()
             OneList.append(newrule)
 
             # right:
@@ -960,6 +973,7 @@ def _ExpandOrBlock(OneList):
 
             for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+            newrule.SetStrTokenLength()
             OneList.append(newrule)
 
             Expand = True
@@ -1121,22 +1135,22 @@ def _CheckFeature_returnword(word):
                 if "|" in word:
                     items = re.split("\|", word)
                     word =  "'|'".join(items)
-                elif " " in word:  # 'this is a good': separate as multiple token.
-                    raise NotImplementedError("TODO: separate this as multiple token")
+#                elif " " in word:  # 'this is a good': separate as multiple token.
+#                    raise NotImplementedError("TODO: separate this as multiple token")
 
             elif matchtype == 'atom':
                 if "|" in word:
                     items = re.split("\|", word)
                     word = "/|/".join(items)
-                elif " " in word:  # 'this is a good': separate as multiple token.
-                    raise NotImplementedError("TODO: separate this as multiple token")
+#                elif " " in word:  # 'this is a good': separate as multiple token.
+#                    raise NotImplementedError("TODO: separate this as multiple token")
 
             elif matchtype == 'text':
                 if "|" in word:
                     items = re.split("\|", word)
                     word = "\"|\"".join(items)
-                elif " " in word:  # 'this is a good': separate as multiple token.
-                    raise NotImplementedError("TODO: separate this as multiple token")
+#                elif " " in word:  # 'this is a good': separate as multiple token.
+#                    raise NotImplementedError("TODO: separate this as multiple token")
 
             elif matchtype == 'unknown':
                 if not re.search('[| !]', word):

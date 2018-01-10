@@ -68,32 +68,43 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
     else:
         PointerIsPrefix = False
 
-    RulePointerPos = GetNumberPointer(Pointer)
-    if RulePointerPos < 0:
-        RulePointerPos = RulePosition
-        #logging.debug("Testing pointer" + Pointer)
-        while RulePointerPos >= 0:
-            if hasattr(RuleTokens[RulePointerPos], 'pointer'):
-                if RuleTokens[RulePointerPos].pointer == Pointer:
-                    break   #found pointer!
-            RulePointerPos -= 1
+    x = StrTokenList.head
+    StrPointerToken = ''
+    while x:
+        if hasattr(x, "TempPointer") and x.TempPointer == Pointer:
+            StrPointerToken = x
+            break
+        x = x.next
 
+    if not StrPointerToken:
+
+        RulePointerPos = GetNumberPointer(Pointer)
         if RulePointerPos < 0:
             RulePointerPos = RulePosition
-            while RulePointerPos < len(RuleTokens):
+            #logging.debug("Testing pointer" + Pointer)
+            while RulePointerPos >= 0:
                 if hasattr(RuleTokens[RulePointerPos], 'pointer'):
                     if RuleTokens[RulePointerPos].pointer == Pointer:
-                        break  # found pointer!
-                RulePointerPos += 1
-            if RulePointerPos >= len(RuleTokens):
-                logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
-                logging.error(jsonpickle.dumps(RuleTokens[0]))
-                raise RuntimeError("Can't find specified pointer in rule!")
-    # Now we have the pointer location in Rule
-    Offset = RulePointerPos - RulePosition  #might be positive, or negative
+                        break   #found pointer!
+                RulePointerPos -= 1
 
-    StrPointerPos = StrPosition+Offset
-    StrPointerToken = StrTokenList.get(StrPointerPos)
+            if RulePointerPos < 0:
+                RulePointerPos = RulePosition
+                while RulePointerPos < len(RuleTokens):
+                    if hasattr(RuleTokens[RulePointerPos], 'pointer'):
+                        if RuleTokens[RulePointerPos].pointer == Pointer:
+                            break  # found pointer!
+                    RulePointerPos += 1
+                if RulePointerPos >= len(RuleTokens):
+                    logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
+                    logging.error(jsonpickle.dumps(RuleTokens[0]))
+                    raise RuntimeError("Can't find specified pointer in rule!")
+        # Now we have the pointer location in Rule
+        Offset = RulePointerPos - RulePosition  #might be positive, or negative
+
+        StrPointerPos = StrPosition+Offset
+        StrPointerToken = StrTokenList.get(StrPointerPos)
+
     strToken = StrTokenList.get(StrPosition)
 
     if matchtype == "text":
@@ -113,36 +124,43 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
-def FindSubtree(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer):
+def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer):
     tree = Pointer.split(".")
-    thisroot = "^" + tree[0]
+    rootPointer = "^" + tree[0]
 
-    RulePointerPos = RulePosition
-    #logging.debug("Testing pointer" + Pointer)
-    while RulePointerPos >= 0:
-        if hasattr(RuleTokens[RulePointerPos], 'pointer'):
-            if RuleTokens[RulePointerPos].pointer == thisroot:
-                break   #found pointer!
-        RulePointerPos -= 1
+    x = StrTokenList.head
+    while x:
+        if hasattr(x, "TempPointer") and x.TempPointer == rootPointer:
+            StrPointerRootToken = x
+            break
+        x = x.next
+    if not StrPointerRootToken:
+        logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
+        logging.error(jsonpickle.dumps(RuleTokens[0]))
+        raise RuntimeError("Can't find specified pointer in rule!")
 
-    if RulePointerPos < 0:
-        RulePointerPos = RulePosition
-        while RulePointerPos < len(RuleTokens):
-            if hasattr(RuleTokens[RulePointerPos], 'pointer'):
-                if RuleTokens[RulePointerPos].pointer == thisroot:
-                    break  # found pointer!
-            RulePointerPos += 1
-        if RulePointerPos >= len(RuleTokens):
-            logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
-            logging.error(jsonpickle.dumps(RuleTokens[0]))
-            raise RuntimeError("Can't find specified pointer in rule!")
-    # Now we have the pointer location in Rule
-    Offset = RulePointerPos - RulePosition  #might be positive, or negative
+    if len(tree)>1:
+        return FindSubtree(StrPointerRootToken, tree[1:])
+    else:
+        return StrPointerRootToken
 
-    StrPointerPos = StrPosition+Offset
-    StrPointerToken = StrTokenList.get(StrPointerPos)
-    return StrPointerToken
 
+def FindSubtree(root, pointers):
+    for son in root.sons:
+        if son.UpperRelationship == pointers[0]:
+            if len(pointers) > 1:
+                return FindSubtree(son, pointers[1:])
+            else:
+                return son
+
+    #if come to here, then no relation is found. need to get the head to continue
+    for son in root.sons:
+        if son.UpperRelationship == "H" or son.UpperRelationship == "":   #this is head
+            return FindSubtree(son, pointers)
+
+    #if come to here, then no relation and no head is found.
+    logging.warning("Found no relation for:" + str(pointers))
+    return None
 
 CombinedPattern = re.compile('[| !]')
 def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown", strToken=None):
@@ -153,7 +171,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         SubtreePointer = RuleTokens[RulePosition].SubtreePointer
         logging.warning("Start looking for Subtree: " + SubtreePointer)
         if not strToken:
-            strToken = FindSubtree(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
+            strToken = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
     else:
         if not strToken:
             strToken = StrTokenList.get(StrPosition)
@@ -163,7 +181,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
     if matchtype == "unknown":
         return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, strToken=strToken)
 
-    if not CombinedPattern.search( rule):
+    if matchtype in ["text", "norm", "atom"]:
         if rule.startswith("^"):
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
@@ -196,6 +214,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         else:
             return False
 
+    logging.warning("When to get here? combined macth type?")
     AndBlocks = [x.strip() for x in re.split(" ", rule)]
     if len(AndBlocks) > 1:
         Result = True
