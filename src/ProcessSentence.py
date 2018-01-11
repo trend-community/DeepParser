@@ -344,7 +344,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "没啥特别感觉"
+    target = "值得称赞的服务一开袋闻到香味口水就留下来了物流服务很快非常香醇美味，很好！"
     m_nodes, winningrules = LexicalAnalyze(target)
     if not m_nodes:
         logging.warning("The result is None!")
