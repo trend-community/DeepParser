@@ -12,6 +12,13 @@ Feel free to use virtenv or anaconda python, if you know what you are doing.
 System:
     java/maven, python 3.
 Folder structure:
+	create an empty folder. For example "git".
+	
+	cd git
+	git clone http://git.jd.com/ynlp/fsa 
+	git clone http://git.jd.com/ynlp/multisegmental 
+	git clone http://git.jd.com/ynlp/parser 
+
     The fsa folder should be in
         git/fsa
     while this Readme.txt should be in
@@ -37,6 +44,7 @@ mvn package
 		 mvn exec:java -Dserver.port=9000
 		and change parser/src/config.ini accordingly.
 
+2.2, select either 2.2.1 or 2.2.2 to run the web service:
 2.2.1, Run the python program as web service 
     cd git/parser/src
     python RestfulService.py
@@ -72,12 +80,12 @@ In your browser visit
 4.1 Prepare the source file, such as "test.txt". It is suggested to place this file in a separate folder, such as git/parser/temp folder
 
 4.2 in current git/parser/src folder, execute:
-	python LexicalAnalyze_RestfulService.py  ../temp/test.txt NoFeature
+	python LexicalAnalyze_RestfulService.py  ../temp/test.txt 
 Note: The error message and standard output are showing in the screen. If you want them to be in separate files, please execute:
-    python LexicalAnalyze_RestfulService.py  ../temp/test.txt NoFeature >../temp/output.txt 2>../temp/error.txt
+    python LexicalAnalyze_RestfulService.py  ../temp/test.txt  >../temp/output.txt 2>../temp/error.txt
 
 4.3 Run the program locally (Still require support from the web service of MultiSegmental Java Program in port 8080)
-    python LexicalAnalyze.py ../temp/test.txt [NoFeature] >../temp/output.txt 2>../temp/error.txt
+    python LexicalAnalyze.py ../temp/test.txt  >../temp/output.txt 2>../temp/error.txt
 
 
 
