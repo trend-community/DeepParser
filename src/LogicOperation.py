@@ -129,6 +129,7 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer
     rootPointer = "^" + tree[0]
 
     x = StrTokenList.head
+    StrPointerRootToken = None
     while x:
         if hasattr(x, "TempPointer") and x.TempPointer == rootPointer:
             StrPointerRootToken = x

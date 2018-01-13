@@ -108,6 +108,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
     for i in range(len(rule.Tokens)):
+
         token = strtokens.get(i+StartPosition)
         # try:
         #     logging.debug("Before:\n" + "in position " + str(StartPosition + i )
