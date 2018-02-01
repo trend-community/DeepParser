@@ -167,6 +167,7 @@ class SentenceLinkedList:
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
             HeadNode = self.get(start+headindex)
             NewNode.features.update([f for f in HeadNode.features if f not in FeatureOntology.NotCopyList] )
+            FeatureOntology.ProcessBarTags(NewNode.features)
             if utils.FeatureID_0 in HeadNode.features:
                 NewNode.Head0Text = HeadNode.text
             else:

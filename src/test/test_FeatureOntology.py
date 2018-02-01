@@ -52,3 +52,9 @@ class FeatureTest(unittest.TestCase):
         a = SplitFeatures("this is a /norm|norm2|norm4/")
         self.assertEqual(len(a), 4)
 
+    def test_ProcessBarTags(self):
+        featurelist = [0, 1, 2, 34, GetFeatureID("N"), GetFeatureID('CL'), GetFeatureID('2')]
+        print(str(featurelist))
+        ProcessBarTags(featurelist)
+        print(str(featurelist))
+        self.assertEqual(len(featurelist), 4)

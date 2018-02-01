@@ -15,6 +15,13 @@ _AliasDict = {}
 _FeatureOntology = []
 NotCopyList = []
 NotShowList = []
+BarTags=[   '0', 'N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH',
+            '1', 'VG', 'NG', 'AP', 'RP',
+            'NP',
+            'PP',
+            '2', 'VP',
+            '3', 'CL'   ]
+
 
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
@@ -222,7 +229,7 @@ def LoadAppendixList(featureOncologyLocation):
                 continue
             NotShowList.append(GetFeatureID(word))
 
-    NoCopyFileLocation = os.path.join(Folder, "featureNotCopy.txt")
+    NoCopyFileLocation = os.path.join(Folder, "featureNotCopy.Parser.txt")
     with open(NoCopyFileLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             word, _ = SeparateComment(line)
@@ -293,6 +300,21 @@ def GetFeatureName(featureID):
         # raise(Exception("error"))
         return ""
 
+
+BarTagIDs = [GetFeatureID(t) for t in BarTags ]
+# For all bar tags in the list, keep only the last one.
+def ProcessBarTags(featurelist):
+    MaxBarTagIndex = -1
+    for f in featurelist:
+        if f in BarTagIDs:
+            if MaxBarTagIndex < BarTagIDs.index(f):
+                MaxBarTagIndex = BarTagIDs.index(f)
+
+    if MaxBarTagIndex > -1:
+        for f in featurelist:
+            if f in BarTagIDs:
+                if BarTagIDs.index(f) != MaxBarTagIndex:
+                    featurelist.remove(f)
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
