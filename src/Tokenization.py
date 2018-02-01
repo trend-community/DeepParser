@@ -322,6 +322,7 @@ class SentenceNode(object):
             if Action == "+++":
                 self.ApplyFeature(utils.FeatureID_0)
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
+        FeatureOntology.ProcessBarTags(self.features)
 
     def GetFeatures(self):
         featureString = ""

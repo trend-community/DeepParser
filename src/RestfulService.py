@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['CACHE_TYPE'] = 'simple'
 app.cache = Cache(app)
 
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),"chart.template.html")) as templatefile:
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
     charttemplate = templatefile.read()
 
 
@@ -38,14 +38,17 @@ def GetFeatureName(FeatureID):
 def GetFeatureList():
     return jsonpickle.encode(FeatureOntology._FeatureDict)
 
+
 @app.route("/GetFeatureList1")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def GetFeatureList1():
-    return jsonpickle.encode({ID:f for f,ID in FeatureOntology._FeatureDict.items()})
+    return jsonpickle.encode({ID: f for f, ID in FeatureOntology._FeatureDict.items()})
+
 
 @app.route("/gchart_loader.js")
 def gchart_loader():
     return send_file('gchart_loader.js')
+
 
 @app.route("/Tokenize/<Sentence>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
@@ -53,7 +56,7 @@ def Tokenize(Sentence):
     return jsonpickle.encode(Tokenization.Tokenize(Sentence))
 
 
-#Following the instruction in pipelineX.txt
+# Following the instruction in pipelineX.txt
 @app.route("/LexicalAnalyze")
 def LexicalAnalyze():
     Sentence = request.args.get('Sentence')
@@ -65,16 +68,16 @@ def LexicalAnalyze():
         Debug = False
     if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
-    #logging.error(Sentence)
+    # logging.error(Sentence)
     # else:
     #     return "Quote your sentence in double quotes please"
 
     nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
-    #return  str(nodes)
-    #return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
+    # return  str(nodes)
+    # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
     if nodes:
         try:
-            #logging.info("Type=" + str(Type))
+            # logging.info("Type=" + str(Type))
             if Type == "simple":
                 return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
             elif Type == "simplefeature":
@@ -86,7 +89,7 @@ def LexicalAnalyze():
                 logging.info("parsetree file is written in:" + str(svgfilelocation))
                 return send_file(svgfilelocation, mimetype='image/gif')
             elif Type == "parsetree":
-                orgdata = Graphviz.orgChart(nodes.root().CleanOutput( KeepOriginFeature = Debug).toJSON())
+                orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON())
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
                 if Debug:
                     winningrulestring = ""
@@ -96,15 +99,13 @@ def LexicalAnalyze():
                     print("RestfulService: winningrules=" + str(winningrules))
                 return chart
             else:
-                return nodes.root().CleanOutput(KeepOriginFeature = Debug).toJSON()
+                return nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()
         except Exception as e:
             logging.error(e)
             return ""
     else:
         logging.error("nodes is blank")
         return ""
-
-
 
 
 # @app.route("/OutputWinningRules")
@@ -114,9 +115,9 @@ def LexicalAnalyze():
 
 @app.route("/QuerySegment/<Sentence>")
 def QuerySegment(Sentence):
-
     norm = viterbi1.normalize(Sentence)
     return ''.join(viterbi1.viterbi1(norm, len(norm)))
+
 
 def init():
     for handler in logging.root.handlers[:]:
@@ -130,7 +131,6 @@ def init():
 init()
 
 if __name__ == "__main__":
-
     print("Running in port " + str(utils.ParserConfig.get("website", "port")))
     app.run(host="0.0.0.0", port=int(utils.ParserConfig.get("website", "port")), debug=False, threaded=True)
-    #app.test_client().get('/')
+    # app.test_client().get('/')

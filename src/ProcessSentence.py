@@ -119,7 +119,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         #     logging.error(str(e))
         #     return len(rule.Tokens)
 
-        if hasattr(rule.Tokens[i], 'action'):
+        if hasattr(rule.Tokens[i], 'action') and rule.Tokens[i].action:
             token.ApplyActions(rule.Tokens[i].action)
 
     if rule.Chunks:
@@ -191,6 +191,9 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
                     rulegroup.RuleList.remove(WinningRule)
+                else:
+                    logging.error("Unknown Rule Applying Error:" + str(e))
+
             except IndexError as e:
                 logging.error("Failed to apply this rule:")
                 logging.error(str(WinningRule))

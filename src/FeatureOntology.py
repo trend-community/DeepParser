@@ -15,12 +15,12 @@ _AliasDict = {}
 _FeatureOntology = []
 NotCopyList = []
 NotShowList = []
-BarTags=[   '0', 'N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH',
-            '1', 'VG', 'NG', 'AP', 'RP',
-            'NP',
-            'PP',
-            '2', 'VP',
-            '3', 'CL'   ]
+BarTags=[   ['0', 'N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH'],
+            ['1', 'VG', 'NG', 'AP', 'RP'],
+            ['NP'],
+            ['PP'],
+            ['2', 'VP'],
+            ['3', 'CL']   ]
 BarTagIDs = []
 
 #_CreateFeatureList = False
@@ -306,18 +306,22 @@ def GetFeatureName(featureID):
         return ""
 
 
+
 # For all bar tags in the list, keep only the last one.
 def ProcessBarTags(featurelist):
-    MaxBarTagIndex = -1
+    MaxBarTagLevel = -1
     for f in featurelist:
-        if f in BarTagIDs:
-            if MaxBarTagIndex < BarTagIDs.index(f):
-                MaxBarTagIndex = BarTagIDs.index(f)
+        taglevel, _ = IndexIn2DArray(f, BarTagIDs)
+        if taglevel > -1:
+            if MaxBarTagLevel < taglevel:
+                MaxBarTagLevel = taglevel
 
-    if MaxBarTagIndex > -1:
-        for f in featurelist:
-            if f in BarTagIDs:
-                if BarTagIDs.index(f) != MaxBarTagIndex:
+    featurelist_copy = featurelist.copy()
+    if MaxBarTagLevel > -1:
+        for f in featurelist_copy:
+            taglevel, _ = IndexIn2DArray(f, BarTagIDs)
+            if taglevel > -1:
+                if taglevel != MaxBarTagLevel:
                     featurelist.remove(f)
 
 if __name__ == "__main__":

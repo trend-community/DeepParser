@@ -51,7 +51,7 @@ def InitGlobalFeatureID():
 
         logging.info("%d, %d, %d, %d" % (FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0))
         logging.info("%d, %d, %d, %d last %d" % (FeatureID_CD, FeatureID_punc, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW))
-        FeatureOntology.BarTagIDs = [FeatureOntology.GetFeatureID(t) for t in FeatureOntology.BarTags]
+        FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
 
 # return -1 if failed. Should throw error?
 @lru_cache(1000000)
@@ -234,3 +234,12 @@ def URLEncoding(Sentence):
 
 def TransferToGoogleChartOrg(Json):
     raise NotImplementedError
+
+
+def IndexIn2DArray(x, array):
+    for i in range(len(array)):
+        for j in range(len(array[i])):
+            if x == array[i][j]:
+                return i, j
+    return -1, -1
+
