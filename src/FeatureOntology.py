@@ -265,7 +265,12 @@ def GetFeatureID(feature):
             ret = requests.get(GetFeatureIDURL + feature)
         except IOError:
             return -1
-        GetFeatureID_Cache[feature] = int(ret.text)
+
+        try:
+            GetFeatureID_Cache[feature] = int(ret.text)
+        except ValueError:
+            #ret.text is not int
+            return -1
         return int(ret.text)
 
     if feature in _AliasDict:
