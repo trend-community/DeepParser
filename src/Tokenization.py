@@ -304,6 +304,12 @@ class SentenceNode(object):
                 self.ApplyFeature(FeatureID)
                 continue
 
+            if Action[0] == "-" and Action[1] == "^":
+                if "." in Action:
+                    if self.UpperRelationship == Action.split(".", 1)[1]:
+                        delattr(self, "UpperRelationship")
+                        logging.debug("Remove Relationship:" + Action)
+
             if Action[0] == "^":
                 # TODO: linked the str tokens.
                 if "." in Action:
@@ -499,7 +505,7 @@ if __name__ == "__main__":
 
     print("\n\n My tokenization:")
     nodes = Tokenize(target)
-    DisplayDS_old(nodes)
+
 
 
 
