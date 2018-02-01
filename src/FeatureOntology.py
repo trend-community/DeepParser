@@ -21,7 +21,7 @@ BarTags=[   '0', 'N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH',
             'PP',
             '2', 'VP',
             '3', 'CL'   ]
-
+BarTagIDs = []
 
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
@@ -301,7 +301,6 @@ def GetFeatureName(featureID):
         return ""
 
 
-BarTagIDs = [GetFeatureID(t) for t in BarTags ]
 # For all bar tags in the list, keep only the last one.
 def ProcessBarTags(featurelist):
     MaxBarTagIndex = -1
