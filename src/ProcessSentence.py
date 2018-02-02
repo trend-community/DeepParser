@@ -1,7 +1,7 @@
 import logging, re, requests, jsonpickle, traceback, os
 import Tokenization, FeatureOntology, Lexicon
 import Rules
-from LogicOperation import LogicMatch #, LogicMatchFeatures
+from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
 from utils import *
 import utils
 counterMatch = 0
@@ -88,6 +88,12 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
     return True
 
 
+def MarkTempPointer(strtokens, rule, StrStartPosition):
+    for i in range(len(rule.Tokens)):
+        if hasattr(rule.Tokens[i], "pointer"):
+            strtokens.get(i + StrStartPosition).TempPointer = rule.Tokens[i].pointer
+
+
 # Apply the features, and other actions.
 #TODO: Apply Mark ".M", group head <, tail > ...
 # Return: the position of the last merged chunk
@@ -107,9 +113,16 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         logging.error("Lenth = 0, error! Need to revisit the parsing process")
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
+
+    MarkTempPointer(strtokens, rule, StartPosition)
     for i in range(len(rule.Tokens)):
 
-        token = strtokens.get(i+StartPosition)
+        if hasattr(rule.Tokens[i], "SubtreePointer"):
+            SubtreePointer = rule.Tokens[i].SubtreePointer
+            logging.warning("Start looking for Subtree: " + SubtreePointer)
+            token = FindPointerNode(strtokens, i+StartPosition, rule.Tokens, i, Pointer=SubtreePointer)
+        else:
+            token = strtokens.get(i+StartPosition)
         # try:
         #     logging.debug("Before:\n" + "in position " + str(StartPosition + i )
         #                   + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
@@ -118,6 +131,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         #     logging.error(str(rule))
         #     logging.error(str(e))
         #     return len(rule.Tokens)
+
 
         if hasattr(rule.Tokens[i], 'action') and rule.Tokens[i].action:
             token.ApplyActions(rule.Tokens[i].action)
@@ -135,6 +149,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
                 strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
 
+    RemoveTempPointer(strtokens)
     return 0 #need to modify for those "forward looking rules"
 
 

@@ -49,8 +49,6 @@ def InitGlobalFeatureID():
         FeatureID_OOV = FeatureOntology.GetFeatureID("OOV")
         FeatureID_NEW = FeatureOntology.GetFeatureID("NEW")
 
-        logging.info("%d, %d, %d, %d" % (FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0))
-        logging.info("%d, %d, %d, %d last %d" % (FeatureID_CD, FeatureID_punc, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW))
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
 
 # return -1 if failed. Should throw error?

@@ -302,7 +302,7 @@ class Rule:
                 if not hasattr(token, "action"):
                     if c.HeadOffset == -1:
                         c.HeadOffset = c.Length
-                elif "^." not in token.action:
+                elif "^" not in token.action:
                     if c.HeadConfidence < 2:
                         c.HeadConfidence = 2
                         c.HeadOffset = c.Length
@@ -1234,7 +1234,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     #LoadRules("../../fsa/X/0defLexX.txt")
-    LoadRules("../../fsa/Y/1test_rules.txt")
+    LoadRules("../../fsa/X/0test.txt")
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
