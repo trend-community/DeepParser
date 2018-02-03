@@ -208,12 +208,16 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
             else:
                 word = strToken.atom
 
-        if rule.lower() == word.lower() \
-                or rule.endswith('-') and word.startswith(rule[:-1])\
-                or rule.startswith('-') and word.endswith(rule[1:]):
+        if rule.lower() == word.lower():
             return True
         else:
-            return False
+            if len(rule) > 1 and (
+                    rule.endswith('-') and word.startswith(rule[:-1])
+                    or rule.startswith('-') and word.endswith(rule[1:])
+            ):
+                return True
+            else:
+                return False
 
     logging.warning("When to get here? combined macth type?")
     AndBlocks = [x.strip() for x in re.split(" ", rule)]

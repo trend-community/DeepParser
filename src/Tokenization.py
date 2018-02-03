@@ -286,6 +286,15 @@ class SentenceNode(object):
                 continue  # already process before.
 
             if Action[-1] == "-":
+                if Action[0] == "^":
+                    if "." in Action:
+                        if self.UpperRelationship == Action.split(".", 1)[1]:
+                            delattr(self, "UpperRelationship")
+                            logging.debug("Remove Relationship:" + Action)
+                    else:
+                        logging.warning("This Action is not right:" + Action)
+                    continue
+
                 FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
                 if FeatureID in self.features:
                     self.features.remove(FeatureID)
@@ -303,12 +312,6 @@ class SentenceNode(object):
                 FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
                 self.ApplyFeature(FeatureID)
                 continue
-
-            if Action[0] == "-" and Action[1] == "^":
-                if "." in Action:
-                    if self.UpperRelationship == Action.split(".", 1)[1]:
-                        delattr(self, "UpperRelationship")
-                        logging.debug("Remove Relationship:" + Action)
 
             if Action[0] == "^":
                 # TODO: linked the str tokens.
