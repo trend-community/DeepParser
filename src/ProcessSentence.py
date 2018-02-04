@@ -119,7 +119,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
         if hasattr(rule.Tokens[i], "SubtreePointer"):
             SubtreePointer = rule.Tokens[i].SubtreePointer
-            logging.warning("Start looking for Subtree: " + SubtreePointer)
+            logging.debug("Start looking for Subtree: " + SubtreePointer)
             token = FindPointerNode(strtokens, i+StartPosition, rule.Tokens, i, Pointer=SubtreePointer)
         else:
             token = strtokens.get(i+StartPosition)

@@ -6,9 +6,9 @@
 
 timeout = 2
 nThreads = 0
-maxThreads = 80
+maxThreads = 50
 completed = 0
-urlprefix = "http://10.15.252.3:5001/LexicalAnalyze?Sentence="
+urlprefix = "http://localhost:5001/"
 
 import sys
 import time
@@ -30,7 +30,8 @@ def get(chunk):
     url = urlprefix + urllib.quote_plus(chunk.encode('utf8'))
     while True:
         try:
-            response = urllib2.urlopen(url, None, to*10)
+#            print url
+            response = urllib2.urlopen(url, None, to*100)
             ret = response.read()
 #            print ret
             completed += 1

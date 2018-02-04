@@ -170,7 +170,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
 
     if hasattr(RuleTokens[RulePosition], "SubtreePointer"):
         SubtreePointer = RuleTokens[RulePosition].SubtreePointer
-        logging.warning("Start looking for Subtree: " + SubtreePointer)
+        logging.debug("Start looking for Subtree: " + SubtreePointer)
         if not strToken:
             strToken = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
     else:

@@ -288,7 +288,7 @@ class SentenceNode(object):
             if Action[-1] == "-":
                 if Action[0] == "^":
                     if "." in Action:
-                        if self.UpperRelationship == Action.split(".", 1)[1]:
+                        if self.UpperRelationship == Action.split(".", 1)[1][-1]:
                             delattr(self, "UpperRelationship")
                             logging.debug("Remove Relationship:" + Action)
                     else:
