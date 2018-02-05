@@ -8,9 +8,9 @@ timeout = 2
 nThreads = 0
 maxThreads = 50
 completed = 0
-urlprefix = "http://localhost:5001/"
+urlprefix = "http://localhost:7001/LexicalAnalyze?Sentence="
 
-import sys
+import sys, logging
 import time
 import thread
 import threading
@@ -33,11 +33,11 @@ def get(chunk):
 #            print url
             response = urllib2.urlopen(url, None, to*100)
             ret = response.read()
-#            print ret
+            print ret
             completed += 1
             break
         except:
-            print "to=", to, ":", sys.exc_info()[1]
+            logging.error( "to=" + str(to) + " Error:" + str(sys.exc_info()[1]))
             sys.stdout.flush()
             time.sleep(to)
             to += 1
@@ -56,7 +56,7 @@ for line in fin:
         with lock:
             exceed = (nThreads > maxThreads)
         if exceed:
-            print   'completed=', completed, ' line number = ', lNum, nThreads
+            logging.error(   'completed=' + str(completed) + ' line number = ' + str(lNum) + ". " + str(nThreads))
             time.sleep(timeout) #wait for the threads to decrease nThreads
         else:
             break
@@ -64,9 +64,12 @@ for line in fin:
     try:
         thread.start_new_thread(get, (line,))
     except:
-        print   'Error:', line
+        logging.error (  'Error:', line)
         sys.stdout.flush()
 
-time.sleep(100)
-print   'completed=', completed, ' line number = ', lNum, nThreads
+for i in range(timeout*10):
+    if nThreads < 1:
+        break
+    time.sleep(1)
+logging.warning (   'completed=' + str(completed) + ' line number = ' + str(lNum) + ". " + str(nThreads))
 

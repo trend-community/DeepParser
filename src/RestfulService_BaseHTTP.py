@@ -1,5 +1,6 @@
 import logging,  jsonpickle
 import urllib
+from socketserver import ThreadingMixIn, ForkingMixIn
 import ProcessSentence
 
 
@@ -30,7 +31,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
             Sentence = Sentence[1:-1]
 
-        logging.error(Sentence)
+        logging.info(Sentence)
         # else:
         #     return "Quote your sentence in double quotes please"
 
@@ -43,7 +44,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', "Application/json;charset=utf-8')")
                 self.end_headers()
                 self.wfile.write(nodes.root().CleanOutput(KeepOriginFeature=False).toJSON().encode("utf-8"))
-                logging.error("Done with" + Sentence)
+                logging.info("Done with" + Sentence)
             except Exception as e:
                 logging.error(e)
                 self.send_response(500)
@@ -61,12 +62,18 @@ def init():
     ProcessSentence.LoadCommon()
 
 
+class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
+
 
 if __name__ == "__main__":
     init()
 
-    print("Running in port " + str(utils.ParserConfig.get("website", "port")))
-    httpd = HTTPServer( ('0.0.0.0', int(utils.ParserConfig.get("website", "port"))), ProcessSentence_Handler)
 
+    startport = int(utils.ParserConfig.get("website", "port"))
+    print("Running in port " + str(startport+1))
+
+    httpd = ThreadedHTTPServer( ('0.0.0.0', startport+1), ProcessSentence_Handler)
     httpd.serve_forever()
+    print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')

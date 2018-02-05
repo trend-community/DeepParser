@@ -250,6 +250,7 @@ class Rule:
 
     #For head (son) node, only apply negative action, and
     #   features after "NEW".
+    # update on Feb 4: Only "++" is for new node. The rest is for Son
     @staticmethod
     def ExtractSonActions( actinstring):
         actions = actinstring.split("NEW", 1)
@@ -302,7 +303,7 @@ class Rule:
                 if not hasattr(token, "action"):
                     if c.HeadOffset == -1:
                         c.HeadOffset = c.Length
-                elif "^" not in token.action:
+                elif "^." not in token.action:
                     if c.HeadConfidence < 2:
                         c.HeadConfidence = 2
                         c.HeadOffset = c.Length
