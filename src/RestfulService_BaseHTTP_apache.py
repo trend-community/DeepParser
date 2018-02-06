@@ -22,11 +22,7 @@ def gchart_loader():
 def LexicalAnalyze():
     Sentence = request.args.get('Sentence')
     Type = request.args.get('Type')
-    Debug = request.args.get('Debug')
-    if Debug:
-        Debug = True
-    else:
-        Debug = False
+
     if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
         Sentence = Sentence[1:-1]
     # logging.error(Sentence)
@@ -35,12 +31,14 @@ def LexicalAnalyze():
 
     #nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
 
-
+    # noinspection PyUnresolvedReferences
     url = BaseHTTPUrl + urllib.parse.quote_plus(Sentence.encode('utf8'))
 
     attempts = 0
+    response = None
     while attempts < 5:
         try:
+            # noinspection PyUnresolvedReferences
             response = urllib.request.urlopen(url, None)
             break
         except OSError:
@@ -51,7 +49,7 @@ def LexicalAnalyze():
     # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
     if response:
         try:
-            jsonoutput = response.read()
+            jsonoutput = response.read().decode("utf-8")
             # logging.info("Type=" + str(Type))
             if Type == "parsetree":
                 orgdata = Graphviz.orgChart(jsonoutput)

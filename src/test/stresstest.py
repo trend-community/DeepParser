@@ -8,7 +8,7 @@ timeout = 2
 nThreads = 0
 maxThreads = 50
 completed = 0
-urlprefix = "http://localhost:7001/LexicalAnalyze?Sentence="
+urlprefix = "http://localhost:5001/LexicalAnalyze?Sentence="
 
 import sys, logging
 import time
