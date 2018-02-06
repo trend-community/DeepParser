@@ -177,6 +177,9 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         if not strToken:
             strToken = StrTokenList.get(StrPosition)
 
+    if not strToken:
+        return False
+
     LogicMatchKey = [strToken, rule]
     rule, matchtype = CheckPrefix(rule, matchtype)
     if matchtype == "unknown":
