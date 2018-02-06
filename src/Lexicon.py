@@ -369,6 +369,10 @@ def ApplyWordLengthFeature(node):
 
 
 def ApplyLexicon(node, lex=None):
+    OOVFeatureSet = { utils.FeatureID_JM, utils.FeatureID_JM2, utils.FeatureID_JS, utils.FeatureID_JS2,
+                      C1ID, C2ID, C3ID, C4ID, C4plusID
+                      #utils.FeatureID_0
+                      }
     if not lex:
         lex = SearchLexicon(node.text)
     # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
@@ -394,7 +398,8 @@ def ApplyLexicon(node, lex=None):
         else:
             node.features.update(lex.features)
         _ApplyWordStem(node, lex)
-        if len(node.features) == 0:
+        if len(node.features) == 0 or \
+            len(node.features - OOVFeatureSet) == 0:
             node.features.add(utils.FeatureID_OOV)
 
     ApplyWordLengthFeature(node)

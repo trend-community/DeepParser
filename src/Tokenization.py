@@ -77,27 +77,25 @@ class SentenceLinkedList:
             raise RuntimeError("Can't get " + str(index) + " from the sentence!")
             #return None
 
-        if (index < self.size/2):
+        if index < self.size/2:
             p = self.head
-            counter = 0
             for i in range(index):
                 p = p.next
             return p
         else:   # for
             p = self.tail
             index = self.size - index -1
-            counter = 0
             for i in range(index):
                 p = p.prev
             return p
-        logging.error(self.__str__())
-        raise RuntimeError("SentenceLinkedList.get(" + str(index) + ") should not get to here.")
+        # logging.error(self.__str__())
+        # raise RuntimeError("SentenceLinkedList.get(" + str(index) + ") should not get to here.")
 
     def __str__(self):
         output = "[" + str(self.size) + "]"
         p = self.head
-        if p != None:
-            while p.next != None:
+        if not p:
+            while not p.next:
                 output += str(p)
                 p = p.next
             output += str(p)
@@ -202,7 +200,7 @@ class SentenceLinkedList:
             return None
         length = self.size
         start = 0
-        if KeepOrigin==False:
+        if KeepOrigin == False:
             start = 1       #remove the first token (JS)
             if self.tail.text == "":
                 length -= 1 #remove the JM token if it is blank
@@ -238,7 +236,7 @@ class SentenceNode(object):
         for featurename in self.featurenames:
             self.ApplyFeature(FeatureOntology.GetFeatureID(featurename))
 
-        self.EndOffset = self.StartOffset + len(self.word)
+        self.EndOffset = self.StartOffset + len(self.text)
         self.sons = []
         self.next = None
         self.prev = None
@@ -344,7 +342,7 @@ class SentenceNode(object):
                     featureString += ","
                 featureString += f
             else:
-                logging.warning("Can't get feature name of " + self.word + " for id " + str(feature))
+                logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return featureString
 
     def CleanOutput(self, KeepOriginFeature=False):

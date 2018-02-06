@@ -7,6 +7,9 @@ import ProcessSentence
 import utils
 
 from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
+# from urlparse import urlparse, parse_qs
+# query_components = parse_qs(urlparse(self.path).query)
+# imsi = query_components["imsi"]
 
 
 class ProcessSentence_Handler(BaseHTTPRequestHandler):
@@ -25,6 +28,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         Sentence = urllib.parse.unquote(self.path)
+        o = urllib.parse.urlparse(self.path)
         if Sentence[0] == "/":
             Sentence = Sentence[1:]
 

@@ -33,7 +33,7 @@ def get(chunk):
 #            print url
             response = urllib2.urlopen(url, None, to*100)
             ret = response.read()
-            print ret
+            #print ret
             completed += 1
             break
         except:

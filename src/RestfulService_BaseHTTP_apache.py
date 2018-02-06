@@ -1,7 +1,7 @@
 import logging, sys, re, jsonpickle, os, json
 
 import utils, Graphviz
-import urllib
+import urllib, time
 from flask import Flask, request, send_file
 
 
@@ -43,6 +43,7 @@ def LexicalAnalyze():
             break
         except OSError:
             attempts += 1
+            time.sleep(0.1 * attempts)
             logging.error("Failed ULR Request at try " + str(attempts))
 
     # return  str(nodes)
