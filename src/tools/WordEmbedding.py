@@ -6,6 +6,10 @@
 #   5, output the highest similar words. specify the highest word that are already in our system lexicon.
 # for step 4, "graph", neo4j is good.
 
+#usage: WordEmbedding.py ../../../fsa/input/test/testCoffee.txt 10 50 ../../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt ../../../fsa/X/AllLexicon.txt
+# WordEmbedding.py --query q ../../temp/g0.raw.head.txt 10 50 ../../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt ../../../fsa/X/AllLexicon.txt
+
+
 import argparse, logging
 import re
 from collections import defaultdict
@@ -19,7 +23,6 @@ stopsigns += ' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' + ']'
 #push the s[i] (2 and 3 character words) into the window, and remove the oldest one.
 # return: the link betwen the new ones and the existing ones
 def WindowPush(s, i, w):
-
     for item in list(w.keys()):
         w[item] -= 1
         if w[item] < 0:
@@ -52,14 +55,23 @@ def InsertOrGetID(l, word):
 
 
 def ImportCorpus(line):
+    freq = 1
+    if args.query:
+        try:
+            line, freq = re.split('\x01', line)
+            freq = int(freq)
+        except ValueError:
+            return
+    if not line:
+        return
     sentences = re.split(stopsigns, line)
     for sentence in sentences:
         window = dict()
         for index in range(len(sentence) - 1):
             newrelations = WindowPush(sentence, index, window)
             for r in newrelations:
-                NeighbourList[r[0]][r[1]] += 1  #can be the query frequency here.
-                NeighbourList[r[1]][r[0]] += 1
+                NeighbourList[r[0]][r[1]] += freq  #can be the query frequency here.
+                NeighbourList[r[1]][r[0]] += freq
 
 
 def TrimNeighbours(size = 3):
@@ -77,7 +89,6 @@ def SimilarWord(word):
     similarlist = {}
     for i in range(len(NeighbourList)):
         intersec = set(neigbours.keys()).intersection(NeighbourList[i].keys())
-        distance = len(intersec) / len(neigbours)
         distance = sum([abs(neigbours[x] - NeighbourList[i][x])/(neigbours[x] + NeighbourList[i][x]) for x in intersec])/len(neigbours)
         if distance > 0:
             similarlist[i] = distance
@@ -108,7 +119,7 @@ def LoadFile(FileName, stopsign=' '):
     with open(FileName, encoding="utf-8") as CorpusFile:
         for line in CorpusFile:
             if line.strip():
-                result.append(line.strip())
+                result.append(line.strip().split(stopsign)[0])
     return result
 
 
@@ -121,6 +132,8 @@ if __name__ == "__main__":
     parser.add_argument("neighboursize", help="20?")
     parser.add_argument("querywordfile", help="the words to query")
     parser.add_argument("lexiconwordfile", help="known words")
+    parser.add_argument("--query", help="for query file with \01 with frequency")
+    parser.add_argument("--all", help="output all match words")
 
     args = parser.parse_args()
 
@@ -138,6 +151,7 @@ if __name__ == "__main__":
         swlist = SimilarWord(q)
         if swlist:
             for sw in swlist:
-                if sw in LexiconWords:
-                    print(q + ":'" + sw + "'")
-                    break
+                if WordList[sw] in LexiconWords:
+                    print(q + ":'" + WordList[sw] + "'")
+                    if not args.all:
+                        break
