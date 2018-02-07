@@ -19,7 +19,7 @@ def SentenceSegmentation(Doc):
 
 
 if __name__ == "__main__":
-    jsonpickle.set_encoder_options('json', ensure_ascii=False);
+    jsonpickle.set_encoder_options('json', ensure_ascii=False)
     DebugMode = False
     NoFeature = False
     level = logging.INFO
