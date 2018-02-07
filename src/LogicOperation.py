@@ -221,7 +221,6 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
 
 
 def LogicMatchText(ruletext, stringtext):
-    logging.warning("When to get here? combined macth type?")
     AndBlocks = [x.strip() for x in re.split(" ", ruletext)]
     if len(AndBlocks) > 1:
         Result = True

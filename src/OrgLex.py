@@ -97,7 +97,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                 # logging.debug(node.word)
             oldWord = blocks[0]
 
-    logging.debug("Finish loading lexicon")
+    logging.debug("Finish loading lexicon" + lexiconLocation)
 
 def FeatureNotCopy():
     with open(paraFeatureNotCopy, encoding='utf-8') as file:
