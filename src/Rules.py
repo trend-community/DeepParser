@@ -239,9 +239,10 @@ class Rule:
             output += str(token)
         output += "};"
 
+        if self.Chunks:
+            output += "\n//" + jsonpickle.dumps(self.Chunks)
+
         if style != "concise":
-            if self.Chunks:
-                output += "\n//" + jsonpickle.dumps(self.Chunks)
             if self.comment:
                 output += " " + self.comment
 

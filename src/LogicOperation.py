@@ -1,4 +1,4 @@
-import jsonpickle
+
 import FeatureOntology
 from utils import *
 import utils
@@ -165,7 +165,7 @@ def FindSubtree(root, pointers):
 
 CombinedPattern = re.compile('[| !]')
 def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matchtype="unknown", strToken=None):
-    if not rule:  # for the comparison of "[]", can match anything
+    if (not rule) or rule == '':  # for the comparison of "[]", can match anything
         return True
 
     if hasattr(RuleTokens[RulePosition], "SubtreePointer"):
@@ -185,7 +185,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
     if matchtype == "unknown":
         return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, strToken=strToken)
 
-    if matchtype in ["text", "norm", "atom"]:
+    elif matchtype in ["text", "norm", "atom"]:
         if rule.startswith("^"):
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
@@ -211,35 +211,45 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
             else:
                 word = strToken.atom
 
-        if rule.lower() == word.lower():
-            return True
-        else:
-            if len(rule) > 1 and (
-                    rule.endswith('-') and word.startswith(rule[:-1])
-                    or rule.startswith('-') and word.endswith(rule[1:])
-            ):
-                return True
-            else:
-                return False
+        return LogicMatchText(rule, word)
 
+
+
+    else:
+        logging.warning("Suspicous type:" + str(matchtype))
+        return False
+
+
+def LogicMatchText(ruletext, stringtext):
     logging.warning("When to get here? combined macth type?")
-    AndBlocks = [x.strip() for x in re.split(" ", rule)]
+    AndBlocks = [x.strip() for x in re.split(" ", ruletext)]
     if len(AndBlocks) > 1:
         Result = True
         for AndBlock in AndBlocks:
-            Result = Result and LogicMatch(StrTokenList, StrPosition, AndBlock, RuleTokens, RulePosition, matchtype, strToken=strToken)
+            Result = Result and LogicMatchText(AndBlock, stringtext)
     else:
-        if rule[0] == "!":      #Not
-            Result = not LogicMatch(StrTokenList, StrPosition, rule[1:], RuleTokens, RulePosition, matchtype, strToken=strToken)
+        if ruletext[0] == "!":      #Not
+            Result = not LogicMatchText(ruletext[1:], stringtext)
         else:
             Result = False
-            OrBlocks = SeparateOrBlocks(rule)
-            if len(OrBlocks) >= 1:
+            OrBlocks = SeparateOrBlocks(ruletext)
+            if len(OrBlocks) == 1:
+                if ruletext.lower() == stringtext.lower():
+                    return True
+                else:
+                    if len(ruletext) > 1 and (
+                            ruletext.endswith('-') and stringtext.startswith(ruletext[:-1])
+                            or ruletext.startswith('-') and stringtext.endswith(ruletext[1:])
+                            ):
+                        return True
+                    else:
+                        return False
+
+            elif len(OrBlocks) > 1:
                 for OrBlock in OrBlocks:
-                    Result = Result or LogicMatch(StrTokenList, StrPosition, OrBlock, RuleTokens, RulePosition, matchtype, strToken=strToken)
+                    Result = Result or LogicMatchText(OrBlock, stringtext)
             else:
                 raise RuntimeError("Why OrBlock is none?")
-
     return Result
 
 
@@ -288,7 +298,7 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
 @lru_cache(100000)
 def SeparateOrBlocks(OrString):
     if "|" not in OrString:
-        return OrString
+        return [OrString]
     OrBlocks = []
 
     i = 0

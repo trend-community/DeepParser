@@ -162,3 +162,15 @@ class RuleTest(unittest.TestCase):
         word, matchtype = CheckPrefix("'abc'|ab|'cde'", "unknown")
         self.assertEqual(matchtype, "unknown")
 
+    def test_SeparateOrBlocks(self):
+        a = SeparateOrBlocks("一款")
+        self.assertEqual(len(a), 1)
+
+        b = SeparateOrBlocks("一|款")
+        self.assertEqual(len(b), 2)
+
+        c = SeparateOrBlocks("一|款|款")
+        self.assertEqual(len(c), 3)
+
+
+
