@@ -6,8 +6,8 @@
 #   5, output the highest similar words. specify the highest word that are already in our system lexicon.
 # for step 4, "graph", neo4j is good.
 
-#usage: WordEmbedding.py ../../../fsa/input/test/testCoffee.txt 10 50 ../../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt ../../../fsa/X/AllLexicon.txt
-# WordEmbedding.py --query q ../../temp/g0.raw.head.txt 10 50 ../../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt ../../../fsa/X/AllLexicon.txt
+#usage: python3 WordEmbedding.py ../../../fsa/test/input/testCoffee.txt 10 50 ../../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt ../../../fsa/X/AllLexicon.txt
+# python3 WordEmbedding.py --query q ../../temp/g0.raw.txt 10 50 ../../../fsa/X/Q/lexicon/CleanLexicon_gram_2_list.txt ../../../fsa/X/AllLexicon.txt
 
 
 import argparse, logging
