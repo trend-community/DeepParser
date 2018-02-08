@@ -14,7 +14,8 @@ import argparse, logging
 import re
 from collections import defaultdict
 
-WordList = []
+WordList2 = []
+WordDict = {}
 NeighbourList = []  # each neighbour is a dict (word:frequency).
 stopsigns = '[' + '！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.'
 stopsigns += ' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' + ']'
@@ -30,28 +31,30 @@ def WindowPush(s, i, w):
     newrelationship = []
     existingwords = list(w.keys())
     if len(s) >= i+2:
-        newwordid = InsertOrGetID(WordList, s[i:i+2])
+        newwordid = InsertOrGetID( s[i:i+2])
         w[newwordid] = neighbourwindowsize
         newrelationship.extend([(newwordid, oldid) for oldid in existingwords
-                                if len(WordList[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
+                                if len(WordList2[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
                            ])
 
     if len(s) >= i+3:
-        newwordid = InsertOrGetID(WordList, s[i:i+3])
+        newwordid = InsertOrGetID( s[i:i+3])
         w[newwordid] = neighbourwindowsize
         newrelationship.extend([(newwordid, oldid) for oldid in existingwords
-                                if len(WordList[oldid]) < 3 or w[oldid] < neighbourwindowsize - 1
+                                if len(WordList2[oldid]) < 3 or w[oldid] < neighbourwindowsize - 1
                             ])
 
     return newrelationship
 
 
-def InsertOrGetID(l, word):
-    if word not in l:
-        l.append(word)
+def InsertOrGetID( word):
+    if word not in WordDict:
+
+        WordDict[word] = len(WordList2)
+        WordList2.append(word)
         frequencypair = defaultdict(int)
         NeighbourList.append(frequencypair)
-    return l.index(word)
+    return WordDict[word]
 
 
 def ImportCorpus(line):
@@ -80,9 +83,9 @@ def TrimNeighbours(size = 3):
 
 
 def SimilarWord(word):
-    if word not in WordList:
+    if word not in WordList2:
         return None
-    neigbours = NeighbourList[WordList.index(word)]
+    neigbours = NeighbourList[WordDict[word]]
     if len(neigbours) == 0:
         return None
 
@@ -96,9 +99,9 @@ def SimilarWord(word):
     output = word + ":"
     result = sorted(similarlist, key=similarlist.get, reverse=True)[:100]
     for index in result:
-        if index == WordList.index(word):
+        if index == WordDict[word]:
             continue
-        output +=  WordList[index] + "(" + str(similarlist[index]) + ") "
+        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
 
     print(output)
     return result
@@ -140,7 +143,12 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    LoadCorpus(args.corpusfile)
+    import cProfile, pstats
+    cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(60)
+
+    #LoadCorpus(args.corpusfile)
 
     TrimNeighbours(int(args.neighboursize))
 
@@ -151,7 +159,7 @@ if __name__ == "__main__":
         swlist = SimilarWord(q)
         if swlist:
             for sw in swlist:
-                if WordList[sw] in LexiconWords:
-                    print(q + ":'" + WordList[sw] + "'")
+                if WordList2[sw] in LexiconWords:
+                    print(q + ":'" + WordList2[sw] + "'")
                     if not args.all:
                         break
