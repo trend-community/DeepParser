@@ -92,15 +92,16 @@ def SimilarWord(word):
     similarlist = {}
     for i in range(len(NeighbourList)):
         intersec = set(neigbours.keys()).intersection(NeighbourList[i].keys())
-        distance = sum([abs(neigbours[x] - NeighbourList[i][x])/(neigbours[x] + NeighbourList[i][x]) for x in intersec])/len(neigbours)
-        if distance > 0:
-            similarlist[i] = distance
+        if intersec:
+            distance = sum([abs(neigbours[x] - NeighbourList[i][x])/(neigbours[x] + NeighbourList[i][x]) for x in intersec])/len(neigbours)
+            if distance > 0:
+                similarlist[i] = distance
 
 #    output = word + ":"
     result = sorted(similarlist, key=similarlist.get, reverse=True)[:100]
-    for index in result:
-        if index == WordDict[word]:
-            continue
+ #   for index in result:
+ #       if index == WordDict[word]:
+ #           continue
 #        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
 
 #    print(output)
@@ -143,7 +144,7 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    # import cProfile, pstats
+    import cProfile, pstats
     # cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
     # p = pstats.Stats('restats')
     # p.sort_stats('time').print_stats(60)
@@ -156,6 +157,11 @@ if __name__ == "__main__":
     LexiconWords = LoadFile(args.lexiconwordfile, '\t')
 
     for q in QueryWords:
+        cProfile.run("SimilarWord(q)", 'sw')
+        psw = pstats.Stats('sw')
+        psw.sort_stats('time').print_stats(60)
+
+
         swlist = SimilarWord(q)
         if swlist:
             for sw in swlist:
