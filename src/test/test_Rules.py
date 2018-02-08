@@ -717,10 +717,12 @@ third line};""")
 
     def test_ExtractSonActions(self):
         a = Rule.ExtractSonActions("a b -c NEW x y")
-        self.assertEqual(a, "-c NEW x y")
+        self.assertEqual(a, "a b -c NEW x y")
 
-        a = Rule.ExtractSonActions("a b -c ")
-        self.assertEqual(a, "-c")
-        a = Rule.ExtractSonActions("a b")
+        a = Rule.ExtractSonActions("a b -c a++ b++ c++")
+        self.assertEqual(a, "a b -c")
+        a = Rule.ExtractSonActions("-a x++ y++ b")
+        self.assertEqual(a, "-a b")
+
+        a = Rule.ExtractSonActions(" x++ y++ ")
         self.assertEqual(a, "")
-

@@ -176,8 +176,8 @@ class Rule:
             self.comment = comment
             return  # stop processing macro.
 
+        remaining = ''
         try:
-            remaining = ''
             RuleContent, remaining = SeparateRules(RuleBlocks.group(2).strip())
             if remaining:
                 self.Origin = self.Origin.replace(remaining, '').strip()
@@ -251,19 +251,16 @@ class Rule:
 
     #For head (son) node, only apply negative action, and
     #   features after "NEW".
-    # update on Feb 4: Only "++" is for new node. The rest is for Son
+    # update on Feb 4: Only "X++" is for new node. The rest is for Son
     @staticmethod
-    def ExtractSonActions( actinstring):
-        actions = actinstring.split("NEW", 1)
-        NegativeActions = []
-        for a in actions[0].split():
-            if a[0] == '-':
-                NegativeActions.append(a)
-        NegativeActionString = " ".join(NegativeActions)
-        if len(actions)>1:
-            NegativeActionString +=  " NEW " + actions[1].strip()
+    def ExtractParentSonActions( actinstring):
+        actions = actinstring.split()
+        SonActionString = " ".join([a for a in actions if a[-2:] != "++" and a[0] != '^' or a == '+++' ])
+        ParentActions = [a[:-2] for a in actions if a[-2:] == "++" and a != '+++']
+        ParentActions.extend( [a for a in actions if a[0] == "^"]        )
+        ParentActionString = " ".join(ParentActions)
 
-        return NegativeActionString
+        return ParentActionString, SonActionString
 
     def CreateChunk(self, StartOffset, StartChunkLevel):
         c = RuleChunk()
@@ -296,30 +293,31 @@ class Rule:
                 ChunkLevel += token.StartChunk
             if ChunkLevel == 1:
                 if hasattr(token, "pointer") :#and token.pointer == "H":
-                    token.HeadConfidence = 3
+                    c.HeadConfidence = 3
                     c.HeadOffset = c.Length
                     if hasattr(token, "action"):
-                        c.Action = token.action
-                        token.action = self.ExtractSonActions(token.action)
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
                 if not hasattr(token, "action"):
                     if c.HeadOffset == -1:
-                        c.HeadOffset = c.Length
-                elif "^." not in token.action:
-                    if c.HeadConfidence < 2:
                         c.HeadConfidence = 2
                         c.HeadOffset = c.Length
-                        c.Action = token.action
-                        token.action = self.ExtractSonActions(token.action)
+                        c.Action = ''
+                elif "^." not in token.action or "^^." in token.action or "+++" in token.action:
+                    if c.HeadConfidence <= 2:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = c.Length
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
                 c.Length += 1
+
             if token.EndChunk:
                 ChunkLevel -= token.EndChunk
-                if ChunkLevel == 1:     #end of a chunk of the same level. head *might* be in this chunk
+                if ChunkLevel == 1:     #end of a chunk of the same level. head *might* be  this chunk
                     if  c.HeadConfidence < 1:
                         c.HeadConfidence = 1
                         c.HeadOffset = c.Length
-                        #TODO: find the head of this chunk to apply action
                     c.Length += 1
-                if ChunkLevel < 1:
+                elif ChunkLevel < 1:
                     if ChunkLevel + token.EndChunk >1:      # ">>" to conclude current chunk of level 1. need to add this chunk as one in length.
                         if  c.HeadConfidence < 1:
                             c.HeadConfidence = 1             # head is in it if not already set.
@@ -329,8 +327,11 @@ class Rule:
                     break
         if c.HeadOffset == -1:
             logging.warning("Can't find head in this rule:")
-            logging.warning(str(self))
+            logging.warning(self.Origin)
 
+        if c.HeadConfidence < 2 :
+            logging.warning("HeadConfidence is low: " + str(c.HeadConfidence) + " Head might be in a chunk.  check the action!")
+            logging.warning(self.Origin)
         c.StringChunkLength = c.Length - VirtualTokenNum
 
         return c
@@ -587,9 +588,9 @@ def LoadRules(RuleLocation):
     logging.debug("Start Loading Rule " + RuleFileName)
     rulegroup = RuleGroup(RuleFileName)
 
+    rule = ""
     try:
         with open(RuleLocation, encoding="utf-8") as RuleFile:
-            rule = ""
             for line in RuleFile:
                 # commentLocation = line.find("//")
                 # if commentLocation>=0:
@@ -715,6 +716,7 @@ def _ExpandRuleWildCard_List(OneList):
                     NextIsStart = False
                     NextIsRestart = False
                     NextIsPointer = False
+                    origin_node = None
                     if repeat_num == 0:  # this token is removed. some features need to copy to others
                         origin_node = rule.Tokens[tokenindex]
                         if origin_node.StartChunk:
@@ -1254,5 +1256,5 @@ if __name__ == "__main__":
     PreProcess_CheckFeatures()
 
     # print (OutputRules("concise"))
-    OutputRuleFiles("../temp/")
+    OutputRuleFiles("../compiled/")
     #print(FeatureOntology.OutputMissingFeatureSet())
