@@ -197,7 +197,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             # logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
             try:
                 if WinningRule.RuleName not in WinningRules:
-                    WinningRules[WinningRule.RuleName] = WinningRule.Origin + '<BR/> <li/>' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                    WinningRules[WinningRule.RuleName] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
                 else:
                     WinningRules[WinningRule.RuleName] += " " + MarkWinningTokens(strtokenlist, WinningRule, i)
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)

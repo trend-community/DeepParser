@@ -94,7 +94,7 @@ def LexicalAnalyze():
                 if Debug:
                     winningrulestring = ""
                     for rule in winningrules:
-                        winningrulestring += rule + ":" + winningrules[rule] + "\n"
+                        winningrulestring +=  winningrules[rule] + "\n"
                     chart = chart.replace("<!-- EXTRA -->", winningrulestring)
                     print("RestfulService: winningrules=" + str(winningrules))
                 return chart

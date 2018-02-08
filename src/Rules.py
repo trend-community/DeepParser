@@ -333,8 +333,8 @@ class Rule:
             logging.warning("HeadConfidence is low: " + str(c.HeadConfidence) + " Head might be in a chunk.  check the action!")
             logging.warning(self.Origin)
         c.StringChunkLength = c.Length - VirtualTokenNum
-
         return c
+
 
     def CompileChunk(self):
         for i in range(len(self.Tokens)):
