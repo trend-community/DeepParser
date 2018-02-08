@@ -143,12 +143,12 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    import cProfile, pstats
-    cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
-    p = pstats.Stats('restats')
-    p.sort_stats('time').print_stats(60)
+    # import cProfile, pstats
+    # cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
+    # p = pstats.Stats('restats')
+    # p.sort_stats('time').print_stats(60)
 
-    #LoadCorpus(args.corpusfile)
+    LoadCorpus(args.corpusfile)
 
     TrimNeighbours(int(args.neighboursize))
 
@@ -163,3 +163,5 @@ if __name__ == "__main__":
                     print(q + ":'" + WordList2[sw] + "'")
                     if not args.all:
                         break
+
+    logging.info("Done.")
