@@ -96,14 +96,14 @@ def SimilarWord(word):
         if distance > 0:
             similarlist[i] = distance
 
-    output = word + ":"
+#    output = word + ":"
     result = sorted(similarlist, key=similarlist.get, reverse=True)[:100]
     for index in result:
         if index == WordDict[word]:
             continue
-        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
+#        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
 
-    print(output)
+#    print(output)
     return result
 
 
