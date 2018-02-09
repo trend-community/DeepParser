@@ -383,7 +383,7 @@ def ApplyLexicon(node, lex=None):
         if IsCD(node.text):
             node.features.add(utils.FeatureID_CD)
         elif node.text in string.punctuation:
-            node.features.add(utils.FeatureID_punc)
+            node.features.add(utils.FeatureID_SYM)
         elif node.text == " ":
             pass    #not to apply NNP/OOV to space.
         else:

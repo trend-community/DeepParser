@@ -244,17 +244,27 @@ def PrepareJSandJM(nodes):
     JSnode.ApplyFeature(utils.FeatureID_JS)
     JSnode.ApplyFeature(utils.FeatureID_JS2)
     nodes.insert(JSnode, 0)
+    p = nodes.head.next
+    while p.next:
+        if utils.FeatureID_SYM not in p.features:
+            p.ApplyFeature(utils.FeatureID_JS2)
+            break
+        p.ApplyFeature(utils.FeatureID_JS2)
+        p = p.next
 
-    if utils.FeatureID_punc not in nodes.tail.features:
+    PUNCSet = {".", "?", "!", ";", "...", ":", "。"}
+    if utils.FeatureID_SYM not in nodes.tail.features and \
+            nodes.tail.text not in PUNCSet  :
         JMnode = Tokenization.SentenceNode('')
         JMnode.StartOffset = nodes.tail.EndOffset
         JMnode.EndOffset = nodes.tail.EndOffset
+        JMnode.ApplyFeature(utils.FeatureID_punc)
         nodes.append(JMnode)
     nodes.tail.ApplyFeature(utils.FeatureID_JM)
     nodes.tail.ApplyFeature(utils.FeatureID_JM2)
     p = nodes.tail.prev
     while p.prev:
-        if utils.FeatureID_punc not in p.features:
+        if utils.FeatureID_SYM not in p.features:
             # first one that is not punc. the real JM2:
             p.ApplyFeature(utils.FeatureID_JM2)
             break

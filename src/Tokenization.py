@@ -269,7 +269,7 @@ class SentenceNode(object):
     def ApplyFeature(self, featureID):
         self.features.add(featureID)
         FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
-        if FeatureNode:
+        if FeatureNode and FeatureNode.ancestors:
             self.features.update(FeatureNode.ancestors)
 
     def ApplyActions(self, actinstring):
@@ -506,6 +506,12 @@ if __name__ == "__main__":
 
     print("\n\n My tokenization:")
     nodes = Tokenize(target)
+
+    import cProfile, pstats
+
+    cProfile.run("Tokenize('中文变化规则很长很长')", 'restats')
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(10)
 
 
 

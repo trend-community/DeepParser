@@ -15,6 +15,7 @@ FeatureID_JM = None
 FeatureID_0 = -8
 FeatureID_CD = None
 FeatureID_punc = None
+FeatureID_SYM = None
 FeatureID_NNP = None
 FeatureID_OOV = None
 FeatureID_NEW = None
@@ -35,7 +36,7 @@ class LexiconLookupSource(Enum):
 
 def InitGlobalFeatureID():
     global FeatureID_JS, FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0
-    global FeatureID_CD, FeatureID_punc, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW
+    global FeatureID_CD, FeatureID_punc, FeatureID_SYM, FeatureID_NNP, FeatureID_OOV, FeatureID_NEW
     if not FeatureID_JS2:
         import FeatureOntology
         FeatureID_JS = FeatureOntology.GetFeatureID("JS")
@@ -45,6 +46,7 @@ def InitGlobalFeatureID():
         FeatureID_0 = FeatureOntology.GetFeatureID("0")
         FeatureID_CD = FeatureOntology.GetFeatureID("CD")
         FeatureID_punc = FeatureOntology.GetFeatureID("punc")
+        FeatureID_SYM = FeatureOntology.GetFeatureID("SYM")
         FeatureID_NNP = FeatureOntology.GetFeatureID("NNP")
         FeatureID_OOV = FeatureOntology.GetFeatureID("OOV")
         FeatureID_NEW = FeatureOntology.GetFeatureID("NEW")

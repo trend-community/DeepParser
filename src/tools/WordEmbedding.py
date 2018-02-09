@@ -144,7 +144,7 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    import cProfile, pstats
+    #import cProfile, pstats
     # cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
     # p = pstats.Stats('restats')
     # p.sort_stats('time').print_stats(60)
@@ -157,10 +157,9 @@ if __name__ == "__main__":
     LexiconWords = LoadFile(args.lexiconwordfile, '\t')
 
     for q in QueryWords:
-        cProfile.run("SimilarWord(q)", 'sw')
-        psw = pstats.Stats('sw')
-        psw.sort_stats('time').print_stats(60)
-
+        # cProfile.run("SimilarWord(q)", 'sw')
+        # psw = pstats.Stats('sw')
+        # psw.sort_stats('time').print_stats(60)
 
         swlist = SimilarWord(q)
         if swlist:
