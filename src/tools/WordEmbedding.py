@@ -28,6 +28,7 @@ def WindowPush(s, i, w):
         w[item] -= 1
         if w[item] < 0:
             del w[item]
+
     newrelationship = []
     existingwords = list(w.keys())
     if len(s) >= i+2:
@@ -85,15 +86,16 @@ def TrimNeighbours(size = 3):
 def SimilarWord(word):
     if word not in WordList2:
         return None
-    neigbours = NeighbourList[WordDict[word]]
-    if len(neigbours) == 0:
+    neighbours = NeighbourList[WordDict[word]]
+    if len(neighbours) == 0:
         return None
 
+    neighbourset  = set(neighbours.keys())
     similarlist = {}
     for i in range(len(NeighbourList)):
-        intersec = set(neigbours.keys()).intersection(NeighbourList[i].keys())
+        intersec = neighbourset.intersection(NeighbourList[i].keys())
         if intersec:
-            distance = sum([abs(neigbours[x] - NeighbourList[i][x])/(neigbours[x] + NeighbourList[i][x]) for x in intersec])/len(neigbours)
+            distance = sum([abs(neighbours[x] - NeighbourList[i][x])/(neighbours[x] + NeighbourList[i][x]) for x in intersec])/len(neighbours)
             if distance > 0:
                 similarlist[i] = distance
 
@@ -144,10 +146,10 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    #import cProfile, pstats
-    # cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
-    # p = pstats.Stats('restats')
-    # p.sort_stats('time').print_stats(60)
+    import cProfile, pstats
+    cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(60)
 
     LoadCorpus(args.corpusfile)
 
