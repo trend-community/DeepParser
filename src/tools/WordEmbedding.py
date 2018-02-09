@@ -19,7 +19,7 @@ WordDict = {}
 NeighbourList = []  # each neighbour is a dict (word:frequency).
 stopsigns = '[' + '！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.'
 stopsigns += ' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' + ']'
-
+restopsigns = re.compile(stopsigns)
 
 #push the s[i] (2 and 3 character words) into the window, and remove the oldest one.
 # return: the link betwen the new ones and the existing ones
@@ -34,9 +34,9 @@ def WindowPush(s, i, w):
     if len(s) >= i+2:
         newwordid = InsertOrGetID( s[i:i+2])
         w[newwordid] = neighbourwindowsize
-        newrelationship.extend([(newwordid, oldid) for oldid in existingwords
+        newrelationship = [(newwordid, oldid) for oldid in existingwords
                                 if len(WordList2[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
-                           ])
+                           ]
 
     if len(s) >= i+3:
         newwordid = InsertOrGetID( s[i:i+3])
@@ -68,7 +68,8 @@ def ImportCorpus(line):
             return
     if not line:
         return
-    sentences = re.split(stopsigns, line)
+    sentences = restopsigns.split(line)
+    #sentences = re.split(stopsigns, line)
     for sentence in sentences:
         window = dict()
         for index in range(len(sentence) - 1):
@@ -83,30 +84,51 @@ def TrimNeighbours(size = 3):
         NeighbourList[i] = {k:NeighbourList[i][k] for k in sorted(NeighbourList[i], key=NeighbourList[i].get, reverse=True)[:size] }
 
 
+DistanceCache = {}
+def Distance(a, b, a_neighbourdict, a_neighbourset):
+    if (b, a) in DistanceCache:
+        return DistanceCache[(b, a)]
+    if (a, b) in DistanceCache:
+        return DistanceCache[(a, b)]
+
+    intersec = a_neighbourset.intersection(NeighbourList[b].keys())
+    distance = 0
+    if intersec:
+        distance = sum([(1 - abs(a_neighbourdict[x] - NeighbourList[b][x]) / (a_neighbourdict[x] + NeighbourList[b][x]))
+                        for x in intersec])    / len(a_neighbourdict)
+        DistanceCache[(a, b)] = distance
+    return distance
+
+
+
 def SimilarWord(word):
     if word not in WordList2:
         return None
-    neighbours = NeighbourList[WordDict[word]]
-    if len(neighbours) == 0:
+    wordid = WordDict[word]
+    neighbourdict = NeighbourList[wordid]
+    if len(neighbourdict) == 0:
         return None
 
-    neighbourset  = set(neighbours.keys())
+    neighbourset  = set(neighbourdict.keys())
     similarlist = {}
     for i in range(len(NeighbourList)):
-        intersec = neighbourset.intersection(NeighbourList[i].keys())
-        if intersec:
-            distance = sum([abs(neighbours[x] - NeighbourList[i][x])/(neighbours[x] + NeighbourList[i][x]) for x in intersec])/len(neighbours)
-            if distance > 0:
-                similarlist[i] = distance
+        if i == wordid:
+            continue
 
-#    output = word + ":"
+        distance = Distance(wordid, i, neighbourdict, neighbourset)
+
+        if distance > 0:
+            similarlist[i] = distance
+
     result = sorted(similarlist, key=similarlist.get, reverse=True)[:100]
- #   for index in result:
- #       if index == WordDict[word]:
- #           continue
-#        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
 
-#    print(output)
+    output = word + ":"
+    for index in result:
+       if index == WordDict[word]:
+           continue
+       output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
+    print(output)
+
     return result
 
 
@@ -146,10 +168,10 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    # import cProfile, pstats
-    # cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
-    # p = pstats.Stats('restats')
-    # p.sort_stats('time').print_stats(60)
+    import cProfile, pstats
+    cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(20)
 
     LoadCorpus(args.corpusfile)
 
@@ -161,15 +183,15 @@ if __name__ == "__main__":
     for q in QueryWords:
         # cProfile.run("SimilarWord(q)", 'sw')
         # psw = pstats.Stats('sw')
-        # psw.sort_stats('time').print_stats(60)
+        # psw.sort_stats('time').print_stats(10)
 
         swlist = SimilarWord(q)
         if swlist:
-            result = q + ":"
+            similarwordes = q + ":"
             for sw in swlist:
                 if WordList2[sw] in LexiconWords:
-                    result += " '"+ WordList2[sw] + "'"
+                    similarwordes += " '"+ WordList2[sw] + "'"
                     if not args.all:
                         break
-            print(result)
+            print(similarwordes)
     logging.info("Done.")
