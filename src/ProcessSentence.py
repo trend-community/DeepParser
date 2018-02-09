@@ -21,7 +21,7 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
     counter = 0
     StopPosition = StartPosition+rule.StrTokenLength - 1
     while p:
-        if counter == StartPosition:
+        if counter == StartPosition+1:
             result += "<em>"
         result += p.text
         if counter == StopPosition:
