@@ -146,10 +146,10 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
-    import cProfile, pstats
-    cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
-    p = pstats.Stats('restats')
-    p.sort_stats('time').print_stats(60)
+    # import cProfile, pstats
+    # cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
+    # p = pstats.Stats('restats')
+    # p.sort_stats('time').print_stats(60)
 
     LoadCorpus(args.corpusfile)
 
@@ -165,10 +165,11 @@ if __name__ == "__main__":
 
         swlist = SimilarWord(q)
         if swlist:
+            result = q + ":"
             for sw in swlist:
                 if WordList2[sw] in LexiconWords:
-                    print(q + ":'" + WordList2[sw] + "'")
+                    result += " '"+ WordList2[sw] + "'"
                     if not args.all:
                         break
-
+            print(result)
     logging.info("Done.")
