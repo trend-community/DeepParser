@@ -229,6 +229,8 @@ def DynamicPipeline(NodeList):
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
+            # if NodeList:
+            #     logging.debug(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
         if action.startswith("lookup"):
             lookupSourceName = action[6:].strip()
@@ -336,6 +338,7 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt', lookupSource=LexiconLookupSource.External)
 
+    Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
     LoadPipeline(XLocation + 'pipelineX.txt')
 
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))

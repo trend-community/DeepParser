@@ -47,7 +47,7 @@ def viterbi1(strSent, maxPhraseLen=20, isRecursive=True):
                 bestScore[i] = LogPw + bestScore[j]
 
     ## backward path: collect "best"
-    listPhrases = [];
+    listPhrases = []
     i = sentLen - 1
     while i > 0:
         ## recursion

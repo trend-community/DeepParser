@@ -8,6 +8,7 @@ import string
 import utils
 from FeatureOntology import *
 import Tokenization
+from collections import defaultdict
 
 
 _LexiconDict = {}
@@ -15,7 +16,7 @@ _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
-_LexiconDictSegment = []    # from main2017. used for segmentation onln. there is no feature.
+_LexiconSegmentDict = {}    # from main2017. used for segmentation onln. there is no feature.
 
 #_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
@@ -171,12 +172,38 @@ def OutputLexiconFile(FolderLocation):
 #             _LexiconBlacklist.append(pattern)
 
 
-# def InLexiconBlacklist(word):
-#     for pattern in _LexiconBlacklist:
-#         if re.match(pattern, word):
-#             logging.debug("Blacklisted:" + word)
-#             return True
-#     return False
+def LoadSegmentLexicon():
+    global _LexiconSegmentDict
+    # _LexiconSegmentDict = defaultdict(lambda:1, _LexiconSegmentDict)
+    # _LexiconSegmentDict.update(list(_LexiconLookupSet[LexiconLookupSource.External])[:5])
+
+    #_LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
+
+    XLocation = '../../fsa/X/'
+    lexiconLocation = XLocation + 'main2017.txt'
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if word:
+                word = word.replace("/", "")
+                _LexiconSegmentDict[word] = 0.8
+    logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+
+    lexiconLocation = XLocation + 'AllLexicon.txt'
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            code, _ = SeparateComment(line)
+            if word:
+                word = code.split("\t")[0]
+                word = word.replace("/", "")
+                _LexiconSegmentDict[word] = 1.2
+    logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+
+    for word in _LexiconLookupSet[LexiconLookupSource.External]:
+        _LexiconSegmentDict[word] = 1
+#    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
+    logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+
 
 def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet
@@ -343,13 +370,13 @@ def ApplyWordLengthFeature(node):
     # Below is for None-English only:
     if C1ID in node.features:
         node.features.remove(C1ID)
-    if C2ID in node.features:
+    elif C2ID in node.features:
         node.features.remove(C2ID)
-    if C3ID in node.features:
+    elif C3ID in node.features:
         node.features.remove(C3ID)
-    if C4ID in node.features:
+    elif C4ID in node.features:
         node.features.remove(C4ID)
-    if C4plusID in node.features:
+    elif C4plusID in node.features:
         node.features.remove(C4plusID)
 
     wordlength = len(node.text)

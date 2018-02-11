@@ -24,7 +24,7 @@ class SentenceLinkedList:
         self.size = 0
 
     def append(self, node):    #Add to the tail
-        if self.tail == None:
+        if not self.tail:
             self.head = node
             self.tail = node
         else:
@@ -34,8 +34,8 @@ class SentenceLinkedList:
             self.tail = node
         self.size += 1
 
-    def insert(self, node, position):    #Add to the tail
-        if self.tail == None and position == 0:
+    def insert(self, node, position):    #Add to the specific position
+        if not self.tail and position == 0:
             self.head = node
             self.tail = node
         elif position == self.size:
@@ -101,17 +101,17 @@ class SentenceLinkedList:
             output += str(p)
         return output
 
-    def toJSON(self):
-        a = JsonClass()
-        a.text = self.text
-        if self.norm != self.text:
-            a.norm = self.norm
-        if self.atom != self.text:
-            a.atom = self.atom
-        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features]
-
-        a.StartOffset = self.StartOffset
-        a.EndOffset = self.EndOffset
+    # def toJSON(self):
+    #     a = JsonClass()
+    #     a.text = self.text
+    #     if self.norm != self.text:
+    #         a.norm = self.norm
+    #     if self.atom != self.text:
+    #         a.atom = self.atom
+    #     a.features = [FeatureOntology.GetFeatureName(f) for f in self.features]
+    #
+    #     a.StartOffset = self.StartOffset
+    #     a.EndOffset = self.EndOffset
 
 
 
@@ -398,7 +398,7 @@ class JsonClass(object):
         pass
 
 
-def Tokenize_space(sentence):
+def Tokenize_Space(sentence):
     StartToken = True
     StartPosition = 0
     #for i in range(1, len(sentence)):   #ignore the first one.
@@ -433,10 +433,69 @@ def Tokenize_space(sentence):
     return TokenList
 
 
+# for the mix of Chinese/Ascii. Should be called for all sentences.
+def Tokenize_CEMix(sentence):
+    subsentence = []
+    subsentence_isascii = []
+    isascii = True
+    substart = 0
+    for i in range(len(sentence)):
+        isascii = IsAscii(sentence[i])
+        if i == 0:
+            isascii_prev = isascii
+            continue
+        if isascii != isascii_prev:
+            subsentence.append( [sentence[substart:i+1]])
+            substart = i+1
+            subsentence_isascii.append( isascii_prev)
+        isascii_prev = isascii
+
+    #last part
+    subsentence.append([sentence[substart:]])
+    subsentence_isascii.append(isascii)
+
+    segmentedlist = []
+    for i in range(len(subsentence)):
+        if subsentence_isascii:
+            segmentedlist.append(_Tokenize_Space(subsentence[i]))
+        else:
+            segmentedlist.append(_Tokenize_Lexicon(subsentence[i]))
+
+
+def Tokenize_Lexicon(sentence):
+    TokenList = SentenceLinkedList()
+
+
+
+    sentLen = len(sentence)
+    bestPhrase = []
+    bestPhraseLen = [1] * (sentLen+1)
+    bestScore = [i for i in range( sentLen + 1)]
+
+    ## forward path: fill up "best"
+    for i in range(0, sentLen):
+        for j in range( i ):
+            value = Lexicon._LexiconSegmentDict.get(sentence[j:i+1], 0) * (i+1-j)
+            if value != 0 and value + bestScore[j] > bestScore[i]:
+                bestPhraseLen[i] = i + 1 - j
+                bestScore[i] = value + bestScore[j]
+
+    ## backward path: collect "best"
+    i = sentLen
+    while i > 0:
+        Element = SentenceNode(sentence[i+1 - bestPhraseLen[i]:i+1])
+        Element.StartOffset = i+1 - bestPhraseLen[i]
+        Element.EndOffset = i
+        TokenList.insert(Element, 0)
+        i = i - bestPhraseLen[i]
+
+    return TokenList
+
+
 def Tokenize(Sentence):
     Sentence = Sentence.strip()
     if utils.IsAscii(Sentence):
-        TokenList = Tokenize_space(Sentence)
+        TokenList = Tokenize_Space(Sentence)
 
         # if FeatureOntology._FeatureSet:
             #this part is to get tokenize from webservice. not actually practical.
@@ -444,59 +503,63 @@ def Tokenize(Sentence):
         # ret_t = requests.post(TokenizeURL, data=Sentence)
         # nodes_t = jsonpickle.decode(ret_t.text)
     else:
-        TokenizeURL = ParserConfig.get("main", "url_ch") + "/TokenizeJson/"
-        #ret_t = requests.get(TokenizeURL + Sentence)
+        TokenList = Tokenize_Lexicon(Sentence)
+        tl = old_Tokenize_cn(Sentence)
 
-        data = {'Sentence': URLEncoding(Sentence)}
-        try:
-            ret = requests.get(TokenizeURL, params=data)
-        except requests.exceptions.ConnectionError as e:
-            #logging.error(str(e))
-            logging.error(data)
-            return None
-        if ret.status_code>399:
-            logging.error("Return code:" + str(ret.status_code))
-            logging.error(data)
-            return None
-        segmented = ret.text
-        try:
-            Tokens = jsonpickle.decode(segmented)
-        except ValueError as e:
-            logging.error("Can't be process:")
-            logging.error(segmented)
-            logging.error(data)
-            logging.error(str(e))
-            return None
+        print(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        print(tl.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-        #logging.info("segmented text=\n" + segmented)
-
-        # Tokens = []
-        TokenList = SentenceLinkedList()
-        for token in Tokens:
-
-            token.populatedefaultvalue()
-            TokenList.append(token)
-
-        #logging.info("Tokens encode text=\n" + jsonpickle.encode(Tokens))
-        # segmented = segmented.replace("\/", IMPOSSIBLESTRING)
-        # blocks = segmented.split("/")
-        # Tokens = []
-        # for block in blocks:
-        #     block = block.replace(IMPOSSIBLESTRING, "/")
-        #     WordPropertyPair = block.split(":")
-        #     Element = SentenceNode(WordPropertyPair[0])
-        #     if len(WordPropertyPair)>1:
-        #         features = WordPropertyPair[1]
-        #         for feature in features.split():
-        #             featureid = FeatureOntology.GetFeatureID(feature)
-        #             Element.features.add(featureid)
-        #
-        #     Tokens.append(Element)
     return TokenList
 
 
+def old_Tokenize_cn(Sentence):
+
+    TokenizeURL = ParserConfig.get("main", "url_ch") + "/TokenizeJson/"
+    #ret_t = requests.get(TokenizeURL + Sentence)
+
+    data = {'Sentence': URLEncoding(Sentence)}
+    try:
+        ret = requests.get(TokenizeURL, params=data)
+    except requests.exceptions.ConnectionError as e:
+        #logging.error(str(e))
+        logging.error(data)
+        return None
+    if ret.status_code>399:
+        logging.error("Return code:" + str(ret.status_code))
+        logging.error(data)
+        return None
+    segmented = ret.text
+    try:
+        Tokens = jsonpickle.decode(segmented)
+    except ValueError as e:
+        logging.error("Can't be process:")
+        logging.error(segmented)
+        logging.error(data)
+        logging.error(str(e))
+        return None
+
+    #logging.info("segmented text=\n" + segmented)
+
+    # Tokens = []
+    TokenList = SentenceLinkedList()
+    for token in Tokens:
+
+        token.populatedefaultvalue()
+        TokenList.append(token)
+
+    return TokenList
+
+def LoopTest1(n):
+    for _ in range(n):
+        Tokenize_Lexicon('中文规则很长很长中文规则很长很长')
+
+
+def LoopTest2(n):
+    for _ in range(n):
+        old_Tokenize_cn('中文规则很长很长中文规则很长很长')
+
 if __name__ == "__main__":
-    logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig( level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     target = "This is a 'bad_sentence', not a word. Don't classify it as a character."
     target = """PassiveSimpleING = {<"being|getting" [RB:^.R]? [VBN|ED:VG Passive Simple Ing]>};"""
     print(target)
@@ -507,11 +570,20 @@ if __name__ == "__main__":
     print("\n\n My tokenization:")
     nodes = Tokenize(target)
 
-    import cProfile, pstats
+    # import ProcessSentence
+    # ProcessSentence.LoadCommon()  # too heavy to load for debugging
 
-    cProfile.run("Tokenize('中文变化规则很长很长')", 'restats')
-    p = pstats.Stats('restats')
-    p.sort_stats('time').print_stats(10)
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+    Lexicon.LoadSegmentLexicon()
+
+    import cProfile, pstats
+    cProfile.run("LoopTest2(100)", 'restats')
+    pstat = pstats.Stats('restats')
+    pstat.sort_stats('time').print_stats(10)
+
+    cProfile.run("LoopTest1(100)", 'restatslex')
+    pstat = pstats.Stats('restatslex')
+    pstat.sort_stats('time').print_stats(10)
 
 
 

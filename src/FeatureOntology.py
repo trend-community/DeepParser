@@ -295,6 +295,7 @@ def GetFeatureName(featureID):
             ret.raise_for_status()
         except requests.exceptions.HTTPError as e:
             logging.error(e)
+            logging.error("Link = " + GetFeatureNameURL)
             return ""
         return ret.text
 
