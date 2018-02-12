@@ -84,19 +84,19 @@ def TrimNeighbours(size = 3):
         NeighbourList[i] = {k:NeighbourList[i][k] for k in sorted(NeighbourList[i], key=NeighbourList[i].get, reverse=True)[:size] }
 
 
-DistanceCache = {}
+#DistanceCache = {}
 def Distance(a, b, a_neighbourdict, a_neighbourset):
-    if (b, a) in DistanceCache:
-        return DistanceCache[(b, a)]
-    if (a, b) in DistanceCache:
-        return DistanceCache[(a, b)]
+    # if (b, a) in DistanceCache:
+    #     return DistanceCache[(b, a)]
+    # if (a, b) in DistanceCache:
+    #     return DistanceCache[(a, b)]
 
     intersec = a_neighbourset.intersection(NeighbourList[b].keys())
     distance = 0
     if intersec:
         distance = sum([(1 - abs(a_neighbourdict[x] - NeighbourList[b][x]) / (a_neighbourdict[x] + NeighbourList[b][x]))
                         for x in intersec])    / len(a_neighbourdict)
-        DistanceCache[(a, b)] = distance
+#        DistanceCache[(a, b)] = distance
     return distance
 
 
