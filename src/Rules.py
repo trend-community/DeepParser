@@ -330,8 +330,8 @@ class Rule:
             logging.warning(self.Origin)
 
         if c.HeadConfidence < 2 :
-            logging.warning("HeadConfidence is low: " + str(c.HeadConfidence) + " Head might be in a chunk.  check the action!")
-            logging.warning(self.Origin)
+            logging.debug("HeadConfidence is low: " + str(c.HeadConfidence) + " Head might be in a chunk.  check the action!")
+            logging.debug(self.Origin)
         c.StringChunkLength = c.Length - VirtualTokenNum
         return c
 
@@ -391,6 +391,10 @@ def Tokenize(RuleContent):
                     TokenList.append(node)
                     i = EndOfToken
                     break
+                else:
+                    logging.error("Can't find paired content in rule")
+                    logging.error(RuleContent)
+                    raise RuntimeError("rule compilation error")
 
         i += 1
 

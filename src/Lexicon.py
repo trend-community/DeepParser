@@ -179,14 +179,14 @@ def LoadSegmentLexicon():
 
     #_LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
 
-    XLocation = '../../fsa/X/'
+    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
     lexiconLocation = XLocation + 'main2017.txt'
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             word, _ = SeparateComment(line)
             if word:
                 word = word.replace("/", "")
-                _LexiconSegmentDict[word] = 0.8
+                _LexiconSegmentDict[word] = 0.9
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
     lexiconLocation = XLocation + 'AllLexicon.txt'

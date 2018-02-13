@@ -173,7 +173,7 @@ if __name__ == "__main__":
     p = pstats.Stats('restats')
     p.sort_stats('time').print_stats(20)
 
-    LoadCorpus(args.corpusfile)
+    #LoadCorpus(args.corpusfile)
 
     TrimNeighbours(int(args.neighboursize))
 

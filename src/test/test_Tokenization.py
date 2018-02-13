@@ -68,7 +68,7 @@ class TokenizationTest(unittest.TestCase):
     def testGet(self):
         t = "中文语义识别研究"
 
-        Lexicon.Lo
+        Lexicon.LoadSegmentLexicon()
 
         NodeList = Tokenize(t)
         print(NodeList)
@@ -78,3 +78,8 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(NodeList.get(3).text, "研究")
         with self.assertRaises(RuntimeError):
             NodeList.get(4)
+
+        t = "很少有科普"
+        NodeList = Tokenize(t)
+        self.assertEqual(NodeList.size, 3)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
