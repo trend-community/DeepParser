@@ -481,12 +481,15 @@ def _Tokenize_Lexicon(sentence, lexicononly=False):
 
     ## forward path: fill up "best"
     for i in range(2, sentLen + 1):
-        for j in range(1, i ):
-            singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
-            if  lexicononly and singlevalue == 0.9:
-                continue
-            value = singlevalue * (i+1-j)
-            if value != 0 and value + bestScore[j-1] > bestScore[i]:
+        for j in range(1, i+1 ):
+            if j == i:
+                value = 0.5
+            else:
+                singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
+                if  lexicononly and singlevalue < 1:
+                    continue
+                value = singlevalue * (i+1-j)*(i+1-j)
+            if value + bestScore[j-1] > bestScore[i]:
                 bestPhraseLen[i] = i+1 - j
                 bestScore[i] = value + bestScore[j-1]
 
@@ -595,8 +598,8 @@ if __name__ == "__main__":
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     Lexicon.LoadSegmentLexicon()
 
-    Tokenize('线上线下来都可以很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
-    old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
+    Tokenize('线上线下来都可以 很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
+    #old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
 
     # import cProfile, pstats
     # cProfile.run("LoopTest2(100)", 'restats')
