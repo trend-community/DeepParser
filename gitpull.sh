@@ -1,16 +1,16 @@
 #!/bin/bash
 
-cd ..
+cd ~/git
 
 cd fsa
-git checkout X/summaryLex.txt
+#git checkout X/summaryLex.txt
 git pull
  git log --pretty=format:'%h' -n 1 > ../parser/revision.txt 
 
-cd ../multisegmental
+#cd ../multisegmental
 #git checkout .
-git pull
-mvn package
+#git pull
+#mvn package
 #find . -name "*.java" -delete
 
 
