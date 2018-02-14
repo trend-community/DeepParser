@@ -65,7 +65,7 @@ class TokenizationTest(unittest.TestCase):
         print(NodeList.get(0).CleanOutput().toJSON())
 
 
-    def testGet(self):
+    def testSegmentation(self):
         t = "中文语义识别研究"
 
         Lexicon.LoadSegmentLexicon()
@@ -83,3 +83,8 @@ class TokenizationTest(unittest.TestCase):
         NodeList = Tokenize(t)
         self.assertEqual(NodeList.size, 3)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+
+        t = "很少有 科普"
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 4)
