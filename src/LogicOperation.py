@@ -269,12 +269,19 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
             strToken.features.remove(-1)
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
+            logging.warning("Found a feature of rule that is not a feature in feature.txt")
+            logging.warning("This should not happen. Please rewirte the rule for compilation.")
+            logging.warning("Rule=" + str(RuleTokens))
             return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
         else:
             if featureID and featureID in strToken.features:
                 return True
             else:
-                return False
+                if featureID == FeatureID_0 and \
+                        (not hasattr(strToken, "sons") or len(strToken.sons) == 0):
+                    return True     #special case, for "0": if no son, then it is true.
+                else:
+                    return False
 
     AndBlocks = [x.strip() for x in re.split(" ", rule)]
     if len(AndBlocks) > 1:
