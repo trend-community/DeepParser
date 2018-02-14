@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash  
 
 cd ~/git
 
@@ -6,6 +6,9 @@ cd fsa
 #git checkout X/summaryLex.txt
 git pull
  git log --pretty=format:'%h' -n 1 > ../parser/revision.txt 
+cd X
+sh SegmentSlash.sh
+cd ..
 
 #cd ../multisegmental
 #git checkout .
