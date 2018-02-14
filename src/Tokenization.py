@@ -1,6 +1,6 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
-import logging, requests, jsonpickle
+import requests
 import FeatureOntology, Lexicon
 import utils    #for the Feature_...
 from utils import *
@@ -172,11 +172,11 @@ class SentenceLinkedList:
                 NewNode.Head0Text = HeadNode.Head0Text
 
         if utils.FeatureID_JS2 in startnode.features:
-            NewNode.features.add(utils.FeatureID_JS2)
+            NewNode.ApplyFeature(utils.FeatureID_JS2)
         if utils.FeatureID_JM2 in endnode.features:
-            NewNode.features.add(utils.FeatureID_JM2)
+            NewNode.ApplyFeature(utils.FeatureID_JM2)
         if utils.FeatureID_JM in endnode.features:
-            NewNode.features.add(utils.FeatureID_JM)
+            NewNode.ApplyFeature(utils.FeatureID_JM)
 
         NewNode.prev = startnode.prev
         if startnode != self.head:
@@ -200,7 +200,7 @@ class SentenceLinkedList:
             return None
         length = self.size
         start = 0
-        if KeepOrigin == False:
+        if not KeepOrigin:
             start = 1       #remove the first token (JS)
             if self.tail.text == "":
                 length -= 1 #remove the JM token if it is blank
@@ -226,23 +226,23 @@ class SentenceNode(object):
         Lexicon.ApplyWordLengthFeature(self)
         self.Head0Text = ''
 
-        #From webservice, only word/StartOffset/features are set,
-        #    and the features are "list", need to change to "set"
-    def populatedefaultvalue(self):
-        self.text = self.word
-        self.norm = self.text.lower()
-        self.atom = self.text.lower()
-        self.features = set()
-        for featurename in self.featurenames:
-            self.ApplyFeature(FeatureOntology.GetFeatureID(featurename))
-
-        self.EndOffset = self.StartOffset + len(self.text)
-        self.sons = []
-        self.next = None
-        self.prev = None
-        self.sons = []
-        self.UpperRelationship = ''
-        self.Head0Text = ''
+    #     #From webservice, only word/StartOffset/features are set,
+    #     #    and the features are "list", need to change to "set"
+    # def populatedefaultvalue(self):
+    #     self.text = self.word
+    #     self.norm = self.text.lower()
+    #     self.atom = self.text.lower()
+    #     self.features = set()
+    #     for featurename in self.featurenames:
+    #         self.ApplyFeature(FeatureOntology.GetFeatureID(featurename))
+    #
+    #     self.EndOffset = self.StartOffset + len(self.text)
+    #     self.sons = []
+    #     self.next = None
+    #     self.prev = None
+    #     self.sons = []
+    #     self.UpperRelationship = ''
+    #     self.Head0Text = ''
 
     def __str__(self):
         output = "[" + self.text + "] "
@@ -432,6 +432,7 @@ def Tokenize_CnEnMix(sentence):
     subsentence = []
     subsentence_isascii = []
     isascii = True
+    isascii_prev = True     #will be overwritten immediately when i==0
     substart = 0
     for i in range(len(sentence)):
         isascii = IsAscii(sentence[i])
@@ -484,7 +485,7 @@ def _Tokenize_Lexicon(sentence, lexicononly=False):
             singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
             if  lexicononly and singlevalue == 0.9:
                 continue
-            value = singlevalue * (i-j)
+            value = singlevalue * (i+1-j)
             if value != 0 and value + bestScore[j-1] > bestScore[i]:
                 bestPhraseLen[i] = i+1 - j
                 bestScore[i] = value + bestScore[j-1]
@@ -493,7 +494,10 @@ def _Tokenize_Lexicon(sentence, lexicononly=False):
     i = sentLen
     while i > 0:
         segment = sentence[i - bestPhraseLen[i]:i]
-        if bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] == 0.9:
+        segmentslashed = TrySlash(segment)
+        if segmentslashed:
+            segments = segmentslashed + segments
+        elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
             #from main2007.txt, not trustworthy
             subsegments = _Tokenize_Lexicon(segment, True)
             segments = subsegments + segments
@@ -502,6 +506,13 @@ def _Tokenize_Lexicon(sentence, lexicononly=False):
         i = i - bestPhraseLen[i]
 
     return segments
+
+
+def TrySlash(seg):
+    if seg in Lexicon._LexiconSegmentSlashDict:
+        return Lexicon._LexiconSegmentSlashDict[seg].split("/")
+    else:
+        return None
 
 
 def Tokenize(Sentence):
@@ -577,23 +588,24 @@ def LoopTest2(n):
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
+    logging.info("Start")
     # import ProcessSentence
     # ProcessSentence.LoadCommon()  # too heavy to load for debugging
 
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     Lexicon.LoadSegmentLexicon()
 
-    Tokenize('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
+    Tokenize('线上线下来都可以很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
     old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
 
-    import cProfile, pstats
-    cProfile.run("LoopTest2(100)", 'restats')
-    pstat = pstats.Stats('restats')
-    pstat.sort_stats('time').print_stats(10)
-
-    cProfile.run("LoopTest1(100)", 'restatslex')
-    pstat = pstats.Stats('restatslex')
-    pstat.sort_stats('time').print_stats(10)
+    # import cProfile, pstats
+    # cProfile.run("LoopTest2(100)", 'restats')
+    # pstat = pstats.Stats('restats')
+    # pstat.sort_stats('time').print_stats(10)
+    #
+    # cProfile.run("LoopTest1(100)", 'restatslex')
+    # pstat = pstats.Stats('restatslex')
+    # pstat.sort_stats('time').print_stats(10)
 
 
 

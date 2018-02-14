@@ -17,6 +17,7 @@ _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
 _LexiconSegmentDict = {}    # from main2017. used for segmentation onln. there is no feature.
+_LexiconSegmentSlashDict = {}   #
 
 #_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
@@ -189,20 +190,37 @@ def LoadSegmentLexicon():
                 _LexiconSegmentDict[word] = 0.9
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
-    lexiconLocation = XLocation + 'AllLexicon.txt'
-    with open(lexiconLocation, encoding='utf-8') as dictionary:
-        for line in dictionary:
-            code, _ = SeparateComment(line)
-            if word:
-                word = code.split("\t")[0]
-                word = word.replace("/", "")
+    if _LexiconDict:
+        for word in _LexiconDict:
+            if word not in _LexiconLookupSet[LexiconLookupSource.defLex] \
+                and word not in _LexiconLookupSet[LexiconLookupSource.External]:
                 _LexiconSegmentDict[word] = 1.2
+    else:
+        lexiconLocation = XLocation + 'AllLexicon.txt'
+        with open(lexiconLocation, encoding='utf-8') as dictionary:
+            for line in dictionary:
+                code, _ = SeparateComment(line)
+                if code:
+                    word = code.split(":")[0]
+                    word = word.replace("/", "")
+                    _LexiconSegmentDict[word] = 1.2
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
     for word in _LexiconLookupSet[LexiconLookupSource.External]:
         _LexiconSegmentDict[word] = 1
 #    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+
+    lexiconLocation = XLocation + 'SegmentSlash.txt'
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if word:
+                combinedword = word.replace("/", "")
+                _LexiconSegmentSlashDict[combinedword] = word
+                _LexiconSegmentDict[combinedword] = 1.2
+    logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
+
 
 
 def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
@@ -441,9 +459,7 @@ def ApplyLexicon(node, lex=None):
 def LexiconLookup(strTokens, lookupsource):
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth+1)]
-    combinedText = ''
-    combinedCount = 0
-    p = strTokens.head
+
     i = 0
 
     logging.info("LexiconLookup " + lookupsource.name + "  size:" + str(len(_LexiconLookupSet[lookupsource])))
