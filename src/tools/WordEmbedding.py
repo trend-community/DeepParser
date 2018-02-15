@@ -33,17 +33,19 @@ def WindowPush(s, i, w):
     existingwords = list(w.keys())
     if len(s) >= i+2:
         newwordid = InsertOrGetID( s[i:i+2])
-        w[newwordid] = neighbourwindowsize
-        newrelationship = [(newwordid, oldid) for oldid in existingwords
-                                if len(WordList2[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
-                           ]
+        if newwordid >= 0:
+            w[newwordid] = neighbourwindowsize
+            newrelationship = [(newwordid, oldid) for oldid in existingwords
+                                    if len(WordList2[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
+                               ]
 
     if len(s) >= i+3:
         newwordid = InsertOrGetID( s[i:i+3])
-        w[newwordid] = neighbourwindowsize
-        newrelationship.extend([(newwordid, oldid) for oldid in existingwords
-                                if len(WordList2[oldid]) < 3 or w[oldid] < neighbourwindowsize - 1
-                            ])
+        if newwordid >= 0:
+            w[newwordid] = neighbourwindowsize
+            newrelationship.extend([(newwordid, oldid) for oldid in existingwords
+                                    if len(WordList2[oldid]) < 3 or w[oldid] < neighbourwindowsize - 1
+                                ])
 
     return newrelationship
 
@@ -55,7 +57,9 @@ def InsertOrGetID( word):
             WordList2.append(word)
             frequencypair = defaultdict(int)
             NeighbourList.append(frequencypair)
-    return WordDict[word]
+
+
+    return WordDict.get(word, -1)
 
 
 def ImportCorpus(line):
