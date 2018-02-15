@@ -50,11 +50,11 @@ def WindowPush(s, i, w):
 
 def InsertOrGetID( word):
     if word not in WordDict:
-
-        WordDict[word] = len(WordList2)
-        WordList2.append(word)
-        frequencypair = defaultdict(int)
-        NeighbourList.append(frequencypair)
+        if word in QueryWords or word in LexiconWords:
+            WordDict[word] = len(WordList2)
+            WordList2.append(word)
+            frequencypair = defaultdict(int)
+            NeighbourList.append(frequencypair)
     return WordDict[word]
 
 
@@ -168,6 +168,9 @@ if __name__ == "__main__":
     neighbourwindowsize = int(args.neighbourwindowsize)
     logging.info("Start.")
 
+    QueryWords = LoadFile(args.querywordfile)
+    LexiconWords = LoadFile(args.lexiconwordfile, '\t')
+
     import cProfile, pstats
     cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
     p = pstats.Stats('restats')
@@ -177,8 +180,6 @@ if __name__ == "__main__":
 
     TrimNeighbours(int(args.neighboursize))
 
-    QueryWords = LoadFile(args.querywordfile)
-    LexiconWords = LoadFile(args.lexiconwordfile, '\t')
 
     for q in QueryWords:
         # cProfile.run("SimilarWord(q)", 'sw')

@@ -160,7 +160,7 @@ def FindSubtree(root, pointers):
             return FindSubtree(son, pointers)
 
     #if come to here, then no relation and no head is found.
-    logging.warning("Found no relation for:" + str(pointers))
+    logging.debug("This string has no relation of:" + str(pointers))
     return None
 
 CombinedPattern = re.compile('[| !]')
