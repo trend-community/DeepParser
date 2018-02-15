@@ -1,6 +1,6 @@
 #!/usr/bin/env bash  
-
-cd ~/git
+#echo "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 cd fsa
 #git checkout X/summaryLex.txt
