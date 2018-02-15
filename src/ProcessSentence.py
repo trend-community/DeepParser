@@ -339,6 +339,8 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt', lookupSource=LexiconLookupSource.External)
 
     Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
+    Lexicon.LoadCuobiezie(XLocation + 'CuobieziX.txt')
+
     LoadPipeline(XLocation + 'pipelineX.txt')
 
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))

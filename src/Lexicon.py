@@ -18,6 +18,7 @@ _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
 _LexiconSegmentDict = {}    # from main2017. used for segmentation onln. there is no feature.
 _LexiconSegmentSlashDict = {}   #
+_LexiconCuobieziDict = {}
 
 #_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
@@ -221,6 +222,16 @@ def LoadSegmentLexicon():
                 _LexiconSegmentDict[combinedword] = 1.2
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 
+
+def LoadCuobiezie(lexiconLocation):
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            code, _ = SeparateComment(line)
+            if code and ":" in code:
+                goodword, badwords = code.split(":", 1)
+                for badword in badwords.split():
+                    _LexiconCuobieziDict[badword] = goodword
+    logging.info("Size of _LexiconCuobieziDict: " + str(len(_LexiconCuobieziDict)))
 
 
 def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):

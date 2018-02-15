@@ -435,6 +435,8 @@ def Tokenize_CnEnMix(sentence):
     isascii = True
     isascii_prev = True     #will be overwritten immediately when i==0
     substart = 0
+    sentence = ReplaceCuobiezi(sentence)
+
     for i in range(len(sentence)):
         isascii = IsAscii(sentence[i])
         if i == 0:
@@ -469,6 +471,12 @@ def Tokenize_CnEnMix(sentence):
     logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
     return TokenList
 
+
+def ReplaceCuobiezi(sentence):
+    for k, v in Lexicon._LexiconCuobieziDict.items():
+        if k in sentence:
+            sentence = sentence.replace(k, v)
+    return sentence
 
 
 def _Tokenize_Lexicon(sentence, lexicononly=False):
@@ -598,18 +606,19 @@ if __name__ == "__main__":
 
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     Lexicon.LoadSegmentLexicon()
+    Lexicon.LoadCuobiezie('../../fsa/X/' + 'CuobieziX.txt')
 
     Tokenize('线上线下来都可以 很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
     #old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
 
-    # import cProfile, pstats
-    # cProfile.run("LoopTest2(100)", 'restats')
-    # pstat = pstats.Stats('restats')
-    # pstat.sort_stats('time').print_stats(10)
-    #
-    # cProfile.run("LoopTest1(100)", 'restatslex')
-    # pstat = pstats.Stats('restatslex')
-    # pstat.sort_stats('time').print_stats(10)
+    import cProfile, pstats
+    cProfile.run("LoopTest2(100)", 'restats')
+    pstat = pstats.Stats('restats')
+    pstat.sort_stats('time').print_stats(10)
+
+    cProfile.run("LoopTest1(100)", 'restatslex')
+    pstat = pstats.Stats('restatslex')
+    pstat.sort_stats('time').print_stats(10)
 
 
 
