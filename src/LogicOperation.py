@@ -190,16 +190,11 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
 
-        if utils.FeatureID_0 not in strToken.features:
-            if RuleTokens[RulePosition].word.startswith("0") or RuleTokens[RulePosition].word.startswith("[0"):
-                logging.error("Checking feature 0 should be the first task in current rule. should not get to here")
-                logging.error(jsonpickle.dumps(RuleTokens[0]))
-                raise RuntimeError("Logic Error for checking feature 0")
+        if not hasattr(RuleTokens[RulePosition], 'features') or utils.FeatureID_0 not in RuleTokens[RulePosition].features:   # strToken.features:
+            if strToken.Head0Text:
+                word = strToken.Head0Text
             else:
-                if strToken.Head0Text:
-                    word = strToken.Head0Text
-                else:
-                    word = strToken.text
+                word = strToken.text
                 #logging.debug("Rule Not 0:" + rule + " of " + RuleTokens[RulePosition].word + " for: " + word)
         else:
 #            if RuleTokens[RulePosition].word.startswith("0") or RuleTokens[RulePosition].word.startswith("[0"):
@@ -273,15 +268,13 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
             logging.warning("This should not happen. Please rewirte the rule for compilation.")
             logging.warning("Rule=" + str(RuleTokens))
             return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
+        elif featureID == utils.FeatureID_0:
+            return True     #Ignore "0" in feature comparison.
         else:
             if featureID and featureID in strToken.features:
                 return True
             else:
-                if featureID == FeatureID_0 and \
-                        (not hasattr(strToken, "sons") or len(strToken.sons) == 0):
-                    return True     #special case, for "0": if no son, then it is true.
-                else:
-                    return False
+                return False
 
     AndBlocks = [x.strip() for x in re.split(" ", rule)]
     if len(AndBlocks) > 1:

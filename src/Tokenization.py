@@ -196,7 +196,8 @@ class SentenceLinkedList:
         return NewNode
 
     def root(self, KeepOrigin=False):
-        if self.size <= 1:
+        if self.size < 1:
+            logging.warning("A root with size 0!")
             return None
         length = self.size
         start = 0
