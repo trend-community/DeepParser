@@ -3,7 +3,9 @@
 cd "$(dirname "$0")/.."
 
 cd fsa
-#git checkout X/summaryLex.txt
+git checkout X/summaryLex.txt
+git checkout X/SegmentSlash.txt
+
 git pull
  git log --pretty=format:'%h' -n 1 > ../parser/revision.txt 
 cd X

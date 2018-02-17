@@ -473,9 +473,16 @@ def Tokenize_CnEnMix(sentence):
 
 
 def ReplaceCuobiezi(sentence):
-    for k, v in Lexicon._LexiconCuobieziDict.items():
-        if k in sentence:
-            sentence = sentence.replace(k, v)
+    from tools.replace import Converter
+
+    c = Converter('zh-hans', Lexicon._LexiconCuobieziDict)
+    sentence = c.convert(sentence)
+    c2 = Converter('zh-hans')
+    sentence = c2.convert(sentence)
+
+    # for k, v in Lexicon._LexiconCuobieziDict.items():
+    #     if k in sentence:
+    #         sentence = sentence.replace(k, v)
     return sentence
 
 
@@ -590,12 +597,12 @@ def old_Tokenize_cn(Sentence):
 
 def LoopTest1(n):
     for _ in range(n):
-        Tokenize('中文规则很长 very long , 是不？')
+        Tokenize('響著錄中文规则很长 very long , 为啥是不？')
 
 
 def LoopTest2(n):
     for _ in range(n):
-        old_Tokenize_cn('中文规则很长 very long , 是不？')
+        old_Tokenize_cn('響著錄中文规则很长 very long , 为啥是不？')
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
