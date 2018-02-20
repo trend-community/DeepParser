@@ -194,7 +194,12 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
             if strToken.Head0Text:
                 word = strToken.Head0Text
             else:
-                word = strToken.text
+                if matchtype == "text":
+                    word = strToken.text
+                elif matchtype == "norm":
+                    word = strToken.norm
+                else:
+                    word = strToken.atom
                 #logging.debug("Rule Not 0:" + rule + " of " + RuleTokens[RulePosition].word + " for: " + word)
         else:
 #            if RuleTokens[RulePosition].word.startswith("0") or RuleTokens[RulePosition].word.startswith("[0"):
@@ -216,6 +221,10 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
 
 
 def LogicMatchText(ruletext, stringtext):
+    if ruletext == '？':
+        pass
+    if ruletext == '?':
+        pass
     AndBlocks = [x.strip() for x in re.split(" ", ruletext)]
     if len(AndBlocks) > 1:
         Result = True
