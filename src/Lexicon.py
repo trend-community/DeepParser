@@ -219,7 +219,7 @@ def LoadSegmentLexicon():
             if word:
                 combinedword = word.replace("/", "")
                 _LexiconSegmentSlashDict[combinedword] = word
-                _LexiconSegmentDict[combinedword] = 1.2
+                _LexiconSegmentDict[combinedword] = 1.2     #these words from main2017 and 60ngramMain.txt also join segmentation.
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 
 
