@@ -529,8 +529,14 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
         segment = sentence[i - bestPhraseLen[i]:i]
         segmentslashed = TrySlash(segment)
         if segmentslashed:
-
-            segments = segmentslashed + segments
+            if Lexicon._LexiconSegmentDict[segment] < 1:
+                temp_segments = []
+                for segmentslashed in segmentslashed:
+                    subsegments = _Tokenize_Lexicon_maxweight(segmentslashed, True)
+                    temp_segments += subsegments
+                segments = temp_segments + segments
+            else:
+                segments = segmentslashed + segments
         elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
             #from main2007.txt, not trustworthy
             subsegments = _Tokenize_Lexicon_maxweight(segment, True)
