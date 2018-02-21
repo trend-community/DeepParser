@@ -1,4 +1,4 @@
-import logging, re, requests, jsonpickle, traceback, os
+import traceback
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
@@ -73,15 +73,16 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
             if hasattr(ruleTokens[i], "SubtreePointer"):
                 StartPosition -= 1  # do not skip to next strToken, if this Subtree Rule is matched.
         except RuntimeError as e:
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i).word)
+            logging.error("Error in HeadMatch rule:" + str(ruleTokens))
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text)
             logging.error(e)
             # raise
         except Exception as e:
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i).word )
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
         except IndexError as e:
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i).word )
+            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
     RemoveTempPointer(strTokenList)
@@ -339,7 +340,8 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt', lookupSource=LexiconLookupSource.External)
 
     Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
-    Lexicon.LoadCuobiezie(XLocation + 'CuobieziX.txt')
+    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
+    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 

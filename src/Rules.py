@@ -256,7 +256,7 @@ class Rule:
     def ExtractParentSonActions( actinstring):
         actions = actinstring.split()
         SonActionString = " ".join([a for a in actions if a[-2:] != "++" and a[0] != '^' or a == '+++' ])
-        ParentActions = [a[:-2] for a in actions if a[-2:] == "++" and a != '+++']
+        ParentActions = [a for a in actions if a[-2:] == "++" and a != '+++']
         ParentActions.extend( [a for a in actions if a[0] == "^"]        )
         ParentActionString = " ".join(ParentActions)
 

@@ -3,6 +3,22 @@
 # -*- coding: utf-8 -*-
 # copy fom wikipedia
 
+#1, copy second part zh2Hans to Fanti.txt;
+#2, revert left/right
+#    perl -pi -e 's/(.*)\: (.*)/$2\:$1/g' Fanti.txt
+#3, copy first part zh2Hans to Fanti.txt
+#4, remove  everything else
+#    perl -pi -e "s/[\', ]//g" Fanti.txt
+#    grep : Fanti.txt > Fanti1.txt
+# sort Fanti1.txt | uniq -u > Fanti.txt
+# Note: after doing all these, we have 10122 entries.
+# The zh2Hant has 10009 entries. Not worth the trouble.
+# so we only need the entries in zh2Hant!
+# 1, copy zh2Hant into Fanti1.txt
+# 2, remove  everything else
+#    perl -pi -e "s/[\', ]//g" Fanti1.txt
+#    grep : Fanti1.txt > Fanti.txt
+
 zh2Hant = {
 '㐽': '偑',
 '㑇': '㑳',

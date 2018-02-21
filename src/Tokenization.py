@@ -165,7 +165,7 @@ class SentenceLinkedList:
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
             HeadNode = self.get(start+headindex)
             NewNode.features.update([f for f in HeadNode.features if f not in FeatureOntology.NotCopyList] )
-            FeatureOntology.ProcessBarTags(NewNode.features)
+            #FeatureOntology.ProcessBarTags(NewNode.features)
             if utils.FeatureID_0 in HeadNode.features:
                 NewNode.Head0Text = HeadNode.text
             else:
@@ -268,18 +268,20 @@ class SentenceNode(object):
         return output.strip()
 
     def ApplyFeature(self, featureID):
+#        == do the bartag in here?
         self.features.add(featureID)
         FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
         if FeatureNode and FeatureNode.ancestors:
             self.features.update(FeatureNode.ancestors)
 
     def ApplyActions(self, actinstring):
-
         Actions = actinstring.split()
         logging.debug("Word:" + self.text)
 
         if "NEW" in Actions:
             self.features = set()
+
+        HasBartagAction = False
         for Action in Actions:
             if Action == "NEW":
                 continue  # already process before.
@@ -299,17 +301,24 @@ class SentenceNode(object):
                     self.features.remove(FeatureID)
                 continue
 
-            if Action[-1] == "+" and Action != "+++":
-                MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
-                if Action.strip("+") in MajorPOSFeatures:
-                    for conflictfeature in MajorPOSFeatures:
-                        conflictfeatureid = FeatureOntology.GetFeatureID(conflictfeature)
-                        if conflictfeatureid in self.features:
-                            self.features.remove(conflictfeatureid)
-                            # TODO: Might also remove the child features of them. Check spec.
+            if Action[-1] == "+":
+                if Action[-2] == "+":
+                    if Action[-3] == "+":    #"+++"
+                        self.ApplyFeature(utils.FeatureID_0)
+                    else:                   #"X++":
+                        #this should be in a chunk, only apply to the new node
+                        HasBartagAction = True
+                        FeatureID = FeatureOntology.GetFeatureID(Action.strip("++"))
+                        self.ApplyFeature(FeatureID)
+                else:                       #"X+"
+                #MajorPOSFeatures = ["A", "N", "P", "R", "RB", "X", "V"]
+                #Feb 20, 2018: use the BarTagIDs[0] as the MajorPOSFeatures.
+                    for bar0id in FeatureOntology.BarTagIDs[0]:
+                        if bar0id in self.features:
+                            self.features.remove(bar0id)
 
-                FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
-                self.ApplyFeature(FeatureID)
+                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
+                    self.ApplyFeature(FeatureID)
                 continue
 
             if Action[0] == "^":
@@ -323,14 +332,16 @@ class SentenceNode(object):
                 continue
 
             ActionID = FeatureOntology.GetFeatureID(Action)
-            if ActionID == FeatureOntology.GetFeatureID("Gone"):
-                self.Gone = True
+            # if ActionID == FeatureOntology.GetFeatureID("Gone"):
+            #     self.Gone = True
             if ActionID != -1:
                 self.ApplyFeature(ActionID)
-            if Action == "+++":
-                self.ApplyFeature(utils.FeatureID_0)
+            else:
+                logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
+
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
-        FeatureOntology.ProcessBarTags(self.features)
+        if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
+            FeatureOntology.ProcessBarTags(self.features)
 
     def GetFeatures(self):
         featureString = ""
@@ -435,7 +446,7 @@ def Tokenize_CnEnMix(sentence):
     isascii = True
     isascii_prev = True     #will be overwritten immediately when i==0
     substart = 0
-    sentence = ReplaceCuobiezi(sentence)
+    sentence = ReplaceCuobieziAndFanti(sentence)
 
     for i in range(len(sentence)):
         isascii = IsAscii(sentence[i])
@@ -457,7 +468,7 @@ def Tokenize_CnEnMix(sentence):
         if subsentence_isascii[i]:
             segmentedlist += _Tokenize_Space(subsentence[i])
         else:
-            segmentedlist += _Tokenize_Lexicon(subsentence[i])
+            segmentedlist += _Tokenize_Lexicon_maxweight(subsentence[i])
 
     TokenList = SentenceLinkedList()
     start = 0
@@ -472,21 +483,20 @@ def Tokenize_CnEnMix(sentence):
     return TokenList
 
 
-def ReplaceCuobiezi(sentence):
-    from tools.replace import Converter
+def ReplaceCuobieziAndFanti(sentence):
+    if not hasattr(ReplaceCuobieziAndFanti, "combinedlist"):
+        ReplaceCuobieziAndFanti.combineddict = Lexicon._LexiconCuobieziDict
+        ReplaceCuobieziAndFanti.combineddict.update(Lexicon._LexiconFantiDict)
+        ReplaceCuobieziAndFanti.combinedlist = sorted(ReplaceCuobieziAndFanti.combineddict, key=len, reverse=True)
 
-    c = Converter('zh-hans', Lexicon._LexiconCuobieziDict)
-    sentence = c.convert(sentence)
-    c2 = Converter('zh-hans')
-    sentence = c2.convert(sentence)
+    for k in ReplaceCuobieziAndFanti.combinedlist:
+        if k in sentence:
+            sentence = sentence.replace(k, ReplaceCuobieziAndFanti.combineddict[k])
 
-    # for k, v in Lexicon._LexiconCuobieziDict.items():
-    #     if k in sentence:
-    #         sentence = sentence.replace(k, v)
     return sentence
 
 
-def _Tokenize_Lexicon(sentence, lexicononly=False):
+def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
 #    TokenList = SentenceLinkedList()
     segments = []
 
@@ -504,8 +514,56 @@ def _Tokenize_Lexicon(sentence, lexicononly=False):
                 singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
                 if  lexicononly and singlevalue < 1:
                     continue
-                value = singlevalue * (i+1-j)*(i+1-j)
+                value = singlevalue * (i+1-j)
             if value + bestScore[j-1] > bestScore[i]:
+                bestPhraseLen[i] = i+1 - j
+                bestScore[i] = value + bestScore[j-1]
+            elif value + bestScore[j-1] == bestScore[i]:
+                if (i+1-j) == 2 :
+                    bestPhraseLen[i] = i + 1 - j
+                    bestScore[i] = value + bestScore[j - 1]
+
+    ## backward path: collect "best"
+    i = sentLen
+    while i > 0:
+        segment = sentence[i - bestPhraseLen[i]:i]
+        segmentslashed = TrySlash(segment)
+        if segmentslashed:
+
+            segments = segmentslashed + segments
+        elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
+            #from main2007.txt, not trustworthy
+            subsegments = _Tokenize_Lexicon_maxweight(segment, True)
+            segments = subsegments + segments
+        else:
+            segments = [sentence[i - bestPhraseLen[i]:i]] + segments
+        i = i - bestPhraseLen[i]
+
+    return segments
+
+
+def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
+#    TokenList = SentenceLinkedList()
+    segments = []
+
+    sentLen = len(sentence)
+    bestPhrase = []
+    bestPhraseLen = [1] * (sentLen+1)
+    bestScore = [i for i in range(sentLen+1)]
+
+    ## forward path: fill up "best"
+    for i in range(2, sentLen + 1):
+        for j in range(1, i+1 ):
+            if j == i:
+                value = 1
+            else:
+                singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
+                if singlevalue == 0:
+                    continue
+                if  lexicononly and singlevalue < 1:
+                    continue
+                value = (1/singlevalue) * (i+1-j)
+            if value + bestScore[j-1] < bestScore[i]:
                 bestPhraseLen[i] = i+1 - j
                 bestScore[i] = value + bestScore[j-1]
 
@@ -518,7 +576,7 @@ def _Tokenize_Lexicon(sentence, lexicononly=False):
             segments = segmentslashed + segments
         elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
             #from main2007.txt, not trustworthy
-            subsegments = _Tokenize_Lexicon(segment, True)
+            subsegments = _Tokenize_Lexicon_maxweight(segment, True)
             segments = subsegments + segments
         else:
             segments = [sentence[i - bestPhraseLen[i]:i]] + segments
@@ -600,9 +658,9 @@ def LoopTest1(n):
         Tokenize('響著錄中文规则很长 very long , 为啥是不？')
 
 
-def LoopTest2(n):
-    for _ in range(n):
-        old_Tokenize_cn('響著錄中文规则很长 very long , 为啥是不？')
+# def LoopTest2(n):
+#     for _ in range(n):
+#         old_Tokenize_cn('響著錄中文规则很长 very long , 为啥是不？')
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -613,15 +671,14 @@ if __name__ == "__main__":
 
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     Lexicon.LoadSegmentLexicon()
-    Lexicon.LoadCuobiezie('../../fsa/X/' + 'CuobieziX.txt')
+    XLocation = '../../fsa/X/'
+    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
+    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
-    Tokenize('线上线下来都可以 很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
+    x = Tokenize('科普：。，？带你看懂蜀绣冰壶比赛')
     #old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
 
     import cProfile, pstats
-    cProfile.run("LoopTest2(100)", 'restats')
-    pstat = pstats.Stats('restats')
-    pstat.sort_stats('time').print_stats(10)
 
     cProfile.run("LoopTest1(100)", 'restatslex')
     pstat = pstats.Stats('restatslex')

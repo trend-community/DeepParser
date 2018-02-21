@@ -2,13 +2,10 @@
 #read in the lookup dictionary. It is mainly used for segmenation (combining multiple tokens into one word/token)
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
-import logging, re, operator, sys, os, pickle, requests
 import string
 
 import utils
 from FeatureOntology import *
-import Tokenization
-from collections import defaultdict
 
 
 _LexiconDict = {}
@@ -19,6 +16,7 @@ _LexiconLookupSet[LexiconLookupSource.External] = set()
 _LexiconSegmentDict = {}    # from main2017. used for segmentation onln. there is no feature.
 _LexiconSegmentSlashDict = {}   #
 _LexiconCuobieziDict = {}
+_LexiconFantiDict = {}
 
 #_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
                             # the same node is also saved in _LexiconDict
@@ -223,15 +221,16 @@ def LoadSegmentLexicon():
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 
 
-def LoadCuobiezie(lexiconLocation):
+# for Cuobiezi and Fanti. The format is: good: bad1 bad2 bad3
+def LoadExtraReference(lexiconLocation, thedict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             code, _ = SeparateComment(line)
             if code and ":" in code:
                 goodword, badwords = code.split(":", 1)
                 for badword in badwords.split():
-                    _LexiconCuobieziDict[badword] = goodword
-    logging.info("Size of _LexiconCuobieziDict: " + str(len(_LexiconCuobieziDict)))
+                    thedict[badword] = goodword
+    logging.info("Size of thedict: " + str(len(thedict)))
 
 
 def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
