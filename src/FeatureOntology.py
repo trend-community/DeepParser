@@ -16,8 +16,8 @@ _FeatureOntology = []
 NotCopyList = []
 NotShowList = []
 BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC', 'CC', 'DT', 'SYM', 'punc'],
-            ['NE', 'DE', 'NG', 'AP', 'RP'],
-            ['VG'],
+            ['NE', 'DE', 'NG', 'RP'],
+            ['AP','VG'],
             ['NP'],
             ['PoP', 'PP'],
             ['VP'],
