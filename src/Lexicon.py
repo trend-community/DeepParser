@@ -412,15 +412,15 @@ def ApplyWordLengthFeature(node):
     if wordlength<1:
         pass
     elif wordlength == 1:
-        node.features.add(C1ID)
+        node.ApplyFeature(C1ID)
     elif wordlength == 2:
-        node.features.add(C2ID)
+        node.ApplyFeature(C2ID)
     elif wordlength == 3:
-        node.features.add(C3ID)
+        node.ApplyFeature(C3ID)
     elif wordlength == 4:
-        node.features.add(C4ID)
+        node.ApplyFeature(C4ID)
     else:
-        node.features.add(C4plusID)
+        node.ApplyFeature(C4plusID)
 
     return
 
@@ -437,15 +437,15 @@ def ApplyLexicon(node, lex=None):
     #     node.lexicon = SearchLexicon(node.word)
     if lex is None:
         if IsCD(node.text):
-            node.features.add(utils.FeatureID_CD)
+            node.ApplyFeature(utils.FeatureID_CD)
         elif node.text in string.punctuation:
-            node.features.add(utils.FeatureID_SYM)
+            node.ApplyFeature(utils.FeatureID_SYM)
         elif node.text == " ":
-            node.features.add(utils.FeatureID_CM)
+            node.ApplyFeature(utils.FeatureID_CM)
                 #not to apply NNP/OOV to space.
         else:
-            node.features.add(utils.FeatureID_NNP)
-            node.features.add(utils.FeatureID_OOV)
+            node.ApplyFeature(utils.FeatureID_NNP)
+            node.ApplyFeature(utils.FeatureID_OOV)
     else:
         node.norm = lex.norm
         node.atom = lex.atom
@@ -458,10 +458,11 @@ def ApplyLexicon(node, lex=None):
         _ApplyWordStem(node, lex)
         if len(node.features) == 0 or \
             len(node.features - OOVFeatureSet) == 0:
-            node.features.add(utils.FeatureID_OOV)
+            node.ApplyFeature(utils.FeatureID_OOV)
+            #node.features.add(utils.FeatureID_OOV)
 
     ApplyWordLengthFeature(node)
-    node.features.add(utils.FeatureID_0)
+    node.ApplyFeature(utils.FeatureID_0)
     return node
 
 
