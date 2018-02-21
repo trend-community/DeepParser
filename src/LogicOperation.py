@@ -190,20 +190,9 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
 
-        if not hasattr(RuleTokens[RulePosition], 'features') or utils.FeatureID_0 not in RuleTokens[RulePosition].features:   # strToken.features:
-            if strToken.Head0Text:
-                word = strToken.Head0Text
-            else:
-                if matchtype == "text":
-                    word = strToken.text
-                elif matchtype == "norm":
-                    word = strToken.norm
-                else:
-                    word = strToken.atom
-                #logging.debug("Rule Not 0:" + rule + " of " + RuleTokens[RulePosition].word + " for: " + word)
+        if (not RuleTokens[RulePosition].word.startswith("[0 "))  and strToken.Head0Text:
+            word = strToken.Head0Text
         else:
-#            if RuleTokens[RulePosition].word.startswith("0") or RuleTokens[RulePosition].word.startswith("[0"):
-#                logging.debug("Rule 0:" + rule + " of " + RuleTokens[RulePosition].word)
             if matchtype == "text":
                 word = strToken.text
             elif matchtype == "norm":
@@ -212,8 +201,6 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
                 word = strToken.atom
 
         return LogicMatchText(rule, word)
-
-
 
     else:
         logging.warning("Suspicous type:" + str(matchtype))
