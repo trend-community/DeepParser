@@ -255,9 +255,9 @@ class Rule:
     @staticmethod
     def ExtractParentSonActions( actinstring):
         actions = actinstring.split()
-        SonActionString = " ".join([a for a in actions if a[-2:] != "++" and a[0] != '^' or a == '+++' ])
+        SonActionString = " ".join([a for a in actions if a[-2:] != "++"  or a == '+++' ])
         ParentActions = [a for a in actions if a[-2:] == "++" and a != '+++']
-        ParentActions.extend( [a for a in actions if a[0] == "^"]        )
+        #ParentActions.extend( [a for a in actions if a[0] == "^"]        )
         ParentActionString = " ".join(ParentActions)
 
         return ParentActionString, SonActionString
@@ -292,7 +292,7 @@ class Rule:
             if i != StartOffset:
                 ChunkLevel += token.StartChunk
             if ChunkLevel == 1:
-                if hasattr(token, "pointer") :#and token.pointer == "H":
+                if hasattr(token, "pointer") and token.pointer == "H":
                     c.HeadConfidence = 3
                     c.HeadOffset = c.Length
                     if hasattr(token, "action"):

@@ -99,6 +99,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
 
     logging.debug("Finish loading lexicon" + lexiconLocation)
 
+
 def FeatureNotCopy():
     with open(paraFeatureNotCopy, encoding='utf-8') as file:
         for line in file:
@@ -186,9 +187,9 @@ def EnrichFeature( _LexiconDict):
     return _LexiconDict
 
 def GetStemFeatures(word):
-    for dict in dictList:
-        if word in dict.keys():
-            node = dict.get(word)
+    for d in dictList:
+        if word in d.keys():
+            node = d.get(word)
             features = node.features
             copyFeatures = features.copy()
 
@@ -654,22 +655,24 @@ def printSummaryLex():
         for dict in summary:
             if dict == _LexiconDictLexX:
                 origLoc = "LexX"
-            if dict == _LexiconDictL:
+            elif dict == _LexiconDictL:
                 origLoc = "locX"
-            if dict == _LexiconDictDefX:
+            elif dict == _LexiconDictDefX:
                 origLoc = "defLexX"
-            if dict == _LexiconDictB:
+            elif dict == _LexiconDictB:
                 origLoc = "brandX"
-            if dict == _LexiconDictI:
+            elif dict == _LexiconDictI:
                 origLoc = "idiomX"
-            if dict == _LexiconDictI4:
+            elif dict == _LexiconDictI4:
                 origLoc = "idiom4X"
-            if dict == _LexiconDictP:
+            elif dict == _LexiconDictP:
                 origLoc = "perX"
-            if dict == _LexiconDictPlus:
+            elif dict == _LexiconDictPlus:
                 origLoc = "LexXplus"
-            if dict == _LexiconDictDefPlus:
+            elif dict == _LexiconDictDefPlus:
                 origLoc = "defPlus"
+            else:
+                origLoc = "unknown"
             for word in dict.keys():
                 file.write(word + "\t" + origLoc + "\n")
 
@@ -679,16 +682,16 @@ def printSenti(posloc, negloc):
     pCID = GetFeatureID("pC")
     nCID = GetFeatureID("nC")
     with open(posloc, 'w', encoding='utf-8') as file:
-        for dict in summary:
-            for word in dict.keys():
-                node = dict.get(word)
+        for d in summary:
+            for word in d.keys():
+                node = d.get(word)
                 features = node.features
                 if pCID in features:
                     file.write(word + "\n")
     with open(negloc, 'w', encoding='utf-8') as file:
-        for dict in summary:
-            for word in dict.keys():
-                node = dict.get(word)
+        for d in summary:
+            for word in d.keys():
+                node = d.get(word)
                 features = node.features
                 if nCID in features:
                     file.write(word + "\n")

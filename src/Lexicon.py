@@ -503,6 +503,8 @@ def LexiconLookup(strTokens, lookupsource):
             NewNode = strTokens.combine(i-bestScore[i]+1, bestScore[i], -1)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
+            if lookupsource == LexiconLookupSource.External:
+                NewNode.ApplyFeature(FeatureID_External)
             NewNode.sons = []   #For lookup, eliminate the sons
             logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
