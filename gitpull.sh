@@ -24,7 +24,8 @@ cd ../parser
 git pull
 python3 -m compileall -b src
 #find . -name "*.py" -delete
- echo -n " " >> revision.txt
+# echo -n " " >> revision.txt
+echo " \c" >> revision.txt
  git log --pretty=format:'%h' -n 1 >> revision.txt
  echo "" >> revision.txt
  date >> revision.txt
