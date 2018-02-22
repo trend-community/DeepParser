@@ -1,0 +1,70 @@
+词典 features 补全说明
+
+1. 任务描述
+
+LexX.txt has 118000 entries with features.(path is fsa/X/LexX.txt)
+
+其中三字以内的词汇是 8 万多条。属于普通词汇。
+
+sample below:
+	接踵: RB follow //接踵/
+	接车: meet perF vi vn vo //接车/
+	接轨: obey vi vn vo //接轨/
+	接转: V v //接转/
+
+如上例四个条目，前三个都有 semantic features：follow，meet，obey，但是第4条就缺失了。
+
+缺的是什么？我们可以对比一下“转”字：
+
+	转: V cN freeM rotate submit
+
+rotate 与“接转”无关，但 submit 就是缺失的 feature。这时候我们可以想到另一个词“转送”：
+
+	转送: VNPPPto give pv submit vt //转送/
+
+“转”是单字词，更多义，而“转送”与“接转”更近义，features 应该相同。
+
+所以一个简单的补全 features 的办法，是为 features 贫乏的词，想出一个合适的同义词（这是手工做 word embedding）。如果几秒钟能想出来，就标上，然后我们的词典维护程序，就自动拷贝相关 features 过来。
+
+2. 操作过程
+2.1, 在 LexX.txt 中添加同义词。格式为 word: ... F /sync/
+
+以上面的例子作说明：
+
+在 LexX.txt 中，把
+
+	接转: V v //接转/
+
+修改为
+
+	接转: V v F /转送/
+
+注：
+(1) 加 F 告诉系统存在同义词 sync；
+(2) 把 //（本来是 comment）改成 /（/ ... / 存贮词的规范式）;
+(3) 把“接转”替换成想到的同义词“转送”；
+
+2.2, 运行词典维护程序 OrgLex.py (path: parser/src/, run "python3 OrgLex.py")
+如上修改之后，下次运行词典维护程序，“接转”的词条的信息就会丰富起来，跑完程序后的结果为：
+
+	接转: F V VNPPPto give pv submit vt v /转送/
+
+
+3. 其他说明
+
+3.1, 需要补全的词的范围 
+单字词可以先忽略，只做 2 字词 和 3 字词。
+
+3.2, Future Work
+上述办法不补 POS 信息（同义词不总是 POS 相同），所以下一个任务是补全 POS。
+ 
+其实只需要补全 V 动、A 形、N 名 三类。
+
+譬如：
+	转道: goRound vi vn vo //转道/
+缺少 V，应该是：
+	转道: V goRound vi vn vo //转道/
+
+因为 POS 都是大写字母，所以冒号后面没有大写的条目 都是缺失 POS
+的。
+
