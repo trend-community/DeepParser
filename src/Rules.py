@@ -1,7 +1,5 @@
-import logging, re, os, operator
-import Tokenization
+
 import copy
-# from RuleMacro import ProcessMacro
 from utils import *
 
 # import FeatureOntology
@@ -145,7 +143,7 @@ class Rule:
     def __lt__(self, other):
         return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
 
-    def SetRule(self, ruleString, MacroDict={}, ID=1):
+    def SetRule(self, ruleString, MacroDict=None, ID=1):
         self.Origin = ruleString.strip()
         code, comment = SeparateComment(ruleString)
         if not code:
@@ -254,96 +252,279 @@ class Rule:
     # update on Feb 4: Only "X++" is for new node. The rest is for Son
     @staticmethod
     def ExtractParentSonActions( actinstring):
-        actions = actinstring.split()
-        SonActionString = " ".join([a for a in actions if a[-2:] != "++"  or a == '+++' ])
+        actions = set(actinstring.split())
+        #SonActionString = " ".join([a for a in actions if a[-2:] != "++"   or a == '+++' ])
         ParentActions = [a for a in actions if a[-2:] == "++" and a != '+++']
-        #ParentActions.extend( [a for a in actions if a[0] == "^"]        )
-        ParentActionString = " ".join(ParentActions)
+        ParentActions.extend( [a for a in actions if a[0:2] == "^^"]        )
 
-        return ParentActionString, SonActionString
+        SonActions = list(actions - set(ParentActions))
 
-    def CreateChunk(self, StartOffset, StartChunkLevel):
+        return " ".join(ParentActions), " ".join(SonActions)
+
+
+    def CompileChunk(self):
+        rulebody = ''
+        for token in self.Tokens:
+            rulebody += str(token)
+
+        Chunk2_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk2   = re.match("(.*)<(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk1_2 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
+        Chunk1   = re.match("(.*)<(.+)>(.*)", rulebody)
+
+        if Chunk2_2:
+            tokencount_1 = Chunk2_2.group(1).count('[')
+            tokencount_2 = Chunk2_2.group(2).count('[')
+            tokencount_3 = Chunk2_2.group(3).count('[')
+            tokencount_4 = Chunk2_2.group(4).count('[')
+            tokencount_5 = Chunk2_2.group(5).count('[')
+            tokencount_6 = Chunk2_2.group(5).count('[')
+            c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
+            self.Chunks.append(c1)
+            c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 , tokencount_5)
+            self.Chunks.append(c2)
+
+            c = RuleChunk()
+            c.StartOffset = tokencount_1
+            c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_5
+
+            VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
+            #check the part before first inner chuck.
+            for i in range(tokencount_2):
+                token = self.Tokens[c.StartOffset + i]
+                if hasattr(token, "SubtreePointer"):
+                    VirtualTokenNum += 1
+
+                if hasattr(token, "pointer") and token.pointer == "H":
+                    c.HeadConfidence = 3
+                    c.HeadOffset = i
+                    if hasattr(token, "action"):
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                    if c.HeadOffset < 3:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+                        else:
+                            c.Action = ''
+                elif "^." not in token.action:
+                    if c.HeadConfidence < 2:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+            #check the part after first inner chuck, before second inner chuck.
+            for i in range(tokencount_4):
+                token = self.Tokens[c.StartOffset + tokencount_2 + 1 + i]
+                if hasattr(token, "SubtreePointer"):
+                    VirtualTokenNum += 1
+
+                if hasattr(token, "pointer") and token.pointer == "H":
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 + 1 + i
+                    if hasattr(token, "action"):
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                    if c.HeadOffset < 3:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = tokencount_2 + 1 + i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+                        else:
+                            c.Action = ''
+                elif "^." not in token.action:
+                    if c.HeadConfidence < 2:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = tokencount_2 + 1 + i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+            #check the part after second inner chuck.
+            for i in range(tokencount_6):
+                token = self.Tokens[c.StartOffset + tokencount_2 + 1 + tokencount_4 + 1]
+                if hasattr(token, "SubtreePointer"):
+                    VirtualTokenNum += 1
+
+                if hasattr(token, "pointer") and token.pointer == "H":
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
+                    if hasattr(token, "action"):
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                    if c.HeadOffset < 3:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+                        else:
+                            c.Action = ''
+                elif "^." not in token.action:
+                    if c.HeadConfidence < 2:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+            if c.HeadOffset == -1:
+                logging.info("Can't find head in scattered tokens. must be one of the inner chucks.")
+                logging.info(self.Origin)
+                c.HeadConfidence = 1
+                if "^^." not in c1.Action:
+                    c.HeadOffset = tokencount_2
+                else:
+                    if "^^." not in c2.Action:
+                        c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                    else:
+                        logging.warning("Can't determined the head!")
+                        logging.warning(self.Origin)
+
+            c.StringChunkLength = c.Length - VirtualTokenNum
+            c.ChunkLevel = 2
+            self.Chunks.append(c)
+        elif Chunk2:
+            tokencount_1 = Chunk2.group(1).count('[')
+            tokencount_2 = Chunk2.group(2).count('[')
+            tokencount_3 = Chunk2.group(3).count('[')
+            tokencount_4 = Chunk2.group(4).count('[')
+            c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
+            self.Chunks.append(c1)
+            c = RuleChunk()
+            c.StartOffset = tokencount_1
+            c.Length = tokencount_2 + 1 + tokencount_4
+
+            VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
+            #check the part before inner chuck.
+            for i in range(tokencount_2):
+                token = self.Tokens[c.StartOffset + i]
+                if hasattr(token, "SubtreePointer"):
+                    VirtualTokenNum += 1
+
+                if hasattr(token, "pointer") and token.pointer == "H":
+                    c.HeadConfidence = 3
+                    c.HeadOffset = i
+                    if hasattr(token, "action"):
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                    if c.HeadOffset < 3:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+                        else:
+                            c.Action = ''
+                elif "^." not in token.action:
+                    if c.HeadConfidence < 2:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+            #check the part after inner chuck.
+            for i in range(tokencount_4):
+                token = self.Tokens[c.StartOffset + tokencount_2 + 1 + i]
+                if hasattr(token, "SubtreePointer"):
+                    VirtualTokenNum += 1
+
+                if hasattr(token, "pointer") and token.pointer == "H":
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 + 1 +i
+                    if hasattr(token, "action"):
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                    if c.HeadOffset < 3:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = tokencount_2 + 1 +i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+                        else:
+                            c.Action = ''
+                elif "^." not in token.action:
+                    if c.HeadConfidence < 2:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = tokencount_2 + 1 +i
+                        if hasattr(token, "action"):
+                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+            if c.HeadOffset == -1:
+                logging.info("Can't find head in scattered tokens. must be the inner chuck.")
+                logging.info(self.Origin)
+                c.HeadConfidence = 1
+                c.HeadOffset = tokencount_2
+
+            c.StringChunkLength = c.Length - VirtualTokenNum
+            c.ChunkLevel = 2
+            self.Chunks.append(c)
+
+        elif Chunk1_2:
+            tokencount_1 = Chunk1_2.group(1).count('[')
+            tokencount_2 = Chunk1_2.group(2).count('[')
+            c1 = self.CreateChunk(tokencount_1, tokencount_2)
+            self.Chunks.append(c1)
+
+            tokencount_3 = Chunk1_2.group(3).count('[')
+            tokencount_4 = Chunk1_2.group(4).count('[')
+            c2 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3, tokencount_4)
+            self.Chunks.append(c2)
+
+        elif Chunk1:
+            prefix = Chunk1.group(1)
+            tokencount_prefix = prefix.count('[')
+
+            inside = Chunk1.group(2)
+            tokencount_inside = inside.count('[')
+
+            c = self.CreateChunk(tokencount_prefix, tokencount_inside)
+            self.Chunks.append(c)
+
+        else:
+            logging.debug("There is no chunk in this rule.")
+
+        # sort backward for applying
+        self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
+
+
+    def CreateChunk(self, StartOffset, Length):
         c = RuleChunk()
         c.StartOffset = StartOffset
-        EndChunkLevel = StartChunkLevel
-        c.ChunkLevel = StartChunkLevel
-        for i in range(StartOffset, len(self.Tokens)):
-            if i != StartOffset:    #ignore the first one because the level is already added in previous line.
-                c.ChunkLevel += self.Tokens[i].StartChunk
-                EndChunkLevel += self.Tokens[i].StartChunk
-            EndChunkLevel -= self.Tokens[i].EndChunk
-            if EndChunkLevel <= 0:
-                break
-        if EndChunkLevel > 0:
-            logging.error("Can't find eought EndChunk in this rule:" + str(self))
-            return None
-            #raise RuntimeError("Rule compiling error" )
+        c.Length = Length
 
-        EndOffset = i
-
-        ChunkLevel = StartChunkLevel
-        VirtualTokenNum = 0  #Those "^V=xxx" is virtual token that does not apply to real string token
-        
-        for i in range(StartOffset, EndOffset+1):
-            token = self.Tokens[i]
+        VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
+        for i in range(c.Length):
+            token = self.Tokens[c.StartOffset + i]
             if hasattr(token, "SubtreePointer"):
                 VirtualTokenNum += 1
 
-            if i != StartOffset:
-                ChunkLevel += token.StartChunk
-            if ChunkLevel == 1:
-                if hasattr(token, "pointer") and token.pointer == "H":
-                    c.HeadConfidence = 3
-                    c.HeadOffset = c.Length
+            if hasattr(token, "pointer") and token.pointer == "H":
+                c.HeadConfidence = 3
+                c.HeadOffset = i
+                if hasattr(token, "action"):
+                    c.Action, token.action = self.ExtractParentSonActions(token.action)
+            elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                if c.HeadOffset < 3:
+                    c.HeadConfidence = 2
+                    c.HeadOffset = i
                     if hasattr(token, "action"):
                         c.Action, token.action = self.ExtractParentSonActions(token.action)
-                if not hasattr(token, "action"):
-                    if c.HeadOffset == -1:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = c.Length
+                    else:
                         c.Action = ''
-                elif "^." not in token.action or "^^." in token.action or "+++" in token.action:
-                    if c.HeadConfidence <= 2:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = c.Length
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
-                c.Length += 1
+            elif "^." not in token.action:
+                if c.HeadConfidence < 2:
+                    c.HeadConfidence = 1
+                    c.HeadOffset = i
+                    if hasattr(token, "action"):
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
 
-            if token.EndChunk:
-                ChunkLevel -= token.EndChunk
-                if ChunkLevel == 1:     #end of a chunk of the same level. head *might* be  this chunk
-                    if  c.HeadConfidence < 1:
-                        c.HeadConfidence = 1
-                        c.HeadOffset = c.Length
-                    c.Length += 1
-                elif ChunkLevel < 1:
-                    if ChunkLevel + token.EndChunk >1:      # ">>" to conclude current chunk of level 1. need to add this chunk as one in length.
-                        if  c.HeadConfidence < 1:
-                            c.HeadConfidence = 1             # head is in it if not already set.
-                            c.HeadOffset = c.Length
-                            # TODO: find the head of this chunk to apply action
-                        c.Length += 1
-                    break
         if c.HeadOffset == -1:
             logging.warning("Can't find head in this rule:")
             logging.warning(self.Origin)
 
-        if c.HeadConfidence < 2 :
-            logging.debug("HeadConfidence is low: " + str(c.HeadConfidence) + " Head might be in a chunk.  check the action!")
-            logging.debug(self.Origin)
         c.StringChunkLength = c.Length - VirtualTokenNum
+        c.ChunkLevel = 1
+
         return c
 
-
-    def CompileChunk(self):
-        for i in range(len(self.Tokens)):
-            for level in range(self.Tokens[i].StartChunk):
-                NewChunk = self.CreateChunk(i, level+1)
-                if NewChunk:
-                    self.Chunks.append(NewChunk)
-        # sort backward for applying
-        self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
 
 # Note: this tokenization is for tokenizing rule,
 #       which is different from tokenizing the normal language.
@@ -613,7 +794,7 @@ def LoadRules(RuleLocation):
 
             if rule:
                 InsertRuleInList(rule, rulegroup)
-    except UnicodeError as e:
+    except UnicodeError :
         logging.error("Error when processing " + RuleFileName)
         logging.error("Currently rule=" + rule)
     UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
@@ -1002,7 +1183,8 @@ def PreProcess_CheckFeatures():
     for RuleFile in RuleGroupDict:
         logging.info("PreProcessing " + RuleFile)
         rg = RuleGroupDict[RuleFile]
-        _PreProcess_CheckFeatures(rg.RuleList)
+        _PreProcess_CheckFeaturesAndCompileChunk(rg.RuleList)
+
 
 def SortByLength():
     for RuleFile in RuleGroupDict:
@@ -1014,7 +1196,7 @@ def SortByLength():
 # Check the rules. If it is a stem, not a feature, but omit quote
 #   then we add quote;
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
-def _PreProcess_CheckFeatures(OneList):
+def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
     for rule in OneList:
         if len(rule.Tokens) == 0:
             logging.error("This rule has zero token.")
@@ -1027,170 +1209,170 @@ def _PreProcess_CheckFeatures(OneList):
 
         rule.CompileChunk()
 
-def _CheckFeature(token, rulename):
-            word = token.word
-
-            try:
-                if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
-                    word = word[1:-1].strip()
-
-                word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
-            except RuntimeError as e:
-                logging.error("Error for rule:" + rulename)
-                logging.error(str(e))
-                return
-
-            if not word:
-                return
-
-            if matchtype == 'norm':
-                if "|" in word:
-                    items = re.split("\|", word.lstrip("!"))
-                    if word.startswith("!"):
-                        token.word = "[!'" + "'|'".join(items) + "']"
-                    else:
-                        token.word = "['" + "'|'".join(items) + "']"
-                elif " " in word:  # 'this is a good': separate as multiple token.
-                    logging.warning("The rule is: " + rulename)
-                    raise NotImplementedError("TODO: separate this as multiple token")
-
-            elif matchtype == 'atom':
-                if "|" in word:
-                    items = re.split("\|", word.lstrip("!"))
-                    if word.startswith("!"):
-                        token.word = "[!/" + "/|/".join(items) + "/]"
-                    else:
-                        token.word = "[/" + "/|/".join(items) + "/]"
-                elif " " in word:  # 'this is a good': separate as multiple token.
-                    logging.warning("The rule is: " + rulename)
-                    raise NotImplementedError("TODO: separate this as multiple token")
-
-            elif matchtype == 'text':
-                if "|" in word:
-                    items = re.split("\|", word.lstrip("!"))
-                    if word.startswith("!"):
-                        token.word = "[!\"" + "\"|\"".join(items) + "\"]"
-                    else:
-                        token.word = "[\"" + "\"|\"".join(items) + "\"]"
-                elif " " in word:  # 'this is a good': separate as multiple token.
-                    raise NotImplementedError("TODO: separate this as multiple token")
-
-            elif matchtype == 'unknown':
-                if not re.search('[| !]', word):
-                    if FeatureOntology.GetFeatureID(word) == -1:
-                        # logging.warning("Will treat this word as a stem:" + word)
-                        token.word = "['" + word + "']"
-                elif "|" in word and " " not in word and "[" not in word:
-                    # be aware of ['and|or|of|that|which'|PP|CM]
-                    try:
-                        if word.startswith("!"):
-                            prefix = "!"
-                            OrBlocks = LogicOperation_SeparateOrBlocks(word[1:])
-
-                        else:
-                            prefix = ""
-                            OrBlocks = LogicOperation_SeparateOrBlocks(word)
-                    except RuntimeError as e:
-                        logging.error("Error for rule:" + rulename)
-                        logging.error(str(e))
-                        return  # not to process the rest.
-
-                    token.word = prefix + "["
-                    for OrBlock in OrBlocks:
-                        _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
-                        if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
-                            # logging.warning("Will treat this as a stem:" + OrBlock)
-                            token.word += "'" + OrBlock + "'|"
-                        else:
-                            token.word += OrBlock + "|"
-                    token.word = re.sub("\|$", "]", token.word)
-                elif " " in word and "|" not in word and "[" not in word:
-                    # be aware of ['and|or|of|that|which'|PP|CM]
-                    AndBlocks = word.split()
-                    token.word = "["
-                    for AndBlock in AndBlocks:
-                        _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
-                        if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
-                            token.word += "'" + AndBlock + "' "
-                        else:
-                            token.word += AndBlock + " "
-                    token.word = re.sub(" $", "]", token.word)
-
+#
+# def _CheckFeature(token, rulename):
+#             word = token.word
+#
+#             try:
+#                 if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
+#                     word = word[1:-1].strip()
+#
+#                 word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+#             except RuntimeError as e:
+#                 logging.error("Error for rule:" + rulename)
+#                 logging.error(str(e))
+#                 return
+#
+#             if not word:
+#                 return
+#
+#             if matchtype == 'norm':
+#                 if "|" in word:
+#                     items = re.split("\|", word.lstrip("!"))
+#                     if word.startswith("!"):
+#                         token.word = "[!'" + "'|'".join(items) + "']"
+#                     else:
+#                         token.word = "['" + "'|'".join(items) + "']"
+#                 elif " " in word:  # 'this is a good': separate as multiple token.
+#                     logging.warning("The rule is: " + rulename)
+#                     raise NotImplementedError("TODO: separate this as multiple token")
+#
+#             elif matchtype == 'atom':
+#                 if "|" in word:
+#                     items = re.split("\|", word.lstrip("!"))
+#                     if word.startswith("!"):
+#                         token.word = "[!/" + "/|/".join(items) + "/]"
+#                     else:
+#                         token.word = "[/" + "/|/".join(items) + "/]"
+#                 elif " " in word:  # 'this is a good': separate as multiple token.
+#                     logging.warning("The rule is: " + rulename)
+#                     raise NotImplementedError("TODO: separate this as multiple token")
+#
+#             elif matchtype == 'text':
+#                 if "|" in word:
+#                     items = re.split("\|", word.lstrip("!"))
+#                     if word.startswith("!"):
+#                         token.word = "[!\"" + "\"|\"".join(items) + "\"]"
+#                     else:
+#                         token.word = "[\"" + "\"|\"".join(items) + "\"]"
+#                 elif " " in word:  # 'this is a good': separate as multiple token.
+#                     raise NotImplementedError("TODO: separate this as multiple token")
+#
+#             elif matchtype == 'unknown':
+#                 if not re.search('[| !]', word):
+#                     if FeatureOntology.GetFeatureID(word) == -1:
+#                         # logging.warning("Will treat this word as a stem:" + word)
+#                         token.word = "['" + word + "']"
+#                 elif "|" in word and " " not in word and "[" not in word:
+#                     # be aware of ['and|or|of|that|which'|PP|CM]
+#                     try:
+#                         if word.startswith("!"):
+#                             prefix = "!"
+#                             OrBlocks = LogicOperation_SeparateOrBlocks(word[1:])
+#
+#                         else:
+#                             prefix = ""
+#                             OrBlocks = LogicOperation_SeparateOrBlocks(word)
+#                     except RuntimeError as e:
+#                         logging.error("Error for rule:" + rulename)
+#                         logging.error(str(e))
+#                         return  # not to process the rest.
+#
+#                     token.word = prefix + "["
+#                     for OrBlock in OrBlocks:
+#                         _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
+#                         if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
+#                             # logging.warning("Will treat this as a stem:" + OrBlock)
+#                             token.word += "'" + OrBlock + "'|"
+#                         else:
+#                             token.word += OrBlock + "|"
+#                     token.word = re.sub("\|$", "]", token.word)
+#                 elif " " in word and "|" not in word and "[" not in word:
+#                     # be aware of ['and|or|of|that|which'|PP|CM]
+#                     AndBlocks = word.split()
+#                     token.word = "["
+#                     for AndBlock in AndBlocks:
+#                         _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
+#                         if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
+#                             token.word += "'" + AndBlock + "' "
+#                         else:
+#                             token.word += AndBlock + " "
+#                     token.word = re.sub(" $", "]", token.word)
+#
 
 
 def _CheckFeature_returnword(word):
+    try:
+        if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
+            word = word[1:-1].strip()
 
+        _, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+    except RuntimeError as e:
+
+        logging.error(str(e))
+        return ''
+
+    if not word:
+        return ''
+
+    prefix = ""
+
+    if word[0] == "!":
+        prefix = "!"
+        word = word.lstrip("!")
+
+    if matchtype == 'norm':
+        if "|" in word:
+            items = re.split("\|", word)
+            word =  "'|'".join(items)
+#                elif " " in word:  # 'this is a good': separate as multiple token.
+#                    raise NotImplementedError("TODO: separate this as multiple token")
+
+    elif matchtype == 'atom':
+        if "|" in word:
+            items = re.split("\|", word)
+            word = "/|/".join(items)
+#                elif " " in word:  # 'this is a good': separate as multiple token.
+#                    raise NotImplementedError("TODO: separate this as multiple token")
+
+    elif matchtype == 'text':
+        if "|" in word:
+            items = re.split("\|", word)
+            word = "\"|\"".join(items)
+#                elif " " in word:  # 'this is a good': separate as multiple token.
+#                    raise NotImplementedError("TODO: separate this as multiple token")
+
+    elif matchtype == 'unknown':
+        if not re.search('[| !]', word):
+            if FeatureOntology.GetFeatureID(word) == -1:
+                # logging.warning("Will treat this word as a stem:" + word)
+                word = "'" + word + "'"
+        elif "|" in word and " " not in word and "[" not in word:
+            # be aware of ['and|or|of|that|which'|PP|CM]
             try:
-                if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
-                    word = word[1:-1].strip()
-
-                _, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+                OrBlocks = LogicOperation_SeparateOrBlocks(word)
             except RuntimeError as e:
-
+                logging.error("Error for rule:" + word )
                 logging.error(str(e))
-                return ''
+                return  # not to process the rest.
 
-            if not word:
-                return ''
-
-            prefix = ""
-
-            if word[0] == "!":
-                prefix = "!"
-                word = word.lstrip("!")
-
-            if matchtype == 'norm':
-                if "|" in word:
-                    items = re.split("\|", word)
-                    word =  "'|'".join(items)
-#                elif " " in word:  # 'this is a good': separate as multiple token.
-#                    raise NotImplementedError("TODO: separate this as multiple token")
-
-            elif matchtype == 'atom':
-                if "|" in word:
-                    items = re.split("\|", word)
-                    word = "/|/".join(items)
-#                elif " " in word:  # 'this is a good': separate as multiple token.
-#                    raise NotImplementedError("TODO: separate this as multiple token")
-
-            elif matchtype == 'text':
-                if "|" in word:
-                    items = re.split("\|", word)
-                    word = "\"|\"".join(items)
-#                elif " " in word:  # 'this is a good': separate as multiple token.
-#                    raise NotImplementedError("TODO: separate this as multiple token")
-
-            elif matchtype == 'unknown':
-                if not re.search('[| !]', word):
-                    if FeatureOntology.GetFeatureID(word) == -1:
-                        # logging.warning("Will treat this word as a stem:" + word)
-                        word = "'" + word + "'"
-                elif "|" in word and " " not in word and "[" not in word:
-                    # be aware of ['and|or|of|that|which'|PP|CM]
-                    try:
-                        OrBlocks = LogicOperation_SeparateOrBlocks(word)
-                    except RuntimeError as e:
-                        logging.error("Error for rule:" + word )
-                        logging.error(str(e))
-                        return  # not to process the rest.
-
-                    newword = ""
-                    for OrBlock in OrBlocks:
-                        _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
-                        if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
-                            # logging.warning("Will treat this as a stem:" + OrBlock)
-                            newword += "'" + OrBlock + "'|"
-                        else:
-                            newword += OrBlock + "|"
-                    word = newword.rstrip("|")
-                elif " " in word and  "[" not in word:
-                    # be aware of ['and|or|of|that|which'|PP|CM]
-                    AndBlocks = word.split()
-                    newword = ""
-                    for AndBlock in AndBlocks:
-                        newword += _CheckFeature_returnword(AndBlock) + " "
-                    word = newword.rstrip(" ")
-            return  prefix + word
+            newword = ""
+            for OrBlock in OrBlocks:
+                _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
+                if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
+                    # logging.warning("Will treat this as a stem:" + OrBlock)
+                    newword += "'" + OrBlock + "'|"
+                else:
+                    newword += OrBlock + "|"
+            word = newword.rstrip("|")
+        elif " " in word and  "[" not in word:
+            # be aware of ['and|or|of|that|which'|PP|CM]
+            AndBlocks = word.split()
+            newword = ""
+            for AndBlock in AndBlocks:
+                newword += _CheckFeature_returnword(AndBlock) + " "
+            word = newword.rstrip(" ")
+    return  prefix + word
 
 
 def OutputRules(rulegroup, style="details"):

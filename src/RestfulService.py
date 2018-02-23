@@ -96,7 +96,6 @@ def LexicalAnalyze():
                     for rule in winningrules:
                         winningrulestring +=  winningrules[rule] + "\n"
                     chart = chart.replace("<!-- EXTRA -->", winningrulestring)
-                    print("RestfulService: winningrules=" + str(winningrules))
                 return chart
             else:
                 return nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()

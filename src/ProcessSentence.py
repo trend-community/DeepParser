@@ -140,14 +140,10 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if rule.Chunks:
         MaxChunkLevelNum = max(chunk.ChunkLevel for chunk in rule.Chunks)
         for ChunkLevel in range(1,MaxChunkLevelNum+1):
-
-            for chunk in rule.Chunks:
+            for chunk in rule.Chunks:   # the chunks are presorted to process right chucks first.
                 if chunk.ChunkLevel != ChunkLevel:
                     continue
-
-                #print("New Chunk: strtokens.combine(%d, %d, %d)"%(StartPosition+chunk.StartOffset, chunk.Length, chunk.HeadOffset))
                 strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
-
                 strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
 
     RemoveTempPointer(strtokens)

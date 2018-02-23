@@ -288,10 +288,12 @@ class SentenceNode(object):
 
             if Action[-1] == "-":
                 if Action[0] == "^":
+
                     if "." in Action:
                         if self.UpperRelationship == Action.split(".", 1)[1][-1]:
+                            # TODO:  actually break the token. not just delattr
                             delattr(self, "UpperRelationship")
-                            logging.debug("Remove Relationship:" + Action)
+                            logging.warning(" TODO:  actually break the token. not just delattr Remove Relationship:" + Action)
                     else:
                         logging.warning("This Action is not right:" + Action)
                     continue
@@ -332,8 +334,6 @@ class SentenceNode(object):
                 continue
 
             ActionID = FeatureOntology.GetFeatureID(Action)
-            # if ActionID == FeatureOntology.GetFeatureID("Gone"):
-            #     self.Gone = True
             if ActionID != -1:
                 self.ApplyFeature(ActionID)
             else:
@@ -342,6 +342,7 @@ class SentenceNode(object):
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
         if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
             FeatureOntology.ProcessBarTags(self.features)
+
 
     def GetFeatures(self):
         featureString = ""
