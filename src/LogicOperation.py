@@ -257,8 +257,9 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:
             logging.warning("Found a feature of rule that is not a feature in feature.txt")
+            logging.warning("rule text:" + rule)
             logging.warning("This should not happen. Please rewirte the rule for compilation.")
-            logging.warning("Rule=" + str(RuleTokens))
+            logging.warning("Rule=" + str([x.word for x in RuleTokens]))
             return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
         elif featureID == utils.FeatureID_0:
             return True     #Ignore "0" in feature comparison.

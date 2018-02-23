@@ -267,6 +267,10 @@ class Rule:
         for token in self.Tokens:
             rulebody += str(token)
 
+        if rulebody.count('<') > 3 :
+            logging.warning("This rule has more than 3 chunks:")
+            logging.warning(rulebody)
+
         Chunk2_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
         Chunk2   = re.match("(.*)<(.*)<(.+)>(.*)>(.*)", rulebody)
         Chunk1_2 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
@@ -278,7 +282,7 @@ class Rule:
             tokencount_3 = Chunk2_2.group(3).count('[')
             tokencount_4 = Chunk2_2.group(4).count('[')
             tokencount_5 = Chunk2_2.group(5).count('[')
-            tokencount_6 = Chunk2_2.group(5).count('[')
+            tokencount_6 = Chunk2_2.group(6).count('[')
             c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
             self.Chunks.append(c1)
             c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 , tokencount_5)
@@ -317,7 +321,7 @@ class Rule:
 
             #check the part after first inner chuck, before second inner chuck.
             for i in range(tokencount_4):
-                token = self.Tokens[c.StartOffset + tokencount_2 + 1 + i]
+                token = self.Tokens[c.StartOffset + tokencount_2 + tokencount_3 + i]
                 if hasattr(token, "SubtreePointer"):
                     VirtualTokenNum += 1
 
@@ -343,7 +347,7 @@ class Rule:
 
             #check the part after second inner chuck.
             for i in range(tokencount_6):
-                token = self.Tokens[c.StartOffset + tokencount_2 + 1 + tokencount_4 + 1]
+                token = self.Tokens[c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + i]
                 if hasattr(token, "SubtreePointer"):
                     VirtualTokenNum += 1
 
@@ -423,7 +427,7 @@ class Rule:
 
             #check the part after inner chuck.
             for i in range(tokencount_4):
-                token = self.Tokens[c.StartOffset + tokencount_2 + 1 + i]
+                token = self.Tokens[c.StartOffset + tokencount_2 + tokencount_3 + i]
                 if hasattr(token, "SubtreePointer"):
                     VirtualTokenNum += 1
 
@@ -1424,7 +1428,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     #LoadRules("../../fsa/X/0defLexX.txt")
-    LoadRules("../../fsa/X/0test.txt")
+    LoadRules("../../fsa/X/6ngrammain.txt")
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
