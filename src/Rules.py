@@ -289,8 +289,9 @@ class Rule:
             self.Chunks.append(c2)
 
             c = RuleChunk()
+            c.ChunkLevel = 2
             c.StartOffset = tokencount_1
-            c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_5
+            c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
 
             VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
             #check the part before first inner chuck.
@@ -304,7 +305,7 @@ class Rule:
                     c.HeadOffset = i
                     if hasattr(token, "action"):
                         c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
                     if c.HeadOffset < 3:
                         c.HeadConfidence = 2
                         c.HeadOffset = i
@@ -330,7 +331,7 @@ class Rule:
                     c.HeadOffset = tokencount_2 + 1 + i
                     if hasattr(token, "action"):
                         c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
                     if c.HeadOffset < 3:
                         c.HeadConfidence = 2
                         c.HeadOffset = tokencount_2 + 1 + i
@@ -356,7 +357,7 @@ class Rule:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
                     if hasattr(token, "action"):
                         c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
                     if c.HeadOffset < 3:
                         c.HeadConfidence = 2
                         c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
@@ -372,20 +373,19 @@ class Rule:
                             c.Action, token.action = self.ExtractParentSonActions(token.action)
 
             if c.HeadOffset == -1:
-                logging.info("Can't find head in scattered tokens. must be one of the inner chucks.")
-                logging.info(self.Origin)
                 c.HeadConfidence = 1
-                if "^^." not in c1.Action:
-                    c.HeadOffset = tokencount_2
+                if "^^." in c1.Action:
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
                 else:
-                    if "^^." not in c2.Action:
-                        c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                    if "^^."  in c2.Action:
+                        c.HeadOffset = tokencount_2
                     else:
-                        logging.warning("Can't determined the head!")
-                        logging.warning(self.Origin)
+                        logging.error(" There is no ^^. for both tokens.  Can't determined the head!")
+                        logging.error(str(self))
+                        logging.error(jsonpickle.dumps(c))
 
             c.StringChunkLength = c.Length - VirtualTokenNum
-            c.ChunkLevel = 2
+
             self.Chunks.append(c)
         elif Chunk2:
             tokencount_1 = Chunk2.group(1).count('[')
@@ -395,6 +395,7 @@ class Rule:
             c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
             self.Chunks.append(c1)
             c = RuleChunk()
+            c.ChunkLevel = 2
             c.StartOffset = tokencount_1
             c.Length = tokencount_2 + 1 + tokencount_4
 
@@ -410,7 +411,7 @@ class Rule:
                     c.HeadOffset = i
                     if hasattr(token, "action"):
                         c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
                     if c.HeadOffset < 3:
                         c.HeadConfidence = 2
                         c.HeadOffset = i
@@ -436,7 +437,7 @@ class Rule:
                     c.HeadOffset = tokencount_2 + 1 +i
                     if hasattr(token, "action"):
                         c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
                     if c.HeadOffset < 3:
                         c.HeadConfidence = 2
                         c.HeadOffset = tokencount_2 + 1 +i
@@ -452,13 +453,14 @@ class Rule:
                             c.Action, token.action = self.ExtractParentSonActions(token.action)
 
             if c.HeadOffset == -1:
-                logging.info("Can't find head in scattered tokens. must be the inner chuck.")
-                logging.info(self.Origin)
                 c.HeadConfidence = 1
                 c.HeadOffset = tokencount_2
+                if "^^." not in c1.Action or "++" not in c1.Action:
+                    logging.debug("Can't find head in scattered tokens. must be the inner chuck.")
+                    logging.debug(str(self))
+                    logging.debug(jsonpickle.dumps(c))
 
             c.StringChunkLength = c.Length - VirtualTokenNum
-            c.ChunkLevel = 2
             self.Chunks.append(c)
 
         elif Chunk1_2:
@@ -505,7 +507,7 @@ class Rule:
                 c.HeadOffset = i
                 if hasattr(token, "action"):
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif not hasattr(token, "action") or "^^." in token.action or "+++" in token.action:
+            elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
                 if c.HeadOffset < 3:
                     c.HeadConfidence = 2
                     c.HeadOffset = i
@@ -523,6 +525,7 @@ class Rule:
         if c.HeadOffset == -1:
             logging.warning("Can't find head in this rule:")
             logging.warning(self.Origin)
+            logging.warning(str(self))
 
         c.StringChunkLength = c.Length - VirtualTokenNum
         c.ChunkLevel = 1

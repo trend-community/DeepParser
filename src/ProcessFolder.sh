@@ -52,7 +52,7 @@ else
 fi
 
 #remove folder that is 1 week old
-find $OUTPUTFOLDER/* -type d -mtime +20 -exec rm -rf {} \;
+find $OUTPUTFOLDER/* -type d -mtime +90 -exec rm -rf {} \;
 
 
 end_time=$(date "+%Y.%m.%d-%H.%M.%S")
