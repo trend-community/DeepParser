@@ -20,6 +20,8 @@ NeighbourList = []  # each neighbour is a dict (word:frequency).
 stopsigns = '[' + '！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.'
 stopsigns += ' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' + ']'
 restopsigns = re.compile(stopsigns)
+LexiconWordIDs = []
+LexiconWords = []
 
 #push the s[i] (2 and 3 character words) into the window, and remove the oldest one.
 # return: the link betwen the new ones and the existing ones
@@ -37,6 +39,7 @@ def WindowPush(s, i, w):
             w[newwordid] = neighbourwindowsize
             newrelationship = [(newwordid, oldid) for oldid in existingwords
                                     if len(WordList2[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
+
                                ]
 
     if len(s) >= i+3:
@@ -45,19 +48,21 @@ def WindowPush(s, i, w):
             w[newwordid] = neighbourwindowsize
             newrelationship.extend([(newwordid, oldid) for oldid in existingwords
                                     if len(WordList2[oldid]) < 3 or w[oldid] < neighbourwindowsize - 1
+
                                 ])
 
     return newrelationship
 
 
 def InsertOrGetID( word):
-    if word not in WordDict:
-        if word in QueryWords or word in LexiconWords:
-            WordDict[word] = len(WordList2)
-            WordList2.append(word)
-            frequencypair = defaultdict(int)
-            NeighbourList.append(frequencypair)
+    if word not in BothWords:
+        return -1
 
+    if word not in WordDict:
+        WordDict[word] = len(WordList2)
+        WordList2.append(word)
+        frequencypair = defaultdict(int)
+        NeighbourList.append(frequencypair)
 
     return WordDict.get(word, -1)
 
@@ -82,10 +87,18 @@ def ImportCorpus(line):
                 NeighbourList[r[0]][r[1]] += freq  #can be the query frequency here.
                 NeighbourList[r[1]][r[0]] += freq
 
+    # remove the words that are not in  QueryWords or word in LexiconWords
+    # re-index
 
 def TrimNeighbours(size = 3):
+    global LexiconWordIDs
+    logging.info("Start creating LexiconIDs")
+    LexiconWordIDs = [WordDict.get(w, -1) for w in LexiconWords]
+    logging.info("Start trimming neighbourlist")
     for i in range(len(NeighbourList)):
-        NeighbourList[i] = {k:NeighbourList[i][k] for k in sorted(NeighbourList[i], key=NeighbourList[i].get, reverse=True)[:size] }
+        NeighbourList[i] = {k:NeighbourList[i][k] for k in sorted(NeighbourList[i], key=NeighbourList[i].get, reverse=True)[:2*size]} #  if k in LexiconWordIDs}
+
+    logging.info("finished trimming neighbourlist!")
 
 
 #DistanceCache = {}
@@ -173,7 +186,8 @@ if __name__ == "__main__":
     logging.info("Start.")
 
     QueryWords = LoadFile(args.querywordfile)
-    LexiconWords = LoadFile(args.lexiconwordfile, '\t')
+    LexiconWords = LoadFile(args.lexiconwordfile, ':')
+    BothWords = QueryWords+LexiconWords
 
     import cProfile, pstats
     cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
@@ -186,17 +200,17 @@ if __name__ == "__main__":
 
 
     for q in QueryWords:
-        # cProfile.run("SimilarWord(q)", 'sw')
-        # psw = pstats.Stats('sw')
-        # psw.sort_stats('time').print_stats(10)
+        #cProfile.run("SimilarWord(q)", 'sw')
 
         swlist = SimilarWord(q)
         if swlist:
             similarwordes = q + ":"
             for sw in swlist:
-                if WordList2[sw] in LexiconWords:
+                if sw in LexiconWordIDs:
                     similarwordes += " '"+ WordList2[sw] + "'"
                     if not args.all:
                         break
             print(similarwordes)
+    # psw = pstats.Stats('sw')
+    # psw.sort_stats('time').print_stats(10)
     logging.info("Done.")
