@@ -119,7 +119,7 @@ def Distance(a, b, a_neighbourdict, a_neighbourset):
 
 
 def SimilarWord(word):
-    if word not in WordList2:
+    if word not in WordDict:
         return None
     wordid = WordDict[word]
     neighbourdict = NeighbourList[wordid]
@@ -144,7 +144,7 @@ def SimilarWord(word):
        if index == WordDict[word]:
            continue
        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
-    print(output)
+#    print(output)
 
     return result
 
