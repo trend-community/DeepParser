@@ -271,10 +271,16 @@ class Rule:
             logging.warning("This rule has more than 3 chunks:")
             logging.warning(rulebody)
 
+        # TODO: leave these 3 for future usage.
+        # Chunk2_3_1 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
+        # Chunk2_3_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)<(.+)>(.*)", rulebody)
+        # Chunk2_3_3 = re.match("(.*)<(.+)>(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
+
         Chunk2_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
-        Chunk2   = re.match("(.*)<(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk2_1 = re.match("(.*)<(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk1_3 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
         Chunk1_2 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
-        Chunk1   = re.match("(.*)<(.+)>(.*)", rulebody)
+        Chunk1_1 = re.match("(.*)<(.+)>(.*)", rulebody)
 
         if Chunk2_2:
             tokencount_1 = Chunk2_2.group(1).count('[')
@@ -387,11 +393,11 @@ class Rule:
             c.StringChunkLength = c.Length - VirtualTokenNum
 
             self.Chunks.append(c)
-        elif Chunk2:
-            tokencount_1 = Chunk2.group(1).count('[')
-            tokencount_2 = Chunk2.group(2).count('[')
-            tokencount_3 = Chunk2.group(3).count('[')
-            tokencount_4 = Chunk2.group(4).count('[')
+        elif Chunk2_1:
+            tokencount_1 = Chunk2_1.group(1).count('[')
+            tokencount_2 = Chunk2_1.group(2).count('[')
+            tokencount_3 = Chunk2_1.group(3).count('[')
+            tokencount_4 = Chunk2_1.group(4).count('[')
             c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
             self.Chunks.append(c1)
             c = RuleChunk()
@@ -463,6 +469,22 @@ class Rule:
             c.StringChunkLength = c.Length - VirtualTokenNum
             self.Chunks.append(c)
 
+        elif Chunk1_3:
+            tokencount_1 = Chunk1_3.group(1).count('[')
+            tokencount_2 = Chunk1_3.group(2).count('[')
+            c1 = self.CreateChunk(tokencount_1, tokencount_2)
+            self.Chunks.append(c1)
+
+            tokencount_3 = Chunk1_3.group(3).count('[')
+            tokencount_4 = Chunk1_3.group(4).count('[')
+            c2 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3, tokencount_4)
+            self.Chunks.append(c2)
+
+            tokencount_5 = Chunk1_3.group(5).count('[')
+            tokencount_6 = Chunk1_3.group(6).count('[')
+            c3 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3+tokencount_4+tokencount_5, tokencount_6)
+            self.Chunks.append(c3)
+
         elif Chunk1_2:
             tokencount_1 = Chunk1_2.group(1).count('[')
             tokencount_2 = Chunk1_2.group(2).count('[')
@@ -474,11 +496,11 @@ class Rule:
             c2 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3, tokencount_4)
             self.Chunks.append(c2)
 
-        elif Chunk1:
-            prefix = Chunk1.group(1)
+        elif Chunk1_1:
+            prefix = Chunk1_1.group(1)
             tokencount_prefix = prefix.count('[')
 
-            inside = Chunk1.group(2)
+            inside = Chunk1_1.group(2)
             tokencount_inside = inside.count('[')
 
             c = self.CreateChunk(tokencount_prefix, tokencount_inside)

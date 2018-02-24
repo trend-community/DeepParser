@@ -12,7 +12,7 @@ class TokenizationTest(unittest.TestCase):
 
     def testList(self):
         t = "this is a good desk, for study"
-        NodeList = Tokenize_space(t)
+        NodeList = Tokenize(t)
         print(NodeList)
         #NodeList.combine(3, 2)
         print(NodeList)
@@ -81,10 +81,20 @@ class TokenizationTest(unittest.TestCase):
 
         t = "很少有科普"
         NodeList = Tokenize(t)
-        self.assertEqual(NodeList.size, 3)
+        self.assertEqual(NodeList.size, 4)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
         t = "很少有 科普"
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(NodeList.size, 4)
+        self.assertEqual(NodeList.size, 5)
+
+        t = "这稍微甜"
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 3)
+
+        t = "天津市长"
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 2)

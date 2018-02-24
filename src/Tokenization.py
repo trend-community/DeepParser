@@ -504,18 +504,20 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
     sentLen = len(sentence)
     bestPhrase = []
     bestPhraseLen = [1] * (sentLen+1)
-    bestScore = [0] * (sentLen+1)
+    bestScore = [0.1*i for i in range(sentLen+1) ]
 
     ## forward path: fill up "best"
     for i in range(2, sentLen + 1):
         for j in range(1, i+1 ):
             if j == i:
-                value = 0.5
+                value = 0.1
             else:
                 singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
                 if  lexicononly and singlevalue < 1:
                     continue
                 value = singlevalue * (i+1-j)
+            if value == 0:
+                continue
             if value + bestScore[j-1] > bestScore[i]:
                 bestPhraseLen[i] = i+1 - j
                 bestScore[i] = value + bestScore[j-1]
