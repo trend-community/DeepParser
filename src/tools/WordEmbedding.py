@@ -96,7 +96,7 @@ def TrimNeighbours(size = 3):
     LexiconWordIDs = [WordDict.get(w, -1) for w in LexiconWords]
     logging.info("Start trimming neighbourlist")
     for i in range(len(NeighbourList)):
-        NeighbourList[i] = {k:NeighbourList[i][k] for k in sorted(NeighbourList[i], key=NeighbourList[i].get, reverse=True)[:2*size]} #  if k in LexiconWordIDs}
+        NeighbourList[i] = {k:NeighbourList[i][k] for k in sorted(NeighbourList[i], key=NeighbourList[i].get, reverse=True)[:size]} #  if k in LexiconWordIDs}
 
     logging.info("finished trimming neighbourlist!")
 
@@ -187,7 +187,7 @@ if __name__ == "__main__":
 
     QueryWords = LoadFile(args.querywordfile)
     LexiconWords = LoadFile(args.lexiconwordfile, ':')
-    BothWords = QueryWords+LexiconWords
+    BothWords = set(QueryWords+LexiconWords)
 
     import cProfile, pstats
     cProfile.run("LoadCorpus(args.corpusfile)", 'restats')
