@@ -55,8 +55,7 @@ def OutputWinningRules():
 def RemoveTempPointer(StrList):
     x = StrList.head
     while x:
-        if hasattr(x, "TempPointer"):
-            delattr(x, "TempPointer")
+        x.TempPointer = ''
         x = x.next
 
 
@@ -68,10 +67,10 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
                 RemoveTempPointer(strTokenList)
                 return False  #  this rule does not fit for this string
-            if hasattr(ruleTokens[i], "pointer"):
-                strTokenList.get(i+StartPosition).TempPointer = ruleTokens[i].pointer
             if hasattr(ruleTokens[i], "SubtreePointer"):
                 StartPosition -= 1  # do not skip to next strToken, if this Subtree Rule is matched.
+            if ruleTokens[i].pointer:
+                strTokenList.get(i + StartPosition).TempPointer = ruleTokens[i].pointer
         except RuntimeError as e:
             logging.error("Error in HeadMatch rule:" + str(ruleTokens))
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text)
@@ -91,7 +90,7 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
 
 def MarkTempPointer(strtokens, rule, StrStartPosition):
     for i in range(len(rule.Tokens)):
-        if hasattr(rule.Tokens[i], "pointer"):
+        if rule.Tokens[i].pointer:
             strtokens.get(i + StrStartPosition).TempPointer = rule.Tokens[i].pointer
 
 
@@ -134,7 +133,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         #     return len(rule.Tokens)
 
 
-        if hasattr(rule.Tokens[i], 'action') and rule.Tokens[i].action:
+        if rule.Tokens[i].action:
             token.ApplyActions(rule.Tokens[i].action)
 
     if rule.Chunks:
@@ -377,21 +376,29 @@ if __name__ == "__main__":
     LoadCommon()
 
     target = "值得称赞的服务一开袋闻到香味口水就留下来了物流服务很快非常香醇美味，很好！"
-    m_nodes, winningrules = LexicalAnalyze(target)
-    if not m_nodes:
-        logging.warning("The result is None!")
-        exit(1)
 
-    logging.info("\tDone! counterMatch=%s" % counterMatch)
+    import cProfile, pstats
+    cProfile.run("LexicalAnalyze(target)", 'restatslex')
+    pstat = pstats.Stats('restatslex')
+    pstat.sort_stats('time').print_stats(10)
 
-    print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
-    print(OutputStringTokens_oneliner(m_nodes))
-
-
-    print("Winning rules:\n" + OutputWinningRules())
-
-    print(FeatureOntology.OutputMissingFeatureSet())
-
-    print(m_nodes.root().CleanOutput().toJSON())
-    print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
-    print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+    #
+    #
+    # m_nodes, winningrules = LexicalAnalyze(target)
+    # if not m_nodes:
+    #     logging.warning("The result is None!")
+    #     exit(1)
+    #
+    # logging.info("\tDone! counterMatch=%s" % counterMatch)
+    #
+    # print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
+    # print(OutputStringTokens_oneliner(m_nodes))
+    #
+    #
+    # print("Winning rules:\n" + OutputWinningRules())
+    #
+    # print(FeatureOntology.OutputMissingFeatureSet())
+    #
+    # print(m_nodes.root().CleanOutput().toJSON())
+    # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
+    # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())

@@ -71,7 +71,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
     x = StrTokenList.head
     StrPointerToken = ''
     while x:
-        if hasattr(x, "TempPointer") and x.TempPointer == Pointer:
+        if x.TempPointer == Pointer:
             StrPointerToken = x
             break
         x = x.next
@@ -83,7 +83,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
             RulePointerPos = RulePosition
             #logging.debug("Testing pointer" + Pointer)
             while RulePointerPos >= 0:
-                if hasattr(RuleTokens[RulePointerPos], 'pointer'):
+                if RuleTokens[RulePointerPos].pointer:
                     if RuleTokens[RulePointerPos].pointer == Pointer:
                         break   #found pointer!
                 RulePointerPos -= 1
@@ -91,7 +91,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
             if RulePointerPos < 0:
                 RulePointerPos = RulePosition
                 while RulePointerPos < len(RuleTokens):
-                    if hasattr(RuleTokens[RulePointerPos], 'pointer'):
+                    if RuleTokens[RulePointerPos].pointer:
                         if RuleTokens[RulePointerPos].pointer == Pointer:
                             break  # found pointer!
                     RulePointerPos += 1
@@ -131,7 +131,7 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer
     x = StrTokenList.head
     StrPointerRootToken = None
     while x:
-        if hasattr(x, "TempPointer") and x.TempPointer == rootPointer:
+        if x.TempPointer == rootPointer:
             StrPointerRootToken = x
             break
         x = x.next

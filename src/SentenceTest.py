@@ -54,3 +54,4 @@ if __name__ == "__main__":
     for sample in FailedList:
         print(str(sample))
 
+    logging.info("Done!")

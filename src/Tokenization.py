@@ -226,6 +226,7 @@ class SentenceNode(object):
         self.UpperRelationship = ''
         Lexicon.ApplyWordLengthFeature(self)
         self.Head0Text = ''
+        self.TempPointer = ''
 
     #     #From webservice, only word/StartOffset/features are set,
     #     #    and the features are "list", need to change to "set"

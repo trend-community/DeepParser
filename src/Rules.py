@@ -90,15 +90,16 @@ class RuleToken(object):
         self.word = ''
         self.RestartPoint = False
         self.MatchType = -1     #-1:unknown/mixed 0: feature 1:text 2:norm 3:atom
+        self.pointer = ''
+        self.action = ''
 
     def __str__(self):
         output = ""
         for _ in range(self.StartChunk):
             output += "<"
-        if hasattr(self, 'pointer'):
-            output += self.pointer
+        output += self.pointer
         t = self.word
-        if hasattr(self, 'action') and self.action:
+        if self.action:
             t = t.replace("]", ":" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
@@ -299,84 +300,14 @@ class Rule:
             c.StartOffset = tokencount_1
             c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
 
-            VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
             #check the part before first inner chuck.
-            for i in range(tokencount_2):
-                token = self.Tokens[c.StartOffset + i]
-                if hasattr(token, "SubtreePointer"):
-                    VirtualTokenNum += 1
-
-                if hasattr(token, "pointer") and token.pointer == "H":
-                    c.HeadConfidence = 3
-                    c.HeadOffset = i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
-                    if c.HeadOffset < 3:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
-                        else:
-                            c.Action = ''
-                elif "^." not in token.action:
-                    if c.HeadConfidence < 2:
-                        c.HeadConfidence = 1
-                        c.HeadOffset = i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+            VirtualTokenNum = self.CheckTokensForHead(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
 
             #check the part after first inner chuck, before second inner chuck.
-            for i in range(tokencount_4):
-                token = self.Tokens[c.StartOffset + tokencount_2 + tokencount_3 + i]
-                if hasattr(token, "SubtreePointer"):
-                    VirtualTokenNum += 1
-
-                if hasattr(token, "pointer") and token.pointer == "H":
-                    c.HeadConfidence = 3
-                    c.HeadOffset = tokencount_2 + 1 + i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
-                    if c.HeadOffset < 3:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = tokencount_2 + 1 + i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
-                        else:
-                            c.Action = ''
-                elif "^." not in token.action:
-                    if c.HeadConfidence < 2:
-                        c.HeadConfidence = 1
-                        c.HeadOffset = tokencount_2 + 1 + i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+            VirtualTokenNum += self.CheckTokensForHead(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
 
             #check the part after second inner chuck.
-            for i in range(tokencount_6):
-                token = self.Tokens[c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + i]
-                if hasattr(token, "SubtreePointer"):
-                    VirtualTokenNum += 1
-
-                if hasattr(token, "pointer") and token.pointer == "H":
-                    c.HeadConfidence = 3
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
-                    if c.HeadOffset < 3:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
-                        else:
-                            c.Action = ''
-                elif "^." not in token.action:
-                    if c.HeadConfidence < 2:
-                        c.HeadConfidence = 1
-                        c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+            VirtualTokenNum += self.CheckTokensForHead(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5, Length=tokencount_6, HeadOffset = tokencount_2 + 1 + tokencount_4 + 1)
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
@@ -400,69 +331,24 @@ class Rule:
             tokencount_4 = Chunk2_1.group(4).count('[')
             c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
             self.Chunks.append(c1)
+
             c = RuleChunk()
             c.ChunkLevel = 2
             c.StartOffset = tokencount_1
             c.Length = tokencount_2 + 1 + tokencount_4
 
-            VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
             #check the part before inner chuck.
-            for i in range(tokencount_2):
-                token = self.Tokens[c.StartOffset + i]
-                if hasattr(token, "SubtreePointer"):
-                    VirtualTokenNum += 1
-
-                if hasattr(token, "pointer") and token.pointer == "H":
-                    c.HeadConfidence = 3
-                    c.HeadOffset = i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
-                    if c.HeadOffset < 3:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
-                        else:
-                            c.Action = ''
-                elif "^." not in token.action:
-                    if c.HeadConfidence < 2:
-                        c.HeadConfidence = 1
-                        c.HeadOffset = i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+            VirtualTokenNum = self.CheckTokensForHead(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
 
             #check the part after inner chuck.
-            for i in range(tokencount_4):
-                token = self.Tokens[c.StartOffset + tokencount_2 + tokencount_3 + i]
-                if hasattr(token, "SubtreePointer"):
-                    VirtualTokenNum += 1
-
-                if hasattr(token, "pointer") and token.pointer == "H":
-                    c.HeadConfidence = 3
-                    c.HeadOffset = tokencount_2 + 1 +i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
-                elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
-                    if c.HeadOffset < 3:
-                        c.HeadConfidence = 2
-                        c.HeadOffset = tokencount_2 + 1 +i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
-                        else:
-                            c.Action = ''
-                elif "^." not in token.action:
-                    if c.HeadConfidence < 2:
-                        c.HeadConfidence = 1
-                        c.HeadOffset = tokencount_2 + 1 +i
-                        if hasattr(token, "action"):
-                            c.Action, token.action = self.ExtractParentSonActions(token.action)
+            VirtualTokenNum += self.CheckTokensForHead(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
                 c.HeadOffset = tokencount_2
-                if "^^." not in c1.Action or "++" not in c1.Action:
-                    logging.debug("Can't find head in scattered tokens. must be the inner chuck.")
+                if "^^." not in c1.Action and "++" not in c1.Action:
+                    c.HeadConfidence = 0
+                    logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
                     logging.debug(str(self))
                     logging.debug(jsonpickle.dumps(c))
 
@@ -513,36 +399,43 @@ class Rule:
         self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
 
 
-    def CreateChunk(self, StartOffset, Length):
-        c = RuleChunk()
-        c.StartOffset = StartOffset
-        c.Length = Length
+    def CheckTokensForHead(self, c, StartOffset, Length, HeadOffset = 0):
 
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
-        for i in range(c.Length):
-            token = self.Tokens[c.StartOffset + i]
+        for i in range(Length):
+            token = self.Tokens[StartOffset + i]
             if hasattr(token, "SubtreePointer"):
                 VirtualTokenNum += 1
 
-            if hasattr(token, "pointer") and token.pointer == "H":
-                c.HeadConfidence = 3
-                c.HeadOffset = i
-                if hasattr(token, "action"):
+            if token.pointer == "H":
+                c.HeadConfidence = 4
+                c.HeadOffset = HeadOffset + i
+                c.Action, token.action = self.ExtractParentSonActions(token.action)
+            elif  "^^." in token.action or "++" in token.action:
+                if c.HeadOffset < 4:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif not hasattr(token, "action") or "^^." in token.action or "++" in token.action:
+            elif not token.action:
                 if c.HeadOffset < 3:
                     c.HeadConfidence = 2
-                    c.HeadOffset = i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
-                    else:
-                        c.Action = ''
+                    c.HeadOffset = HeadOffset + i
+                    c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif "^." not in token.action:
                 if c.HeadConfidence < 2:
-                    c.HeadConfidence = 1
+                    c.HeadConfidence = HeadOffset + 1
                     c.HeadOffset = i
-                    if hasattr(token, "action"):
-                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                    c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+        return VirtualTokenNum
+
+
+    def CreateChunk(self, StartOffset, Length, ChunkLevel = 1):
+        c = RuleChunk()
+        c.StartOffset = StartOffset
+        c.Length = Length
+        VirtualTokenNum = self.CheckTokensForHead(c, StartOffset=c.StartOffset,
+                           Length=Length, HeadOffset=0)
 
         if c.HeadOffset == -1:
             logging.warning("Can't find head in this rule:")
@@ -550,8 +443,7 @@ class Rule:
             logging.warning(str(self))
 
         c.StringChunkLength = c.Length - VirtualTokenNum
-        c.ChunkLevel = 1
-
+        c.ChunkLevel = ChunkLevel
         return c
 
 
@@ -940,7 +832,7 @@ def _ExpandRuleWildCard_List(OneList):
                             lastToken.EndChunk = origin_node.EndChunk
                         if origin_node.RestartPoint:
                             NextIsRestart = True
-                        if hasattr(origin_node, "pointer"):
+                        if origin_node.pointer:
                             NextIsPointer = True
                             NextPointer = origin_node.pointer
                     for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
@@ -1012,8 +904,7 @@ def _ExpandParenthesis(OneList):
 
                 if subTokenlist:
                     ProcessTokens(subTokenlist)
-                    if hasattr(token, "pointer"):
-                        subTokenlist[0].pointer = token.pointer
+                    subTokenlist[0].pointer = token.pointer
                     subTokenlist[0].StartChunk = token.StartChunk
                     subTokenlist[-1].EndChunk = token.EndChunk
 
@@ -1143,11 +1034,10 @@ def _ExpandOrBlock(OneList):
                 continue
             if subTokenlist:
                 ProcessTokens(subTokenlist)
-                if hasattr(token, "pointer"):
-                    subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].pointer = token.pointer
                 subTokenlist[0].StartChunk = token.StartChunk
                 subTokenlist[-1].EndChunk = token.EndChunk
-                if hasattr(token, "action"):
+                if token.action:
                     if len(subTokenlist) > 1:
                         logging.warning("The block has action before Or expand!")
                     subTokenlist[-1].action = token.action
@@ -1178,11 +1068,10 @@ def _ExpandOrBlock(OneList):
                 continue
             if subTokenlist:
                 ProcessTokens(subTokenlist)
-                if hasattr(token, "pointer"):
-                    subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].pointer = token.pointer
                 subTokenlist[0].StartChunk = token.StartChunk
                 subTokenlist[-1].EndChunk = token.EndChunk
-                if hasattr(token, "action"):
+                if token.action:
                     if len(subTokenlist) > 1:
                         logging.warning("The block has action before Or expand!")
                     subTokenlist[-1].action = token.action
