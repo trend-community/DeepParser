@@ -514,7 +514,7 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
                 value = 0.1
             else:
                 singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
-                if  lexicononly and singlevalue < 1:
+                if  lexicononly and singlevalue < 1.2:
                     continue
                 value = singlevalue * (i+1-j)
             if value == 0:
@@ -523,7 +523,7 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
                 bestPhraseLen[i] = i+1 - j
                 bestScore[i] = value + bestScore[j-1]
             elif value + bestScore[j-1] == bestScore[i]:
-                if (i+1-j) == 2 :
+                if (i+1-j) == 2 and bestPhraseLen[i] in [1,3] :
                     bestPhraseLen[i] = i + 1 - j
                     bestScore[i] = value + bestScore[j - 1]
 
@@ -533,7 +533,7 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
         segment = sentence[i - bestPhraseLen[i]:i]
         segmentslashed = TrySlash(segment)
         if segmentslashed:
-            if Lexicon._LexiconSegmentDict[segment] < 1:
+            if Lexicon._LexiconSegmentDict[segment] < 1.2:
                 temp_segments = []
                 for segmentslashed in segmentslashed:
                     subsegments = _Tokenize_Lexicon_maxweight(segmentslashed, True)
@@ -541,7 +541,7 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
                 segments = temp_segments + segments
             else:
                 segments = segmentslashed + segments
-        elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
+        elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1.2:
             #from main2007.txt, not trustworthy
             subsegments = _Tokenize_Lexicon_maxweight(segment, True)
             segments = subsegments + segments
