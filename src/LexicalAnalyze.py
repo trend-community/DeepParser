@@ -76,13 +76,13 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon()
 
-    if not logging.getLogger().isEnabledFor(logging.DEBUG):
+    if  logging.getLogger().isEnabledFor(logging.DEBUG):
         ProcessFile(args.inputfile)
     else:   #debugging modef
         # ProcessFile(UnitTestFileName)
         # pass
         import cProfile, pstats
-        cProfile.run("ProcessFile(UnitTestFileName)", 'restats')
+        cProfile.run("ProcessFile(args.inputfile)", 'restats')
         p = pstats.Stats('restats')
         p.sort_stats('time').print_stats(60)
 

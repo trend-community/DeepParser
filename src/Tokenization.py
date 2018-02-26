@@ -375,6 +375,7 @@ class SentenceNode(object):
         a.EndOffset = self.EndOffset
         if self.UpperRelationship:
             a.UpperRelationship = self.UpperRelationship
+
         if self.sons:
             a.sons = [s.CleanOutput(KeepOriginFeature) for s in self.sons]
 
