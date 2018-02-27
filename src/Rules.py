@@ -253,7 +253,12 @@ class Rule:
     # update on Feb 4: Only "X++" is for new node. The rest is for Son
     @staticmethod
     def ExtractParentSonActions( actinstring):
+
+        if "+++" in actinstring:    # if there is +++, then all are parentaction.
+            return actinstring, ""
+
         actions = set(actinstring.split())
+
         #SonActionString = " ".join([a for a in actions if a[-2:] != "++"   or a == '+++' ])
         ParentActions = [a for a in actions if a[-2:] == "++" and a != '+++']
         ParentActions.extend( [a for a in actions if a[0:2] == "^^"]        )

@@ -471,7 +471,7 @@ def Tokenize_CnEnMix(sentence):
         if subsentence_isascii[i]:
             segmentedlist += _Tokenize_Space(subsentence[i])
         else:
-            segmentedlist += _Tokenize_Lexicon_maxweight(subsentence[i])
+            segmentedlist += _Tokenize_Lexicon_minseg(subsentence[i])
 
     TokenList = SentenceLinkedList()
     start = 0
@@ -559,24 +559,27 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
 
     sentLen = len(sentence)
     bestPhrase = []
-    bestPhraseLen = [1] * (sentLen+1)
-    bestScore = [i for i in range(sentLen+1)]
+    bestPhraseLen = [1] * (sentLen + 1)
+    bestScore = [i for i in range(sentLen + 1)]
 
     ## forward path: fill up "best"
     for i in range(2, sentLen + 1):
-        for j in range(1, i+1 ):
+        for j in range(1, i+1):
             if j == i:
-                value = 1
+                singlevalue = 0.1
             else:
-                singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
-                if singlevalue == 0:
+                singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j - 1:i], 0)
+                if lexicononly and singlevalue < 1.2:
                     continue
-                if  lexicononly and singlevalue < 1:
-                    continue
-                value = (1/singlevalue) * (i+1-j)
-            if value + bestScore[j-1] < bestScore[i]:
-                bestPhraseLen[i] = i+1 - j
-                bestScore[i] = value + bestScore[j-1]
+            if singlevalue == 0:
+                continue
+            if 1 + bestScore[j - 1] < bestScore[i]:
+                bestPhraseLen[i] = i + 1 - j
+                bestScore[i] = 1 + bestScore[j - 1]
+            elif 1 + bestScore[j - 1] == bestScore[i]:
+                if (i + 1 - j) == 2 and bestPhraseLen[i] in [1, 3]:
+                    bestPhraseLen[i] = i + 1 - j
+                    bestScore[i] = 1 + bestScore[j - 1]
 
     ## backward path: collect "best"
     i = sentLen
@@ -584,9 +587,16 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
         segment = sentence[i - bestPhraseLen[i]:i]
         segmentslashed = TrySlash(segment)
         if segmentslashed:
-            segments = segmentslashed + segments
-        elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
-            #from main2007.txt, not trustworthy
+            if Lexicon._LexiconSegmentDict[segment] < 1.2:
+                temp_segments = []
+                for segmentslashed in segmentslashed:
+                    subsegments = _Tokenize_Lexicon_maxweight(segmentslashed, True)
+                    temp_segments += subsegments
+                segments = temp_segments + segments
+            else:
+                segments = segmentslashed + segments
+        elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1.2:
+            # from main2007.txt, not trustworthy
             subsegments = _Tokenize_Lexicon_maxweight(segment, True)
             segments = subsegments + segments
         else:
@@ -594,6 +604,46 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
         i = i - bestPhraseLen[i]
 
     return segments
+    #
+    # segments = []
+    #
+    # sentLen = len(sentence)
+    # bestPhrase = []
+    # bestPhraseLen = [1] * (sentLen+1)
+    # bestScore = [i for i in range(sentLen+1)]
+    #
+    # ## forward path: fill up "best"
+    # for i in range(2, sentLen + 1):
+    #     for j in range(1, i+1 ):
+    #         if j == i:
+    #             value = 1
+    #         else:
+    #             singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
+    #             if singlevalue == 0:
+    #                 continue
+    #             if  lexicononly and singlevalue < 1:
+    #                 continue
+    #             value = (1/singlevalue) * (i+1-j)
+    #         if value + bestScore[j-1] < bestScore[i]:
+    #             bestPhraseLen[i] = i+1 - j
+    #             bestScore[i] = value + bestScore[j-1]
+    #
+    # ## backward path: collect "best"
+    # i = sentLen
+    # while i > 0:
+    #     segment = sentence[i - bestPhraseLen[i]:i]
+    #     segmentslashed = TrySlash(segment)
+    #     if segmentslashed:
+    #         segments = segmentslashed + segments
+    #     elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
+    #         #from main2007.txt, not trustworthy
+    #         subsegments = _Tokenize_Lexicon_maxweight(segment, True)
+    #         segments = subsegments + segments
+    #     else:
+    #         segments = [sentence[i - bestPhraseLen[i]:i]] + segments
+    #     i = i - bestPhraseLen[i]
+    #
+    # return segments
 
 
 def TrySlash(seg):

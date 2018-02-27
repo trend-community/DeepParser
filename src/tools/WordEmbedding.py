@@ -87,9 +87,9 @@ def ImportCorpus(line):
                 NeighbourList[r[0]][r[1]] += freq  #can be the query frequency here.
                 NeighbourList[r[1]][r[0]] += freq
 
+
     # remove the words that are not in  QueryWords or word in LexiconWords
     # re-index
-
 def TrimNeighbours(size = 3):
     global LexiconWordIDs
     logging.info("Start creating LexiconIDs")
@@ -115,7 +115,6 @@ def Distance(a, b, a_neighbourdict, a_neighbourset):
                         for x in intersec])    / (len(a_neighbourdict)+len(NeighbourList[b]))
 #        DistanceCache[(a, b)] = distance
     return distance
-
 
 
 def SimilarWord(word):

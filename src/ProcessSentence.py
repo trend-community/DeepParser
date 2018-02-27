@@ -357,7 +357,7 @@ def LoadCommon():
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
     Rules.PreProcess_CheckFeatures()
-    Rules.SortByLength()
+    #Rules.SortByLength()
 
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")

@@ -108,3 +108,14 @@ class TokenizationTest(unittest.TestCase):
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
         self.assertEqual(NodeList.size, 3)
+
+        t = "前路椎间盘切除术"  #external lexicon
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        #self.assertEqual(NodeList.size, 2)
+
+
+        t = "武装部长方大国"  #external lexicon
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 2)

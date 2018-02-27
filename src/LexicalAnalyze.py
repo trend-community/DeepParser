@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--mode", help="json/segmentation", choices=['json', 'segmentation'])
+    parser.add_argument("--mode", help="json/simple", choices=['json', 'simple'])
     parser.add_argument("--winningrules")
     parser.add_argument("--extra")
 
