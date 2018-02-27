@@ -590,7 +590,7 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
             if Lexicon._LexiconSegmentDict[segment] < 1.2:
                 temp_segments = []
                 for segmentslashed in segmentslashed:
-                    subsegments = _Tokenize_Lexicon_maxweight(segmentslashed, True)
+                    subsegments = _Tokenize_Lexicon_minseg(segmentslashed, True)
                     temp_segments += subsegments
                 segments = temp_segments + segments
             else:
