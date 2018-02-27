@@ -205,11 +205,15 @@ if __name__ == "__main__":
         swlist, swdict = SimilarWord(q)
         if swlist:
             similarwords = q + ":"
+            count = 0
             for sw in swlist:
                 if sw in LexiconWordIDs:
                     similarwords += " '"+ WordList2[sw] + "'"
                     similarwords += "(" + str(swdict[sw]) + ")"
                     if not args.all:
+                        break
+                    count += 1
+                    if count > 10:
                         break
             print(similarwords)
     # psw = pstats.Stats('sw')
