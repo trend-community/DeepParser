@@ -38,7 +38,7 @@ def WindowPush(s, i, w):
         if newwordid >= 0:
             w[newwordid] = neighbourwindowsize
             newrelationship = [(newwordid, oldid) for oldid in existingwords
-                                    if len(WordList2[oldid])<3 or w[oldid] < neighbourwindowsize-1    #exclude overlap word as neighbour.
+                                    if len(WordList2[oldid]) + w[oldid] < neighbourwindowsize    #exclude overlap word as neighbour.
 
                                ]
 
@@ -47,7 +47,7 @@ def WindowPush(s, i, w):
         if newwordid >= 0:
             w[newwordid] = neighbourwindowsize
             newrelationship.extend([(newwordid, oldid) for oldid in existingwords
-                                    if len(WordList2[oldid]) < 3 or w[oldid] < neighbourwindowsize - 1
+                                    if len(WordList2[oldid]) + w[oldid] < neighbourwindowsize
 
                                 ])
 
@@ -112,7 +112,7 @@ def Distance(a, b, a_neighbourdict, a_neighbourset):
     distance = 0
     if intersec:
         distance = sum([(1 - abs(a_neighbourdict[x] - NeighbourList[b][x]) / (a_neighbourdict[x] + NeighbourList[b][x]))
-                        for x in intersec])    / len(a_neighbourdict)
+                        for x in intersec])    / (len(a_neighbourdict)+len(NeighbourList[b]))
 #        DistanceCache[(a, b)] = distance
     return distance
 
@@ -120,11 +120,11 @@ def Distance(a, b, a_neighbourdict, a_neighbourset):
 
 def SimilarWord(word):
     if word not in WordDict:
-        return None
+        return None, None
     wordid = WordDict[word]
     neighbourdict = NeighbourList[wordid]
     if len(neighbourdict) == 0:
-        return None
+        return None, None
 
     neighbourset  = set(neighbourdict.keys())
     similarlist = {}
@@ -146,7 +146,7 @@ def SimilarWord(word):
        output +=  WordList2[index] + "(" + str(similarlist[index]) + ") "
 #    print(output)
 
-    return result
+    return result, similarlist
 
 
 def LoadCorpus(FileName):
@@ -202,15 +202,16 @@ if __name__ == "__main__":
     for q in QueryWords:
         #cProfile.run("SimilarWord(q)", 'sw')
 
-        swlist = SimilarWord(q)
+        swlist, swdict = SimilarWord(q)
         if swlist:
-            similarwordes = q + ":"
+            similarwords = q + ":"
             for sw in swlist:
                 if sw in LexiconWordIDs:
-                    similarwordes += " '"+ WordList2[sw] + "'"
+                    similarwords += " '"+ WordList2[sw] + "'"
+                    similarwords += "(" + str(swdict[sw]) + ")"
                     if not args.all:
                         break
-            print(similarwordes)
+            print(similarwords)
     # psw = pstats.Stats('sw')
     # psw.sort_stats('time').print_stats(10)
     logging.info("Done.")
