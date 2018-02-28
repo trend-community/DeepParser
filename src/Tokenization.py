@@ -325,7 +325,6 @@ class SentenceNode(object):
                 continue
 
             if Action[0] == "^":
-                # TODO: linked the str tokens.
                 if "." in Action:
                     self.UpperRelationship = Action.split(".", 1)[1]
                 else:
@@ -334,6 +333,14 @@ class SentenceNode(object):
                     self.UpperRelationship = Action[1:]
                 continue
 
+            if Action[0] == '\'':
+                #Make the norm of the token to this key
+                self.norm = Action[1:-1]
+                continue
+            if Action[0] == '\\':
+                #Make the atom of the token to this key
+                self.atom = Action[1:-1]
+                continue
             ActionID = FeatureOntology.GetFeatureID(Action)
             if ActionID != -1:
                 self.ApplyFeature(ActionID)
@@ -566,7 +573,7 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
     for i in range(2, sentLen + 1):
         for j in range(1, i+1):
             if j == i:
-                singlevalue = 0.1
+                singlevalue = 1
             else:
                 singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j - 1:i], 0)
                 if lexicononly and singlevalue < 1.2:
@@ -575,11 +582,11 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
                 continue
             if 1 + bestScore[j - 1] < bestScore[i]:
                 bestPhraseLen[i] = i + 1 - j
-                bestScore[i] = 1 + bestScore[j - 1]
+                bestScore[i] = (1/singlevalue) + bestScore[j - 1]
             elif 1 + bestScore[j - 1] == bestScore[i]:
                 if (i + 1 - j) == 2 and bestPhraseLen[i] in [1, 3]:
                     bestPhraseLen[i] = i + 1 - j
-                    bestScore[i] = 1 + bestScore[j - 1]
+                    bestScore[i] = (1/singlevalue) + bestScore[j - 1]
 
     ## backward path: collect "best"
     i = sentLen

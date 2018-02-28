@@ -92,6 +92,7 @@ class RuleToken(object):
         self.MatchType = -1     #-1:unknown/mixed 0: feature 1:text 2:norm 3:atom
         self.pointer = ''
         self.action = ''
+        self.SubtreePointer = ''
 
     def __str__(self):
         output = ""
@@ -137,7 +138,7 @@ class Rule:
     def SetStrTokenLength(self):
         VirtualTokenNum = 0  #Those "^V=xxx" is virtual token that does not apply to real string token
         for t in self.Tokens:
-            if hasattr(t, "SubtreePointer"):
+            if t.SubtreePointer:
                 VirtualTokenNum += 1
         self.StrTokenLength = len(self.Tokens) - VirtualTokenNum
 
@@ -306,13 +307,13 @@ class Rule:
             c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
 
             #check the part before first inner chuck.
-            VirtualTokenNum = self.CheckTokensForHead(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
+            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
 
             #check the part after first inner chuck, before second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHead(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
 
             #check the part after second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHead(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5, Length=tokencount_6, HeadOffset = tokencount_2 + 1 + tokencount_4 + 1)
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5, Length=tokencount_6, HeadOffset = tokencount_2 + 1 + tokencount_4 + 1)
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
@@ -343,10 +344,10 @@ class Rule:
             c.Length = tokencount_2 + 1 + tokencount_4
 
             #check the part before inner chuck.
-            VirtualTokenNum = self.CheckTokensForHead(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
+            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
 
             #check the part after inner chuck.
-            VirtualTokenNum += self.CheckTokensForHead(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
@@ -404,18 +405,23 @@ class Rule:
         self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
 
 
-    def CheckTokensForHead(self, c, StartOffset, Length, HeadOffset = 0):
+    def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset = 0):
 
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
         for i in range(Length):
             token = self.Tokens[StartOffset + i]
-            if hasattr(token, "SubtreePointer"):
+            if token.SubtreePointer:
                 VirtualTokenNum += 1
 
-            if token.pointer == "H":
-                c.HeadConfidence = 4
+            if "H" in token.action:
+                c.HeadConfidence = 5
                 c.HeadOffset = HeadOffset + i
                 c.Action, token.action = self.ExtractParentSonActions(token.action)
+            elif token.pointer == "H":
+                if c.HeadOffset < 5:
+                    c.HeadConfidence = 4
+                    c.HeadOffset = HeadOffset + i
+                    c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif  "^^." in token.action or "++" in token.action:
                 if c.HeadOffset < 4:
                     c.HeadConfidence = 3
@@ -439,7 +445,7 @@ class Rule:
         c = RuleChunk()
         c.StartOffset = StartOffset
         c.Length = Length
-        VirtualTokenNum = self.CheckTokensForHead(c, StartOffset=c.StartOffset,
+        VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset,
                            Length=Length, HeadOffset=0)
 
         if c.HeadOffset == -1:
@@ -559,10 +565,17 @@ def ProcessTokens(Tokens):
 
         pointerMatch = re.match("\^(.+)$", node.word, re.DOTALL)
         if pointerMatch:
+            logging.error("Unknown situation. Pointer not in right place:")
+            logging.error(node.word)
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = '^'
 
-        pointerSubtreeMatch = re.search("(\^(.+)=)", node.word, re.DOTALL)    # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(.+)=)", node.word, re.DOTALL)    # Subtree Pattern
+        if pointerSubtreeMatch:
+            node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
+            node.SubtreePointer = pointerSubtreeMatch.group(2)
+
+        pointerSubtreeMatch = re.search("\[(\^(.+) )", node.word, re.DOTALL)    # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
@@ -586,6 +599,7 @@ def ProcessTokens(Tokens):
             node.word = '[0 ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
         node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
+        node.action = node.action.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
 
 # Avoid [(AS:action)|sjfa]
 # Good character in action:

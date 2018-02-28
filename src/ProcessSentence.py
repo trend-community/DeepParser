@@ -67,8 +67,8 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
                 RemoveTempPointer(strTokenList)
                 return False  #  this rule does not fit for this string
-            if hasattr(ruleTokens[i], "SubtreePointer"):
-                StartPosition -= 1  # do not skip to next strToken, if this Subtree Rule is matched.
+            if ruleTokens[i].SubtreePointer:
+                StartPosition -= 1  # do not skip to next strToken, if this token is for Subtree.
             if ruleTokens[i].pointer:
                 strTokenList.get(i + StartPosition).TempPointer = ruleTokens[i].pointer
         except RuntimeError as e:
@@ -117,23 +117,14 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     MarkTempPointer(strtokens, rule, StartPosition)
     for i in range(len(rule.Tokens)):
 
-        if hasattr(rule.Tokens[i], "SubtreePointer"):
-            SubtreePointer = rule.Tokens[i].SubtreePointer
-            logging.debug("Start looking for Subtree: " + SubtreePointer)
-            token = FindPointerNode(strtokens, i+StartPosition, rule.Tokens, i, Pointer=SubtreePointer)
-        else:
-            token = strtokens.get(i+StartPosition)
-        # try:
-        #     logging.debug("Before:\n" + "in position " + str(StartPosition + i )
-        #                   + " Rule is:" + jsonpickle.dumps(rule.Tokens[i]))
-        # except IndexError as e:
-        #     logging.error("Wrong when trying to debug and dump. maybe the string is not long enough?")
-        #     logging.error(str(rule))
-        #     logging.error(str(e))
-        #     return len(rule.Tokens)
-
-
         if rule.Tokens[i].action:
+            if rule.Tokens[i].SubtreePointer:
+                SubtreePointer = rule.Tokens[i].SubtreePointer
+                logging.debug("Start looking for Subtree: " + SubtreePointer)
+                token = FindPointerNode(strtokens, i + StartPosition, rule.Tokens, i, Pointer=SubtreePointer)
+            else:
+                token = strtokens.get(i + StartPosition)
+
             token.ApplyActions(rule.Tokens[i].action)
 
     if rule.Chunks:
@@ -165,7 +156,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
         for rule in rulegroup.RuleList:
-            if i+rule.StrTokenLength > strtokenlist.size:
+            if rule.StrTokenLength > strtokenlist.size-i:
                 continue
             if WinningRuleSize < len(rule.Tokens):
                 # if ruleSize < len(strsignatures):
