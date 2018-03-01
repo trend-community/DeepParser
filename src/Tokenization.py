@@ -337,7 +337,7 @@ class SentenceNode(object):
                 #Make the norm of the token to this key
                 self.norm = Action[1:-1]
                 continue
-            if Action[0] == '\\':
+            if Action[0] == '/':
                 #Make the atom of the token to this key
                 self.atom = Action[1:-1]
                 continue
