@@ -310,13 +310,15 @@ def LoadCommon():
 
     Lexicon.LoadLexicon(XLocation + 'LexX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-    Lexicon.LoadLexicon(XLocation + 'brandX.txt')
-    Lexicon.LoadLexicon(XLocation + 'idiom4X.txt')
-    Lexicon.LoadLexicon(XLocation + 'idiomX.txt')
-    Lexicon.LoadLexicon(XLocation + 'locX.txt')
-    Lexicon.LoadLexicon(XLocation + 'perX.txt')
-    Lexicon.LoadLexicon(XLocation + 'defPlus.txt')
-    Lexicon.LoadLexicon(XLocation + 'ChinesePunctuate.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
+
+    Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
 
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
@@ -363,7 +365,7 @@ def LoadCommon():
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
     target = "值得称赞的服务一开袋闻到香味口水就留下来了物流服务很快非常香醇美味，很好！"
