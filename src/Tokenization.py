@@ -327,6 +327,12 @@ class SentenceNode(object):
             if Action[0] == "^":
                 if "." in Action:
                     self.UpperRelationship = Action.split(".", 1)[1]
+                    RelationActionID = FeatureOntology.GetFeatureID(self.UpperRelationship)
+                    if RelationActionID != -1:
+                        self.ApplyFeature(RelationActionID)
+                    else:
+                        logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
+
                 else:
                     logging.error("The Action is wrong: It does not have dot to link to proper pointer")
                     logging.error("  actinstring:" + actinstring)

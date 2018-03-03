@@ -350,7 +350,7 @@ def LoadCommon():
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
     Rules.PreProcess_CheckFeatures()
-    #Rules.SortByLength()
+    Rules.SortByLength()
 
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
@@ -365,33 +365,33 @@ def LoadCommon():
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "值得称赞的服务一开袋闻到香味口水就留下来了物流服务很快非常香醇美味，很好！"
+    target = "喝不惯"
 
-    import cProfile, pstats
-    cProfile.run("LexicalAnalyze(target)", 'restatslex')
-    pstat = pstats.Stats('restatslex')
-    pstat.sort_stats('time').print_stats(10)
+    # import cProfile, pstats
+    # cProfile.run("LexicalAnalyze(target)", 'restatslex')
+    # pstat = pstats.Stats('restatslex')
+    # pstat.sort_stats('time').print_stats(10)
 
-    #
-    #
-    # m_nodes, winningrules = LexicalAnalyze(target)
-    # if not m_nodes:
-    #     logging.warning("The result is None!")
-    #     exit(1)
-    #
-    # logging.info("\tDone! counterMatch=%s" % counterMatch)
-    #
-    # print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
-    # print(OutputStringTokens_oneliner(m_nodes))
-    #
-    #
-    # print("Winning rules:\n" + OutputWinningRules())
-    #
-    # print(FeatureOntology.OutputMissingFeatureSet())
-    #
-    # print(m_nodes.root().CleanOutput().toJSON())
-    # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
-    # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+
+
+    m_nodes, winningrules = LexicalAnalyze(target)
+    if not m_nodes:
+        logging.warning("The result is None!")
+        exit(1)
+
+    logging.info("\tDone! counterMatch=%s" % counterMatch)
+
+    print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
+    print(OutputStringTokens_oneliner(m_nodes))
+
+
+    print("Winning rules:\n" + OutputWinningRules())
+
+    print(FeatureOntology.OutputMissingFeatureSet())
+
+    print(m_nodes.root().CleanOutput().toJSON())
+    print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
+    print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())

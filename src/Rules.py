@@ -1116,6 +1116,113 @@ def _ExpandOrBlock(OneList):
     #     ExpandOrBlock()    #recursive call itself to finish all.
 
 
+#Expand | inside of one token. Should be done after the _ExpandOrBlock.
+def _ExpandOrToken(OneList):
+    Modified = False
+    # counter = 0
+    for rule in OneList:
+        if len(rule.RuleName) > 200:
+            logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
+            continue
+        Expand = False
+        for tokenindex in range(len(rule.Tokens)):
+            token = rule.Tokens[tokenindex]
+            orIndex = token.word.find("|") + 1
+            if orIndex <= 0:
+                continue
+
+            originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
+            if originBlock is None:
+                logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
+                continue  # failed to process. might be pair tag issue.
+
+            # left:
+            newrule = Rule()
+            newrule.FileName = rule.FileName
+            newrule.Origin = rule.Origin
+            newrule.comment = rule.comment
+            newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
+            newrule.RuleContent = rule.RuleContent
+            for tokenindex_pre in range(tokenindex):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+            #
+            # newtoken = copy.copy(rule.Tokens[tokenindex])
+            # newtoken.word = newtoken.word.replace(originBlock, leftBlock)
+            # newrule.Tokens.append(newtoken)
+
+            # Analyze the new word, might be a list of tokens.
+            try:
+                subTokenlist = Tokenize(token.word.replace(originBlock, leftBlock))
+            except Exception as e:
+                logging.error("Failed to _ExpandOrBlock.left.tokenize because: " + str(e))
+                logging.error("when expanding or block:" + leftBlock + " for rule name: " + rule.RuleName)
+                continue
+            if subTokenlist:
+                ProcessTokens(subTokenlist)
+                subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartChunk = token.StartChunk
+                subTokenlist[-1].EndChunk = token.EndChunk
+                if token.action:
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has action before Or expand!")
+                    subTokenlist[-1].action = token.action
+            for subtoken in subTokenlist:
+                newrule.Tokens.append(subtoken)
+
+            for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+            newrule.SetStrTokenLength()
+            OneList.append(newrule)
+
+            # right:
+            newrule = Rule()
+            newrule.FileName = rule.FileName
+            newrule.Origin = rule.Origin
+            newrule.comment = rule.comment
+            newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
+            newrule.RuleContent = rule.RuleContent
+            for tokenindex_pre in range(tokenindex):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+
+            # Analyze the new word, might be a list of tokens.
+            try:
+                subTokenlist = Tokenize(token.word.replace(originBlock, rightBlock))
+            except Exception as e:
+                logging.error("Failed to _ExpandOrBlock.right.tokenize because: " + str(e))
+                logging.error("when expanding or block:" + rightBlock + " for rule name: " + rule.RuleName)
+                continue
+            if subTokenlist:
+                ProcessTokens(subTokenlist)
+                subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartChunk = token.StartChunk
+                subTokenlist[-1].EndChunk = token.EndChunk
+                if token.action:
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has action before Or expand!")
+                    subTokenlist[-1].action = token.action
+            for subtoken in subTokenlist:
+                newrule.Tokens.append(subtoken)
+
+            for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+            newrule.SetStrTokenLength()
+            OneList.append(newrule)
+
+            Expand = True
+            # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+            break
+
+        if Expand:
+            OneList.remove(rule)
+            Modified = True
+
+    return Modified
+    # if Modified:
+    #     logging.info("\tExpandOrBlock next level.")
+    #     ExpandOrBlock()    #recursive call itself to finish all.
+
+
+
 def PreProcess_CheckFeatures():
     for RuleFile in RuleGroupDict:
         logging.info("PreProcessing " + RuleFile)
@@ -1145,97 +1252,6 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
             token.word = "[" +  _CheckFeature_returnword(token.word) + "]"
 
         rule.CompileChunk()
-
-#
-# def _CheckFeature(token, rulename):
-#             word = token.word
-#
-#             try:
-#                 if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
-#                     word = word[1:-1].strip()
-#
-#                 word, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
-#             except RuntimeError as e:
-#                 logging.error("Error for rule:" + rulename)
-#                 logging.error(str(e))
-#                 return
-#
-#             if not word:
-#                 return
-#
-#             if matchtype == 'norm':
-#                 if "|" in word:
-#                     items = re.split("\|", word.lstrip("!"))
-#                     if word.startswith("!"):
-#                         token.word = "[!'" + "'|'".join(items) + "']"
-#                     else:
-#                         token.word = "['" + "'|'".join(items) + "']"
-#                 elif " " in word:  # 'this is a good': separate as multiple token.
-#                     logging.warning("The rule is: " + rulename)
-#                     raise NotImplementedError("TODO: separate this as multiple token")
-#
-#             elif matchtype == 'atom':
-#                 if "|" in word:
-#                     items = re.split("\|", word.lstrip("!"))
-#                     if word.startswith("!"):
-#                         token.word = "[!/" + "/|/".join(items) + "/]"
-#                     else:
-#                         token.word = "[/" + "/|/".join(items) + "/]"
-#                 elif " " in word:  # 'this is a good': separate as multiple token.
-#                     logging.warning("The rule is: " + rulename)
-#                     raise NotImplementedError("TODO: separate this as multiple token")
-#
-#             elif matchtype == 'text':
-#                 if "|" in word:
-#                     items = re.split("\|", word.lstrip("!"))
-#                     if word.startswith("!"):
-#                         token.word = "[!\"" + "\"|\"".join(items) + "\"]"
-#                     else:
-#                         token.word = "[\"" + "\"|\"".join(items) + "\"]"
-#                 elif " " in word:  # 'this is a good': separate as multiple token.
-#                     raise NotImplementedError("TODO: separate this as multiple token")
-#
-#             elif matchtype == 'unknown':
-#                 if not re.search('[| !]', word):
-#                     if FeatureOntology.GetFeatureID(word) == -1:
-#                         # logging.warning("Will treat this word as a stem:" + word)
-#                         token.word = "['" + word + "']"
-#                 elif "|" in word and " " not in word and "[" not in word:
-#                     # be aware of ['and|or|of|that|which'|PP|CM]
-#                     try:
-#                         if word.startswith("!"):
-#                             prefix = "!"
-#                             OrBlocks = LogicOperation_SeparateOrBlocks(word[1:])
-#
-#                         else:
-#                             prefix = ""
-#                             OrBlocks = LogicOperation_SeparateOrBlocks(word)
-#                     except RuntimeError as e:
-#                         logging.error("Error for rule:" + rulename)
-#                         logging.error(str(e))
-#                         return  # not to process the rest.
-#
-#                     token.word = prefix + "["
-#                     for OrBlock in OrBlocks:
-#                         _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
-#                         if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
-#                             # logging.warning("Will treat this as a stem:" + OrBlock)
-#                             token.word += "'" + OrBlock + "'|"
-#                         else:
-#                             token.word += OrBlock + "|"
-#                     token.word = re.sub("\|$", "]", token.word)
-#                 elif " " in word and "|" not in word and "[" not in word:
-#                     # be aware of ['and|or|of|that|which'|PP|CM]
-#                     AndBlocks = word.split()
-#                     token.word = "["
-#                     for AndBlock in AndBlocks:
-#                         _, mtype = LogicOperation_CheckPrefix(AndBlock, "unknown")
-#                         if mtype == "unknown" and AndBlock[0] != "!" and FeatureOntology.GetFeatureID(AndBlock) == -1:
-#                             token.word += "'" + AndBlock + "' "
-#                         else:
-#                             token.word += AndBlock + " "
-#                     token.word = re.sub(" $", "]", token.word)
-#
 
 
 def _CheckFeature_returnword(word):
@@ -1361,7 +1377,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     #LoadRules("../../fsa/X/0defLexX.txt")
-    LoadRules("../../fsa/X/6ngrammain.txt")
+    LoadRules("../../fsa/X/0test.txt")
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
