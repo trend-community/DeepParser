@@ -45,3 +45,25 @@ class LexiconTest(unittest.TestCase):
         ApplyLexicon(node)
         CDFeatureID = GetFeatureID('CD')
         self.assertTrue(CDFeatureID in node.features)
+
+        LoadLexicon(dir_path + '/../../../fsa/X/LexX-ChinesePunctuate.txt')
+
+        node = Tokenization.SentenceNode('：')
+        ApplyLexicon(node)
+        self.assertTrue(utils.FeatureID_SYM in node.features)
+        self.assertFalse(utils.FeatureID_OOV in node.features)
+
+        node = Tokenization.SentenceNode(':')
+        ApplyLexicon(node)
+        self.assertTrue(utils.FeatureID_SYM in node.features)
+        self.assertFalse(utils.FeatureID_OOV in node.features)
+
+    def test_LexiconLookup(self):
+        LoadLexicon(dir_path + '/../../../fsa/X/defPlus.txt', lookupSource=LexiconLookupSource.defLex)
+
+        Sentence="喝不惯"
+        NodeList = Tokenization.Tokenize(Sentence)
+        import ProcessSentence
+        ProcessSentence.PrepareJSandJM(NodeList)
+        LexiconLookup(NodeList, LexiconLookupSource.defLex)
+        self.assertEqual(NodeList.size, 1)

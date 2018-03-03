@@ -1,5 +1,5 @@
 #!/bin/python
-#read in the lookup dictionary. It is mainly used for segmenation (combining multiple tokens into one word/token)
+# read in the lookup dictionary. It is mainly used for segmenation (combining multiple tokens into one word/token)
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import string
@@ -7,20 +7,19 @@ import string
 import utils
 from FeatureOntology import *
 
-
 _LexiconDict = {}
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
-_LexiconSegmentDict = {}    # from main2017. used for segmentation onln. there is no feature.
-_LexiconSegmentSlashDict = {}   #
+_LexiconSegmentDict = {}  # from main2017. used for segmentation onln. there is no feature.
+_LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
 _LexiconFantiDict = {}
 
-#_LexiconLookupDict = {}     # extra dictionary for lookup purpose.
-                            # the same node is also saved in _LexiconDict
-#_LexiconBlacklist = []
+# _LexiconLookupDict = {}     # extra dictionary for lookup purpose.
+# the same node is also saved in _LexiconDict
+# _LexiconBlacklist = []
 _CommentDict = {}
 
 C1ID = None
@@ -37,7 +36,7 @@ class LexiconNode(object):
         self.atom = word
         self.features = set()
         self.missingfeature = ""
-        #self.forLookup = False
+        # self.forLookup = False
 
     def __str__(self):
         output = self.text + ": "
@@ -48,8 +47,6 @@ class LexiconNode(object):
             else:
                 logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return output
-
-
 
     def entry(self):
         output = self.text + ": "
@@ -70,8 +67,8 @@ class LexiconNode(object):
             output += "'" + self.norm + "' "
         if self.atom != self.text:
             output += "/" + self.atom + "/ "
-        if self.missingfeature !="":
-            output +=  self.missingfeature
+        if self.missingfeature != "":
+            output += self.missingfeature
         if hasattr(self, "comment"):
             output += self.comment
 
@@ -79,7 +76,6 @@ class LexiconNode(object):
 
 
 def CopyFeatureLeaves(features):
-
     copy = features.copy()
     # remove redundant ancestors.
     for feature in features:
@@ -93,17 +89,18 @@ def CopyFeatureLeaves(features):
                         copy.remove(a)
     return copy
 
+
 def SplitFeatures(FeatureString):
     StemPart = None
     stemMatch = re.match("(.*)(\'.+\')(.*)", FeatureString)
-    #if re.search('\'.*\'$', FeatureString):
+    # if re.search('\'.*\'$', FeatureString):
     if stemMatch and stemMatch.lastindex == 3:
         StemPart = stemMatch.group(2)
         FeatureString = stemMatch.group(1) + stemMatch.group(3)
 
     NormPart = None
     normMatch = re.match("(.*)(/.+/)(.*)", FeatureString)
-    #if re.search('\'.*\'$', FeatureString):
+    # if re.search('\'.*\'$', FeatureString):
     if normMatch and normMatch.lastindex == 3:
         NormPart = normMatch.group(2)
         FeatureString = normMatch.group(1) + normMatch.group(3)
@@ -121,7 +118,7 @@ def RealLength(x):
     occurance = 0
     while index < len(x):
         index = x.find(' ', index)
-        if index!=-1:
+        if index != -1:
             occurance += 1
             index += 1
         else:
@@ -131,15 +128,15 @@ def RealLength(x):
     return len(x)
 
 
-def OutputLexicon(EnglishFlag = False):
+def OutputLexicon(EnglishFlag=False):
     # print("//***Lexicon***")
     Output = ""
     if _CommentDict.get("firstCommentLine"):
         Output += _CommentDict.get("firstCommentLine") + "\n"
     oldWord = None
     if EnglishFlag:
-        s=sorted(_LexiconDict.keys())
-    else :
+        s = sorted(_LexiconDict.keys())
+    else:
         s = sorted(_LexiconDict.keys(), key=lambda x: (RealLength(x), x))
     for word in s:
         if oldWord in _CommentDict.keys():
@@ -154,7 +151,7 @@ def OutputLexicon(EnglishFlag = False):
 
 def OutputLexiconFile(FolderLocation):
     if FolderLocation.startswith("."):
-        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FolderLocation)
+        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), FolderLocation)
     FileLocation = os.path.join(FolderLocation, "lexicon.txt")
 
     with open(FileLocation, "w", encoding="utf-8") as writer:
@@ -174,10 +171,6 @@ def OutputLexiconFile(FolderLocation):
 
 def LoadSegmentLexicon():
     global _LexiconSegmentDict
-    # _LexiconSegmentDict = defaultdict(lambda:1, _LexiconSegmentDict)
-    # _LexiconSegmentDict.update(list(_LexiconLookupSet[LexiconLookupSource.External])[:5])
-
-    #_LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
 
     XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
     lexiconLocation = XLocation + 'main2017.txt'
@@ -192,7 +185,7 @@ def LoadSegmentLexicon():
     if _LexiconDict:
         for word in _LexiconDict:
             if word not in _LexiconLookupSet[LexiconLookupSource.defLex] \
-                and word not in _LexiconLookupSet[LexiconLookupSource.External]:
+                    and word not in _LexiconLookupSet[LexiconLookupSource.External]:
                 _LexiconSegmentDict[word] = 1.2
     else:
         lexiconLocation = XLocation + 'AllLexicon.txt'
@@ -207,7 +200,7 @@ def LoadSegmentLexicon():
 
     for word in _LexiconLookupSet[LexiconLookupSource.External]:
         _LexiconSegmentDict[word] = 1
-#    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
+    #    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
     lexiconLocation = XLocation + 'SegmentSlash.txt'
@@ -218,7 +211,8 @@ def LoadSegmentLexicon():
                 combinedword = word.replace("/", "")
                 _LexiconSegmentSlashDict[combinedword] = word
                 if combinedword not in _LexiconSegmentDict:
-                    _LexiconSegmentDict[combinedword] = 1.2     #these words from main2017 and 60ngramMain.txt also join segmentation.
+                    _LexiconSegmentDict[
+                        combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 
 
@@ -234,11 +228,11 @@ def LoadExtraReference(lexiconLocation, thedict):
     logging.info("Size of thedict: " + str(len(thedict)))
 
 
-def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
+def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet
     global _CommentDict
     if lexiconLocation.startswith("."):
-        lexiconLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  lexiconLocation)
+        lexiconLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), lexiconLocation)
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
 
@@ -247,7 +241,7 @@ def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
         for line in dictionary:
             if line.startswith("//"):
                 if _CommentDict.get(oldWord):
-                    _CommentDict.update({oldWord:_CommentDict.get(oldWord)+line})
+                    _CommentDict.update({oldWord: _CommentDict.get(oldWord) + line})
                 else:
                     _CommentDict.update({oldWord: line})
                 continue
@@ -259,16 +253,16 @@ def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
                 continue
             newNode = False
             word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":").lower()
-            #Ditionary is case insensitive: make the words lowercase.
+            # Ditionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "").replace("~", "")
 
-            #if InLexiconBlacklist(word):
+            # if InLexiconBlacklist(word):
             #    continue
             ### This checking is only for external dictionary.
             ### So let's apply it to them when generating (offline)
 
             node = SearchLexicon(word, 'origin')
-            #node = None
+            # node = None
             if not node:
                 newNode = True
                 node = LexiconNode(word)
@@ -276,17 +270,17 @@ def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
                     node.comment = comment
             if len(blocks) == 2:
                 # there should be no "\:" on the right side.
-                features = SplitFeatures(blocks[1]) # blocks[1].split()
+                features = SplitFeatures(blocks[1])  # blocks[1].split()
                 for feature in features:
                     if re.match('^\'.*\'$', feature):
                         node.norm = feature.strip('\'')
                     elif re.match('^/.*/$', feature):
                         node.atom = feature.strip('/')
-                    elif ChinesePattern.search(feature):    #Chinese
+                    elif ChinesePattern.search(feature):  # Chinese
                         node.norm = feature
                     else:
                         featureID = GetFeatureID(feature)
-                        if featureID==-1:
+                        if featureID == -1:
                             logging.debug("Missing Feature: " + feature)
                             node.missingfeature += "\\" + feature
                         else:
@@ -317,27 +311,27 @@ def LoadLexicon(lexiconLocation, lookupSource = LexiconLookupSource.Exclude):
 
 
 def _ApplyWordStem(NewNode, lexiconnode):
-    #VFeatureID = GetFeatureID("deverbal")
+    # VFeatureID = GetFeatureID("deverbal")
     VBFeatureID = GetFeatureID("VB")
     VedFeatureID = GetFeatureID("Ved")
     VingFeatureID = GetFeatureID("Ving")
 
     if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
         normnode = _LexiconDict[lexiconnode.norm]
-        #NewNode.features.update(normnode.features)
+        # NewNode.features.update(normnode.features)
         if VBFeatureID in NewNode.features:
             if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
-                    NewNode.features.remove(VBFeatureID)
-                    NewNode.features.add(VedFeatureID)
+                NewNode.features.remove(VBFeatureID)
+                NewNode.features.add(VedFeatureID)
             if NewNode.text == normnode.text + "ing":
-                    NewNode.features.remove(VBFeatureID)
-                    NewNode.features.add(VingFeatureID)
+                NewNode.features.remove(VBFeatureID)
+                NewNode.features.add(VingFeatureID)
 
 
 #   If the SearchType is not flexible, then search the origin word only.
 # Otherwise, after failed for the origin word, search for case-insensitive, _ed _ing _s...
 def SearchLexicon(word, SearchType='flexible'):
-    #word = word.lower()
+    # word = word.lower()
     if word in _LexiconDict.keys():
         return _LexiconDict.get(word)
 
@@ -373,7 +367,7 @@ def SearchLexicon(word, SearchType='flexible'):
 def SearchFeatures(word):
     lexicon = SearchLexicon(word)
     if lexicon is None:
-        return {}   #return empty feature set
+        return {}  # return empty feature set
     return lexicon.features
 
 
@@ -409,7 +403,7 @@ def ApplyWordLengthFeature(node):
         node.features.remove(C4plusID)
 
     wordlength = len(node.text)
-    if wordlength<1:
+    if wordlength < 1:
         pass
     elif wordlength == 1:
         node.ApplyFeature(C1ID)
@@ -426,10 +420,10 @@ def ApplyWordLengthFeature(node):
 
 
 def ApplyLexicon(node, lex=None):
-    OOVFeatureSet = { utils.FeatureID_JM, utils.FeatureID_JM2, utils.FeatureID_JS, utils.FeatureID_JS2,
-                      C1ID, C2ID, C3ID, C4ID, C4plusID
-                      #utils.FeatureID_0
-                      }
+    OOVFeatureSet = {utils.FeatureID_JM, utils.FeatureID_JM2, utils.FeatureID_JS, utils.FeatureID_JS2,
+                     C1ID, C2ID, C3ID, C4ID, C4plusID
+                     # utils.FeatureID_0
+                     }
     if not lex:
         lex = SearchLexicon(node.text)
     # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
@@ -442,7 +436,7 @@ def ApplyLexicon(node, lex=None):
             node.ApplyFeature(utils.FeatureID_SYM)
         elif node.text == " ":
             node.ApplyFeature(utils.FeatureID_CM)
-                #not to apply NNP/OOV to space.
+            # not to apply NNP/OOV to space.
         else:
             node.ApplyFeature(utils.FeatureID_NNP)
             node.ApplyFeature(utils.FeatureID_OOV)
@@ -457,23 +451,22 @@ def ApplyLexicon(node, lex=None):
             node.features.update(lex.features)
         _ApplyWordStem(node, lex)
         if len(node.features) == 0 or \
-            len(node.features - OOVFeatureSet) == 0:
+                len(node.features - OOVFeatureSet) == 0:
             node.ApplyFeature(utils.FeatureID_OOV)
-            #node.features.add(utils.FeatureID_OOV)
+            # node.features.add(utils.FeatureID_OOV)
 
     ApplyWordLengthFeature(node)
     node.ApplyFeature(utils.FeatureID_0)
     return node
 
 
-#Lookup will be used right after segmentation.
+# Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens, lookupsource):
     sentenceLenth = strTokens.size
-    bestScore = [1 for _ in range(sentenceLenth+1)]
+    bestScore = [1 for _ in range(sentenceLenth + 1)]
 
     i = 0
-
     logging.info("LexiconLookup " + lookupsource.name + "  size:" + str(len(_LexiconLookupSet[lookupsource])))
 
     pi = strTokens.head
@@ -491,21 +484,21 @@ def LexiconLookup(strTokens, lookupsource):
                 continue
             combinedText += pj.text
             combinedCount += 1
-            if combinedText in _LexiconLookupSet[lookupsource]:
-                logging.debug( " combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+            if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
+                logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[j] = combinedCount
 
     logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
     i = strTokens.size - 1
-    while i>0:
-        if bestScore[i]>1:
-            NewNode = strTokens.combine(i-bestScore[i]+1, bestScore[i], -1)
+    while i > 0:
+        if bestScore[i] > 1:
+            NewNode = strTokens.combine(i - bestScore[i] + 1, bestScore[i], -1)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
             if lookupsource == LexiconLookupSource.External:
                 NewNode.ApplyFeature(utils.FeatureID_External)
-            NewNode.sons = []   #For lookup, eliminate the sons
+            NewNode.sons = []  # For lookup, eliminate the sons
             logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1
@@ -513,7 +506,7 @@ def LexiconLookup(strTokens, lookupsource):
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
     # LoadLexicon('../../fsa/X/LexX.txt')
@@ -524,7 +517,7 @@ if __name__ == "__main__":
     # LoadLexicon('../../fsa/X/locX.txt')
     # LoadLexicon('../../fsa/X/perX.txt')
     # LoadLexicon('../../fsa/X/defPlus.txt')
-    LoadLexicon('../../fsa/X/ChinesePunctuate.txt', lookupSource=LexiconLookupSource.defLex)
+    LoadLexicon('../../fsa/X/defPlus.txt', lookupSource=LexiconLookupSource.defLex)
     # LoadLexicon('../../fsa/X/perX.txt', lookupSource=LexiconLookupSource.External)
     #
     #
@@ -538,5 +531,3 @@ if __name__ == "__main__":
     #     Englishflag = True
     # print(OutputLexicon(Englishflag))
     print(OutputMissingFeatureSet())
-
-
