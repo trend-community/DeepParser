@@ -460,20 +460,22 @@ def Tokenize_CnEnMix(sentence):
     subsentence = []
     subsentence_isascii = []
     isascii = True
+    isdigit = True
     isascii_prev = True     #will be overwritten immediately when i==0
     substart = 0
     sentence = ReplaceCuobieziAndFanti(sentence)
 
     for i in range(len(sentence)):
         isascii = IsAscii(sentence[i])
+        isdigit = sentence[i].isdigit()
         if i == 0:
-            isascii_prev = isascii
+            isascii_prev = [isascii, isdigit]
             continue
-        if isascii != isascii_prev:
+        if [isascii, isdigit] != isascii_prev:
             subsentence.append( sentence[substart:i])
             substart = i
             subsentence_isascii.append( isascii_prev)
-        isascii_prev = isascii
+        isascii_prev = [isascii, isdigit]
 
     #last part
     subsentence.append(sentence[substart:])
