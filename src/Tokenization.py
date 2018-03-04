@@ -474,7 +474,7 @@ def Tokenize_CnEnMix(sentence):
         if [isascii, isdigit] != isascii_prev:
             subsentence.append( sentence[substart:i])
             substart = i
-            subsentence_isascii.append( isascii_prev)
+            subsentence_isascii.append( isascii_prev[0])
         isascii_prev = [isascii, isdigit]
 
     #last part
