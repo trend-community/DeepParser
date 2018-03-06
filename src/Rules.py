@@ -279,7 +279,7 @@ class Rule:
             logging.warning(rulebody)
 
         # TODO: leave these 3 for future usage.
-        # Chunk2_3_1 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk2_3_1 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
         # Chunk2_3_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)<(.+)>(.*)", rulebody)
         # Chunk2_3_3 = re.match("(.*)<(.+)>(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
 
@@ -289,7 +289,63 @@ class Rule:
         Chunk1_2 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
         Chunk1_1 = re.match("(.*)<(.+)>(.*)", rulebody)
 
-        if Chunk2_2:
+        if Chunk2_3_1:
+            tokencount_1 = Chunk2_3_1.group(1).count('[')
+            tokencount_2 = Chunk2_3_1.group(2).count('[')
+            tokencount_3 = Chunk2_3_1.group(3).count('[')
+            tokencount_4 = Chunk2_3_1.group(4).count('[')
+            tokencount_5 = Chunk2_3_1.group(5).count('[')
+            tokencount_6 = Chunk2_3_1.group(6).count('[')
+            tokencount_7 = Chunk2_3_1.group(7).count('[')
+            tokencount_8 = Chunk2_3_1.group(8).count('[')
+            tokencount_9 = Chunk2_3_1.group(9).count('[')
+            c1 = self.CreateChunk(tokencount_1 + tokencount_2, tokencount_3)
+            self.Chunks.append(c1)
+            c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4, tokencount_5)
+            self.Chunks.append(c2)
+            c3 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + tokencount_6, tokencount_7)
+            self.Chunks.append(c3)
+
+            c = RuleChunk()
+            c.ChunkLevel = 2
+            c.StartOffset = tokencount_1
+            c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 + 1 + tokencount_8
+            # check the part before first inner chuck.
+            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                                     HeadOffset=0)
+            # check the part after first inner chuck, before second inner chuck.
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                                      Length=tokencount_4,
+                                                                      HeadOffset=tokencount_2 + 1)
+            # check the part after second inner chuck.
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
+                                                                      Length=tokencount_6,
+                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1)
+            # check the part after third inner chuck.
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + tokencount_6 + tokencount_7,
+                                                                      Length=tokencount_8,
+                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 + 1)
+
+            if c.HeadOffset == -1:
+                c.HeadConfidence = 1
+                if   "++" in c1.Action:
+                    c.HeadOffset = tokencount_2
+                elif "++" in c2.Action:
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                elif "++" in c3.Action:
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
+                else:
+                    logging.error(" There is no ++ for anyt tokens.  Can't determined the head!")
+                    logging.error(str(self))
+                    logging.error(jsonpickle.dumps(c))
+
+            c.StringChunkLength = c.Length - VirtualTokenNum
+
+            self.Chunks.append(c)
+        elif Chunk2_2:
             tokencount_1 = Chunk2_2.group(1).count('[')
             tokencount_2 = Chunk2_2.group(2).count('[')
             tokencount_3 = Chunk2_2.group(3).count('[')
@@ -317,15 +373,14 @@ class Rule:
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
-                if "^^." in c1.Action:
+                if   "^^." in c2.Action or "++" in c1.Action:
+                    c.HeadOffset = tokencount_2
+                elif "^^." in c1.Action or "++" in c2.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
                 else:
-                    if "^^."  in c2.Action:
-                        c.HeadOffset = tokencount_2
-                    else:
-                        logging.error(" There is no ^^. for both tokens.  Can't determined the head!")
-                        logging.error(str(self))
-                        logging.error(jsonpickle.dumps(c))
+                    logging.error(" There is no ^^. or ++ for both tokens.  Can't determined the head!")
+                    logging.error(str(self))
+                    logging.error(jsonpickle.dumps(c))
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
@@ -1111,10 +1166,6 @@ def _ExpandOrBlock(OneList):
             Modified = True
 
     return Modified
-    # if Modified:
-    #     logging.info("\tExpandOrBlock next level.")
-    #     ExpandOrBlock()    #recursive call itself to finish all.
-
 
 
 def _ProcessOrToken(word):
@@ -1142,7 +1193,6 @@ def _ProcessOrToken(word):
         orlist = ["|".join(notnormlist) ] + normlist
     else:
         orlist = normlist
-
 
     return orlist, "["+leftpieces, rightpieces+"]"
 
@@ -1188,6 +1238,7 @@ def _ExpandOrToken(OneList):
                 for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                 newrule.SetStrTokenLength()
+                newrule.Chunks = copy.copy(rule.Chunks)
                 OneList.append(newrule)
 
             Expand = True
@@ -1202,10 +1253,6 @@ def _ExpandOrToken(OneList):
         return _ExpandOrToken(OneList)
     else:
         return False
-    # if Modified:
-    #     logging.info("\tExpandOrBlock next level.")
-    #     ExpandOrBlock()    #recursive call itself to finish all.
-
 
 
 def PreProcess_CheckFeatures():
@@ -1364,7 +1411,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     #LoadRules("../../fsa/X/0defLexX.txt")
-    LoadRules("../../fsa/X/80Expert.txt")
+    LoadRules("../../fsa/X/0test.txt")
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")

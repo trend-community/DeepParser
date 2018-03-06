@@ -2,7 +2,7 @@
 import unittest
 from Rules import *
 from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock
-from Rules import _CheckFeature, _CheckFeature_returnword
+from Rules import  _CheckFeature_returnword
 import FeatureOntology
 
 class RuleTest(unittest.TestCase):
@@ -305,7 +305,7 @@ class RuleTest(unittest.TestCase):
         InsertRuleInList("""single_token_NP5 == <[proNN:NP]>""", rulegroup)
         r = rulegroup.RuleList[0]
         self.assertEqual(r.Tokens[1].word, "[proNN]")
-        _CheckFeature(r.Tokens[1], 'new')
+        print(_CheckFeature_returnword(r.Tokens[1], 'new'))
 
     def test_CheckFeature(self):
         FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
@@ -318,16 +318,16 @@ class RuleTest(unittest.TestCase):
         r = rulegroup.RuleList[0]
         self.assertEqual(r.Tokens[1].word, "CD")
         self.assertEqual(r.Tokens[2].word, "分")
-        _CheckFeature(r.Tokens[2], 'new')
+        print(_CheckFeature_returnword(r.Tokens[2], 'new'))
 
         InsertRuleInList("""30expert == < ['第-|前-' :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
         r = rulegroup.RuleList[1]
-        _CheckFeature(r.Tokens[1], 'new')
+        print(_CheckFeature_returnword(r.Tokens[1], 'new'))
         self.assertEqual(r.Tokens[1].word, "['第-'|'前-']")
 
         InsertRuleInList("""30expert1 == < ['第-|前-' ordinal :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
         r = rulegroup.RuleList[2]
-        _CheckFeature(r.Tokens[1], 'new')
+        print(_CheckFeature_returnword(r.Tokens[1], 'new'))
         print(r.Tokens[1])
 
         r.Tokens[1].word = "[" + _CheckFeature_returnword(r.Tokens[1].word) + "]"
@@ -588,7 +588,7 @@ class RuleTest(unittest.TestCase):
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
-        #OutputRules("concise")
+        OutputRules("concise")
         word = rulegroup.RuleList[0].Tokens[0].word
         self.assertFalse(":" in word)
         word = rulegroup.RuleList[1].Tokens[0].word
