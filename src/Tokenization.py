@@ -94,11 +94,18 @@ class SentenceLinkedList:
     def __str__(self):
         output = "[" + str(self.size) + "]"
         p = self.head
-        if not p:
-            while not p.next:
-                output += str(p)
-                p = p.next
+        while p:
             output += str(p)
+            p = p.next
+        output += str(p)
+        return output
+
+    def norms(self):
+        output = []
+        p = self.head
+        while p:
+            output += [p.norm]
+            p = p.next
         return output
 
     # def toJSON(self):
@@ -207,8 +214,11 @@ class SentenceLinkedList:
                 length -= 1 #remove the JM token if it is blank
 
         length = length - start
-        r, _, _ = self.newnode(start, length)
-        return r
+        if length > 1:
+            r, _, _ = self.newnode(start, length)
+            return r
+        else:   # if there is only 1 node, then return this node directly, not to create a parent node. Mar 6, 2018
+            return self.get(start)
 
 
 class SentenceNode(object):
@@ -497,7 +507,7 @@ def Tokenize_CnEnMix(sentence):
         TokenList.append(Element)
         start = start + len(t)
 
-    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+#    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
     return TokenList
 
 

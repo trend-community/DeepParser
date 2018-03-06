@@ -18,6 +18,8 @@
 # 2, remove  everything else
 #    perl -pi -e "s/[\', ]//g" Fanti1.txt
 #    grep : Fanti1.txt > Fanti.txt
+#   LC_ALL=C grep -wEv "(.*):\1$" Fanti.txt > /tmp/Fanti.txt
+#   mv /tmp/Fanti.txt .
 
 zh2Hant = {
 '㐽': '偑',

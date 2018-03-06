@@ -331,11 +331,11 @@ class Rule:
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
-                if   "++" in c1.Action:
+                if   "++" in c1.Action or ("^^." in c2.Action and "^^." in c3.Action ):
                     c.HeadOffset = tokencount_2
-                elif "++" in c2.Action:
+                elif "++" in c2.Action or ("^^." in c1.Action and "^^." in c3.Action ):
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                elif "++" in c3.Action:
+                elif "++" in c3.Action or ("^^." in c1.Action and "^^." in c2.Action ):
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
                 else:
                     logging.error(" There is no ++ for anyt tokens.  Can't determined the head!")
@@ -1209,6 +1209,19 @@ def _ExpandOrToken(OneList):
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
+
+            if token.word.find("|") < 0:
+                continue
+
+            #Process  a|b|'c|d|e'|f. Change it to a|b|'c'|'d'|'e'|f
+            ormatch = re.match("^(.*')(.*?)('.*)$", token.word)
+            if ormatch:
+                innerquote = ormatch.group(2)
+                if "|" in innerquote and "'" not in innerquote:
+                    innerquote2 = innerquote.replace("|", "'|'")
+                    token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
+                    logging.info("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+
             orIndex = token.word.find("'|")
             if orIndex < 0:
                 continue
@@ -1261,6 +1274,12 @@ def PreProcess_CheckFeatures():
         rg = RuleGroupDict[RuleFile]
         _PreProcess_CheckFeaturesAndCompileChunk(rg.RuleList)
 
+def PreProcess_CompileHash():
+    for RuleFile in RuleGroupDict:
+        logging.info("PreProcessing " + RuleFile)
+        rg = RuleGroupDict[RuleFile]
+        _PreProcess_CompileHash(rg.RuleList)
+
 
 def SortByLength():
     for RuleFile in RuleGroupDict:
@@ -1274,18 +1293,19 @@ def SortByLength():
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
 def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
     for rule in OneList:
-        if len(rule.Tokens) == 0:
-            logging.error("This rule has zero token.")
-            logging.error("Lenth = 0, error! Need to revisit the parsing process")
-            logging.error(str(rule))
-            OneList.remove(rule)
         for token in rule.Tokens:
             #_CheckFeature(token, rule.RuleName)
             token.word = "[" +  _CheckFeature_returnword(token.word) + "]"
 
         rule.CompileChunk()
 
-    #_ExpandOrToken(OneList)
+    _ExpandOrToken(OneList)
+
+
+def _PreProcess_CompileHash(OneList):
+    for rule in OneList:
+        rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!" else None
+                      for token in rule.Tokens if not token.SubtreePointer ]
 
 
 def _CheckFeature_returnword(word):
@@ -1427,6 +1447,7 @@ if __name__ == "__main__":
     ExpandParenthesisAndOrBlock()
     ExpandRuleWildCard()
     PreProcess_CheckFeatures()
+    PreProcess_CompileHash()
     SortByLength()
 
     # print (OutputRules("concise"))

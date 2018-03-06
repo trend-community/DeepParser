@@ -140,6 +140,17 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     return 0 #need to modify for those "forward looking rules"
 
 
+def ListMatch(list1, list2):
+    if len(list1) != len(list2):
+        logging.error("Coding error. The size should be the same in ListMatch")
+        return False
+    for i in range(len(list1)):
+        if list1[i] == "" or list2[i] == None or list1[i] == list2[i]:
+            pass
+        else:
+            return False
+    return True
+
 # HeadMatchCache = {}
 # RuleSizeLimit = 6
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
@@ -148,6 +159,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     logging.debug("Matching using file:" + RuleFileName)
 
     strtoken = strtokenlist.head
+    strnorms = strtokenlist.norms()
     while strtoken:
         # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
@@ -158,6 +170,10 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         for rule in rulegroup.RuleList:
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
+
+            # if not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
+            #     continue
+
             if WinningRuleSize < len(rule.Tokens):
                 # if ruleSize < len(strsignatures):
                 #     pairSignature = str([strsignatures[ruleSize-1], rule.ID])
@@ -175,6 +191,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 if result:
                     WinningRule = rule
                     WinningRuleSize = len(WinningRule.Tokens)
+                    break
                     if WinningRuleSize + i >= strtokenlist.size:
                         logging.debug("Found a winning rule that matchs up to the end of the string.")
                         break
@@ -350,6 +367,7 @@ def LoadCommon():
     Rules.ExpandParenthesisAndOrBlock()
     Rules.ExpandRuleWildCard()
     Rules.PreProcess_CheckFeatures()
+    Rules.PreProcess_CompileHash()
     Rules.SortByLength()
 
     if ParserConfig.get("main", "runtype") == "Debug":

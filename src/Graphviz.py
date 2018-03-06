@@ -43,6 +43,59 @@ def CreateTree(inputnode):
     nodeList.append(node)
     return node
 
+def CreateFlatTree(inputnode, nodelist, parentid=0):
+    node = Node(inputnode['text'])
+    node.parentid = parentid
+    node.endOffset = inputnode['EndOffset']
+    node.startOffset = inputnode['StartOffset']
+    node.features = inputnode['features']
+    nodeid = 1
+    while nodeid in [n.id for n in nodelist]:
+        nodeid = random.randint(1, 1000000)   # as parent id for sons.
+    node.id = nodeid
+
+    node.upperRelation = ""
+    if 'UpperRelationship' in inputnode.keys():
+        node.upperRelation = inputnode['UpperRelationship']
+    if "H" in node.features:
+        node.upperRelation = "H"
+    nodelist.append(node)
+
+    if 'sons' in inputnode.keys():
+        for son in inputnode['sons']:
+            CreateFlatTree(son, nodelist, node.id)
+
+    return
+
+def orgChart2(json_input):
+    nodelist = []
+    decoded = json.loads(json_input)
+    CreateFlatTree(decoded, nodelist)
+    dataRows = []
+    for node in nodelist:
+        v = str(node.id)
+        if node.parentid:
+            manager = str(node.parentid)
+        else:
+            manager = ''    # root. parentid is zero
+        tooltip = ' '.join(node.features) + " EndOffset:" + str(node.endOffset) + " StartOffset: " + str(node.startOffset)
+        f = node.text
+        f_extra = ""
+        featuretoshow = list(set(node.features).intersection(set(featureShown1 )))
+        if not featuretoshow:
+            featuretoshow = list(set(node.features).intersection(set(featureShown2)))
+        if featuretoshow:
+            f_extra = featuretoshow[0]
+        if node.upperRelation:
+            f_extra += "(" + node.upperRelation + ")"
+        if f_extra:
+            f += '<div style="color:red; font-style:italic">' + f_extra + '</div>'
+
+        element = [{'v':v, 'f':f}, manager, tooltip]
+        dataRows.append(element)
+
+    return dataRows
+
 def printTree(list):
     for node in list:
         print ("original text is " + node.text)

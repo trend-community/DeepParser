@@ -90,7 +90,7 @@ class SingleInstance:
                 logger.warning(e)
             else:
                 print("Unloggable error: %s" % e)
-            sys.exit(-1)
+            #sys.exit()
 
 
 def f(name):
