@@ -442,6 +442,7 @@ def _Tokenize_Space(sentence):
     #for i in range(1, len(sentence)):   #ignore the first one.
     i = 1
     segments = []
+    EndPosition = 0
     while i<len(sentence):
         c = sentence[i]
         prevc = sentence[i-1]
@@ -453,14 +454,15 @@ def _Tokenize_Space(sentence):
         if (prevc.isalnum() and not c.isalnum()) or (not prevc.isalnum() and not prevc.isspace()):
             segments += [sentence[StartPosition:i]]
             StartToken = False
+            EndPosition = i+1
 
         if (c.isalnum() and (not prevc.isalnum()) ) or (not c.isalnum() and not c.isspace()):
             StartToken = True
             StartPosition = i
         i += 1
 
-    if StartToken:  #wrap up the last one
-        segments += [sentence[StartPosition:]]
+    if EndPosition < len(sentence):
+        segments += [sentence[EndPosition:]]
 
     return segments
 
@@ -476,6 +478,8 @@ def Tokenize_CnEnMix(sentence):
     sentence = ReplaceCuobieziAndFanti(sentence)
 
     for i in range(len(sentence)):
+        if sentence[i] == ' ':
+            continue    # leave space as is.
         isascii = IsAscii(sentence[i])
         isdigit = sentence[i].isdigit()
         if i == 0:
@@ -500,11 +504,20 @@ def Tokenize_CnEnMix(sentence):
 
     TokenList = SentenceLinkedList()
     start = 0
+    SpaceQ = False
     for t in segmentedlist:
-        Element = SentenceNode(t)
-        Element.StartOffset = start
-        Element.EndOffset = start + len(t)
-        TokenList.append(Element)
+        if t[0] == " ": #
+            TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
+            SpaceQ = True
+            continue
+        token = SentenceNode(t)
+        token.StartOffset = start
+        token.EndOffset = start + len(t)
+
+        if SpaceQ:
+            token.ApplyFeature(utils.FeatureID_SpaceQ)
+
+        TokenList.append(token)
         start = start + len(t)
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())

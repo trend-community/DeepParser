@@ -158,3 +158,12 @@ class TokenizationTest(unittest.TestCase):
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
         self.assertEqual(NodeList.size, 3)
         self.assertEqual(NodeList.get(0).text, "巴西")
+
+    def testSegmentation_space(self):
+        Lexicon.LoadSegmentLexicon()
+
+        t = "a  巴西 brazil 在   america"  # 2/2
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 5)
+        self.assertEqual(NodeList.get(1).text, "巴西")
