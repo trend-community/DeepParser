@@ -236,9 +236,6 @@ def URLEncoding(Sentence):
     #Sentence = Sentence.replace("/", "%2F")
     return Sentence
 
-def TransferToGoogleChartOrg(Json):
-    raise NotImplementedError
-
 
 def IndexIn2DArray(x, array):
     for i in range(len(array)):
@@ -246,4 +243,13 @@ def IndexIn2DArray(x, array):
             if x == array[i][j]:
                 return i, j
     return -1, -1
+
+
+def LastItemIn2DArray(xlist, array):
+    for i in reversed(range(len(array))):
+        for j in reversed(range(len(array[i]))):
+            if  array[i][j] in xlist:
+                return array[i][j]
+    return None
+
 

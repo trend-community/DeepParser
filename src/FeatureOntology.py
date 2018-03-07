@@ -4,7 +4,7 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import logging, re, operator, sys, os, pickle, requests
+import  operator, sys, requests
 from utils import *
 
 

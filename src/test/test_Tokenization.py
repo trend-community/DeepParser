@@ -137,3 +137,24 @@ class TokenizationTest(unittest.TestCase):
         t = "喝"  #external lexicon
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+
+    def testSegmentation_22(self):
+        Lexicon.LoadSegmentLexicon()
+
+        t = "巴西餐厅"  #2/2
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 2)
+        self.assertEqual(NodeList.head.text, "巴西")
+
+        t = "美在巴西餐厅"  #2/2
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 4)
+        self.assertEqual(NodeList.get(2).text, "巴西")
+
+        t = "巴西餐厅后"  #2/2
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 3)
+        self.assertEqual(NodeList.get(0).text, "巴西")

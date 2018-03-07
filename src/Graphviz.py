@@ -11,6 +11,8 @@ nodeList = []
 randomSet = set()
 featureShown1 = ['VG','NG','AP','PoP','PP','RP','NE','DE','NP','VP','Pred','CL']
 featureShown2 = ['N','V','P','A','PRP','CD','RB','MD','SC','CC','DT','SYM','punc']
+
+
 class Node(object):
     def __init__(self,text):
         self.text = text
@@ -68,6 +70,8 @@ def CreateFlatTree(inputnode, nodelist, parentid=0):
     return
 
 def orgChart2(json_input):
+    import utils, FeatureOntology  # using the BarTags.
+
     nodelist = []
     decoded = json.loads(json_input)
     CreateFlatTree(decoded, nodelist)
@@ -78,14 +82,12 @@ def orgChart2(json_input):
             manager = str(node.parentid)
         else:
             manager = ''    # root. parentid is zero
-        tooltip = ' '.join(node.features) + " EndOffset:" + str(node.endOffset) + " StartOffset: " + str(node.startOffset)
+        tooltip = ' '.join(node.features) + '\n' + " StartOffset: " + str(node.startOffset) + " EndOffset:" + str(node.endOffset)
         f = node.text
         f_extra = ""
-        featuretoshow = list(set(node.features).intersection(set(featureShown1 )))
-        if not featuretoshow:
-            featuretoshow = list(set(node.features).intersection(set(featureShown2)))
-        if featuretoshow:
-            f_extra = featuretoshow[0]
+        BarFeature = utils.LastItemIn2DArray(node.features, FeatureOntology.BarTags)
+        if BarFeature:
+            f_extra = BarFeature
         if node.upperRelation:
             f_extra += "(" + node.upperRelation + ")"
         if f_extra:
