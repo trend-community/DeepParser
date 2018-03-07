@@ -15,12 +15,6 @@ with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.templ
     charttemplate = templatefile.read()
 
 
-@app.route("/SearchLexicon/<word>")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def SearchLexicon(word):
-    return jsonpickle.encode(Lexicon.SearchLexicon(word))
-
-
 @app.route("/GetFeatureID/<word>")
 @app.cache.cached(timeout=3600)  # cache this view for 1 hour
 def GetFeatureID(word):
@@ -33,27 +27,9 @@ def GetFeatureName(FeatureID):
     return jsonpickle.encode(FeatureOntology.GetFeatureName(int(FeatureID)))
 
 
-@app.route("/GetFeatureList")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def GetFeatureList():
-    return jsonpickle.encode(FeatureOntology._FeatureDict)
-
-
-@app.route("/GetFeatureList1")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def GetFeatureList1():
-    return jsonpickle.encode({ID: f for f, ID in FeatureOntology._FeatureDict.items()})
-
-
 @app.route("/gchart_loader.js")
 def gchart_loader():
     return send_file('gchart_loader.js')
-
-
-@app.route("/Tokenize/<Sentence>")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def Tokenize(Sentence):
-    return jsonpickle.encode(Tokenization.Tokenize(Sentence))
 
 
 # Following the instruction in pipelineX.txt
@@ -80,17 +56,11 @@ def LexicalAnalyze():
             # logging.info("Type=" + str(Type))
             if Type == "simple":
                 return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
-            elif Type == "simplefeature":
-                return utils.OutputStringTokens_oneliner(nodes, NoFeature=False)
             elif Type == "json2":
                 return nodes.root().CleanOutput_FeatureLeave().toJSON()
-            elif Type == "parsetreeviz":
-                svgfilelocation = Graphviz.showGraph(nodes.root().CleanOutput().toJSON())
-                logging.info("parsetree file is written in:" + str(svgfilelocation))
-                return send_file(svgfilelocation, mimetype='image/gif')
             elif Type == "parsetree":
-                orgdata = Graphviz.orgChart2(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON())
-                chart = charttemplate.replace("[[[DATA2]]]", str(orgdata))
+                orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON())
+                chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
                 if Debug:
                     winningrulestring = ""

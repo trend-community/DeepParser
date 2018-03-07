@@ -6,32 +6,19 @@
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-        //var data = new google.visualization.DataTable();
-        //data.addColumn('string', 'Name');
-        //data.addColumn('string', 'Manager');
-        //data.addColumn('string', 'ToolTip');
-
-        // For each orgchart box, provide the name, manager, and tooltip to show.
-        //data.addRows([[[DATA]]]);
-
-        // Create the chart.
-        //var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-        // Draw the chart, setting the allowHtml option to true for the tooltips.
-        //chart.draw(data, {allowHtml:true});
-
         ///////////////new/////////
-        var data2 = new google.visualization.DataTable();
-        data2.addColumn('string', 'Name');
-        data2.addColumn('string', 'Manager');
-        data2.addColumn('string', 'ToolTip');
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('string', 'Manager');
+        data.addColumn('string', 'ToolTip');
 
         // For each orgchart box, provide the name, manager, and tooltip to show.
-        data2.addRows([[[DATA2]]]);
+        data.addRows([[[DATA]]]);
 
         // Create the chart.
-        var chart2 = new google.visualization.OrgChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
         // Draw the chart, setting the allowHtml option to true for the tooltips.
-        chart2.draw(data2, {allowHtml:true});
+        chart.draw(data, {allowHtml:true});
       }
    </script>
       <style>
@@ -43,6 +30,5 @@ li.indent {list-style-type: circle; padding-left:50px; padding-bottom:0.5cm;}
     <div id="chart_div"></div>
     <div id="extra_div"><pre><!-- EXTRA --></pre></div>
 
-      <div id="chart_div2"></div>
   </body>
 </html>
