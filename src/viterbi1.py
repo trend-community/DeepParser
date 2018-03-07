@@ -124,10 +124,13 @@ def LoadDictFromLexicon(dictpath):
     with open(dictpath) as lexicondict:
         for line in lexicondict:
             if len(line.strip()) >= 2:
-                querydict[normalize(line.strip())] = -4 #each lexicon word is 1/10000 of total query.
+                blocks = line.split(":")
+                querydict[normalize(blocks[0].strip())] = -4 #each lexicon word is 1/10000 of total query.
     print("After loading from lexicon, size:" + str(len(querydict)))
-    print("querydict['中 介']=" + str(querydict['中 介']))
-    print("querydict['军 刀 黑']=" + str(querydict['军 刀 黑']))
+    if '中 介' in querydict:
+        print("querydict['中 介']=" + str(querydict['中 介']))
+    if '军 刀 黑' in querydict:
+        print("querydict['军 刀 黑']=" + str(querydict['军 刀 黑']))
 
 
 if __name__ == "__main__":
