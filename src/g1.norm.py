@@ -28,7 +28,7 @@ import utils
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="input query unigram file")
 parser.add_argument("output", help="output phrase unigram text file")
-parser.add_argument("dict", help="output phrase unigram pickle dict")
+parser.add_argument("outputdict", help="output phrase unigram pickle dict")
 args = parser.parse_args()
 print (str(args))
 
@@ -43,6 +43,8 @@ fin = codecs.open(args.input, 'rb', encoding='utf-8')
 from viterbi1 import *
 
 _LexiconBlacklist = []
+_Blacklist_Freq = {}
+
 def LoadLexiconBlacklist(BlacklistLocation):
     if BlacklistLocation.startswith("."):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
@@ -67,16 +69,21 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 blocks = [x.strip() for x in re.split(":", pattern) if x]
                 if not blocks:
                     continue
-                _LexiconBlacklist.append(blocks[0]+"$") #from begin to end
+                word_freq = blocks[0].split()
+                if len(word_freq) == 2:
+                    _Blacklist_Freq[word_freq[0]+"$"] = int(word_freq[1])
+                else:
+                    _Blacklist_Freq[word_freq[0]+"$"] = 30
+                _LexiconBlacklist.append(word_freq[0]+"$") #from begin to end
 
 
 from functools import lru_cache
 @lru_cache(maxsize=1000000)
-def InLexiconBlacklist(word):
+def FreqInLexiconBlacklist(word):
     for pattern in _LexiconBlacklist:
         if re.match(pattern, word):
-            return True
-    return False
+            return _Blacklist_Freq[pattern]
+    return -1
 
 
 LoadLexiconBlacklist("../../fsa/X/LexBlacklist.txt")
@@ -87,9 +94,10 @@ for line in fin:
     line = line.strip()
     # print line.encode('utf8')
     try:
-        [query, freqstring] = line.split("", 2)
+        s = line.split('\x01', 2)
+        [query, freqstring] = line.split('\x01', 2)
         freq = int(freqstring)
-        if freq < 10:
+        if freq < 10:       # remove item that less than 10.
             continue
         for chunk in query.split():
             if len(chunk) < 2:
@@ -98,19 +106,30 @@ for line in fin:
                 continue    #ignore digit
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
-            if querydict[phrase] < 60 and InLexiconBlacklist(chunk):
-                logging.warning("Blacklisted:" + chunk)
-                del querydict[phrase]
+
             N = N + freq
     except Exception as e:
-        print("error in processing \n\t" + line)
+        print(" Ignored: error in processing \n\t" + line)
         print(str(e))
-        logging.error(traceback.format_exc())
+        logging.warning(traceback.format_exc())
         continue
+
+logging.info("Start applying blacklist: N=" + str(N))
+delta = N/2000000000.0   # the number in blacklist is based on 2 billion
+q_list = copy.copy(querydict)
+for phrase in q_list:
+    if querydict[phrase] < 10*delta:
+        del querydict[phrase]
+    originphrase = ''.join(phrase.split())
+    blackitem_freq = FreqInLexiconBlacklist(originphrase) #-1 for not in Blacklist
+    if querydict[phrase] < blackitem_freq * delta or blackitem_freq == 0:
+        logging.warning("Blacklisted:" + originphrase)
+        del querydict[phrase]
+
 fin.close()
 
 querydict[''] = N
-pickle.dump( querydict, open(args.dict, "wb") )
+pickle.dump( querydict, open(args.outputdict, "wb") )
 
 fout = codecs.open(args.output, 'wb', encoding='utf-8')
 for phrase in querydict: fout.write(phrase + '\t' + str(querydict[phrase]) + '\n')
