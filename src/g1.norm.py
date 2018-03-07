@@ -120,6 +120,7 @@ q_list = copy.copy(querydict)
 for phrase in q_list:
     if querydict[phrase] < 10*delta:
         del querydict[phrase]
+        continue
     originphrase = ''.join(phrase.split())
     blackitem_freq = FreqInLexiconBlacklist(originphrase) #-1 for not in Blacklist
     if querydict[phrase] < blackitem_freq * delta or blackitem_freq == 0:
