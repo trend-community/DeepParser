@@ -588,23 +588,23 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
     bestScore = [i for i in range(sentLen + 1)]
 
     ## forward path: fill up "best"
-    for i in range(2, sentLen + 1):
-        for j in range(1, i+1):
+    for i in range(2, sentLen+1):
+        for j in range(1, i+1 ):
             if j == i:
                 singlevalue = 1
             else:
-                singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j - 1:i], 0)
+                singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
                 if lexicononly and singlevalue < 1.2:
                     continue
             if singlevalue == 0:
                 continue
-            if 1 + bestScore[j - 1] < bestScore[i]:
+            if (1/singlevalue) + bestScore[j-1] < bestScore[i]:
                 bestPhraseLen[i] = i + 1 - j
-                bestScore[i] = (1/singlevalue) + bestScore[j - 1]
+                bestScore[i] = (1/singlevalue) + bestScore[j-1]
             elif 1 + bestScore[j - 1] == bestScore[i]:
                 if (i + 1 - j) == 2 and bestPhraseLen[i] in [1, 3]:
                     bestPhraseLen[i] = i + 1 - j
-                    bestScore[i] = (1/singlevalue) + bestScore[j - 1]
+                    bestScore[i] = (1/singlevalue) + bestScore[j-1]
 
     ## backward path: collect "best"
     i = sentLen
