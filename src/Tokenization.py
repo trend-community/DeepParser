@@ -436,34 +436,24 @@ class JsonClass(object):
         pass
 
 
+#2018030: Make space as one token. Will be removed and add spaceH/spaceQ for adjacent token in the next step.
 def _Tokenize_Space(sentence):
-    StartToken = True
-    StartPosition = 0
-    #for i in range(1, len(sentence)):   #ignore the first one.
-    i = 1
     segments = []
-    EndPosition = 0
-    while i<len(sentence):
-        c = sentence[i]
-        prevc = sentence[i-1]
-        if c == "'":
-            if 0<i<len(sentence)-1 and sentence[i-1].isalpha() and sentence[i+1].isalpha():
-                i+=2
-                continue    #when ' sign is inside a word, like can't don't
-
-        if (prevc.isalnum() and not c.isalnum()) or (not prevc.isalnum() and not prevc.isspace()):
-            segments += [sentence[StartPosition:i]]
-            StartToken = False
-            EndPosition = i+1
-
-        if (c.isalnum() and (not prevc.isalnum()) ) or (not c.isalnum() and not c.isspace()):
-            StartToken = True
-            StartPosition = i
-        i += 1
-
-    if EndPosition < len(sentence):
-        segments += [sentence[EndPosition:]]
-
+    attribute_prev = True     #will be overwritten immediately when i==0
+    substart = 0
+    for i in range(len(sentence)):
+        isdigit = sentence[i].isdigit()
+        isalpha = sentence[i].isalpha()
+        isspace = sentence[i].isspace()
+        if i == 0:
+            attribute_prev = [isdigit, isalpha, isspace]
+            continue
+        if  [isdigit, isalpha, isspace] != attribute_prev:
+            segments += [sentence[substart:i]]
+            substart = i
+            attribute_prev = [isdigit, isalpha, isspace]
+    if substart < len(sentence):
+        segments += [sentence[substart:]]
     return segments
 
 
@@ -478,21 +468,19 @@ def Tokenize_CnEnMix(sentence):
     sentence = ReplaceCuobieziAndFanti(sentence)
 
     for i in range(len(sentence)):
-        if sentence[i] == ' ':
-            continue    # leave space as is.
         isascii = IsAscii(sentence[i])
-        isdigit = sentence[i].isdigit()
         if i == 0:
-            isascii_prev = [isascii, isdigit]
+            isascii_prev = isascii
             continue
-        if [isascii, isdigit] != isascii_prev:
-            subsentence.append( sentence[substart:i])
+        if isascii != isascii_prev:
+            subsentence += [ sentence[substart:i]]
             substart = i
-            subsentence_isascii.append( isascii_prev[0])
-        isascii_prev = [isascii, isdigit]
+            subsentence_isascii.append( isascii_prev)
+            isascii_prev = isascii
 
     #last part
-    subsentence.append(sentence[substart:])
+    if substart < len(sentence):
+        subsentence += [sentence[substart:]]
     subsentence_isascii.append(isascii)
 
     segmentedlist = []
@@ -506,9 +494,11 @@ def Tokenize_CnEnMix(sentence):
     start = 0
     SpaceQ = False
     for t in segmentedlist:
+
         if t[0] == " ": #
             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
             SpaceQ = True
+            start = start + len(t)
             continue
         token = SentenceNode(t)
         token.StartOffset = start
