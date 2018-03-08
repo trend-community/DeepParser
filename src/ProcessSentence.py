@@ -48,7 +48,7 @@ def OutputWinningRules():
     output = ""
 
     for rule, hits in sorted(WinningRuleDict.values()):
-        output += '[Rule file]' + rule.FileName +  ' [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
+        output += '[Rule file]' + rule.FileName +  '[' + str(rule.ID) + '] [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
 
     return output
 
@@ -145,7 +145,7 @@ def ListMatch(list1, list2):
         logging.error("Coding error. The size should be the same in ListMatch")
         return False
     for i in range(len(list1)):
-        if list1[i] == "" or list2[i] == None or list1[i] == list2[i]:
+        if list2[i] is None or list1[i] == list2[i]:
             pass
         else:
             return False

@@ -650,7 +650,7 @@ def ProcessTokens(Tokens):
                         node.action = actionMatch.group(2)
 
         if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
-            node.word = '[0 ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
+            node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
         node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
         node.action = node.action.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
@@ -1220,7 +1220,7 @@ def _ExpandOrToken(OneList):
                 if "|" in innerquote and "'" not in innerquote:
                     innerquote2 = innerquote.replace("|", "'|'")
                     token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
-                    logging.info("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+                    logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
 
             orIndex = token.word.find("'|") + token.word.find("|'")
             if orIndex < 0:

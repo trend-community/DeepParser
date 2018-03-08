@@ -148,18 +148,27 @@ class SentenceLinkedList:
         endnode = self.get(start+count-1)
         p = startnode
         NewTextList = []
+        NewNormList = []
+        NewAtomList = []
         sons = []
         for i in range(count):
             NewTextList.append(p.text)
+            NewNormList.append(p.norm)
+            NewAtomList.append(p.atom)
             sons.append(p)
             p = p.next
 
         if IsAscii(NewTextList):
             NewText = " ".join(NewTextList)
+            NewNorm = " ".join(NewNormList)
+            NewAtom = " ".join(NewAtomList)
         else:
             NewText = "".join(NewTextList)
-
+            NewNorm = "".join(NewNormList)
+            NewAtom = "".join(NewAtomList)
         NewNode = SentenceNode(NewText)
+        NewNode.norm = NewNorm
+        NewNode.atom = NewAtom
         NewNode.sons = sons
         NewNode.StartOffset = startnode.StartOffset
         NewNode.EndOffset = endnode.EndOffset

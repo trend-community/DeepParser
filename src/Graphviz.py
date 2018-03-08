@@ -12,7 +12,11 @@ class Node(object):
 
 
 def CreateFlatTree(inputnode, nodelist, parentid=0):
-    node = Node(inputnode['text'])
+    if 'norm' in inputnode :
+        norm = inputnode['norm']
+    else:
+        norm = inputnode['text']
+    node = Node(norm)
     node.parentid = parentid
     node.endOffset = inputnode['EndOffset']
     node.startOffset = inputnode['StartOffset']

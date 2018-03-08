@@ -23,6 +23,9 @@ def CheckPrefix(word, matchtype):
 
     prefix = ""
 
+    if word.startswith("FULLSTRING="):
+        word = word[11:]
+
     if word[0] == "!":
         prefix = "!"
         word = word.lstrip("!")
@@ -204,7 +207,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
 
-        if (not RuleTokens[RulePosition].word.startswith("[0 "))  and strToken.Head0Text:
+        if (not RuleTokens[RulePosition].word.startswith("[FULLSTRING "))  and strToken.Head0Text:
             word = strToken.Head0Text
         else:
             if matchtype == "text":
@@ -275,7 +278,7 @@ def LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition
             logging.warning("This should not happen. Please rewirte the rule for compilation.")
             logging.warning("Rule=" + str([x.word for x in RuleTokens]))
             return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
-        elif featureID == utils.FeatureID_0:
+        elif featureID == utils.FeatureID_FULLSTRING:
             return True     #Ignore "0" in feature comparison.
         else:
             if featureID and featureID in strToken.features:
