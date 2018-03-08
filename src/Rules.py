@@ -1170,6 +1170,7 @@ def _ExpandOrBlock(OneList):
 def _ProcessOrToken(word):
     word = word.strip("[|]")
     spaceseparated = word.split(" ")
+    i = 0
     for i in range(len(spaceseparated)):
         if spaceseparated[i].find("'|")>0:
             #this is the piece we need to separate
@@ -1221,7 +1222,7 @@ def _ExpandOrToken(OneList):
                     token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
                     logging.info("or modification: from " + ormatch.group(2) + " to " + innerquote2)
 
-            orIndex = token.word.find("'|")
+            orIndex = token.word.find("'|") + token.word.find("|'")
             if orIndex < 0:
                 continue
 

@@ -171,8 +171,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
 
-            # if not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
-            #     continue
+            if not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
+                continue
 
             if WinningRuleSize < len(rule.Tokens):
                 result = HeadMatch(strtokenlist, i, rule.Tokens)
