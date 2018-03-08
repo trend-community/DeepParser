@@ -274,8 +274,8 @@ class Rule:
         for token in self.Tokens:
             rulebody += str(token)
 
-        if rulebody.count('<') > 3 :
-            logging.warning("This rule has more than 3 chunks:")
+        if rulebody.count('<') > 4 :
+            logging.warning("This rule has more than 4 chunks:")
             logging.warning(rulebody)
 
         # TODO: leave these 3 for future usage.
@@ -298,7 +298,6 @@ class Rule:
             tokencount_6 = Chunk2_3_1.group(6).count('[')
             tokencount_7 = Chunk2_3_1.group(7).count('[')
             tokencount_8 = Chunk2_3_1.group(8).count('[')
-            tokencount_9 = Chunk2_3_1.group(9).count('[')
             c1 = self.CreateChunk(tokencount_1 + tokencount_2, tokencount_3)
             self.Chunks.append(c1)
             c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4, tokencount_5)

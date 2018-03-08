@@ -175,26 +175,14 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             #     continue
 
             if WinningRuleSize < len(rule.Tokens):
-                # if ruleSize < len(strsignatures):
-                #     pairSignature = str([strsignatures[ruleSize-1], rule.ID])
-                # else:
-                #     pairSignature = None
-                # if pairSignature in HeadMatchCache:
-                #     result = HeadMatchCache[pairSignature]
-                #     # logging.debug("HeadMatchCache hit! " + str(result))
-                #     # logging.debug("\tSize of HeadMatchCache:" + str(len(HeadMatchCache)))
-                # else:
                 result = HeadMatch(strtokenlist, i, rule.Tokens)
-                    # if len(HeadMatchCache) < 1000000:
-                    #     passls
-                    #     HeadMatchCache[pairSignature] = result
                 if result:
                     WinningRule = rule
                     WinningRuleSize = len(WinningRule.Tokens)
                     break
-                    if WinningRuleSize + i >= strtokenlist.size:
-                        logging.debug("Found a winning rule that matchs up to the end of the string.")
-                        break
+                    # if WinningRuleSize + i >= strtokenlist.size:
+                    #     logging.debug("Found a winning rule that matchs up to the end of the string.")
+                    #     break
         if WinningRule:
             # rulegroup.RuleList.remove(WinningRule)
             # rulegroup.RuleList.insert(0, WinningRule)
@@ -205,6 +193,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 else:
                     WinningRules[WinningRule.RuleName] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
+                strnorms = strtokenlist.norms()     #the list is updated.
                 #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error":

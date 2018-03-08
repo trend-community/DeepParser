@@ -1,6 +1,7 @@
 #!/bin/python
 #read a file in main(), then do tokenization.
 import requests
+import string
 import FeatureOntology, Lexicon
 import utils    #for the Feature_...
 from utils import *
@@ -448,7 +449,8 @@ def _Tokenize_Space(sentence):
         if i == 0:
             attribute_prev = [isdigit, isalpha, isspace]
             continue
-        if  [isdigit, isalpha, isspace] != attribute_prev:
+        if  [isdigit, isalpha, isspace] != attribute_prev \
+                or sentence[i] in string.punctuation or sentence[i-1] in string.punctuation:   #always make punctuation a single token
             segments += [sentence[substart:i]]
             substart = i
             attribute_prev = [isdigit, isalpha, isspace]
@@ -506,6 +508,7 @@ def Tokenize_CnEnMix(sentence):
 
         if SpaceQ:
             token.ApplyFeature(utils.FeatureID_SpaceQ)
+            SpaceQ = False
 
         TokenList.append(token)
         start = start + len(t)
