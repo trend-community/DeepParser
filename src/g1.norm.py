@@ -18,7 +18,7 @@
 #==============================================================
 # isNonHanzi()
 #==============================================================
-def isNonHanzi(s): return all( (ord(c) < 0x4e00 or ord(c) > 0x9fff) for c in s)
+def isNonHanzi(ss): return all( (ord(c) < 0x4e00 or ord(c) > 0x9fff) for c in ss)
 
 #==============================================================
 # command line
@@ -38,20 +38,31 @@ print (str(args))
 # The most useful output is the pickle'd dictionary of phrases
 # with accumulated frequencies.
 #==============================================================
-import pickle, zipfile
+import pickle
 import codecs
 fin = codecs.open(args.input, 'rb', encoding='utf-8')
 
 from viterbi1 import *
 
 _LexiconBlackSet = set()
+_LexiconFilterSet = set()
 _Blacklist_Freq = {}
 Freq_Basic = 10
 Freq_Basic_Blacklist = 30
 Freq_Base = 2000000000.0 * 0.1   # the number in blacklist is based on 2 billion
                             # try using the base as 0.2 billion. 20180309
 
-def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
+
+def LoadLexiconFilterlist(BlacklistLocation):
+    if BlacklistLocation.startswith("."):
+        BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
+    with open(BlacklistLocation, encoding="utf-8") as dictionary:
+            for lined in dictionary:
+                word, _ = utils.SeparateComment(lined)
+                if  word:
+                    _LexiconBlackSet.add(word)
+
+def LoadLexiconBlacklist(BlacklistLocation):
     if BlacklistLocation.startswith("."):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
     with open(BlacklistLocation, encoding="utf-8") as dictionary:
@@ -63,14 +74,11 @@ def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
                 if not blocks:
                     continue
                 word_freq = blocks[0].split()
-                if "." in word_freq[0]:
-                    pattern = word_freq[0] + "$"
-                else:
-                    pattern = word_freq[0]
+                pattern = word_freq[0] + "$"
                 if len(word_freq) == 2:
                     _Blacklist_Freq[pattern] = int(word_freq[1])
                 else:
-                    _Blacklist_Freq[pattern] = freq_basic
+                    _Blacklist_Freq[pattern] = Freq_Basic_Blacklist
                 _LexiconBlackSet.add(pattern) #from begin to end
 
 
@@ -87,7 +95,7 @@ def FreqInLexiconBlacklist(word):
 
 
 LoadLexiconBlacklist(args.blacklist)
-LoadLexiconBlacklist(args.filter, 0)
+LoadLexiconFilterlist(args.filter)
 
 #LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt.zip")
 digitsearch = re.compile(r'\d')
@@ -106,6 +114,8 @@ for line in fin:
                 continue    #ignore one character word.
             if digitsearch.search(chunk):
                 continue    #ignore digit
+            if chunk in _LexiconBlackSet:
+                continue
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq
 
