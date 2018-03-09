@@ -44,7 +44,7 @@ fin = codecs.open(args.input, 'rb', encoding='utf-8')
 
 from viterbi1 import *
 
-_LexiconBlacklist = []
+_LexiconBlackSet = set()
 _Blacklist_Freq = {}
 Freq_Basic = 10
 Freq_Basic_Blacklist = 30
@@ -54,20 +54,7 @@ Freq_Base = 200000000.0   # the number in blacklist is based on 2 billion
 def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
     if BlacklistLocation.startswith("."):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
-    if BlacklistLocation.endswith(".txt.zip"):
-        with zipfile.ZipFile(BlacklistLocation) as z:
-            with  z.open(os.path.basename(BlacklistLocation)[:-4]) as dictionary:
-                for lined in dictionary:
-                    line = lined.decode("utf-8", "ignore")
-                    pattern, _ = utils.SeparateComment(line)
-                    if not pattern:
-                        continue
-                    blocks = [x.strip() for x in re.split(":", pattern) if x]
-                    if not blocks:
-                        continue
-                    _LexiconBlacklist.append(blocks[0] + "$")  # from begin to end
-    else:
-        with open(BlacklistLocation, encoding="utf-8") as dictionary:
+    with open(BlacklistLocation, encoding="utf-8") as dictionary:
             for lined in dictionary:
                 pattern, _ = utils.SeparateComment(lined)
                 if not pattern:
@@ -76,18 +63,25 @@ def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
                 if not blocks:
                     continue
                 word_freq = blocks[0].split()
-                if len(word_freq) == 2:
-                    _Blacklist_Freq[word_freq[0]+"$"] = int(word_freq[1])
+                if "." in word_freq[0]:
+                    pattern = word_freq[0] + "$"
                 else:
-                    _Blacklist_Freq[word_freq[0]+"$"] = freq_basic
-                _LexiconBlacklist.append(word_freq[0]+"$") #from begin to end
+                    pattern = word_freq[0]
+                if len(word_freq) == 2:
+                    _Blacklist_Freq[pattern] = int(word_freq[1])
+                else:
+                    _Blacklist_Freq[pattern] = freq_basic
+                _LexiconBlackSet.add(pattern) #from begin to end
 
 
 from functools import lru_cache
 @lru_cache(maxsize=1000000)
 def FreqInLexiconBlacklist(word):
-    for pattern in _LexiconBlacklist:
-        if re.match(pattern, word):
+    if word in _LexiconBlackSet:
+        return _Blacklist_Freq[word]
+
+    for pattern in _Blacklist_Freq:
+        if  re.match(pattern, word):
             return _Blacklist_Freq[pattern]
     return -1
 
