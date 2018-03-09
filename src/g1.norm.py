@@ -27,6 +27,8 @@ import argparse, os, logging, traceback
 import utils
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="input query unigram file")
+parser.add_argument("blacklist", help="black list with freq")
+parser.add_argument("filter", help="black list with unlimited freq")
 parser.add_argument("output", help="output phrase unigram text file")
 parser.add_argument("outputdict", help="output phrase unigram pickle dict")
 args = parser.parse_args()
@@ -49,7 +51,7 @@ Freq_Basic_Blacklist = 30
 Freq_Base = 200000000.0   # the number in blacklist is based on 2 billion
                             # try using the base as 0.2 billion. 20180309
 
-def LoadLexiconBlacklist(BlacklistLocation):
+def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
     if BlacklistLocation.startswith("."):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
     if BlacklistLocation.endswith(".txt.zip"):
@@ -77,7 +79,7 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 if len(word_freq) == 2:
                     _Blacklist_Freq[word_freq[0]+"$"] = int(word_freq[1])
                 else:
-                    _Blacklist_Freq[word_freq[0]+"$"] = Freq_Basic_Blacklist
+                    _Blacklist_Freq[word_freq[0]+"$"] = freq_basic
                 _LexiconBlacklist.append(word_freq[0]+"$") #from begin to end
 
 
@@ -90,7 +92,9 @@ def FreqInLexiconBlacklist(word):
     return -1
 
 
-LoadLexiconBlacklist("../../fsa/X/LexBlacklist.txt")
+LoadLexiconBlacklist(args.blacklist)
+LoadLexiconBlacklist(args.filter, 0)
+
 #LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt.zip")
 digitsearch = re.compile(r'\d')
 N = 0
