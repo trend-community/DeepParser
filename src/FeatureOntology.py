@@ -289,7 +289,6 @@ def GetFeatureID(feature):
 
 
 def GetFeatureName(featureID):
-
     if len(_FeatureList) == 0:
         GetFeatureNameURL = ParserConfig.get("main", "url_larestfulservice") + "/GetFeatureName/"
         try:
@@ -309,7 +308,6 @@ def GetFeatureName(featureID):
         return ""
 
 
-
 # For all bar tags in the list, keep only the last one.
 def ProcessBarTags(featurelist):
     MaxBarTagLevel = -1
@@ -326,6 +324,7 @@ def ProcessBarTags(featurelist):
             if taglevel > -1:
                 if taglevel != MaxBarTagLevel:
                     featurelist.remove(f)
+
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))

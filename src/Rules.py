@@ -471,6 +471,7 @@ class Rule:
                 c.HeadConfidence = 5
                 c.HeadOffset = HeadOffset + i
                 c.Action, token.action = self.ExtractParentSonActions(token.action)
+                token.action += " ^.H"
             elif token.pointer == "H":
                 if c.HeadOffset < 5:
                     c.HeadConfidence = 4

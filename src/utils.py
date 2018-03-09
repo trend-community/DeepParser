@@ -23,6 +23,7 @@ FeatureID_CM = None
 FeatureID_NEW = None
 FeatureID_SpaceQ = None
 FeatureID_SpaceH = None
+FeatureID_FULLSTRING = None
 
 IMPOSSIBLESTRING = "@#$%@impossible@"
 IMPOSSIBLESTRINGLP = "@#$%@leftparenthesis@"

@@ -1,4 +1,4 @@
-import logging, sys, os, argparse
+import argparse
 import ProcessSentence, Rules, FeatureOntology
 from utils import *
 

@@ -131,9 +131,9 @@ if __name__ == "__main__":
 
 
     startport = int(utils.ParserConfig.get("website", "port"))
-    print("Running in port " + str(startport+1))
+    print("Running in port " + str(startport))
 
-    httpd = ThreadedHTTPServer( ('0.0.0.0', startport+1), ProcessSentence_Handler)
+    httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')

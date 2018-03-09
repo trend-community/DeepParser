@@ -23,10 +23,6 @@ _LexiconFantiDict = {}
 _CommentDict = {}
 
 C1ID = None
-C2ID = None
-C3ID = None
-C4ID = None
-C4plusID = None
 
 
 class LexiconNode(object):
@@ -381,6 +377,8 @@ def ApplyLexiconToNodes(NodeList):
 
 def ApplyWordLengthFeature(node):
     global C1ID, C2ID, C3ID, C4ID, C4plusID
+    global C5ID, C6ID, C7ID, C8ID, C6plusID, C8plusID
+    global LengthSet
     if IsAscii(node.text):
         return
     if not C1ID:
@@ -389,18 +387,22 @@ def ApplyWordLengthFeature(node):
         C3ID = GetFeatureID('c3')
         C4ID = GetFeatureID('c4')
         C4plusID = GetFeatureID('c4plus')
+        C5ID = GetFeatureID('c5')
+        C6ID = GetFeatureID('c6')
+        C6plusID = GetFeatureID('c6plus')
+        C7ID = GetFeatureID('c7')
+        C8ID = GetFeatureID('c8')
+        C8plusID = GetFeatureID('c8plus')
+
+        LengthSet = {
+            C1ID, C2ID, C3ID, C4ID, C4plusID,
+            C5ID, C6ID, C7ID, C8ID, C6plusID, C8plusID
+
+        }
 
     # Below is for None-English only:
-    if C1ID in node.features:
-        node.features.remove(C1ID)
-    elif C2ID in node.features:
-        node.features.remove(C2ID)
-    elif C3ID in node.features:
-        node.features.remove(C3ID)
-    elif C4ID in node.features:
-        node.features.remove(C4ID)
-    elif C4plusID in node.features:
-        node.features.remove(C4plusID)
+    interset = LengthSet.intersection(node.features)
+    node.features -= interset
 
     wordlength = len(node.text)
     if wordlength < 1:

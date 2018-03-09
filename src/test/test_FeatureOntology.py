@@ -20,6 +20,9 @@ class FeatureTest(unittest.TestCase):
     def test_ontology(self):
         print(SearchFeatureOntology(GetFeatureID("com")))
         print(SearchFeatureOntology(GetFeatureID("com")))
+        print(SearchFeatureOntology(GetFeatureID("NNP")))
+        lex = SearchFeatureOntology(GetFeatureID("NNP"))
+        self.assertTrue(GetFeatureID("nN") in lex.ancestors)
 
 
     def test2(self):
@@ -32,7 +35,7 @@ class FeatureTest(unittest.TestCase):
         print(SearchFeatures("pretty"))
 
 
-    def test_alias(self):
+    def test_alias1(self):
         node = OntologyNode()
         rest = node.ProcessAliasInFeatureFile("A=B=C, D, E, F")
         self.assertEqual(rest, "A,D,E,F")
@@ -53,7 +56,7 @@ class FeatureTest(unittest.TestCase):
         self.assertEqual(len(a), 4)
 
     def test_ProcessBarTags(self):
-        featurelist = [0, 1, 2, 34, GetFeatureID("N"), GetFeatureID('CL'), GetFeatureID('2')]
+        featurelist = [0, 1, 2, 34, GetFeatureID("N"), GetFeatureID('CL'), GetFeatureID('NP')]
         print(str(featurelist))
         ProcessBarTags(featurelist)
         print(str(featurelist))

@@ -6,6 +6,7 @@ import FeatureOntology, Lexicon
 import utils    #for the Feature_...
 from utils import *
 
+
 #class EmptyBase(object): pass
 #
 # def Tokenize(sentence):
@@ -504,16 +505,24 @@ def Tokenize_CnEnMix(sentence):
     TokenList = SentenceLinkedList()
     start = 0
     SpaceQ = False
+    HanziQ = False
     for t in segmentedlist:
-
         if t[0] == " ": #
             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
+            if HanziQ:
+                token = SentenceNode(t)
+                token.StartOffset = start
+                token.EndOffset = start + len(t)
+                token.ApplyFeature(utils.FeatureID_CM)
+                HanziQ = False
+                TokenList.append(token)
             SpaceQ = True
             start = start + len(t)
             continue
         token = SentenceNode(t)
         token.StartOffset = start
         token.EndOffset = start + len(t)
+        HanziQ = not IsAscii(t)
 
         if SpaceQ:
             token.ApplyFeature(utils.FeatureID_SpaceQ)

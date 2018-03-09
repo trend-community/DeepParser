@@ -58,7 +58,9 @@ class LexiconTest(unittest.TestCase):
         self.assertTrue(utils.FeatureID_SYM in node.features)
         self.assertFalse(utils.FeatureID_OOV in node.features)
 
+
     def test_LexiconLookup(self):
+        LoadLexicon(dir_path + '/../../../fsa/X/defLexX.txt', lookupSource=LexiconLookupSource.defLex)
         LoadLexicon(dir_path + '/../../../fsa/X/defPlus.txt', lookupSource=LexiconLookupSource.defLex)
 
         Sentence="喝不惯"
@@ -66,4 +68,12 @@ class LexiconTest(unittest.TestCase):
         import ProcessSentence
         ProcessSentence.PrepareJSandJM(NodeList)
         LexiconLookup(NodeList, LexiconLookupSource.defLex)
+        self.assertEqual(NodeList.size, 3)
+
+        Sentence="李四"
+        NodeList = Tokenization.Tokenize(Sentence)
+        #import ProcessSentence
+        ProcessSentence.PrepareJSandJM(NodeList)
+        LexiconLookup(NodeList, LexiconLookupSource.defLex)
         self.assertEqual(NodeList.size, 1)
+        self.assertFalse(utils.FeatureID_OOV in NodeList.head.features)

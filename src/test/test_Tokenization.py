@@ -87,7 +87,7 @@ class TokenizationTest(unittest.TestCase):
         t = "很少有 科普"
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(NodeList.size, 4)
+        self.assertEqual(NodeList.size, 5)
 
         t = "这稍微甜"
         NodeList = Tokenize(t)
@@ -165,5 +165,12 @@ class TokenizationTest(unittest.TestCase):
         t = "a    beautiful 巴西 brazil 在   north  america"  # 2/2
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(NodeList.size, 7)
+        self.assertEqual(9, NodeList.size)
         self.assertEqual(NodeList.get(2).text, "巴西")
+
+        t = "a 中文 之间的    空格"  # 2/2
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(7, NodeList.size)
+        self.assertEqual(NodeList.get(2).text, " ")
+        self.assertEqual(NodeList.get(3).text, "之间")

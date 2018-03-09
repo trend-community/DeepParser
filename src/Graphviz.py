@@ -29,8 +29,6 @@ def CreateFlatTree(inputnode, nodelist, parentid=0):
     node.upperRelation = ""
     if 'UpperRelationship' in inputnode.keys():
         node.upperRelation = inputnode['UpperRelationship']
-    if "H" in node.features:
-        node.upperRelation = "H"
     nodelist.append(node)
 
     if 'sons' in inputnode.keys():
