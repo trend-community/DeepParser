@@ -653,46 +653,6 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
         i = i - bestPhraseLen[i]
 
     return segments
-    #
-    # segments = []
-    #
-    # sentLen = len(sentence)
-    # bestPhrase = []
-    # bestPhraseLen = [1] * (sentLen+1)
-    # bestScore = [i for i in range(sentLen+1)]
-    #
-    # ## forward path: fill up "best"
-    # for i in range(2, sentLen + 1):
-    #     for j in range(1, i+1 ):
-    #         if j == i:
-    #             value = 1
-    #         else:
-    #             singlevalue = Lexicon._LexiconSegmentDict.get(sentence[j-1:i], 0)
-    #             if singlevalue == 0:
-    #                 continue
-    #             if  lexicononly and singlevalue < 1:
-    #                 continue
-    #             value = (1/singlevalue) * (i+1-j)
-    #         if value + bestScore[j-1] < bestScore[i]:
-    #             bestPhraseLen[i] = i+1 - j
-    #             bestScore[i] = value + bestScore[j-1]
-    #
-    # ## backward path: collect "best"
-    # i = sentLen
-    # while i > 0:
-    #     segment = sentence[i - bestPhraseLen[i]:i]
-    #     segmentslashed = TrySlash(segment)
-    #     if segmentslashed:
-    #         segments = segmentslashed + segments
-    #     elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1:
-    #         #from main2007.txt, not trustworthy
-    #         subsegments = _Tokenize_Lexicon_maxweight(segment, True)
-    #         segments = subsegments + segments
-    #     else:
-    #         segments = [sentence[i - bestPhraseLen[i]:i]] + segments
-    #     i = i - bestPhraseLen[i]
-    #
-    # return segments
 
 
 def TrySlash(seg):
@@ -704,64 +664,6 @@ def TrySlash(seg):
 
 def Tokenize(Sentence):
     return Tokenize_CnEnMix(Sentence.strip())
-    #
-    # Sentence = Sentence.strip()
-    # if utils.IsAscii(Sentence):
-    #     TokenList = Tokenize_Space(Sentence)
-    #
-    #     # if FeatureOntology._FeatureSet:
-    #         #this part is to get tokenize from webservice. not actually practical.
-    #     # TokenizeURL = url + "/Tokenize"
-    #     # ret_t = requests.post(TokenizeURL, data=Sentence)
-    #     # nodes_t = jsonpickle.decode(ret_t.text)
-    # else:
-    #     TokenList = Tokenize_Lexicon(Sentence)
-    #     tl = old_Tokenize_cn(Sentence)
-    #
-    #     print(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-    #     print(tl.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-    #
-    # return TokenList
-
-
-def old_Tokenize_cn(Sentence):
-
-    TokenizeURL = ParserConfig.get("main", "url_ch") + "/TokenizeJson/"
-    #ret_t = requests.get(TokenizeURL + Sentence)
-
-    data = {'Sentence': URLEncoding(Sentence)}
-    try:
-        ret = requests.get(TokenizeURL, params=data)
-    except requests.exceptions.ConnectionError as e:
-        #logging.error(str(e))
-        logging.error(data)
-        return None
-    if ret.status_code>399:
-        logging.error("Return code:" + str(ret.status_code))
-        logging.error(data)
-        return None
-    segmented = ret.text
-    try:
-        Tokens = jsonpickle.decode(segmented)
-    except ValueError as e:
-        logging.error("Can't be process:")
-        logging.error(segmented)
-        logging.error(data)
-        logging.error(str(e))
-        return None
-
-    #logging.info("segmented text=\n" + segmented)
-
-    # Tokens = []
-    TokenList = SentenceLinkedList()
-    for token in Tokens:
-
-        token.populatedefaultvalue()
-        TokenList.append(token)
-
-    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-
-    return TokenList
 
 def LoopTest1(n):
     for _ in range(n):

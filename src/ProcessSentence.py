@@ -46,17 +46,10 @@ def StoreWinningRule(strtokens, rule, StartPosition):
 
 def OutputWinningRules():
     output = ""
-
     for rule, hits in sorted(WinningRuleDict.values()):
         output += '[Rule file]' + rule.FileName +  '[' + str(rule.ID) + '] [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
 
     return output
-
-def RemoveTempPointer(StrList):
-    x = StrList.head
-    while x:
-        x.TempPointer = ''
-        x = x.next
 
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
@@ -88,15 +81,23 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
     return True
 
 
+def RemoveTempPointer(StrList):
+    x = StrList.head
+    while x:
+        x.TempPointer = ''
+        x = x.next
+
+
 def MarkTempPointer(strtokens, rule, StrStartPosition):
+    VirtualRuleToken = 0
     for i in range(len(rule.Tokens)):
+        if rule.Tokens[i].SubtreePointer:
+            VirtualRuleToken += 1
         if rule.Tokens[i].pointer:
-            strtokens.get(i + StrStartPosition).TempPointer = rule.Tokens[i].pointer
+            strtokens.get(i + StrStartPosition - VirtualRuleToken).TempPointer = rule.Tokens[i].pointer
 
 
 # Apply the features, and other actions.
-#TODO: Apply Mark ".M", group head <, tail > ...
-# Return: the position of the last merged chunk
 def ApplyWinningRule(strtokens, rule, StartPosition):
 
     if not strtokens:
@@ -137,7 +138,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                 strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
 
     RemoveTempPointer(strtokens)
-    return 0 #need to modify for those "forward looking rules"
+    return 0
 
 
 def ListMatch(list1, list2):
@@ -149,6 +150,27 @@ def ListMatch(list1, list2):
             pass
         else:
             return False
+
+    return True
+
+#Note: the _UsingCache version is slower: 25 seconds instead of 16 seconds, for 100 sentences.
+# for 4503026 calls, it took 12 seconds, comparing to 4 seconds.
+ListMatchCache = {}
+def ListMatch_UsingCache(list1, list2):
+    l_hash = str(list1+list2)
+    if l_hash in ListMatchCache:
+        return ListMatchCache[l_hash]
+    if len(list1) != len(list2):
+        logging.error("Coding error. The size should be the same in ListMatch")
+        return False
+    for i in range(len(list1)):
+        if list2[i] is None or list1[i] == list2[i]:
+            pass
+        else:
+            ListMatchCache[l_hash] = False
+            return False
+
+    ListMatchCache[l_hash] = True
     return True
 
 # HeadMatchCache = {}
@@ -179,14 +201,11 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 if result:
                     WinningRule = rule
                     WinningRuleSize = len(WinningRule.Tokens)
-                    break
+                    break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
                     # if WinningRuleSize + i >= strtokenlist.size:
                     #     logging.debug("Found a winning rule that matchs up to the end of the string.")
                     #     break
         if WinningRule:
-            # rulegroup.RuleList.remove(WinningRule)
-            # rulegroup.RuleList.insert(0, WinningRule)
-            # logging.info("rulelist of " + rulegroup.FileName + " is modified to have this on top:" + str(WinningRule))
             try:
                 if WinningRule.RuleName not in WinningRules:
                     WinningRules[WinningRule.RuleName] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
@@ -194,7 +213,6 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     WinningRules[WinningRule.RuleName] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 strnorms = strtokenlist.norms()     #the list is updated.
-                #logging.debug("After applied: " + jsonpickle.dumps(strtokenlist))
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
