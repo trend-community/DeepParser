@@ -44,6 +44,10 @@ from viterbi1 import *
 
 _LexiconBlacklist = []
 _Blacklist_Freq = {}
+Freq_Basic = 10
+Freq_Basic_Blacklist = 30
+Freq_Base = 200000000.0   # the number in blacklist is based on 2 billion
+                            # try using the base as 0.2 billion. 20180309
 
 def LoadLexiconBlacklist(BlacklistLocation):
     if BlacklistLocation.startswith("."):
@@ -73,7 +77,7 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 if len(word_freq) == 2:
                     _Blacklist_Freq[word_freq[0]+"$"] = int(word_freq[1])
                 else:
-                    _Blacklist_Freq[word_freq[0]+"$"] = 30
+                    _Blacklist_Freq[word_freq[0]+"$"] = Freq_Basic_Blacklist
                 _LexiconBlacklist.append(word_freq[0]+"$") #from begin to end
 
 
@@ -97,7 +101,7 @@ for line in fin:
         s = line.split('\x01', 2)
         [query, freqstring] = line.split('\x01', 2)
         freq = int(freqstring)
-        if freq < 10:       # remove item that less than 10.
+        if freq < Freq_Basic:       # remove item that less than 10.
             continue
         for chunk in query.split():
             if len(chunk) < 2:
@@ -115,10 +119,10 @@ for line in fin:
         continue
 
 logging.info("Start applying blacklist: N=" + str(N))
-delta = N/2000000000.0   # the number in blacklist is based on 2 billion
+delta = N/Freq_Base
 q_list = copy.copy(querydict)
 for phrase in q_list:
-    if querydict[phrase] < 10*delta:
+    if querydict[phrase] < Freq_Basic*delta:
         del querydict[phrase]
         continue
     originphrase = ''.join(phrase.split())
