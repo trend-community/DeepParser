@@ -48,7 +48,7 @@ _LexiconBlackSet = set()
 _Blacklist_Freq = {}
 Freq_Basic = 10
 Freq_Basic_Blacklist = 30
-Freq_Base = 200000000.0   # the number in blacklist is based on 2 billion
+Freq_Base = 2000000000.0 * 0.1   # the number in blacklist is based on 2 billion
                             # try using the base as 0.2 billion. 20180309
 
 def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
@@ -75,7 +75,7 @@ def LoadLexiconBlacklist(BlacklistLocation, freq_basic = Freq_Basic_Blacklist):
 
 
 from functools import lru_cache
-@lru_cache(maxsize=1000000)
+@lru_cache(maxsize=10000000)
 def FreqInLexiconBlacklist(word):
     if word in _LexiconBlackSet:
         return _Blacklist_Freq[word]
@@ -118,14 +118,15 @@ for line in fin:
 
 logging.info("Start applying blacklist: N=" + str(N))
 delta = N/Freq_Base
+freq_basic = Freq_Basic*delta
 q_list = copy.copy(querydict)
 for phrase in q_list:
-    if querydict[phrase] < Freq_Basic*delta:
+    if querydict[phrase] < freq_basic:
         del querydict[phrase]
         continue
     originphrase = ''.join(phrase.split())
     blackitem_freq = FreqInLexiconBlacklist(originphrase) #-1 for not in Blacklist
-    if querydict[phrase] < blackitem_freq * delta or blackitem_freq == 0:
+    if blackitem_freq == 0 or querydict[phrase] < blackitem_freq * delta :
         logging.warning("Blacklisted:" + originphrase)
         del querydict[phrase]
 
