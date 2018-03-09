@@ -1,64 +1,65 @@
-import logging, sys, re, jsonpickle, os, json
-import Tokenization, FeatureOntology, Lexicon
-import ProcessSentence, Rules
-from flask import Flask, request, send_file
-from flask_cache import Cache
-import viterbi1
-import argparse
-import utils, Graphviz
+import logging,  jsonpickle, os
+import urllib
+from socketserver import ThreadingMixIn, ForkingMixIn
+import ProcessSentence, FeatureOntology
+import Graphviz
 
-app = Flask(__name__)
-app.config['CACHE_TYPE'] = 'simple'
-app.cache = Cache(app)
+import utils
 
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
-    charttemplate = templatefile.read()
+from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
+#from urlparse import urlparse, parse_qs
+# query_components = parse_qs(urlparse(self.path).query)
+# imsi = query_components["imsi"]
+#from urlparse import urlparse
 
+class ProcessSentence_Handler(BaseHTTPRequestHandler):
+    def address_string(self):
+        host, _ = self.client_address[:2]
+        # old and slow way: return socket.getfqdn(host)
+        return host
 
-@app.route("/GetFeatureID/<word>")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def GetFeatureID(word):
-    return jsonpickle.encode(FeatureOntology.GetFeatureID(word))
-
-
-@app.route("/GetFeatureName/<FeatureID>")
-@app.cache.cached(timeout=3600)  # cache this view for 1 hour
-def GetFeatureName(FeatureID):
-    return jsonpickle.encode(FeatureOntology.GetFeatureName(int(FeatureID)))
-
-
-@app.route("/gchart_loader.js")
-def gchart_loader():
-    return send_file('gchart_loader.js')
-
-
-# Following the instruction in pipelineX.txt
-@app.route("/LexicalAnalyze")
-def LexicalAnalyze():
-    Sentence = request.args.get('Sentence')
-    Type = request.args.get('Type')
-    Debug = request.args.get('Debug')
-    if Debug:
-        Debug = True
-    else:
-        Debug = False
-    if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
-        Sentence = Sentence[1:-1]
-    # logging.error(Sentence)
-    # else:
-    #     return "Quote your sentence in double quotes please"
-
-    nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
-    # return  str(nodes)
-    # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
-    if nodes:
+    def do_GET(self):
+        link = urllib.parse.urlparse(self.path)
         try:
-            # logging.info("Type=" + str(Type))
-            if Type == "simple":
-                return utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
-            elif Type == "json2":
-                return nodes.root().CleanOutput_FeatureLeave().toJSON()
-            elif Type == "parsetree":
+            if link.path == '/LexicalAnalyze':
+                queries = dict(qc.split("=") for qc in link.query.split("&"))
+                self.LexicalAnalyze(queries)
+            elif link.path.startswith('/GetFeatureID/'):
+                self.GetFeatureID(link.path[14:])
+            elif link.path.startswith('/GetFeatureName/'):
+                self.GetFeatureName(int(link.path[16:]))
+            elif link.path in ['/gchart_loader.js', '/favicon.ico']:
+                self.feed_file(link.path[1:])
+            else:
+                logging.error("Wrong link.")
+                self.send_response(500)
+        except Exception as e:
+            logging.error("Unknown exception in do_GET")
+            logging.error(str(e))
+            self.send_response(500)
+
+    def LexicalAnalyze(self, queries):
+        Sentence = urllib.parse.unquote(queries["Sentence"])
+
+        if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
+            Sentence = Sentence[1:-1]
+        # else:
+        #     return "Quote your sentence in double quotes please"
+        logging.info(Sentence)
+
+        nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
+        # return  str(nodes)
+        # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
+        if nodes:
+            if   queries["Type"] == "simple":
+                output_type = "text/html;"
+                output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+            elif queries["Type"] == "json2":
+                output_type = "text/html;"
+                output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
+            elif queries["Type"] == "parsetree":
+                Debug = "Debug" in queries
+                output_type = "text/html;"
                 orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON())
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
@@ -67,40 +68,71 @@ def LexicalAnalyze():
                     for rule in winningrules:
                         winningrulestring +=  winningrules[rule] + "\n"
                     chart = chart.replace("<!-- EXTRA -->", winningrulestring)
-                return chart
+                output_text = chart
             else:
-                return nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()
-        except Exception as e:
-            logging.error(e)
-            return ""
-    else:
-        logging.error("nodes is blank")
-        return ""
+                output_type = "Application/json;"
+                output_text =nodes.root().CleanOutput(KeepOriginFeature=False).toJSON()
+
+            try:
+                self.send_response(200)
+                self.send_header('Content-type', output_type + " charset=utf-8")
+                self.end_headers()
+                self.wfile.write(output_text.encode("utf-8"))
+                logging.info("Done with" + Sentence)
+            except Exception as e:
+                logging.error(e)
+                self.send_response(500)
+        else:
+            logging.error("nodes is blank")
+            self.send_response(500)
 
 
-# @app.route("/OutputWinningRules")
-# @app.cache.cached(timeout=10)  # cache this view for 10 seconds
-# def OutputWinningRules():
-#     return ProcessSentence.OutputWinningRules()
+    def GetFeatureID(self, word):
+        self.send_response(200)
+        self.send_header('Content-type', "Application/json; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(jsonpickle.encode(FeatureOntology.GetFeatureID(word)).encode("utf-8"))
 
-@app.route("/QuerySegment/<Sentence>")
-def QuerySegment(Sentence):
-    norm = viterbi1.normalize(Sentence)
-    return ''.join(viterbi1.viterbi1(norm, len(norm)))
+
+    def GetFeatureName(self, FeatureID):
+        self.send_response(200)
+        self.send_header('Content-type', "Application/json; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(jsonpickle.encode(FeatureOntology.GetFeatureName(int(FeatureID))).encode("utf-8"))
+
+
+    def feed_file(self, filepath):
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), filepath)) as f:
+            self.send_response(200)
+            self.send_header('Content-type', "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(f.read().encode("utf-8"))
 
 
 def init():
+    global charttemplate
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
+        charttemplate = templatefile.read()
 
     ProcessSentence.LoadCommon()
+    #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
-init()
+class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
+
 
 if __name__ == "__main__":
-    print("Running in port " + str(utils.ParserConfig.get("website", "port")))
-    app.run(host="0.0.0.0", port=int(utils.ParserConfig.get("website", "port")), debug=False, threaded=True)
+    init()
+
+    startport = int(utils.ParserConfig.get("website", "port"))
+    print("Running in port " + str(startport))
+
+    httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
+    httpd.serve_forever()
+    print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')
