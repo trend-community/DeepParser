@@ -374,13 +374,13 @@ def ApplyLexiconToNodes(NodeList):
         node = node.next
     return NodeList
 
-
-def ApplyWordLengthFeature(node):
+def InitLengthSet():
     global C1ID, C2ID, C3ID, C4ID, C4plusID
-    global C5ID, C6ID, C7ID, C8ID, C6plusID, C8plusID
+    global C5ID, C5plusID, C6ID, C6plusID, C7ID, C7plusID, C8ID, C8plusID
+    global D1ID, D2ID, D3ID, D4ID, D4plusID
+    global L1ID, L2ID, L3ID, L4ID, L4plusID
+
     global LengthSet
-    if IsAscii(node.text):
-        return
     if not C1ID:
         C1ID = GetFeatureID('c1')
         C2ID = GetFeatureID('c2')
@@ -388,18 +388,36 @@ def ApplyWordLengthFeature(node):
         C4ID = GetFeatureID('c4')
         C4plusID = GetFeatureID('c4plus')
         C5ID = GetFeatureID('c5')
+        C5plusID = GetFeatureID('c5plus')
         C6ID = GetFeatureID('c6')
         C6plusID = GetFeatureID('c6plus')
         C7ID = GetFeatureID('c7')
+        C7plusID = GetFeatureID('c7plus')
         C8ID = GetFeatureID('c8')
         C8plusID = GetFeatureID('c8plus')
 
+        D1ID = GetFeatureID('d1')
+        D2ID = GetFeatureID('d2')
+        D3ID = GetFeatureID('d3')
+        D4ID = GetFeatureID('d4')
+        D4plusID = GetFeatureID('d4plus')
+
+        L1ID = GetFeatureID('l1')
+        L2ID = GetFeatureID('l2')
+        L3ID = GetFeatureID('l3')
+        L4ID = GetFeatureID('l4')
+        L4plusID = GetFeatureID('l4plus')
+
         LengthSet = {
             C1ID, C2ID, C3ID, C4ID, C4plusID,
-            C5ID, C6ID, C7ID, C8ID, C6plusID, C8plusID
-
+            C5ID, C5plusID, C6ID, C6plusID, C7ID, C7plusID, C8ID, C8plusID,
+            D1ID, D2ID, D3ID, D4ID, D4plusID,
+            L1ID, L2ID, L3ID, L4ID, L4plusID
         }
 
+def ApplyWordLengthFeature(node):
+    if not C1ID:
+        InitLengthSet()
     # Below is for None-English only:
     interset = LengthSet.intersection(node.features)
     node.features -= interset
@@ -408,24 +426,79 @@ def ApplyWordLengthFeature(node):
     if wordlength < 1:
         pass
     elif wordlength == 1:
-        node.ApplyFeature(C1ID)
+        if node.text.isnumeric():
+            node.ApplyFeature(D1ID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L1ID)
+        else:
+            node.ApplyFeature(C1ID)
     elif wordlength == 2:
-        node.ApplyFeature(C2ID)
+        if node.text.isnumeric():
+            node.ApplyFeature(D2ID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L2ID)
+        else:
+            node.ApplyFeature(C2ID)
     elif wordlength == 3:
-        node.ApplyFeature(C3ID)
+        if node.text.isnumeric():
+            node.ApplyFeature(D3ID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L3ID)
+        else:
+            node.ApplyFeature(C3ID)
     elif wordlength == 4:
-        node.ApplyFeature(C4ID)
-    else:
-        node.ApplyFeature(C4plusID)
+        if node.text.isnumeric():
+            node.ApplyFeature(D4ID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L4ID)
+        else:
+            node.ApplyFeature(C4ID)
+    elif wordlength == 5:
+        if node.text.isnumeric():
+            node.ApplyFeature(D4plusID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L4plusID)
+        else:
+            node.ApplyFeature(C5ID)
+    elif wordlength == 6:
+        if node.text.isnumeric():
+            node.ApplyFeature(D4plusID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L4plusID)
+        else:
+            node.ApplyFeature(C6ID)
 
+    elif wordlength == 7:
+        if node.text.isnumeric():
+            node.ApplyFeature(D4plusID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L4plusID)
+        else:
+            node.ApplyFeature(C7ID)
+    elif wordlength == 8:
+        if node.text.isnumeric():
+            node.ApplyFeature(D4plusID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L4plusID)
+        else:
+            node.ApplyFeature(C8ID)
+    else:
+        if node.text.isnumeric():
+            node.ApplyFeature(D4plusID)
+        elif IsAscii(node.text):
+            node.ApplyFeature(L4plusID)
+        else:
+            node.ApplyFeature(C8plusID)
     return
 
 
 def ApplyLexicon(node, lex=None):
-    OOVFeatureSet = {utils.FeatureID_JM, utils.FeatureID_JM2, utils.FeatureID_JS, utils.FeatureID_JS2,
-                     C1ID, C2ID, C3ID, C4ID, C4plusID
-                     # utils.FeatureID_0
-                     }
+    if not C1ID:
+        InitLengthSet()
+
+    OOVFeatureSet = {utils.FeatureID_JM, utils.FeatureID_JM2, utils.FeatureID_JS, utils.FeatureID_JS2 }
+    OOVFeatureSet |= LengthSet
+
     if not lex:
         lex = SearchLexicon(node.text)
     # if not node.lexicon:    # If lexicon is assigned before, then don't do the search

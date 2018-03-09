@@ -75,5 +75,5 @@ class LexiconTest(unittest.TestCase):
         #import ProcessSentence
         ProcessSentence.PrepareJSandJM(NodeList)
         LexiconLookup(NodeList, LexiconLookupSource.defLex)
-        self.assertEqual(NodeList.size, 1)
+        self.assertEqual(NodeList.size, 3)
         self.assertFalse(utils.FeatureID_OOV in NodeList.head.features)
