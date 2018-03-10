@@ -1305,7 +1305,8 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
 
 def _PreProcess_CompileHash(OneList):
     for rule in OneList:
-        rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!" else None
+        rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
+                                                    and "-" not in token.word.split("'")[1] else None
                       for token in rule.Tokens if not token.SubtreePointer ]
 
 

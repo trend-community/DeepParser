@@ -54,29 +54,13 @@ def GetNumberPointer(Pointer):
     return Pos
 
 
-#In rule, start from RulePosition, seach for pointer:
-#   Start from left side, if not found, seach right side.
-# After that is found, use the offset to locate the token in StrTokens
-#  compare the pointertoken to the current token (both in StrTokens),
-#   return the compare result.
-def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
-    if Pointer.startswith('^-'):
-        PointerIsSuffix = True
-        Pointer = '^' + Pointer[2:]
-    else:
-        PointerIsSuffix = False
-    if Pointer.endswith('-'):
-        PointerIsPrefix = True
-        Pointer = Pointer[:-1]
-    else:
-        PointerIsPrefix = False
-
+def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, Pointer):
     x = StrTokenList.head
     StrPointerToken = ''
     while x:
         if x.TempPointer == Pointer:
             StrPointerToken = x
-            break
+            break       # the TempPointer is already set (the reference is on right side of the rule)
         x = x.next
 
     if not StrPointerToken:
@@ -107,6 +91,29 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
 
         StrPointerPos = StrPosition+Offset
         StrPointerToken = StrTokenList.get(StrPointerPos)
+
+    return StrPointerToken
+
+
+# Unification: <['^V-' ] [不] ^V[V|V0|v]> // Test: 学不学习； 侃不侃大山
+#In rule, start from RulePosition, seach for pointer:
+#   Start from left side, if not found, seach right side.
+# After that is found, use the offset to locate the token in StrTokens
+#  compare the pointertoken to the current token (both in StrTokens),
+#   return the compare result.
+def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
+    if Pointer.startswith('^-'):
+        PointerIsSuffix = True
+        Pointer = '^' + Pointer[2:]
+    else:
+        PointerIsSuffix = False
+    if Pointer.endswith('-'):
+        PointerIsPrefix = True
+        Pointer = Pointer[:-1]
+    else:
+        PointerIsPrefix = False
+
+    StrPointerToken = LocateStrTokenOfPointer(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer)
 
     strToken = StrTokenList.get(StrPosition)
 
