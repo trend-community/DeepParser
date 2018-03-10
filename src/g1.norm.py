@@ -44,7 +44,6 @@ fin = codecs.open(args.input, 'rb', encoding='utf-8')
 
 from viterbi1 import *
 
-_LexiconBlackSet = set()
 _LexiconFilterSet = set()
 _Blacklist_Freq = {}
 Freq_Basic = 10
@@ -60,38 +59,36 @@ def LoadLexiconFilterlist(BlacklistLocation):
             for lined in dictionary:
                 word, _ = utils.SeparateComment(lined)
                 if  word:
-                    _LexiconBlackSet.add(word)
+                    _LexiconFilterSet.add(word)
 
 def LoadLexiconBlacklist(BlacklistLocation):
     if BlacklistLocation.startswith("."):
         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
     with open(BlacklistLocation, encoding="utf-8") as dictionary:
             for lined in dictionary:
-                pattern, _ = utils.SeparateComment(lined)
-                if not pattern:
+                content, _ = utils.SeparateComment(lined)
+                if not content:
                     continue
-                blocks = [x.strip() for x in re.split(":", pattern) if x]
-                if not blocks:
-                    continue
-                word_freq = blocks[0].split()
+                word_freq = content[0].split()
                 pattern = word_freq[0] + "$"
                 if len(word_freq) == 2:
                     _Blacklist_Freq[pattern] = int(word_freq[1])
                 else:
                     _Blacklist_Freq[pattern] = Freq_Basic_Blacklist
-                _LexiconBlackSet.add(pattern) #from begin to end
 
 
 from functools import lru_cache
 @lru_cache(maxsize=10000000)
 def FreqInLexiconBlacklist(word):
-    if word in _LexiconBlackSet:
-        return _Blacklist_Freq[word]
-
+    MaxFreq = -1
     for pattern in _Blacklist_Freq:
         if  re.match(pattern, word):
-            return _Blacklist_Freq[pattern]
-    return -1
+            if _Blacklist_Freq[pattern] == 0:
+                return 0
+            if _Blacklist_Freq[pattern] > MaxFreq:
+                MaxFreq = _Blacklist_Freq[pattern]
+
+    return MaxFreq
 
 
 LoadLexiconBlacklist(args.blacklist)
@@ -114,7 +111,7 @@ for line in fin:
                 continue    #ignore one character word.
             if digitsearch.search(chunk):
                 continue    #ignore digit
-            if chunk in _LexiconBlackSet:
+            if chunk in _LexiconFilterSet:
                 continue
             phrase = normalize(chunk)
             querydict[phrase] = querydict.get(phrase, 0) + freq

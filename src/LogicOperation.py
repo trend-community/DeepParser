@@ -134,31 +134,19 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
+
 def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer):
     StrPointerRootToken = None
 
     tree = Pointer.split(".")
-    if False: #too complicate to implement not tree[0]:     #no name. left neighbour
-        #Feb 27 2018: Decided not to use the "neighbour principle".
-        pass
-        # RuleRootPosition = RulePosition - 1
-        # while RuleRootPosition >=0:
-        #     if not RuleTokens[RuleRootPosition].SubtreePointer:
-        #         break   #found the first that does not have SubtreePointer
-        #     RuleRootPosition -= 1
-        # if RuleRootPosition < 0:
-        #     logging.error("Can't find the left neighbour for pointer " + Pointer + " in this rule")
-        #     logging.error(" ".join([str(r) for r in RuleTokens]))
-        #     raise RuntimeError("Can't find specified pointer in rule!")
-        # #TODO: Locate StrPointerRootToken from RuleRootPosition.
-    else:
-        rootPointer = "^" + tree[0]
-        x = StrTokenList.head
-        while x:
-            if x.TempPointer == rootPointer:
-                StrPointerRootToken = x
-                break
-            x = x.next
+
+    rootPointer = "^" + tree[0]
+    x = StrTokenList.head
+    while x:
+        if x.TempPointer == rootPointer:
+            StrPointerRootToken = x
+            break
+        x = x.next
     if not StrPointerRootToken:
         logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
         logging.error(" ".join([str(r) for r in RuleTokens]))
