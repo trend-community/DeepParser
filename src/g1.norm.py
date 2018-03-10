@@ -69,12 +69,15 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 content, _ = utils.SeparateComment(lined)
                 if not content:
                     continue
-                word_freq = content[0].split()
-                pattern = word_freq[0] + "$"
-                if len(word_freq) == 2:
-                    _Blacklist_Freq[pattern] = int(word_freq[1])
+                if " " in content[0]:
+                    spaceindex = content[0].find(" ")
+                    _word = content[0][:spaceindex]
+                    _freq = int(content[0][spaceindex+1:])
                 else:
-                    _Blacklist_Freq[pattern] = Freq_Basic_Blacklist
+                    _word = content[0]
+                    _freq = Freq_Basic_Blacklist
+                _Blacklist_Freq[_word] = _freq
+
 
 
 from functools import lru_cache
