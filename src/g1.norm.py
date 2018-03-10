@@ -69,12 +69,14 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 content, _ = utils.SeparateComment(lined)
                 if not content:
                     continue
-                if " " in content[0]:
-                    spaceindex = content[0].find(" ")
-                    _word = content[0][:spaceindex]
-                    _freq = int(content[0][spaceindex+1:])
+                if " " in content or "   " in content:
+                    spaceindex = content.find(" ")
+                    if spaceindex < -1:
+                        spaceindex = content.find("  ")
+                    _word = content[:spaceindex] + "$"
+                    _freq = int(content[spaceindex+1:])
                 else:
-                    _word = content[0]
+                    _word = content[0] + "$"
                     _freq = Freq_Basic_Blacklist
                 _Blacklist_Freq[_word] = _freq
 
@@ -96,7 +98,7 @@ def FreqInLexiconBlacklist(word):
 
 LoadLexiconBlacklist(args.blacklist)
 LoadLexiconFilterlist(args.filter)
-
+print(FreqInLexiconBlacklist('我是猫'))
 #LoadLexiconBlacklist("../../fsa/X/LexBlacklist_TopChars.txt.zip")
 digitsearch = re.compile(r'\d')
 N = 0
