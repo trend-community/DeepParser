@@ -69,10 +69,10 @@ def LoadLexiconBlacklist(BlacklistLocation):
                 content, _ = utils.SeparateComment(lined)
                 if not content:
                     continue
-                if " " in content or "   " in content:
+                if " " in content or "\t" in content:
                     spaceindex = content.find(" ")
-                    if spaceindex < -1:
-                        spaceindex = content.find("  ")
+                    if spaceindex < 0:
+                        spaceindex = content.find("\t")
                     _word = content[:spaceindex] + "$"
                     _freq = int(content[spaceindex+1:])
                 else:
