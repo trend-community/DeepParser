@@ -141,12 +141,16 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     return 0
 
 
+#list1 is combination of norm and Head0Text.
+# either of them equals to the item in list2, that means match.
 def ListMatch(list1, list2):
     if len(list1) != len(list2):
         logging.error("Coding error. The size should be the same in ListMatch")
         return False
     for i in range(len(list1)):
-        if list2[i] is None or list1[i] == list2[i]:
+        if list2[i] is None or \
+            list1[i][0] == list2[i] or \
+                len(list1[i]) == 2 and list1[i][1] == list2[i]:
             pass
         else:
             return False
@@ -193,8 +197,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
 
-            # if not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
-            #     continue
+            if not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
+                continue
 
             if WinningRuleSize < len(rule.Tokens):
                 result = HeadMatch(strtokenlist, i, rule.Tokens)

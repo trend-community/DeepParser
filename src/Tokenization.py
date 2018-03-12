@@ -103,12 +103,15 @@ class SentenceLinkedList:
         return output
 
     def norms(self):
-        output = []
+        output_norms = []
         p = self.head
         while p:
-            output += [p.norm]
+            if p.Head0Text:
+                output_norms += [(p.norm, p.Head0Text)]
+            else:
+                output_norms += [(p.norm,)]
             p = p.next
-        return output
+        return output_norms
 
     # def toJSON(self):
     #     a = JsonClass()
