@@ -404,6 +404,8 @@ class SentenceNode(object):
 
         if KeepOriginFeature:
             a.features = [FeatureOntology.GetFeatureName(f) for f in self.features ]
+            if self.Head0Text:
+                a.Head0Text = self.Head0Text
 
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset

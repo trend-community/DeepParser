@@ -50,6 +50,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
         # return  str(nodes)
         # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
+        Debug = "Debug" in queries
         if nodes:
             if   queries["Type"] == "simple":
                 output_type = "text/html;"
@@ -58,7 +59,6 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 output_type = "text/html;"
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
             elif queries["Type"] == "parsetree":
-                Debug = "Debug" in queries
                 output_type = "text/html;"
                 orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON())
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
@@ -71,7 +71,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 output_text = chart
             else:
                 output_type = "Application/json;"
-                output_text =nodes.root().CleanOutput(KeepOriginFeature=False).toJSON()
+                output_text =nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()
 
             try:
                 self.send_response(200)
