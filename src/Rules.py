@@ -472,7 +472,7 @@ class Rule:
                 c.HeadOffset = HeadOffset + i
                 c.Action, token.action = self.ExtractParentSonActions(token.action)
                 token.action += " ^.H"
-            elif token.pointer == "H":
+            elif token.pointer == "^H":
                 if c.HeadOffset < 5:
                     c.HeadConfidence = 4
                     c.HeadOffset = HeadOffset + i
@@ -613,7 +613,7 @@ def ProcessTokens(Tokens):
                 repeatMax = int(repeatMatch.group(2))
             node.repeat = [0, repeatMax]
 
-        pointerMatch = re.match("(\^\w*)\[(.+)\]$", node.word, re.DOTALL)
+        pointerMatch = re.match("(\^\w*)\[(.*)\]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
@@ -1306,7 +1306,7 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
 def _PreProcess_CompileHash(OneList):
     for rule in OneList:
         rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
-                                                    and "-" not in token.word.split("'")[1] else None
+                                                  and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else None
                       for token in rule.Tokens if not token.SubtreePointer ]
 
 

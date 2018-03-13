@@ -1,4 +1,4 @@
-import unittest, os
+import unittest
 from LogicOperation import *
 import Tokenization, Rules
 

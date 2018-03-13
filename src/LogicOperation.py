@@ -42,6 +42,7 @@ def CheckPrefix(word, matchtype):
     return prefix+word, matchtype
 
 
+#Usage:  [] <[A] [B] [^2.S=x]>  //usage ^2 to point to the 2nd token of the rule.
 def GetNumberPointer(Pointer):
     PointerContent = Pointer[1:]
     if len(PointerContent) == 0:
@@ -66,7 +67,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
     if not StrPointerToken:
 
         RulePointerPos = GetNumberPointer(Pointer)
-        if RulePointerPos < 0:
+        if RulePointerPos <= 0:
             RulePointerPos = RulePosition
             #logging.debug("Testing pointer" + Pointer)
             while RulePointerPos >= 0:
@@ -83,7 +84,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
                             break  # found pointer!
                     RulePointerPos += 1
                 if RulePointerPos >= len(RuleTokens):
-                    logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
+                    logging.error("LocateStrTokenOfPointer Can't find specified pointer " + Pointer + " in rule:")
                     logging.error(jsonpickle.dumps(RuleTokens[0]))
                     raise RuntimeError("Can't find specified pointer in rule!")
         # Now we have the pointer location in Rule
@@ -101,34 +102,69 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
 # After that is found, use the offset to locate the token in StrTokens
 #  compare the pointertoken to the current token (both in StrTokens),
 #   return the compare result.
-def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
-    if Pointer.startswith('^-'):
-        PointerIsSuffix = True
-        Pointer = '^' + Pointer[2:]
-    else:
-        PointerIsSuffix = False
-    if Pointer.endswith('-'):
-        PointerIsPrefix = True
-        Pointer = Pointer[:-1]
-    else:
-        PointerIsPrefix = False
+# Update: ^N : 香味   0
+#           ^-N: PointerIsSuffix  味  1   ^N-: PointerIsPrefix  香     2
+#           -^-N: '-味'          臭味  3   ^N--:  '香-'          香气   4
+#           ^-N-: '味-'          味道  5   -^N-:  '-香'          熏香   6
 
-    StrPointerToken = LocateStrTokenOfPointer(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer)
+def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
+
+    if re.match("-\^(.+)-", Pointer):
+        P = "^"+Pointer[2:-1]
+        PointerType = 6
+    elif re.match("\^-(.+)-", Pointer):
+        P = "^"+Pointer[2:-1]
+        PointerType = 5
+    elif re.match("\^(.+)--", Pointer):
+        P = "^"+Pointer[1:-2]
+        PointerType = 4
+    elif re.match("-\^-(.+)", Pointer):
+        P = "^"+Pointer[3:]
+        PointerType = 3
+    elif re.match("\^(.+)-", Pointer):
+        P = "^"+Pointer[1:-1]
+        PointerType = 2
+    elif re.match("\^-(.+)", Pointer):
+        P = "^"+Pointer[2:]
+        PointerType = 1
+    else:
+        P = "^"+Pointer[1:] # should be ^N
+        PointerType = 0
+
+    StrPointerToken = LocateStrTokenOfPointer(StrTokenList, StrPosition, RuleTokens, RulePosition, P)
 
     strToken = StrTokenList.get(StrPosition)
 
     if matchtype == "text":
-        return StrPointerToken.text == strToken.text \
-                or (PointerIsPrefix and StrPointerToken.text.startswith(strToken.text)) \
-               or (PointerIsSuffix and StrPointerToken.text.endswith(strToken.text)  )
+        return strToken.text and StrPointerToken.text \
+               and( (PointerType == 0 and StrPointerToken.text == strToken.text)
+                or (PointerType == 1 and StrPointerToken.text.endswith(  strToken.text))
+                or (PointerType == 2 and StrPointerToken.text.startswith(strToken.text))
+                or (PointerType == 3 and StrPointerToken.text.endswith(  strToken.text[-1]))
+                or (PointerType == 4 and StrPointerToken.text.startswith(strToken.text[0])  )
+                or (PointerType == 5 and StrPointerToken.text.endswith(  strToken.text[0]))
+                or (PointerType == 6 and StrPointerToken.text.startswith(strToken.text[-1])  )
+                                   )
     elif matchtype == "norm":
-        return StrPointerToken.norm == StrTokenList.get(StrPosition).norm \
-                or (PointerIsPrefix and StrPointerToken.norm.startswith(strToken.norm)) \
-               or (PointerIsSuffix and StrPointerToken.norm.endswith(strToken.norm)  )
+        return strToken.norm and StrPointerToken.norm \
+               and( (PointerType == 0 and StrPointerToken.norm == StrTokenList.get(StrPosition).norm)
+                or (PointerType == 1 and StrPointerToken.norm.endswith(  strToken.norm))
+                or (PointerType == 2 and StrPointerToken.norm.startswith(strToken.norm))
+                or (PointerType == 3 and StrPointerToken.norm.endswith(  strToken.norm[-1]))
+                or (PointerType == 4 and StrPointerToken.norm.startswith(strToken.norm[0])  )
+                or (PointerType == 5 and StrPointerToken.norm.endswith(  strToken.norm[0]))
+                or (PointerType == 6 and StrPointerToken.norm.startswith(strToken.norm[-1])  )
+                                   )
     elif matchtype == "atom":
-        return StrPointerToken.atom == StrTokenList.get(StrPosition).atom \
-                or (PointerIsPrefix and StrPointerToken.atom.startswith(strToken.atom)) \
-               or (PointerIsSuffix and StrPointerToken.atom.endswith(strToken.atom)  )
+        return strToken.atom and StrPointerToken.atom \
+               and( (PointerType == 0 and StrPointerToken.atom == StrTokenList.get(StrPosition).atom)
+                or (PointerType == 1 and StrPointerToken.atom.endswith(  strToken.atom))
+                or (PointerType == 2 and StrPointerToken.atom.startswith(strToken.atom))
+                or (PointerType == 3 and StrPointerToken.atom.endswith(  strToken.atom[-1]))
+                or (PointerType == 4 and StrPointerToken.atom.startswith(strToken.atom[0])  )
+                or (PointerType == 5 and StrPointerToken.atom.endswith(  strToken.atom[0]))
+                or (PointerType == 6 and StrPointerToken.atom.startswith(strToken.atom[-1])  )
+                                   )
     else:
         logging.error("Rule token:" + str(RuleTokens[RulePosition]))
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
@@ -148,7 +184,7 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer
             break
         x = x.next
     if not StrPointerRootToken:
-        logging.error("PointerMatch Can't find specified pointer " + Pointer + " in rule:")
+        logging.error("FindPointerNode Can't find specified pointer " + Pointer + " in rule:")
         logging.error(" ".join([str(r) for r in RuleTokens]))
         raise RuntimeError("Can't find specified pointer in rule!")
 
@@ -198,7 +234,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, matcht
         return LogicMatchFeatures(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, strToken=strToken)
 
     elif matchtype in ["text", "norm", "atom"]:
-        if rule.startswith("^"):
+        if "^" in rule:
             #This is a pointer!
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=rule, matchtype=matchtype)
 

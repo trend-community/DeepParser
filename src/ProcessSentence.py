@@ -77,7 +77,7 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
             logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
-    RemoveTempPointer(strTokenList)
+    #RemoveTempPointer(strTokenList)
     return True
 
 
@@ -115,7 +115,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
 
-    MarkTempPointer(strtokens, rule, StartPosition)
+    #MarkTempPointer(strtokens, rule, StartPosition)
     for i in range(len(rule.Tokens)):
 
         if rule.Tokens[i].action:
