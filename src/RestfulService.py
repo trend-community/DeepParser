@@ -125,7 +125,7 @@ def init():
     #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
-class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
+#class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
 
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     try:
         httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
     except:     #windows?
-        http = HTTPServer(('0.0.0.0', startport), ProcessSentence_Handler)
+        httpd = HTTPServer(('0.0.0.0', startport), ProcessSentence_Handler)
         logging.warning("Running without multi-process support.")
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")
