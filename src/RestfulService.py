@@ -125,7 +125,7 @@ def init():
     #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
-#class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
+class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
 
