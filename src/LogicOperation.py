@@ -105,7 +105,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
 # Update: ^N : 香味   0
 #           ^-N: PointerIsSuffix  味  1   ^N-: PointerIsPrefix  香     2
 #           -^-N: '-味'          臭味  3   ^N--:  '香-'          香气   4
-#           ^-N-: '味-'          味道  5   -^N-:  '-香'          熏香   6
+#           ^-N-: '味-'          味道  5   -^N-:  '-香'          夜来香  6
 
 def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
 

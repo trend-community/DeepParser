@@ -103,11 +103,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
         raise(RuntimeError("wrong string to apply rule?"))
-    if strtokens.size > 2:
-        logging.info("Applying Winning Rule:" + rule.RuleName +" to "
-                     + strtokens.get(1).text + strtokens.get(2).text + "...")
-        #print(str(rule))
-        #logging.debug(jsonpickle.dumps(strtokens))
     StoreWinningRule(strtokens, rule, StartPosition)
 
     if len(rule.Tokens) == 0:
