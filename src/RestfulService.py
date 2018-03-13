@@ -1,6 +1,9 @@
 import logging,  jsonpickle, os
 import urllib
-from socketserver import ThreadingMixIn, ForkingMixIn
+try:
+    from socketserver import ThreadingMixIn, ForkingMixIn
+except: #windows? ignore it.
+    pass
 import ProcessSentence, FeatureOntology
 import Graphviz
 
@@ -131,8 +134,11 @@ if __name__ == "__main__":
 
     startport = int(utils.ParserConfig.get("website", "port"))
     print("Running in port " + str(startport))
-
-    httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
+    try:
+        httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
+    except:     #windows?
+        http = HTTPServer(('0.0.0.0', startport), ProcessSentence_Handler)
+        logging.warning("Running without multi-process support.")
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')
