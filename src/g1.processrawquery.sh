@@ -29,16 +29,16 @@ python3 g1.generatewordlist.py $5 $2     2>../temp/g1.generatewordlist.error.txt
 
 mkdir -p $3
 mkdir -p $4
-cat $6 | awk -F: '{print $1}' > $5/AllLexicon.txt
+cat $6 | awk -F: '{print $1}' > $5/SystemLexicon.txt
 for f in $5/gram*
 do
     echo "processing $f ..."
     filename=$(basename "$f")
     outputfile="$5/Mixed_$filename"
-    python3 g1.sent.py  "$f" "$outputfile" $2 $5/AllLexicon.txt
+    python3 g1.sent.py  "$f" "$outputfile" $2 $5/SystemLexicon.txt
 
     newlexiconname="$4/CleanLexicon_$filename"
-    grep -va "<" $outputfile | grep -Fxv -f $5/AllLexicon.txt > $newlexiconname &
+    grep -va "<" $outputfile | grep -Fxv -f $5/SystemLexicon.txt > $newlexiconname &
 
     newrulename="$3/CleanRule_$filename"
     echo "$filename QRule ==  // $filename \n" > $newrulename
