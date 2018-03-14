@@ -124,8 +124,7 @@ def LoadDictFromLexicon(dictpath):
     with open(dictpath) as lexicondict:
         for line in lexicondict:
             if len(line.strip()) >= 2:
-                blocks = line.split(":")
-                querydict[normalize(blocks[0].strip())] = -4 #each lexicon word is 1/10000 of total query.
+                querydict[normalize(line.strip())] = -4 #each lexicon word is 1/10000 of total query.
     print("After loading from lexicon, size:" + str(len(querydict)))
     if '中 介' in querydict:
         print("querydict['中 介']=" + str(querydict['中 介']))
