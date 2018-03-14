@@ -1,3 +1,0 @@
-// company\tproduct	\tsub-product
-
-Apple	iPhone	iPhone7,iPhone 7
