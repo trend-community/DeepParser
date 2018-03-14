@@ -11,8 +11,8 @@ class Node(object):
         # self.id = 0
 
 
-def CreateFlatTree(inputnode, nodelist, parentid=0):
-    if 'norm' in inputnode :
+def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
+    if 'norm' in inputnode and Debug :
         norm = inputnode['norm']
     else:
         norm = inputnode['text']
@@ -33,15 +33,15 @@ def CreateFlatTree(inputnode, nodelist, parentid=0):
 
     if 'sons' in inputnode.keys():
         for son in inputnode['sons']:
-            CreateFlatTree(son, nodelist, node.id)
+            CreateFlatTree(son, nodelist, Debug, node.id)
 
     return
 
 
-def orgChart(json_input):
+def orgChart(json_input, Debug):
     nodelist = []
     decoded = json.loads(json_input)
-    CreateFlatTree(decoded, nodelist)
+    CreateFlatTree(decoded, nodelist, Debug)
     dataRows = []
     for node in nodelist:
         v = str(node.id)
