@@ -4,11 +4,13 @@ import utils, FeatureOntology  # using the BarTags.
 
 
 class Node(object):
+    counter = 1
     def __init__(self,text):
         self.text = text
         self.sons = []
         self.upperRelation = None
-        # self.id = 0
+        self.id = Node.counter
+        Node.counter += 1
 
 
 def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
@@ -21,10 +23,11 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
     node.endOffset = inputnode['EndOffset']
     node.startOffset = inputnode['StartOffset']
     node.features = inputnode['features']
-    nodeid = 1
-    while nodeid in [n.id for n in nodelist]:
-        nodeid = random.randint(1, 1000000)   # as parent id for sons.
-    node.id = nodeid
+    # if not hasattr(CreateFlatTree, "nodeid"):
+    #     CreateFlatTree.nodeid = 1
+    # else:
+    #     CreateFlatTree.nodeid += 1
+    # node.id = CreateFlatTree.nodeid
 
     node.upperRelation = ""
     if 'UpperRelationship' in inputnode.keys():

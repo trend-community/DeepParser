@@ -341,6 +341,7 @@ def LoadCommon():
     Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
 
