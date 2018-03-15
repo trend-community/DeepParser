@@ -250,7 +250,10 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             newNode = False
             word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":").lower()
             # Ditionary is case insensitive: make the words lowercase.
-            word = word.replace(" ", "").replace("~", "")
+            word = word.replace(" ", "")
+            if  "Punctuate" not in lexiconLocation:
+                word = word.replace("/", "")
+                word = word.replace("~", "")
 
             # if InLexiconBlacklist(word):
             #    continue
@@ -266,10 +269,18 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                     node.comment = comment
             if len(blocks) == 2:
                 # there should be no "\:" on the right side.
-                features = SplitFeatures(blocks[1])  # blocks[1].split()
+                features = SplitFeatures(blocks[1].replace(utils.IMPOSSIBLESTRING, ":"))  # blocks[1].split()
                 for feature in features:
                     if re.match('^\'.*\'$', feature):
-                        node.norm = feature.strip('\'')
+                        node.norm = feature[1:-1]
+                        if not node.atom:
+                            node.atom = node.norm
+                        if "Punctuate" in lexiconLocation:
+                            if node.norm in _LexiconDict:
+                                normnode = _LexiconDict[node.norm]
+                                node.features.update(normnode.features)
+                            else:
+                                logging.warning("This punctuate is not listed:" + node.norm + " for: " + node.text)
                     elif re.match('^/.*/$', feature):
                         node.atom = feature.strip('/')
                     elif ChinesePattern.search(feature):  # Chinese
@@ -314,7 +325,9 @@ def _ApplyWordStem(NewNode, lexiconnode):
 
     if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
         normnode = _LexiconDict[lexiconnode.norm]
-        # NewNode.features.update(normnode.features)
+        #NewNode.features.update(normnode.features)
+        #not comfortable to copy the feature blindly. Use an "F" to do that in orgLex.py offline.
+        #   only do that for punctuate signs in the function of LoadLexicon()
         if VBFeatureID in NewNode.features:
             if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
                 NewNode.features.remove(VBFeatureID)
