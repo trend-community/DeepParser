@@ -111,15 +111,18 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         raise(RuntimeError("Rule error"))
 
     #MarkTempPointer(strtokens, rule, StartPosition)
+    VirtualRuleToken = 0
     for i in range(len(rule.Tokens)):
+        if rule.Tokens[i].SubtreePointer:
+            VirtualRuleToken += 1
 
         if rule.Tokens[i].action:
             if rule.Tokens[i].SubtreePointer:
                 SubtreePointer = rule.Tokens[i].SubtreePointer
                 logging.debug("Start looking for Subtree: " + SubtreePointer)
-                token = FindPointerNode(strtokens, i + StartPosition, rule.Tokens, i, Pointer=SubtreePointer)
+                token = FindPointerNode(strtokens, i + StartPosition - VirtualRuleToken, rule.Tokens, i, Pointer=SubtreePointer)
             else:
-                token = strtokens.get(i + StartPosition)
+                token = strtokens.get(i + StartPosition - VirtualRuleToken)
 
             token.ApplyActions(rule.Tokens[i].action)
 
@@ -389,10 +392,10 @@ def LoadCommon():
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "喝不惯"
+    target = "能油比高是优点还是缺点？"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')

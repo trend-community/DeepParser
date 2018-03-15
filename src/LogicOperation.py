@@ -85,7 +85,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
                     RulePointerPos += 1
                 if RulePointerPos >= len(RuleTokens):
                     logging.error("LocateStrTokenOfPointer Can't find specified pointer " + Pointer + " in rule:")
-                    logging.error(jsonpickle.dumps(RuleTokens[0]))
+                    logging.error(jsonpickle.dumps(RuleTokens))
                     raise RuntimeError("Can't find specified pointer in rule!")
         # Now we have the pointer location in Rule
         Offset = RulePointerPos - RulePosition  #might be positive, or negative
@@ -170,7 +170,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
-
+#Note: here Pointer (subtreepointer) does not have "^"
 def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer):
     StrPointerRootToken = None
 

@@ -473,17 +473,17 @@ class Rule:
                 c.Action, token.action = self.ExtractParentSonActions(token.action)
                 token.action += " ^.H"
             elif token.pointer == "^H":
-                if c.HeadOffset < 5:
+                if c.HeadConfidence < 5:
                     c.HeadConfidence = 4
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif  "^^." in token.action or "++" in token.action:
-                if c.HeadOffset < 4:
+                if c.HeadConfidence < 4:
                     c.HeadConfidence = 3
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif not token.action:
-                if c.HeadOffset < 3:
+                if c.HeadConfidence < 3:
                     c.HeadConfidence = 2
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
