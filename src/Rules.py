@@ -619,7 +619,7 @@ def Tokenize(RuleContent):
 
 def ProcessTokens(Tokens):
     for node in Tokens:
-        node.word = node.word.replace("\(", IMPOSSIBLESTRINGLP).replace("\)", IMPOSSIBLESTRINGRP).replace("\'", IMPOSSIBLESTRINGSQ).replace("\:", IMPOSSIBLESTRINGCOLN).replace("\=", IMPOSSIBLESTRINGEQUAL)
+        node.word = node.word.replace("\\(", IMPOSSIBLESTRINGLP).replace("\\)", IMPOSSIBLESTRINGRP).replace("\\'", IMPOSSIBLESTRINGSQ).replace("\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]
@@ -691,6 +691,14 @@ def ProcessTokens(Tokens):
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
+        #
+        # if "(" in node.word and ":" in node.word:
+        #     ActionPosition = node.word.find(":")
+        #
+        #     if ")" not in node.word[ActionPosition:]:
+        #         logging.info("separate action")
+        #         node.word = node.word[:ActionPosition] + "]"
+        #         node.action = node.word[ActionPosition+1:].rstrip("]")
 
         if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
@@ -855,6 +863,7 @@ def LoadRules(RuleLocation):
 
 
 def RuleFileOlderThanDB(RuleLocation):
+    return False
     cur = DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
@@ -1096,6 +1105,41 @@ def ExpandParenthesisAndOrBlock():
         ExpandParenthesisAndOrBlock()
 
 
+def _RemoveExcessiveParenthesis(token):
+    StartParenthesesPosition = token.word.find("(")
+    if StartParenthesesPosition < 0:
+        return False
+    if StartParenthesesPosition > 0 and \
+        token.word[StartParenthesesPosition-1] == "'" and token.word[StartParenthesesPosition+1] == "'":
+        logging.info("ignore this parentheses:" + str(token))
+        return False
+    EndParenthesesPosition = StartParenthesesPosition + 1 + SearchPair(token.word[StartParenthesesPosition+1:], "()")
+    if EndParenthesesPosition == StartParenthesesPosition:   #not paired
+        logging.warning("The parenthesis are not paired:" + token.word + " in this token:\n" + str(token) )
+        return False
+
+    if "]" in token.word[StartParenthesesPosition:EndParenthesesPosition] \
+        or ":" in token.word[StartParenthesesPosition:EndParenthesesPosition]:
+        return False    #not excessive, if ]: in parenthesis.
+
+    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] not in  "|!") \
+        and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition+1] != "|"):
+        if StartParenthesesPosition>0:
+            before = token.word[:StartParenthesesPosition]
+        else:
+            before = ""
+        if EndParenthesesPosition<len(token.word):
+            after = token.word[EndParenthesesPosition+1:]
+        else:
+            after = ""
+
+        logging.info("Removing excessive parenthesis in: " + token.word)
+        token.word = before + token.word[StartParenthesesPosition+1:EndParenthesesPosition] + after
+        logging.info("\t\t as: " + token.word)
+        return True
+    else:
+        return False
+
 def _ExpandParenthesis(OneList):
     Modified = False
     for rule in OneList:
@@ -1105,6 +1149,9 @@ def _ExpandParenthesis(OneList):
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
+            if  _RemoveExcessiveParenthesis(token):
+                Expand = True
+
             if (token.word.startswith("(") and len(token.word) == 2 + SearchPair(token.word[1:], "()")) \
                     or (token.word.startswith("[(") and len(token.word) == 4 + SearchPair(token.word[2:], "()")):
                 # logging.warning("Parenthesis:\n\t" + token.word + "\n\t rulename: " + rule.RuleName )
@@ -1142,6 +1189,7 @@ def _ExpandParenthesis(OneList):
         if Expand:
             OneList.remove(rule)
             Modified = True
+
 
     return Modified
     # if Modified:
@@ -1218,6 +1266,7 @@ def _ExpandOrBlock(OneList):
                         continue
                     else:
                         orIndex += 1    #move the pointer from ] to |
+
 
 
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)

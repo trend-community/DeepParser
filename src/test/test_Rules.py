@@ -715,6 +715,13 @@ third line};""")
         PreProcess_CheckFeatures()
         OutputRules(rulegroup)
 
+        origin = "this is \(, \), \\', \:, \= as origin"
+        print(origin)
+        new = origin.replace("\(", IMPOSSIBLESTRINGLP).replace("\)", IMPOSSIBLESTRINGRP).replace("\\'", IMPOSSIBLESTRINGSQ).replace("\:", IMPOSSIBLESTRINGCOLN).replace("\=", IMPOSSIBLESTRINGEQUAL)
+        print(new)
+        self.assertEqual(new, "this is @#$%@leftparenthesis@, @#$%@rightparenthesis@, @#$%@singlequote@, @#$%@coln@, @#$%@equal@ as origin")
+
+
     # def test_ExtractParentSonActions(self):
     #     a, b = Rule.ExtractParentSonActions("a b -c NEW x y")
     #     self.assertEqual(b, "a b -c NEW x y")
