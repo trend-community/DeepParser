@@ -32,6 +32,8 @@ Environment:
 cd git/parser/src
 pip install -r requirements.txt
 
+cd git/parser/data
+cp parser.empty.db parser.db
 
 2, Background Restful Service:
 2.1, Run the python program as web service :
