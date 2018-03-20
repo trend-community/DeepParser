@@ -1,5 +1,6 @@
 
 import copy
+from datetime import datetime
 from utils import *
 
 # import FeatureOntology
@@ -22,6 +23,7 @@ class RuleGroup(object):
         self.RuleList = []
         self.MacroDict = {}
         self.UnitTest = []
+        self.LoadedFromDB = False
 
     def __lt__(self, other):
         return self.ID < other.ID
@@ -249,6 +251,44 @@ class Rule:
         output += '\n'
         return output
 
+    # body is the part that being used to identify this specific rule. It is also that part to match the rule.
+    def body(self):
+        return "/".join(t.word for t in self.Tokens)
+
+    # if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
+    #    update the verifytime, and status.
+    # if there is no same body, create everything.
+    def DBSave(self, rulefileid):
+        cur = DBCon.cursor()
+        strsql = "SELECT ID from ruleinfo where rulefileid=? AND body=?  limit 1"
+        cur.execute(strsql, [rulefileid, self.body()])
+        resultrecord = cur.fetchone()
+        if resultrecord:
+            resultid = resultrecord[0]
+            strsql = "UPDATE ruleinfo set status=1, verifytime=DATETIME('now') where ID=?"
+            cur.execute(strsql, [resultid,])
+            strsql = "DELETE from rulenodes where ruleid=?"
+            cur.execute(strsql, [resultid, ])
+            strsql = "DELETE from rulechunks where ruleid=?"
+            cur.execute(strsql, [resultid, ])
+        else:
+            strsql = "INSERT into ruleinfo (rulefileid, name, comment, body, status, norms, createtime, verifytime) VALUES(?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+            cur.execute(strsql, [rulefileid, self.RuleName, self.comment, self.body(), 1, '/'.join([x if x else '' for x in self.norms])])
+            resultid = cur.lastrowid
+
+        for i in range(len(self.Tokens)):
+            strsql = "INSERT into rulenodes (ruleid, sequence, matchbody, action) values(?, ?, ?, ?)"
+            cur.execute(strsql, [resultid, i, self.Tokens[i].word, self.Tokens[i].action])
+        for i in range(len(self.Chunks)):
+            strsql = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
+            cur.execute(strsql, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
+                                 self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
+                                 self.Chunks[i].HeadOffset, self.Chunks[i].Action
+                                 ])
+        cur.close()
+        return resultid
+
+
     #For head (son) node, only apply negative action, and
     #   features after "NEW".
     # update on Feb 4: Only "X++" is for new node. The rest is for Son
@@ -266,7 +306,7 @@ class Rule:
 
         SonActions = list(actions - set(ParentActions))
 
-        return " ".join(ParentActions), " ".join(SonActions)
+        return " ".join(sorted(ParentActions)), " ".join(sorted(SonActions))
 
 
     def CompileChunk(self):
@@ -768,43 +808,133 @@ def LoadRules(RuleLocation):
     logging.debug("Start Loading Rule " + RuleFileName)
     rulegroup = RuleGroup(RuleFileName)
 
-    rule = ""
-    try:
-        with open(RuleLocation, encoding="utf-8") as RuleFile:
-            for line in RuleFile:
-                # commentLocation = line.find("//")
-                # if commentLocation>=0:
-                #     line = line[:commentLocation]   #remove anything after //
+    if RuleFileOlderThanDB(RuleLocation):
+        rulegroup.LoadedFromDB = True
+        LoadRulesFromDB(rulegroup)
+    else:
+        rulegroup.LoadedFromDB = False
+        rule = ""
+        try:
+            with open(RuleLocation, encoding="utf-8") as RuleFile:
+                for line in RuleFile:
+                    # commentLocation = line.find("//")
+                    # if commentLocation>=0:
+                    #     line = line[:commentLocation]   #remove anything after //
 
-                line = line.strip().replace("：", ":")
-                if not line:
-                    continue
+                    line = line.strip().replace("：", ":")
+                    if not line:
+                        continue
 
-                code, _ = SeparateComment(line)
-                if code.find("::") >= 0 or code.find("==") >= 0:
-                    if rule:
-                        InsertRuleInList(rule, rulegroup)
-                        rule = ""
-                rule += "\n" + line
+                    code, _ = SeparateComment(line)
+                    if code.find("::") >= 0 or code.find("==") >= 0:
+                        if rule:
+                            InsertRuleInList(rule, rulegroup)
+                            rule = ""
+                    rule += "\n" + line
 
-            if rule:
-                InsertRuleInList(rule, rulegroup)
-    except UnicodeError :
-        logging.error("Error when processing " + RuleFileName)
-        logging.error("Currently rule=" + rule)
-    UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
-    if os.path.exists(UnitTestFileName):
-        # First delete the unit test of current file to have clean plate
-        del rulegroup.UnitTest[:]
-        with open(UnitTestFileName, encoding="utf-8") as RuleFile:
-            for line in RuleFile:
-                RuleName, TestSentence = SeparateComment(line)
-                unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
-                rulegroup.UnitTest.append(unittest)
+                if rule:
+                    InsertRuleInList(rule, rulegroup)
+        except UnicodeError :
+            logging.error("Error when processing " + RuleFileName)
+            logging.error("Currently rule=" + rule)
+        UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
+        if os.path.exists(UnitTestFileName):
+            # First delete the unit test of current file to have clean plate
+            del rulegroup.UnitTest[:]
+            with open(UnitTestFileName, encoding="utf-8") as RuleFile:
+                for line in RuleFile:
+                    RuleName, TestSentence = SeparateComment(line)
+                    unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
+                    rulegroup.UnitTest.append(unittest)
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
     logging.info("Finished Loading Rule " + RuleFileName )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
+
+
+def RuleFileOlderThanDB(RuleLocation):
+    return False
+    cur = DBCon.cursor()
+    RuleFileName = os.path.basename(RuleLocation)
+    strsql = "select ID, verifytime from rulefiles where filelocation=?"
+    cur.execute(strsql, [RuleFileName,])
+    resultrecord = cur.fetchone()
+    cur.close()
+
+    if not resultrecord or not resultrecord[1]:
+        return False
+
+    FileDBTime = resultrecord[1]    #utc time.
+    FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
+    logging.warning("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
+
+    return FileDiskTime < FileDBTime
+
+    # strsql = "f(rulefileid, comment, body, status, norms, createtime, verifytime) VALUES(?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+    # cur.execute(strsql, [rulefileid, self.comment, self.body(), 1, '/'.join([x if x else '' for x in self.norms])])
+    # resultid = cur.lastrowid
+    # for i in range(len(self.Tokens)):
+    #     strsql = "INSERT into rulenodes (ruleid, sequence, matchbody, action) values(?, ?, ?, ?)"
+    #     cur.execute(strsql, [resultid, i, self.Tokens[i].word, self.Tokens[i].action])
+    # for i in range(len(self.Chunks)):
+    #     strsql = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
+    #     cur.execute(strsql, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
+    #                          self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
+    #                          self.Chunks[i].HeadOffset, self.Chunks[i].Action
+    #                          ])
+
+
+def LoadRulesFromDB(rulegroup):
+    cur = DBCon.cursor()
+    strsql = "select ID from rulefiles where filelocation=?"
+    cur.execute(strsql, [rulegroup.FileName,])
+    resultrecord = cur.fetchone()
+    if not resultrecord:
+        logging.error("Trying to load rules from DB for :" + rulegroup.FileName)
+        return False
+    rulefileid = resultrecord[0]
+
+    strsql = "SELECT id, name, norms, comment from ruleinfo where rulefileid=?"
+    cur.execute(strsql, [rulefileid, ])
+    rows = cur.fetchall()
+    for row in rows:
+        rule = Rule()
+        rule.FileName = rulegroup.FileName
+        rule.ID = int(row[0])
+        rule.RuleName = row[1]
+        rule.norms = [x if x else None for x in row[2].split("/")]
+        rule.comment = row[3]
+
+        strsql = "SELECT matchbody, action from rulenodes where ruleid=? order by sequence"
+        cur.execute(strsql, [rule.ID,])
+        noderows = cur.fetchall()
+        for noderow in noderows:
+            token = RuleToken()
+            token.word = noderow[0]
+            token.action = noderow[1]
+            rule.Tokens.append(token)
+
+        strsql = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
+        cur.execute(strsql, [rule.ID,])
+        chunkrows = cur.fetchall()
+        for chunkrow in chunkrows:
+            chunk = RuleChunk()
+            chunk.ChunkLevel = int(chunkrow[0])
+            chunk.StartOffset = int(chunkrow[1])
+            chunk.Length = int(chunkrow[2])
+            chunk.StringChunkLength = int(chunkrow[3])
+            chunk.HeadOffset = int(chunkrow[4])
+            chunk.Action = chunkrow[5]
+            rule.Chunks.append(chunk)
+
+        rulegroup.RuleList.append(rule)
+
+
+    strsql = "update rulefiles set verifytime=DATETIME('now')"
+    cur.execute(strsql)
+    rulegroup.LoadedFromDB = True
+    cur.close()
+    return True
 
 
 def InsertRuleInList(string, rulegroup):
@@ -1418,6 +1548,58 @@ def OutputRuleFiles(FolderLocation):
         with open(utFileLocation, "w", encoding="utf-8") as writer:
             writer.write(utoutput)
 
+    OutputRuleDB()
+
+#tablefields and values are lists.
+def DBInsertOrGetID(tablename, tablefields, values):
+    cur = DBCon.cursor()
+    strsql = "SELECT ID from " + tablename + " where " + " AND ".join(field + "=?" for field in tablefields ) + "  limit 1"
+    cur.execute(strsql, values)
+    resultrecord = cur.fetchone()
+    if resultrecord:
+        resultid = resultrecord[0]
+    else:
+        strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
+        cur.execute(strsql, values)
+        resultid = cur.lastrowid
+    cur.close()
+    return resultid
+
+
+#sqlite3 parser.db
+### ruleinfo.body is the __str__ of the body part. for unique comparison.
+# create table ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, comment TEXT, body TEXT, status INT, norms TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
+# create table rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , CONSTRAINT unique_position UNIQUE(ruleid, sequence));      #//can be separated in the future
+# create table rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
+# create table rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
+# create table sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
+# create table rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
+def OutputRuleDB():
+    cur = DBCon.cursor()
+    for RuleFile in RuleGroupDict:
+        rg = RuleGroupDict[RuleFile]
+        if rg.LoadedFromDB:     #during the loading, compare file modify time with verifytime in db. If the file is not modified, load the rulegroup from db.
+            continue
+        strsql = "SELECT ID from rulefiles where filelocation=?  limit 1"
+        cur.execute(strsql, [rg.FileName,])
+        resultrecord = cur.fetchone()
+        if resultrecord:
+            rulefileid = resultrecord[0]
+            strsql = "update rulefiles set verifytime=DATETIME('now') where ID=?"
+            cur.execute(strsql, [rulefileid, ])
+        else:
+            strsql = "INSERT into rulefiles (filelocation, createtime, verifytime) VALUES(?, DATETIME('now'), DATETIME('now'))"
+            cur.execute(strsql, [rg.FileName,])
+            rulefileid = cur.lastrowid
+
+        for rule in rg.RuleList:
+            rule.DBSave(rulefileid)
+            #if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
+            #    update the verifytime, and status.
+            # if there is no same body, create everything.
+            #Aftter one iteration, find the rule that the verifytime is old, change status to disable them.
+
+    DBCon.commit()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')

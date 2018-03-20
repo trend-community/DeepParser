@@ -43,6 +43,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
     def LexicalAnalyze(self, queries):
         Sentence = urllib.parse.unquote(queries["Sentence"])
+        Type = "json"
+        if "Type" in queries:
+            Type = queries["Type"]
 
         if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
             Sentence = Sentence[1:-1]
@@ -55,13 +58,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
         Debug = "Debug" in queries
         if nodes:
-            if   queries["Type"] == "simple":
+            if  Type  == "simple":
                 output_type = "text/html;"
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
-            elif queries["Type"] == "json2":
+            elif Type == "json2":
                 output_type = "text/html;"
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
-            elif queries["Type"] == "parsetree":
+            elif Type == "parsetree":
                 output_type = "text/html;"
                 orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON(), Debug=Debug)
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))

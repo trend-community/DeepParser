@@ -1,4 +1,5 @@
 import logging, re, json, jsonpickle, configparser, os
+import sqlite3
 from functools import lru_cache
 
 
@@ -259,4 +260,4 @@ def LastItemIn2DArray(xlist, array):
                 return array[i][j]
     return None
 
-
+DBCon = sqlite3.connect('../data/parser.db')

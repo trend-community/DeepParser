@@ -141,6 +141,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
 #list1 is combination of norm and Head0Text.
 # either of them equals to the item in list2, that means match.
+#from functools import lru_cache
+#@lru_cache(maxsize=100000)
 def ListMatch(list1, list2):
     if len(list1) != len(list2):
         logging.error("Coding error. The size should be the same in ListMatch")
@@ -347,6 +349,7 @@ def LoadCommon():
 
     Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
     Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
+    Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
 
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)

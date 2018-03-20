@@ -173,8 +173,8 @@ class RuleTest(unittest.TestCase):
         ResetRules(rulegroup)
         RuleGroupDict.update({rulegroup.FileName: rulegroup})
         r = Rule()
-        r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]? ^V2[0 Ved:^.M] [AP:^.M]* @noun_mod [N !date:NP]>")
-        self.assertEqual(len(r.Tokens), 7)
+        r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] )? [R:^V2.R]? ^V2[0 Ved:^.M] [AP:^.M]*  [N !date:NP]>")
+        self.assertEqual(len(r.Tokens), 6)
         if r.RuleName:
             rulegroup.RuleList.append(r)
         ExpandRuleWildCard()
@@ -197,7 +197,7 @@ class RuleTest(unittest.TestCase):
         RuleGroupDict.update({rulegroup.FileName: rulegroup})
         r = Rule()
         r.SetRule(
-            "rule_p ==  ([R:^V.R]? ^V[0 Ved:^.M] @andC)? ")
+            "rule_p ==  ([R:^V.R]? ^V[0 Ved:^.M] )? ")
         self.assertEqual(len(r.Tokens), 1)
         if r.RuleName:
             rulegroup.RuleList.append(r)
@@ -207,7 +207,7 @@ class RuleTest(unittest.TestCase):
         print("Start rules after expand parenthesis")
         #OutputRules()
         newr = rulegroup.RuleList[1]
-        self.assertEqual(len(newr.Tokens), 3)
+        self.assertEqual(len(newr.Tokens), 2)
         ExpandRuleWildCard()
         print("Start rules after expand wild card again")
         #OutputRules()
@@ -220,7 +220,7 @@ class RuleTest(unittest.TestCase):
         RuleGroupDict.update({rulegroup.FileName: rulegroup})
         
         r = Rule()
-        r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] @andC)? [R:^V2.R]>")
+        r.SetRule("rule_p == [JS2 !DT|PDT|VBN|pro] <([R:^V.R]? ^V[0 Ved:^.M] )? [R:^V2.R]>")
         self.assertEqual(len(r.Tokens), 3)
         if r.RuleName:
             rulegroup.RuleList.append(r)
@@ -305,7 +305,7 @@ class RuleTest(unittest.TestCase):
         InsertRuleInList("""single_token_NP5 == <[proNN:NP]>""", rulegroup)
         r = rulegroup.RuleList[0]
         self.assertEqual(r.Tokens[1].word, "[proNN]")
-        print(_CheckFeature_returnword(r.Tokens[1], 'new'))
+        print(_CheckFeature_returnword(r.Tokens[1].word))
 
     def test_CheckFeature(self):
         FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
@@ -318,16 +318,16 @@ class RuleTest(unittest.TestCase):
         r = rulegroup.RuleList[0]
         self.assertEqual(r.Tokens[1].word, "CD")
         self.assertEqual(r.Tokens[2].word, "分")
-        print(_CheckFeature_returnword(r.Tokens[2], 'new'))
+        print(_CheckFeature_returnword(r.Tokens[2].word))
 
         InsertRuleInList("""30expert == < ['第-|前-' :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
         r = rulegroup.RuleList[1]
-        print(_CheckFeature_returnword(r.Tokens[1], 'new'))
+        r.Tokens[1].word = "[" + _CheckFeature_returnword(r.Tokens[1].word) + "]"
         self.assertEqual(r.Tokens[1].word, "['第-'|'前-']")
 
         InsertRuleInList("""30expert1 == < ['第-|前-' ordinal :AP pred pro succeed] [unit c1 !time:^.X]?>""", rulegroup)
         r = rulegroup.RuleList[2]
-        print(_CheckFeature_returnword(r.Tokens[1], 'new'))
+        print(_CheckFeature_returnword(r.Tokens[1].word))
         print(r.Tokens[1])
 
         r.Tokens[1].word = "[" + _CheckFeature_returnword(r.Tokens[1].word) + "]"
@@ -588,7 +588,7 @@ class RuleTest(unittest.TestCase):
         ExpandParenthesisAndOrBlock()
         ExpandRuleWildCard()
 
-        OutputRules("concise")
+        OutputRules(rulegroup, "concise")
         word = rulegroup.RuleList[0].Tokens[0].word
         self.assertFalse(":" in word)
         word = rulegroup.RuleList[1].Tokens[0].word
@@ -673,9 +673,9 @@ third line};""")
                  """, rulegroup)
 
         PreProcess_CheckFeatures()
-        self.assertEqual(len(rulegroup.RuleList), 1)
+        self.assertEqual(len(rulegroup.RuleList), 3)
         word = rulegroup.RuleList[0].Tokens[0].word
-        self.assertEqual(word, "['a'|'b'|'c']")
+        self.assertEqual(word, "[ 'a' ]")
 
         InsertRuleInList(
             """features2 ==
@@ -683,8 +683,8 @@ third line};""")
                  """, rulegroup)
         #OutputRules()
         PreProcess_CheckFeatures()
-        self.assertEqual(len(rulegroup.RuleList), 2)
-        word = rulegroup.RuleList[1].Tokens[0].word
+        self.assertEqual(len(rulegroup.RuleList), 4)
+        word = rulegroup.RuleList[3].Tokens[0].word
         self.assertEqual(word, "['notfeature']")
 
         InsertRuleInList(
@@ -694,9 +694,9 @@ third line};""")
 
         PreProcess_CheckFeatures()
         OutputRules(rulegroup)
-        self.assertEqual(len(rulegroup.RuleList), 3)
-        word = rulegroup.RuleList[2].Tokens[0].word
-        self.assertEqual(word, "['notfeature'|'a'|'notfeature2']")
+        self.assertEqual(len(rulegroup.RuleList), 7)
+        word = rulegroup.RuleList[6].Tokens[0].word
+        self.assertEqual(word, "[ 'notfeature2' ]")
 
     def test_Random(self):
         rulegroup = RuleGroup("test")
@@ -715,14 +715,14 @@ third line};""")
         PreProcess_CheckFeatures()
         OutputRules(rulegroup)
 
-    def test_ExtractSonActions(self):
-        a = Rule.ExtractSonActions("a b -c NEW x y")
-        self.assertEqual(a, "a b -c NEW x y")
-
-        a = Rule.ExtractSonActions("a b -c a++ b++ c++")
-        self.assertEqual(a, "a b -c")
-        a = Rule.ExtractSonActions("-a x++ y++ b")
-        self.assertEqual(a, "-a b")
-
-        a = Rule.ExtractSonActions(" x++ y++ ")
-        self.assertEqual(a, "")
+    # def test_ExtractParentSonActions(self):
+    #     a, b = Rule.ExtractParentSonActions("a b -c NEW x y")
+    #     self.assertEqual(b, "a b -c NEW x y")
+    #
+    #     a, b = Rule.ExtractParentSonActions("a b -c a++ b++ c++")
+    #     self.assertEqual(b, "a b -c")
+    #     a, b = Rule.ExtractParentSonActions("-a x++ y++ b")
+    #     self.assertEqual(b, "-a b")
+    #
+    #     a, b = Rule.ExtractParentSonActions(" x++ y++ ")
+    #     self.assertEqual(b, "")
