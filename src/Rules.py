@@ -136,6 +136,7 @@ class Rule:
         self.StrTokenLength = -1
         self.Chunks = []
         self.comment = ''
+        self.norms = []
 
     def SetStrTokenLength(self):
         VirtualTokenNum = 0  #Those "^V=xxx" is virtual token that does not apply to real string token
@@ -272,8 +273,9 @@ class Rule:
             strsql = "DELETE from rulechunks where ruleid=?"
             cur.execute(strsql, [resultid, ])
         else:
-            strsql = "INSERT into ruleinfo (rulefileid, name, comment, body, status, norms, createtime, verifytime) VALUES(?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-            cur.execute(strsql, [rulefileid, self.RuleName, self.comment, self.body(), 1, '/'.join([x if x else '' for x in self.norms])])
+            strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, norms, comment, createtime, verifytime) " \
+                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1, '/'.join([x if x else '' for x in self.norms]), self.comment])
             resultid = cur.lastrowid
 
         for i in range(len(self.Tokens)):
@@ -853,7 +855,6 @@ def LoadRules(RuleLocation):
 
 
 def RuleFileOlderThanDB(RuleLocation):
-    return False
     cur = DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
@@ -894,7 +895,8 @@ def LoadRulesFromDB(rulegroup):
         return False
     rulefileid = resultrecord[0]
 
-    strsql = "SELECT id, name, norms, comment from ruleinfo where rulefileid=?"
+    #order by tokenlength desc, and by hits desc.
+    strsql = "SELECT id, name, strtokenlength, norms, comment from ruleinfo where rulefileid=? order by tokenlength desc"
     cur.execute(strsql, [rulefileid, ])
     rows = cur.fetchall()
     for row in rows:
@@ -902,8 +904,9 @@ def LoadRulesFromDB(rulegroup):
         rule.FileName = rulegroup.FileName
         rule.ID = int(row[0])
         rule.RuleName = row[1]
-        rule.norms = [x if x else None for x in row[2].split("/")]
-        rule.comment = row[3]
+        rule.StrTokenLength = int(row[2])
+        rule.norms = [x if x else None for x in row[3].split("/")]
+        rule.comment = row[4]
 
         strsql = "SELECT matchbody, action from rulenodes where ruleid=? order by sequence"
         cur.execute(strsql, [rule.ID,])
@@ -1066,6 +1069,8 @@ def ExpandRuleWildCard():
     Modified = False
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
+        if rg.LoadedFromDB:
+            continue
         Modified = _ExpandRuleWildCard_List(rg.RuleList) or Modified
 
     if Modified:
@@ -1077,6 +1082,9 @@ def ExpandParenthesisAndOrBlock():
     Modified = False
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
+        if rg.LoadedFromDB:
+            continue
+
         logging.info("\tExpandParenthesisAndOrBlock in " + RuleFile + ": Size of RuleList:" + str(len(rg.RuleList)))
         Modified = _ExpandParenthesis(rg.RuleList) or Modified
         Modified = _ExpandOrBlock(rg.RuleList) or Modified
@@ -1321,7 +1329,7 @@ def _ProcessOrToken(word):
     notnormlist = set(orlist) - set(normlist)
 
     if notnormlist:
-        orlist = ["|".join(notnormlist) ] + normlist
+        orlist = ["|".join(sorted(notnormlist)) ] + normlist
     else:
         orlist = normlist
 
@@ -1403,12 +1411,18 @@ def PreProcess_CheckFeatures():
     for RuleFile in RuleGroupDict:
         logging.info("PreProcessing " + RuleFile)
         rg = RuleGroupDict[RuleFile]
+        if rg.LoadedFromDB:
+            continue
+
         _PreProcess_CheckFeaturesAndCompileChunk(rg.RuleList)
 
 def PreProcess_CompileHash():
     for RuleFile in RuleGroupDict:
         logging.info("PreProcessing " + RuleFile)
         rg = RuleGroupDict[RuleFile]
+        if rg.LoadedFromDB:
+            continue
+
         _PreProcess_CompileHash(rg.RuleList)
 
 
@@ -1416,6 +1430,9 @@ def SortByLength():
     for RuleFile in RuleGroupDict:
         logging.info("Sorting " + RuleFile)
         rg = RuleGroupDict[RuleFile]
+        if rg.LoadedFromDB:
+            continue
+
         rg.RuleList = sorted(rg.RuleList, key = lambda x: len(x.Tokens), reverse=True)
 
 
@@ -1568,7 +1585,7 @@ def DBInsertOrGetID(tablename, tablefields, values):
 
 #sqlite3 parser.db
 ### ruleinfo.body is the __str__ of the body part. for unique comparison.
-# create table ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, comment TEXT, body TEXT, status INT, norms TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
+# create table ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
 # create table rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , CONSTRAINT unique_position UNIQUE(ruleid, sequence));      #//can be separated in the future
 # create table rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
 # create table rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
