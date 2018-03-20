@@ -850,7 +850,7 @@ def LoadRules(RuleLocation):
                     rulegroup.UnitTest.append(unittest)
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
-    logging.info("Finished Loading Rule " + RuleFileName )
+    logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
 
 
@@ -868,6 +868,7 @@ def RuleFileOlderThanDB(RuleLocation):
     FileDBTime = resultrecord[1]    #utc time.
     FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
 
+    logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
     return FileDiskTime < FileDBTime
 
     # strsql = "f(rulefileid, comment, body, status, norms, createtime, verifytime) VALUES(?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
@@ -934,8 +935,8 @@ def LoadRulesFromDB(rulegroup):
         rulegroup.RuleList.append(rule)
 
 
-    strsql = "update rulefiles set verifytime=DATETIME('now')"
-    cur.execute(strsql)
+    strsql = "update rulefiles set verifytime=DATETIME('now') where filelocation=?"
+    cur.execute(strsql, [rulegroup.FileName,])
     rulegroup.LoadedFromDB = True
     cur.close()
     return True
