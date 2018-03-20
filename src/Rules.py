@@ -254,7 +254,7 @@ class Rule:
 
     # body is the part that being used to identify this specific rule. It is also that part to match the rule.
     def body(self):
-        return "/".join(t.word for t in self.Tokens)
+        return "".join(t.word for t in self.Tokens)
 
     # if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
     #    update the verifytime, and status.
@@ -275,12 +275,12 @@ class Rule:
         else:
             strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, norms, comment, createtime, verifytime) " \
                             "VALUES(?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1, '/'.join([x if x else '' for x in self.norms]), self.comment])
+            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1, '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.comment])
             resultid = cur.lastrowid
 
         for i in range(len(self.Tokens)):
-            strsql = "INSERT into rulenodes (ruleid, sequence, matchbody, action) values(?, ?, ?, ?)"
-            cur.execute(strsql, [resultid, i, self.Tokens[i].word, self.Tokens[i].action])
+            strsql = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer) values(?, ?, ?, ?, ?, ?)"
+            cur.execute(strsql, [resultid, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
         for i in range(len(self.Chunks)):
             strsql = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
             cur.execute(strsql, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
@@ -867,7 +867,6 @@ def RuleFileOlderThanDB(RuleLocation):
 
     FileDBTime = resultrecord[1]    #utc time.
     FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
-    logging.warning("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
 
     return FileDiskTime < FileDBTime
 
@@ -905,16 +904,18 @@ def LoadRulesFromDB(rulegroup):
         rule.ID = int(row[0])
         rule.RuleName = row[1]
         rule.StrTokenLength = int(row[2])
-        rule.norms = [x if x else None for x in row[3].split("/")]
+        rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") if x else None for x in row[3].split("/")]
         rule.comment = row[4]
 
-        strsql = "SELECT matchbody, action from rulenodes where ruleid=? order by sequence"
+        strsql = "SELECT matchbody, action, pointer, subtreepointer from rulenodes where ruleid=? order by sequence"
         cur.execute(strsql, [rule.ID,])
         noderows = cur.fetchall()
         for noderow in noderows:
             token = RuleToken()
             token.word = noderow[0]
             token.action = noderow[1]
+            token.pointer = noderow[2]
+            token.SubtreePointer = noderow[3]
             rule.Tokens.append(token)
 
         strsql = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
@@ -1584,13 +1585,13 @@ def DBInsertOrGetID(tablename, tablefields, values):
 
 
 #sqlite3 parser.db
-### ruleinfo.body is the __str__ of the body part. for unique comparison.
-# create table ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
-# create table rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , CONSTRAINT unique_position UNIQUE(ruleid, sequence));      #//can be separated in the future
-# create table rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
-# create table rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
-# create table sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
-# create table rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
+### ruleinfo.body is the body part of each token. for unique comparison.
+# CREATE TABLE rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
+# CREATE TABLE rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
+# CREATE TABLE sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
+# CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
+# CREATE TABLE rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , pointer TEXT, subtreepointer TEXT, CONSTRAINT unique_position UNIQUE(ruleid, sequence));
+# CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
 def OutputRuleDB():
     cur = DBCon.cursor()
     for RuleFile in RuleGroupDict:

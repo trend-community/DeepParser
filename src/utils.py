@@ -32,6 +32,7 @@ IMPOSSIBLESTRINGRP = "@#$%@rightparenthesis@"
 IMPOSSIBLESTRINGSQ = "@#$%@singlequote@"
 IMPOSSIBLESTRINGCOLN = "@#$%@coln@"
 IMPOSSIBLESTRINGEQUAL = "@#$%@equal@"
+IMPOSSIBLESTRINGSLASH = "@#$%@slash@"   #for the norms only.
 
 from enum import Enum
 class LexiconLookupSource(Enum):
