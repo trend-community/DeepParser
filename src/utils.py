@@ -1,6 +1,7 @@
 import logging, re, json, jsonpickle, configparser, os
 import sqlite3
 from functools import lru_cache
+import atexit
 
 
 ParserConfig = configparser.ConfigParser()
@@ -66,6 +67,7 @@ def InitGlobalFeatureID():
 
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
 
+
 # return -1 if failed. Should throw error?
 @lru_cache(1000000)
 def SearchPair(string, tagpair, Reverse=False):
@@ -102,6 +104,7 @@ def _SeparateComment(line):
         return line, ""
     else:
         return line[:SlashLocation].strip(), line[SlashLocation+2:].strip()
+
 
 @lru_cache(50000)
 def SeparateComment(multiline):
@@ -154,19 +157,18 @@ def RemoveExcessiveSpace(Content):
     r = re.compile("\s*>", re.MULTILINE)
     Content = r.sub(">", Content)
 
-    Content = Content.strip(";")
+    Content = Content.strip(";")    # ";" sign at the end of rule is not useful.
 
     return Content
-
 
 
 SignsToIgnore = "{};"
 Pairs = ['[]', '()', '""', '\'\'', '//']
 
-@lru_cache(50000)
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
 #   close at a space, or starting of next token.
+@lru_cache(50000)
 def SearchToEnd(string, Reverse=False):
     if not string:      # if it is empty
         return 0
@@ -261,4 +263,31 @@ def LastItemIn2DArray(xlist, array):
                 return array[i][j]
     return None
 
-DBCon = sqlite3.connect('../data/parser.db')
+
+def InitDB():
+    global DBCon
+    DBCon = sqlite3.connect('../data/parser.db')
+    cur = DBCon.cursor()
+    cur.execute("PRAGMA synchronous=OFF;")
+    cur.execute("PRAGMA journal_mode=WAL;")
+    cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
+    cur.close()
+    DBCon.commit()
+    logging.info("DBCon Init")
+    atexit.register(CloseDB)
+
+def CloseDB():
+    DBCon.commit()
+    DBCon.close()
+    logging.info("DBCon closed.")
+
+# try:
+#     if not DBCon:
+#         InitDB()    #initialize this
+# except NameError:
+#     DBCon = None
+#     InitDB()
+
+
+DBCon = None
+InitDB()
