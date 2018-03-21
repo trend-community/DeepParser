@@ -827,10 +827,6 @@ def LoadRules(RuleLocation):
         try:
             with open(RuleLocation, encoding="utf-8") as RuleFile:
                 for line in RuleFile:
-                    # commentLocation = line.find("//")
-                    # if commentLocation>=0:
-                    #     line = line[:commentLocation]   #remove anything after //
-
                     line = line.strip().replace("：", ":")
                     if not line:
                         continue
@@ -847,15 +843,31 @@ def LoadRules(RuleLocation):
         except UnicodeError :
             logging.error("Error when processing " + RuleFileName)
             logging.error("Currently rule=" + rule)
-        UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
-        if os.path.exists(UnitTestFileName):
-            # First delete the unit test of current file to have clean plate
-            del rulegroup.UnitTest[:]
-            with open(UnitTestFileName, encoding="utf-8") as RuleFile:
-                for line in RuleFile:
-                    RuleName, TestSentence = SeparateComment(line)
-                    unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
-                    rulegroup.UnitTest.append(unittest)
+        # UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
+        # if os.path.exists(UnitTestFileName):
+        #     # First delete the unit test of current file to have clean plate
+        #     del rulegroup.UnitTest[:]
+        #     with open(UnitTestFileName, encoding="utf-8") as RuleFile:
+        #         for line in RuleFile:
+        #             RuleName, TestSentence = SeparateComment(line)
+        #             unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
+        #             rulegroup.UnitTest.append(unittest)
+
+        while _ExpandRuleWildCard_List(rulegroup.RuleList):
+            pass
+
+        Modified = True
+        while Modified:
+            Modified = _ExpandParenthesis(rulegroup.RuleList)
+            Modified = _ExpandOrBlock(rulegroup.RuleList) or Modified
+
+        while _ExpandRuleWildCard_List(rulegroup.RuleList):
+            pass
+
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        _PreProcess_CompileHash(rulegroup.RuleList)
+        rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: len(x.Tokens), reverse=True)
+        _OutputRuleDB(rulegroup)
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
     logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
@@ -879,19 +891,6 @@ def RuleFileOlderThanDB(RuleLocation):
 
     logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
     return FileDiskTime < FileDBTime
-
-    # strsql = "f(rulefileid, comment, body, status, norms, createtime, verifytime) VALUES(?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-    # cur.execute(strsql, [rulefileid, self.comment, self.body(), 1, '/'.join([x if x else '' for x in self.norms])])
-    # resultid = cur.lastrowid
-    # for i in range(len(self.Tokens)):
-    #     strsql = "INSERT into rulenodes (ruleid, sequence, matchbody, action) values(?, ?, ?, ?)"
-    #     cur.execute(strsql, [resultid, i, self.Tokens[i].word, self.Tokens[i].action])
-    # for i in range(len(self.Chunks)):
-    #     strsql = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
-    #     cur.execute(strsql, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
-    #                          self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
-    #                          self.Chunks[i].HeadOffset, self.Chunks[i].Action
-    #                          ])
 
 
 def LoadRulesFromDB(rulegroup):
@@ -942,7 +941,6 @@ def LoadRulesFromDB(rulegroup):
             rule.Chunks.append(chunk)
 
         rulegroup.RuleList.append(rule)
-
 
     strsql = "update rulefiles set verifytime=DATETIME('now') where filelocation=?"
     cur.execute(strsql, [rulegroup.FileName,])
@@ -1075,18 +1073,18 @@ def _ExpandRuleWildCard_List(OneList):
 
     return Modified
 
-
-def ExpandRuleWildCard():
-    Modified = False
-    for RuleFile in RuleGroupDict:
-        rg = RuleGroupDict[RuleFile]
-        if rg.LoadedFromDB:
-            continue
-        Modified = _ExpandRuleWildCard_List(rg.RuleList) or Modified
-
-    if Modified:
-        logging.info("ExpandRuleWildCard next level.")
-        ExpandRuleWildCard()  # recursive call itself to finish all.
+#
+# def ExpandRuleWildCard():
+#     Modified = False
+#     for RuleFile in RuleGroupDict:
+#         rg = RuleGroupDict[RuleFile]
+#         if rg.LoadedFromDB:
+#             continue
+#         Modified = _ExpandRuleWildCard_List(rg.RuleList) or Modified
+#
+#     if Modified:
+#         logging.info("ExpandRuleWildCard next level.")
+#         ExpandRuleWildCard()  # recursive call itself to finish all.
 
 
 def ExpandParenthesisAndOrBlock():
@@ -1460,34 +1458,6 @@ def _ExpandOrToken(OneList):
         return False
 
 
-def PreProcess_CheckFeatures():
-    for RuleFile in RuleGroupDict:
-        logging.info("PreProcessing " + RuleFile)
-        rg = RuleGroupDict[RuleFile]
-        if rg.LoadedFromDB:
-            continue
-
-        _PreProcess_CheckFeaturesAndCompileChunk(rg.RuleList)
-
-def PreProcess_CompileHash():
-    for RuleFile in RuleGroupDict:
-        logging.info("PreProcessing " + RuleFile)
-        rg = RuleGroupDict[RuleFile]
-        if rg.LoadedFromDB:
-            continue
-
-        _PreProcess_CompileHash(rg.RuleList)
-
-
-def SortByLength():
-    for RuleFile in RuleGroupDict:
-        logging.info("Sorting " + RuleFile)
-        rg = RuleGroupDict[RuleFile]
-        if rg.LoadedFromDB:
-            continue
-
-        rg.RuleList = sorted(rg.RuleList, key = lambda x: len(x.Tokens), reverse=True)
-
 
 # Check the rules. If it is a stem, not a feature, but omit quote
 #   then we add quote;
@@ -1618,7 +1588,7 @@ def OutputRuleFiles(FolderLocation):
         with open(utFileLocation, "w", encoding="utf-8") as writer:
             writer.write(utoutput)
 
-    OutputRuleDB()
+    #OutputRuleDB()
 
 #tablefields and values are lists.
 def DBInsertOrGetID(tablename, tablefields, values):
@@ -1636,6 +1606,34 @@ def DBInsertOrGetID(tablename, tablefields, values):
     return resultid
 
 
+def _OutputRuleDB(rulegroup):
+    cur = DBCon.cursor()
+    startdatetime = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+    strsql = "SELECT ID from rulefiles where filelocation=?  limit 1"
+    cur.execute(strsql, [rulegroup.FileName, ])
+    resultrecord = cur.fetchone()
+    if resultrecord:
+        rulefileid = resultrecord[0]
+        strsql = "update rulefiles set verifytime=DATETIME('now') where ID=?"
+        cur.execute(strsql, [rulefileid, ])
+    else:
+        strsql = "INSERT into rulefiles (filelocation, createtime, verifytime) VALUES(?, DATETIME('now'), DATETIME('now'))"
+        cur.execute(strsql, [rulegroup.FileName, ])
+        rulefileid = cur.lastrowid
+
+    for rule in rulegroup.RuleList:
+        rule.DBSave(rulefileid)
+        # if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
+        #    update the verifytime, and status.
+        # if there is no same body, create everything.
+        # Aftter one iteration, find the rule that the verifytime is old, change status to disable them.
+
+    strsql = "UPDATE ruleinfo set status=-1 where rulefileid=? and verifytime<?"
+    cur.execute(strsql, [rulefileid, startdatetime])
+    cur.close()
+    DBCon.commit()
+
 #sqlite3 parser.db
 ### ruleinfo.body is the body part of each token. for unique comparison.
 # CREATE TABLE rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
@@ -1644,32 +1642,7 @@ def DBInsertOrGetID(tablename, tablefields, values):
 # CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
 # CREATE TABLE rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , pointer TEXT, subtreepointer TEXT, CONSTRAINT unique_position UNIQUE(ruleid, sequence));
 # CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
-def OutputRuleDB():
-    cur = DBCon.cursor()
-    for RuleFile in RuleGroupDict:
-        rg = RuleGroupDict[RuleFile]
-        if rg.LoadedFromDB:     #during the loading, compare file modify time with verifytime in db. If the file is not modified, load the rulegroup from db.
-            continue
-        strsql = "SELECT ID from rulefiles where filelocation=?  limit 1"
-        cur.execute(strsql, [rg.FileName,])
-        resultrecord = cur.fetchone()
-        if resultrecord:
-            rulefileid = resultrecord[0]
-            strsql = "update rulefiles set verifytime=DATETIME('now') where ID=?"
-            cur.execute(strsql, [rulefileid, ])
-        else:
-            strsql = "INSERT into rulefiles (filelocation, createtime, verifytime) VALUES(?, DATETIME('now'), DATETIME('now'))"
-            cur.execute(strsql, [rg.FileName,])
-            rulefileid = cur.lastrowid
 
-        for rule in rg.RuleList:
-            rule.DBSave(rulefileid)
-            #if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
-            #    update the verifytime, and status.
-            # if there is no same body, create everything.
-            #Aftter one iteration, find the rule that the verifytime is old, change status to disable them.
-
-    DBCon.commit()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -1697,12 +1670,12 @@ if __name__ == "__main__":
 
     # LoadRules("../../fsa/X/180NPx.txt")
 
-    ExpandRuleWildCard()
-    ExpandParenthesisAndOrBlock()
-    ExpandRuleWildCard()
-    PreProcess_CheckFeatures()
-    PreProcess_CompileHash()
-    SortByLength()
+    # ExpandRuleWildCard()
+    # ExpandParenthesisAndOrBlock()
+    # ExpandRuleWildCard()
+    # PreProcess_CheckFeatures()
+    # PreProcess_CompileHash()
+    # SortByLength()
 
     # print (OutputRules("concise"))
     OutputRuleFiles("../compiled/")

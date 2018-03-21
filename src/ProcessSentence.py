@@ -376,12 +376,12 @@ def LoadCommon():
             Rulefile = os.path.join(RuleFolder, Rulefile)
             Rules.LoadRules(Rulefile)
 
-    Rules.ExpandRuleWildCard()
-    Rules.ExpandParenthesisAndOrBlock()
-    Rules.ExpandRuleWildCard()
-    Rules.PreProcess_CheckFeatures()
-    Rules.PreProcess_CompileHash()
-    Rules.SortByLength()
+    # Rules.ExpandRuleWildCard()
+    # Rules.ExpandParenthesisAndOrBlock()
+    # Rules.ExpandRuleWildCard()
+    # Rules.PreProcess_CheckFeatures()
+    # Rules.PreProcess_CompileHash()
+    # Rules.SortByLength()
 
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
