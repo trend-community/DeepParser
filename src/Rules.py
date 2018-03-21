@@ -103,7 +103,7 @@ class RuleToken(object):
         output += self.pointer
         t = self.word
         if self.action:
-            t = t.replace("]", ":" + self.action + "]")
+            t = t.replace("]", "ACTION" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])
@@ -691,14 +691,14 @@ def ProcessTokens(Tokens):
                     if actionMatch:
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
-        #
-        # if "(" in node.word and ":" in node.word:
-        #     ActionPosition = node.word.find(":")
-        #
-        #     if ")" not in node.word[ActionPosition:]:
-        #         logging.info("separate action")
-        #         node.word = node.word[:ActionPosition] + "]"
-        #         node.action = node.word[ActionPosition+1:].rstrip("]")
+
+        if "(" in node.word and ":" in node.word:
+            ActionPosition = node.word.find(":")
+
+            if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
+                logging.info("separate action")
+                node.action = node.word[ActionPosition+1:].rstrip("]")
+                node.word = node.word[:ActionPosition] + "]"
 
         if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
@@ -1142,15 +1142,16 @@ def _RemoveExcessiveParenthesis(token):
 
 def _ExpandParenthesis(OneList):
     Modified = False
+    RemovedExcessive = False
     for rule in OneList:
         if len(rule.RuleName) > 400:
             logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
             continue
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
+            if  _RemoveExcessiveParenthesis(rule.Tokens[tokenindex]):
+                RemovedExcessive = True
             token = rule.Tokens[tokenindex]
-            if  _RemoveExcessiveParenthesis(token):
-                Expand = True
 
             if (token.word.startswith("(") and len(token.word) == 2 + SearchPair(token.word[1:], "()")) \
                     or (token.word.startswith("[(") and len(token.word) == 4 + SearchPair(token.word[2:], "()")):
@@ -1190,7 +1191,8 @@ def _ExpandParenthesis(OneList):
             OneList.remove(rule)
             Modified = True
 
-
+    if RemovedExcessive:
+        Modified = True
     return Modified
     # if Modified:
     #     logging.info("\tExpandParenthesis next level.")
