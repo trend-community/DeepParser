@@ -103,7 +103,7 @@ class RuleToken(object):
         output += self.pointer
         t = self.word
         if self.action:
-            t = t.replace("]", "ACTION" + self.action + "]")
+            t = t.replace("]", ":" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])
@@ -205,6 +205,12 @@ class Rule:
             return remaining
         ProcessTokens(self.Tokens)
 
+        if len(self.Tokens) == 0:
+            logging.error("There is no rule set for:" + self.RuleName)
+            self.RuleName = ""
+            self.RuleContent = ""
+            return remaining
+
         if self.Tokens[0].StartChunk:
             UniversalToken = RuleToken()
             UniversalToken.word = '[]'    #make it universal
@@ -273,17 +279,19 @@ class Rule:
             strsql = "DELETE from rulechunks where ruleid=?"
             cur.execute(strsql, [resultid, ])
         else:
-            strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, norms, comment, createtime, verifytime) " \
-                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1, '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.comment])
+            strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
+                        "norms, origin, comment, createtime, verifytime) " \
+                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1,
+                                 '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
             resultid = cur.lastrowid
 
+        strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer) values(?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Tokens)):
-            strsql = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer) values(?, ?, ?, ?, ?, ?)"
-            cur.execute(strsql, [resultid, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
+            cur.execute(strsql_node, [resultid, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
+        strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Chunks)):
-            strsql = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
-            cur.execute(strsql, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
+            cur.execute(strsql_chunk, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
                                  self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
                                  self.Chunks[i].HeadOffset, self.Chunks[i].Action
                                  ])
@@ -677,6 +685,12 @@ def ProcessTokens(Tokens):
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
+        ActionPosition = node.word.find(":")
+        if ActionPosition > 0:
+            if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
+                node.action = node.word[ActionPosition+1:].rstrip("]")
+                node.word = node.word[:ActionPosition] + "]"
+
         if "(" not in node.word and ":" in node.word:
             orblocks = re.split("\|\[", node.word)
             if len(orblocks) > 1:
@@ -692,15 +706,8 @@ def ProcessTokens(Tokens):
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
 
-        if "(" in node.word and ":" in node.word:
-            ActionPosition = node.word.find(":")
 
-            if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
-                logging.info("separate action")
-                node.action = node.word[ActionPosition+1:].rstrip("]")
-                node.word = node.word[:ActionPosition] + "]"
-
-        if node.word[0] == '[' and ChinesePattern.match(node.word[1]):
+        if node.word and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
         node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
@@ -875,7 +882,7 @@ def LoadRules(RuleLocation):
 
 
 def RuleFileOlderThanDB(RuleLocation):
-    return False
+    #return False
     cur = DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
@@ -904,8 +911,12 @@ def LoadRulesFromDB(rulegroup):
     rulefileid = resultrecord[0]
 
     #order by tokenlength desc, and by hits desc.
-    strsql = "SELECT id, name, strtokenlength, norms, comment from ruleinfo where rulefileid=? order by tokenlength desc"
-    cur.execute(strsql, [rulefileid, ])
+    strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment 
+                    from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? group by r.id 
+                        order by tokenlength desc, count(h.ruleid ) desc"""
+    strsql_node = "SELECT matchbody, action, pointer, subtreepointer from rulenodes where ruleid=? order by sequence"
+    strsql_chunk = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
+    cur.execute(strsql_rule, [rulefileid, ])
     rows = cur.fetchall()
     for row in rows:
         rule = Rule()
@@ -913,11 +924,14 @@ def LoadRulesFromDB(rulegroup):
         rule.ID = int(row[0])
         rule.RuleName = row[1]
         rule.StrTokenLength = int(row[2])
-        rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") if x else None for x in row[3].split("/")]
-        rule.comment = row[4]
+        if row[3]:
+            rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") for x in row[3].split("/")]
+        else:
+            rule.norms = []
+        rule.Origin = row[4]
+        rule.comment = row[5]
 
-        strsql = "SELECT matchbody, action, pointer, subtreepointer from rulenodes where ruleid=? order by sequence"
-        cur.execute(strsql, [rule.ID,])
+        cur.execute(strsql_node, [rule.ID,])
         noderows = cur.fetchall()
         for noderow in noderows:
             token = RuleToken()
@@ -927,8 +941,7 @@ def LoadRulesFromDB(rulegroup):
             token.SubtreePointer = noderow[3]
             rule.Tokens.append(token)
 
-        strsql = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
-        cur.execute(strsql, [rule.ID,])
+        cur.execute(strsql_chunk, [rule.ID,])
         chunkrows = cur.fetchall()
         for chunkrow in chunkrows:
             chunk = RuleChunk()
@@ -1131,9 +1144,9 @@ def _RemoveExcessiveParenthesis(token):
         else:
             after = ""
 
-        logging.info("Removing excessive parenthesis in: " + token.word)
+        #logging.info("Removing excessive parenthesis in: " + token.word)
         token.word = before + token.word[StartParenthesesPosition+1:EndParenthesesPosition] + after
-        logging.info("\t\t as: " + token.word)
+        #logging.info("\t\t as: " + token.word)
         return True
     else:
         return False
@@ -1458,7 +1471,6 @@ def _ExpandOrToken(OneList):
         return False
 
 
-
 # Check the rules. If it is a stem, not a feature, but omit quote
 #   then we add quote;
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
@@ -1476,9 +1488,10 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
 def _PreProcess_CompileHash(OneList):
     for rule in OneList:
         rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
-                                                  and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else None
+                                                  and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else ''
                       for token in rule.Tokens if not token.SubtreePointer ]
-
+        if len("".join(rule.norms)) == 0:
+            rule.norms = []
 
 def _CheckFeature_returnword(word):
     try:
@@ -1590,21 +1603,6 @@ def OutputRuleFiles(FolderLocation):
 
     #OutputRuleDB()
 
-#tablefields and values are lists.
-def DBInsertOrGetID(tablename, tablefields, values):
-    cur = DBCon.cursor()
-    strsql = "SELECT ID from " + tablename + " where " + " AND ".join(field + "=?" for field in tablefields ) + "  limit 1"
-    cur.execute(strsql, values)
-    resultrecord = cur.fetchone()
-    if resultrecord:
-        resultid = resultrecord[0]
-    else:
-        strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
-        cur.execute(strsql, values)
-        resultid = cur.lastrowid
-    cur.close()
-    return resultid
-
 
 def _OutputRuleDB(rulegroup):
     cur = DBCon.cursor()
@@ -1641,7 +1639,7 @@ def _OutputRuleDB(rulegroup):
 # CREATE TABLE sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
 # CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
 # CREATE TABLE rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , pointer TEXT, subtreepointer TEXT, CONSTRAINT unique_position UNIQUE(ruleid, sequence));
-# CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
+# CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, origin TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
 
 
 if __name__ == "__main__":

@@ -86,4 +86,10 @@ if __name__ == "__main__":
         p = pstats.Stats('restats')
         p.sort_stats('time').print_stats(30)
 
+        # import os
+        # import psutil
+        #
+        # process = psutil.Process(os.getpid())
+        # print(process.memory_info().rss)
+
     #Rules.OutputRuleFiles("../temp/rule.after/")

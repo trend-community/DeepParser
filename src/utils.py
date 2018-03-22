@@ -268,8 +268,8 @@ def InitDB():
     global DBCon
     DBCon = sqlite3.connect('../data/parser.db')
     cur = DBCon.cursor()
-    cur.execute("PRAGMA synchronous=OFF;")
-    cur.execute("PRAGMA journal_mode=WAL;")
+    cur.execute("PRAGMA synchronous=2;")
+    cur.execute("PRAGMA journal_mode=0;")
     cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
     cur.close()
     DBCon.commit()
@@ -291,3 +291,18 @@ def CloseDB():
 
 DBCon = None
 InitDB()
+
+#tablefields and values are lists.
+def DBInsertOrGetID(tablename, tablefields, values):
+    cur = DBCon.cursor()
+    strsql = "SELECT ID from " + tablename + " where " + " AND ".join(field + "=?" for field in tablefields ) + "  limit 1"
+    cur.execute(strsql, values)
+    resultrecord = cur.fetchone()
+    if resultrecord:
+        resultid = resultrecord[0]
+    else:
+        strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
+        cur.execute(strsql, values)
+        resultid = cur.lastrowid
+    cur.close()
+    return resultid

@@ -147,8 +147,8 @@ def ListMatch(list1, list2):
     if len(list1) != len(list2):
         logging.error("Coding error. The size should be the same in ListMatch")
         return False
-    for i in range(len(list1)):
-        if list2[i] is None or \
+    for i in range(len(list2)):
+        if list2[i] == '' or \
             list1[i][0] == list2[i] or \
                 len(list1[i]) == 2 and list1[i][1] == list2[i]:
             pass
@@ -197,7 +197,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
 
-            if not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
+            if rule.norms and not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
                 continue
 
             if WinningRuleSize < len(rule.Tokens):
@@ -211,10 +211,10 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     #     break
         if WinningRule:
             try:
-                if WinningRule.RuleName not in WinningRules:
-                    WinningRules[WinningRule.RuleName] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                if WinningRule.ID not in WinningRules:
+                    WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
                 else:
-                    WinningRules[WinningRule.RuleName] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                    WinningRules[WinningRule.ID] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 strnorms = strtokenlist.norms()     #the list is updated.
             except RuntimeError as e:
@@ -294,11 +294,15 @@ def LexicalAnalyze(Sentence):
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
+        SentenceID = DBInsertOrGetID("sentences", ["sentence", ] , [Sentence, ] )
+        #I can compare the "verify" time with lexicon/rule file. But now we do not have
+        #   lexicon file time (assume it is changing all the time), so ignore this part now
+        #   until the lexicon/rule are more stable.
+
         NodeList = Tokenization.Tokenize(Sentence)
         if not NodeList or NodeList.size == 0:
             return None, None
-        logging.debug("-Start ApplyLexiconToNodes")
-        #print("after tokenize" + OutputStringTokens_oneliner(NodeList))
+
         Lexicon.ApplyLexiconToNodes(NodeList)
         #print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
@@ -306,6 +310,13 @@ def LexicalAnalyze(Sentence):
 
         WinningRules = DynamicPipeline(NodeList)
 
+        cur = DBCon.cursor()
+        strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
+                        VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
+        for ruleid in WinningRules:
+            cur.execute(strsql, [SentenceID, ruleid])
+        cur.close()
+        DBCon.commit()
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
@@ -391,6 +402,7 @@ def LoadCommon():
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
     logging.debug("Done of LoadCommon!")
+    DBCon.commit()
         #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
