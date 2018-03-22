@@ -182,7 +182,8 @@ def ListMatch_UsingCache(list1, list2):
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
     i = 0
-    logging.debug("Matching using file:" + RuleFileName)
+    logging.info("Matching using file:" + RuleFileName)
+    counter = 0
 
     strtoken = strtokenlist.head
     strnorms = strtokenlist.norms()
@@ -197,10 +198,13 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
 
+
             if rule.norms and not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
                 continue
 
             if WinningRuleSize < len(rule.Tokens):
+                counter += 1
+                logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(len(rule.Tokens)) + " |" + rule.Origin )
                 result = HeadMatch(strtokenlist, i, rule.Tokens)
                 if result:
                     WinningRule = rule
@@ -210,6 +214,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     #     logging.debug("Found a winning rule that matchs up to the end of the string.")
                     #     break
         if WinningRule:
+            logging.info("Found winning rule at counter: " + str(counter))
             try:
                 if WinningRule.ID not in WinningRules:
                     WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
@@ -218,7 +223,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
                 strnorms = strtokenlist.norms()     #the list is updated.
             except RuntimeError as e:
-                if e.args and e.args[0] == "Rule error":
+                if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
                     rulegroup.RuleList.remove(WinningRule)
                 else:
@@ -408,10 +413,10 @@ def LoadCommon():
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "能油比高是优点还是缺点？"
+    target = "iOS5.0的输入法好用了些![酷]"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')

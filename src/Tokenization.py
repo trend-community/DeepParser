@@ -212,8 +212,8 @@ class SentenceLinkedList:
 
         self.size = self.size - count + 1
 
-        logging.debug("NewNode.text: " + NewNode.text + " features:" + str(NewNode.features))
-        logging.debug("combined as:" + str(NewNode))
+        #logging.debug("NewNode.text: " + NewNode.text + " features:" + str(NewNode.features))
+        #logging.debug("combined as:" + str(NewNode))
         return NewNode
 
     def root(self, KeepOrigin=False):

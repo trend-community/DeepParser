@@ -101,7 +101,7 @@ class RuleToken(object):
         for _ in range(self.StartChunk):
             output += "<"
         output += self.pointer
-        t = self.word
+        t = "[" + self.word.strip("[|]") + "]"
         if self.action:
             t = t.replace("]", ":" + self.action + "]")
         output += t
@@ -911,9 +911,12 @@ def LoadRulesFromDB(rulegroup):
     rulefileid = resultrecord[0]
 
     #order by tokenlength desc, and by hits desc.
-    strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment 
-                    from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? group by r.id 
-                        order by tokenlength desc, count(h.ruleid ) desc"""
+    strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
+                    from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? group by r.id
+                        order by tokenlength desc, count(h.ruleid ) desc """
+    # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
+    #                 from ruleinfo r    where rulefileid=?
+    #                     order by tokenlength desc"""
     strsql_node = "SELECT matchbody, action, pointer, subtreepointer from rulenodes where ruleid=? order by sequence"
     strsql_chunk = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
     cur.execute(strsql_rule, [rulefileid, ])
@@ -1375,7 +1378,7 @@ def _ProcessOrToken(word):
     spaceseparated = word.split(" ")
     i = 0
     for i in range(len(spaceseparated)):
-        if spaceseparated[i].find("'|")>0:
+        if spaceseparated[i].find("'|")>0 or spaceseparated[i].find("/|")>0 or spaceseparated[i].find("\"|")>0:
             #this is the piece we need to separate
             break
     if i > 0:
@@ -1389,13 +1392,13 @@ def _ProcessOrToken(word):
         rightpieces = ""
 
     orlist = spaceseparated[i].split("|")
-    normlist = [x for x in orlist if len(x)>2 and x[0]=="'" and x[-1]=="'"]
-    notnormlist = set(orlist) - set(normlist)
+    textlist = [x for x in orlist if len(x)>2 and (x[0]=="'" and x[-1]=="'" or x[0]=="/" and x[-1]=="/"  or x[0]=="\"" and x[-1]=="\"")]
+    nottextlist = set(orlist) - set(textlist)
 
-    if notnormlist:
-        orlist = ["|".join(sorted(notnormlist)) ] + normlist
+    if nottextlist:
+        orlist = ["|".join(sorted(nottextlist)) ] + textlist
     else:
-        orlist = normlist
+        orlist = textlist
 
     return orlist, "["+leftpieces, rightpieces+"]"
 
@@ -1425,7 +1428,25 @@ def _ExpandOrToken(OneList):
                     token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
                     logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
 
-            orIndex = token.word.find("'|") + token.word.find("|'")
+            #Process  a|b|/c|d|e/|f. Change it to a|b|/c/|/d/|/e/|f
+            ormatch = re.match("^(.*/)(.*?)(/.*)$", token.word)
+            if ormatch:
+                innerquote = ormatch.group(2)
+                if "|" in innerquote and "/" not in innerquote:
+                    innerquote2 = innerquote.replace("|", "/|/")
+                    token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
+                    logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+
+                # Process  a|b|/c|d|e/|f. Change it to a|b|/c/|/d/|/e/|f
+            ormatch = re.match("^(.*\")(.*?)(\".*)$", token.word)
+            if ormatch:
+                innerquote = ormatch.group(2)
+                if "|" in innerquote and "\"" not in innerquote:
+                    innerquote2 = innerquote.replace("|", "\"|\"")
+                    token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
+                    logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+
+            orIndex = token.word.find("'|") + token.word.find("|'") + token.word.find("/|") + token.word.find("|/")
             if orIndex < 0:
                 continue
 
@@ -1493,14 +1514,15 @@ def _PreProcess_CompileHash(OneList):
         if len("".join(rule.norms)) == 0:
             rule.norms = []
 
+        for token in rule.Tokens:   #remove extra [] in match body.
+            token.word = token.word.strip("[|]")
+
 def _CheckFeature_returnword(word):
     try:
         if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
             word = word[1:-1].strip()
-
-        _, matchtype = LogicOperation_CheckPrefix(word, 'unknown')
+        _, matchtype = LogicOperation_CheckPrefix(word)
     except RuntimeError as e:
-
         logging.error(str(e))
         return ''
 
@@ -1508,7 +1530,6 @@ def _CheckFeature_returnword(word):
         return ''
 
     prefix = ""
-
     if word[0] == "!":
         prefix = "!"
         word = word.lstrip("!")
@@ -1550,7 +1571,7 @@ def _CheckFeature_returnword(word):
 
             newword = ""
             for OrBlock in OrBlocks:
-                _, mtype = LogicOperation_CheckPrefix(OrBlock, "unknown")
+                _, mtype = LogicOperation_CheckPrefix(OrBlock)
                 if mtype == "unknown" and OrBlock[0] != "!" and FeatureOntology.GetFeatureID(OrBlock) == -1:
                     # logging.warning("Will treat this as a stem:" + OrBlock)
                     newword += "'" + OrBlock + "'|"
