@@ -87,6 +87,7 @@ class SingleInstance:
                     os.unlink(self.lockfile)
         except Exception as e:
             if logger:
+                logger.warning("singleton error:")
                 logger.warning(e)
             else:
                 print("Unloggable error: %s" % e)

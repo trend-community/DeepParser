@@ -76,20 +76,18 @@ if __name__ == "__main__":
 
     ProcessSentence.LoadCommon()
 
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        ProcessFile(args.inputfile)
-    else:   #debugging modef
-        # ProcessFile(UnitTestFileName)
-        # pass
-        import cProfile, pstats
-        cProfile.run("ProcessFile(args.inputfile)", 'restats')
-        p = pstats.Stats('restats')
-        p.sort_stats('time').print_stats(30)
 
-        # import os
-        # import psutil
-        #
-        # process = psutil.Process(os.getpid())
-        # print(process.memory_info().rss)
+    # ProcessFile(UnitTestFileName)
+    # pass
+    import cProfile, pstats
+    cProfile.run("ProcessFile(args.inputfile)", 'restats')
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(30)
+
+    # import os
+    # import psutil
+    #
+    # process = psutil.Process(os.getpid())
+    # print(process.memory_info().rss)
 
     #Rules.OutputRuleFiles("../temp/rule.after/")

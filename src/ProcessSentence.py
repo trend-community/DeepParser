@@ -123,7 +123,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         if rule.Tokens[i].action:
             if rule.Tokens[i].SubtreePointer:
                 SubtreePointer = rule.Tokens[i].SubtreePointer
-                logging.debug("Start looking for Subtree: " + SubtreePointer)
+                #logging.debug("Start looking for Subtree: " + SubtreePointer)
                 token = FindPointerNode(strtokens, i + StartPosition - VirtualRuleToken, rule.Tokens, i, Pointer=SubtreePointer)
             else:
                 token = strtokens.get(i + StartPosition - VirtualRuleToken)
@@ -181,8 +181,7 @@ def ListMatch_UsingCache(list1, list2):
     ListMatchCache[l_hash] = True
     return True
 
-# HeadMatchCache = {}
-# RuleSizeLimit = 6
+
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
     i = 0
@@ -194,7 +193,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     while strtoken:
         # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
-        logging.debug("Checking tokens start from:" + strtoken.text)
+        #logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
@@ -204,18 +203,12 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 
             if rule.norms and not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
                 continue
-
-            if WinningRuleSize < len(rule.Tokens):
-                counter += 1
-                logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(len(rule.Tokens)) + " |" + rule.Origin )
-                result = HeadMatch(strtokenlist, i, rule.Tokens)
-                if result:
-                    WinningRule = rule
-                    WinningRuleSize = len(WinningRule.Tokens)
-                    break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
-                    # if WinningRuleSize + i >= strtokenlist.size:
-                    #     logging.debug("Found a winning rule that matchs up to the end of the string.")
-                    #     break
+            counter += 1
+            #logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(len(rule.Tokens)) + " |" + rule.Origin )
+            result = HeadMatch(strtokenlist, i, rule.Tokens)
+            if result:
+                WinningRule = rule
+                break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
         if WinningRule:
             logging.info("Found winning rule at counter: " + str(counter))
             try:

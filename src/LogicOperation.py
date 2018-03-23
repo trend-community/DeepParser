@@ -207,7 +207,7 @@ def FindSubtree(root, pointers):
             return FindSubtree(son, pointers)
 
     #if come to here, then no relation and no head is found.
-    logging.debug("This string has no relation of:" + str(pointers))
+    #logging.debug("This string has no relation of:" + str(pointers))
     return None
 
 CombinedPattern = re.compile('[| !]')
@@ -217,10 +217,10 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition):
 
     if RuleTokens[RulePosition].SubtreePointer:
         SubtreePointer = RuleTokens[RulePosition].SubtreePointer
-        logging.debug("Start looking for Subtree: " + SubtreePointer)
+        #logging.debug("Start looking for Subtree: " + SubtreePointer)
         strToken = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
         if not strToken:
-            logging.debug("there is no such pointer.")
+            #logging.debug("there is no such pointer.")
             return False
     else:
         strToken = StrTokenList.get(StrPosition)
@@ -306,13 +306,9 @@ def LogicMatchFeatures(rule, features):
 
     if "|" in rule:
         OrBlocks = [x.strip() for x in rule.split("|") if x]
-        if len(OrBlocks) >= 1:
-            for OrBlock in OrBlocks:
-                if LogicMatchFeatures(OrBlock, features):
-                    return True
-        else:
-            raise RuntimeError("Why OrBlock is none?")
-
+        for OrBlock in OrBlocks:
+            if LogicMatchFeatures(OrBlock, features):
+                return True
     else:
         featureID = FeatureOntology.GetFeatureID(rule)
         if featureID == -1:

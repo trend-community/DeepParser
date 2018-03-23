@@ -555,7 +555,6 @@ def LexiconLookup(strTokens, lookupsource):
     bestScore = [1 for _ in range(sentenceLenth + 1)]
 
     i = 0
-    logging.info("LexiconLookup " + lookupsource.name + "  size:" + str(len(_LexiconLookupSet[lookupsource])))
 
     pi = strTokens.head
     while pi.next:
