@@ -260,7 +260,7 @@ class Rule:
 
     # body is the part that being used to identify this specific rule. It is also that part to match the rule.
     def body(self):
-        return "".join(t.word for t in self.Tokens)
+        return "/".join(t.word for t in self.Tokens)
 
     # if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
     #    update the verifytime, and status.
@@ -718,18 +718,18 @@ def ProcessTokens(Tokens):
 #     ^.M $
 # Bad characters in action:
 #     )?':
-def FindLastColonWithoutSpecialCharacter(string):
-    index = len(string) - 2
-    while index >= 0:
-        if string[index] == ":":
-            return index
-        if string[index].isalnum() or \
-                        string[index] in "^. $,>+-":
-            index -= 1
-        else:
-            #            logging.warning("not a ligit action: " + string[index] + " in " + string )
-            return -1
-    return -1
+# def FindLastColonWithoutSpecialCharacter(string):
+#     index = len(string) - 2
+#     while index >= 0:
+#         if string[index] == ":":
+#             return index
+#         if string[index].isalnum() or \
+#                         string[index] in "^. $,>+-":
+#             index -= 1
+#         else:
+#             #            logging.warning("not a ligit action: " + string[index] + " in " + string )
+#             return -1
+#     return -1
 
 
 # The previous step already search up to the close tag.
@@ -1089,19 +1089,6 @@ def _ExpandRuleWildCard_List(OneList):
 
     return Modified
 
-#
-# def ExpandRuleWildCard():
-#     Modified = False
-#     for RuleFile in RuleGroupDict:
-#         rg = RuleGroupDict[RuleFile]
-#         if rg.LoadedFromDB:
-#             continue
-#         Modified = _ExpandRuleWildCard_List(rg.RuleList) or Modified
-#
-#     if Modified:
-#         logging.info("ExpandRuleWildCard next level.")
-#         ExpandRuleWildCard()  # recursive call itself to finish all.
-
 
 def ExpandParenthesisAndOrBlock():
     Modified = False
@@ -1153,6 +1140,7 @@ def _RemoveExcessiveParenthesis(token):
         return True
     else:
         return False
+
 
 def _ExpandParenthesis(OneList):
     Modified = False
@@ -1283,8 +1271,6 @@ def _ExpandOrBlock(OneList):
                     else:
                         orIndex += 1    #move the pointer from ] to |
 
-
-
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
             if originBlock is None:
                 logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
@@ -1299,10 +1285,6 @@ def _ExpandOrBlock(OneList):
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
-            #
-            # newtoken = copy.copy(rule.Tokens[tokenindex])
-            # newtoken.word = newtoken.word.replace(originBlock, leftBlock)
-            # newrule.Tokens.append(newtoken)
 
             # Analyze the new word, might be a list of tokens.
             try:

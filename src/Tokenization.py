@@ -1,23 +1,11 @@
 #!/bin/python
-#read a file in main(), then do tokenization.
-import requests
+#Process Sentence tokens.
+
 import string
 import FeatureOntology, Lexicon
 import utils    #for the Feature_...
 from utils import *
 
-
-#class EmptyBase(object): pass
-#
-# def Tokenize(sentence):
-#     global DS
-#     tokens = nltk.word_tokenize(sentence)
-#
-#     for token in tokens:
-#         Element = EmptyBase()
-#         Element.word = token
-#         Element.position = 1
-#         DS.append(Element)
 
 class SentenceLinkedList:
     def __init__(self):
@@ -26,7 +14,7 @@ class SentenceLinkedList:
         self.size = 0
 
     def append(self, node):    #Add to the tail
-        if not self.tail:
+        if not self.head:
             self.head = node
             self.tail = node
         else:
@@ -37,38 +25,39 @@ class SentenceLinkedList:
         self.size += 1
 
     def insert(self, node, position):    #Add to the specific position
-        if not self.tail and position == 0:
-            self.head = node
-            self.tail = node
+        if position == 0:
+            if not self.head:
+                self.head = node
+                self.tail = node
+            else:
+                node.prev = None
+                node.next = self.head
+                self.head.prev = node
+                self.head = node
         elif position == self.size:
-            self.tail.next = node
             node.prev = self.tail
+            self.tail.next = node
             self.tail = node
         else:
             x = self.get(position)
-            if x == self.head:
-                self.head = node
-                node.prev = None
-                node.next = x
-                x.prev = node
-            else:
-                x.prev.next = node
-                node.prev = x.prev
-                node.next = x
-                x.prev = node
+            node.prev = x.prev
+            node.next = x
+            x.prev.next = node
+            x.prev = node
 
         self.size += 1
 
     def remove(self, node):
-
-        if node != self.head:
-            node.prev.next = node.next
-        else:
+        if node == self.head:
             self.head = node.next
-        if node != self.tail:
-            node.next.prev = node.prev
         else:
+            node.prev.next = node.next
+
+        if node == self.tail:
             self.tail = node.prev
+        else:
+            node.next.prev = node.prev
+
         self.size -= 1
 
     def get(self, index):
@@ -79,7 +68,7 @@ class SentenceLinkedList:
             raise RuntimeError("Can't get " + str(index) + " from the sentence!")
             #return None
 
-        if index < self.size/2:
+        if index <= self.size/2:
             p = self.head
             for i in range(index):
                 p = p.next
@@ -126,19 +115,19 @@ class SentenceLinkedList:
     #     a.EndOffset = self.EndOffset
 
 
-
-    def signature(self, start, limit):
-        startnode = self.get(start)
-        p = startnode
-        sig = [ [] for _ in range(limit)]
-        accumulatesig = []
-        for i in range(limit):
-            accumulatesig.append(p.text)
-            accumulatesig.append(p.features)
-            sig[i] = accumulatesig
-            p = p.next
-
-        return sig
+    #
+    # def signature(self, start, limit):
+    #     startnode = self.get(start)
+    #     p = startnode
+    #     sig = [ [] for _ in range(limit)]
+    #     accumulatesig = []
+    #     for i in range(limit):
+    #         accumulatesig.append(p.text)
+    #         accumulatesig.append(p.features)
+    #         sig[i] = accumulatesig
+    #         p = p.next
+    #
+    #     return sig
 
     def newnode(self, start, count):
         #logging.info("new node: start=" + str(start) + " count=" + str(count))
@@ -691,7 +680,7 @@ if __name__ == "__main__":
     Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
     Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
-    x = Tokenize('科普：。，？带你看懂蜀绣冰壶比赛')
+    main_x = Tokenize('科普：。，？带你看懂蜀绣冰壶比赛')
     #old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
 
     import cProfile, pstats

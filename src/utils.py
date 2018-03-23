@@ -27,6 +27,10 @@ FeatureID_SpaceQ = None
 FeatureID_SpaceH = None
 FeatureID_FULLSTRING = None
 
+FeatureID_VB = None
+FeatureID_Ved = None
+FeatureID_Ving = None
+
 IMPOSSIBLESTRING = "@#$%@impossible@"
 IMPOSSIBLESTRINGLP = "@#$%@leftparenthesis@"
 IMPOSSIBLESTRINGRP = "@#$%@rightparenthesis@"
@@ -46,6 +50,7 @@ def InitGlobalFeatureID():
     global FeatureID_JS, FeatureID_JS2, FeatureID_JM2, FeatureID_JM, FeatureID_0
     global FeatureID_CD, FeatureID_punc, FeatureID_SYM, FeatureID_NNP, FeatureID_External
     global FeatureID_OOV,FeatureID_CM, FeatureID_NEW, FeatureID_SpaceQ, FeatureID_SpaceH, FeatureID_FULLSTRING
+    global FeatureID_VB, FeatureID_Ved, FeatureID_Ving
     if not FeatureID_JS2:
         import FeatureOntology
         FeatureID_JS = FeatureOntology.GetFeatureID("JS")
@@ -64,6 +69,9 @@ def InitGlobalFeatureID():
         FeatureID_SpaceQ = FeatureOntology.GetFeatureID("spaceQ")
         FeatureID_SpaceH = FeatureOntology.GetFeatureID("spaceH")
         FeatureID_FULLSTRING = FeatureOntology.GetFeatureID("FULLSTRING")
+        FeatureID_VB = FeatureOntology.GetFeatureID("VB")
+        FeatureID_Ved = FeatureOntology.GetFeatureID("Ved")
+        FeatureID_Ving = FeatureOntology.GetFeatureID("Ving")
 
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
 
@@ -168,7 +176,7 @@ Pairs = ['[]', '()', '""', '\'\'', '//']
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
 #   close at a space, or starting of next token.
-@lru_cache(50000)
+@lru_cache(100000)
 def SearchToEnd(string, Reverse=False):
     if not string:      # if it is empty
         return 0
@@ -213,7 +221,7 @@ def SearchToEnd(string, Reverse=False):
 
 #Return the word before the first "_";
 # If there is no "_", return the whole word
-@lru_cache(50000)
+@lru_cache(100000)
 def GetPrefix(Name):
     match = re.findall("(.*?)_\d", Name)
     if match:
@@ -240,12 +248,12 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
     return output
 
 
-#Replace % and & sign before using "GET" to query webservice.
-def URLEncoding(Sentence):
-    #Sentence = Sentence.replace("%", "%25")
-    #Sentence = Sentence.replace("&", "%26")
-    #Sentence = Sentence.replace("/", "%2F")
-    return Sentence
+# #Replace % and & sign before using "GET" to query webservice.
+# def URLEncoding(Sentence):
+#     #Sentence = Sentence.replace("%", "%25")
+#     #Sentence = Sentence.replace("&", "%26")
+#     #Sentence = Sentence.replace("/", "%2F")
+#     return Sentence
 
 
 def IndexIn2DArray(x, array):
@@ -275,6 +283,7 @@ def InitDB():
     DBCon.commit()
     logging.info("DBCon Init")
     atexit.register(CloseDB)
+
 
 def CloseDB():
     DBCon.commit()

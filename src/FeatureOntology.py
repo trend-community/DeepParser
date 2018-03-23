@@ -4,7 +4,7 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import  operator, sys, requests
+import  sys, requests
 from utils import *
 
 
@@ -12,7 +12,7 @@ _FeatureSet = set()
 _FeatureList = []   #this is populated from FeatureSet. to have featureID.
 _FeatureDict = {}   #this is populated from FeatureSet. for better searching
 _AliasDict = {}
-_FeatureOntology = []
+_FeatureOntologyDict = {}
 NotCopyList = []
 NotShowList = []
 BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC', 'CC', 'DT', 'SYM', 'punc'],
@@ -47,7 +47,7 @@ class OntologyNode:
             output += "\t" + self.Comment
         return output
 
-    def SetRule(self, line):
+    def SetAncestors(self, line):
         code, comment = SeparateComment(line)
         self.Comment = comment
         code = self.ProcessAliasInFeatureFile(code)
@@ -57,7 +57,6 @@ class OntologyNode:
         features = [x.strip() for x in re.split("[,; ]", code) if x]
         openWord = features[0]
         openWordID = GetFeatureID(openWord)
-
 
         TryOldNode = SearchFeatureOntology(openWordID)
         if TryOldNode:
@@ -97,7 +96,7 @@ class OntologyNode:
             realnode = OntologyNode()
             realnode.openWord = realfeature
             realnode.openWordID = realfeatureId
-            _FeatureOntology.append(realnode)
+            _FeatureOntologyDict[realnode.openWordID] = realnode
 
         features = [x.strip() for x in re.split("[,; ]", code) if x]    # the first feature is the last alias.
         lastalias = features[0]
@@ -112,7 +111,7 @@ class OntologyNode:
 
             # find all feature ontology nodes that have alias as ancestor
             #   replace that using the realfeatureId
-            for node in _FeatureOntology:
+            for node in _FeatureOntologyDict.values():
                 if aliasId in node.ancestors:
                     node.ancestors.remove(aliasId)
                     node.ancestors.add(realfeatureId)
@@ -144,19 +143,6 @@ def LoadFeatureSet(featureOncologyLocation):
     _FeatureDict = {f: ID for ID, f in enumerate(_FeatureList)}
 
 
-def LoadFullFeatureList_Deprecate(featureListLocation):
-    global _FeatureList, _FeatureDict
-    _FeatureSet.clear()
-    with open(featureListLocation, encoding="utf-8") as dictionary:
-        for line in dictionary:
-            feature, __ = SeparateComment(line)
-            if len(feature) == 0:
-                continue
-            _FeatureSet.add(feature)
-    _FeatureList = list(sorted(_FeatureSet))
-    _FeatureDict = {f:ID for ID,f in enumerate(sorted(_FeatureSet))}
-
-
 def OutputFeatureSet():
     output = "// ***Feature Set***" + "\n"
     for feature in sorted(_FeatureSet):
@@ -176,9 +162,9 @@ def OutputMissingFeatureSet():
 
 def OutputFeatureOntology():
     output = "//***Ontology***" + "\n"
-    for node in sorted(_FeatureOntology, key=operator.attrgetter('openWord')):
-        if node.ancestors:
-            output += str(node) + "\n"
+    for OpenWord in sorted(_FeatureOntologyDict.keys()):
+        if _FeatureOntologyDict[OpenWord].ancestors:
+            output += str(_FeatureOntologyDict[OpenWord]) + "\n"
     output += "//***Alias***" + "\n"
     for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
         output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"
@@ -194,28 +180,16 @@ def OutputFeatureOntologyFile(FolderLocation):
 
 
 def LoadFeatureOntology(featureOncologyLocation):
-    global _FeatureOntology
-    # pickleLocation = "featureontology.pickle"
-    # if os.path.isfile(pickleLocation):
-    #     with open(pickleLocation, 'rb') as pk:
-    #         _FeatureOntology = pickle.load(pk)
-    #     return
-
     if featureOncologyLocation.startswith("."):
         featureOncologyLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  featureOncologyLocation)
 
-
-    LoadFeatureSet(featureOncologyLocation)
-
+    LoadFeatureSet(featureOncologyLocation) #get feature id for each feature first.
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             node = OntologyNode()
-            node.SetRule(line)
+            node.SetAncestors(line)
             if node.openWordID != -1:
-                _FeatureOntology.append(node)
-
-    # with open(pickleLocation, 'wb') as pk:
-    #     pickle.dump(_FeatureOntology, pk)
+                _FeatureOntologyDict[node.openWordID] = node
 
     LoadAppendixList(featureOncologyLocation)
     InitGlobalFeatureID()
@@ -240,38 +214,19 @@ def LoadAppendixList(featureOncologyLocation):
             NotCopyList.append(GetFeatureID(word))
 
 
-SearchFeatureOntology_Cache = {}
 def SearchFeatureOntology(featureID):
     #print("SearchFeatureOntology ID" + str(featureID))
-    if featureID in SearchFeatureOntology_Cache:
-        return SearchFeatureOntology_Cache[featureID]
-    for node in _FeatureOntology:
-        if node.openWordID == featureID:
-            SearchFeatureOntology_Cache[featureID] = node
-            return node
+    if featureID in _FeatureOntologyDict:
+        return _FeatureOntologyDict[featureID]
     return None
 
 
-GetFeatureID_Cache = {}
 def GetFeatureID(feature):
-    # if _CreateFeatureList:
-    #     _FeatureSet.add(feature)
-    #     return 1
-
-    if feature in GetFeatureID_Cache:
-        return GetFeatureID_Cache[feature]
-
-    if not _FeatureList:
+    if not _FeatureList:    #for some clients that the _FeatureList is not load locally.
         try:
             GetFeatureIDURL = ParserConfig.get("main", "url_larestfulservice") + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
         except IOError:
-            return -1
-
-        try:
-            GetFeatureID_Cache[feature] = int(ret.text)
-        except ValueError:
-            #ret.text is not int
             return -1
         return int(ret.text)
 

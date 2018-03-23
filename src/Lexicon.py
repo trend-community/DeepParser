@@ -36,12 +36,7 @@ class LexiconNode(object):
 
     def __str__(self):
         output = self.text + ": "
-        for feature in self.features:
-            f = GetFeatureName(feature)
-            if f:
-                output += f + ","
-            else:
-                logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
+        output += ",".join([GetFeatureName(feature) for feature in self.features])
         return output
 
     def entry(self):
@@ -120,6 +115,8 @@ def RealLength(x):
         else:
             break
     if " " in x:
+        if occurance != x.count(" "):
+            logging.error("Error in RealLength!")
         return len(x) - occurance
     return len(x)
 
@@ -318,31 +315,26 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
 
 
 def _ApplyWordStem(NewNode, lexiconnode):
-    # VFeatureID = GetFeatureID("deverbal")
-    VBFeatureID = GetFeatureID("VB")
-    VedFeatureID = GetFeatureID("Ved")
-    VingFeatureID = GetFeatureID("Ving")
-
     if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
         normnode = _LexiconDict[lexiconnode.norm]
         #NewNode.features.update(normnode.features)
         #not comfortable to copy the feature blindly. Use an "F" to do that in orgLex.py offline.
         #   only do that for punctuate signs in the function of LoadLexicon()
-        if VBFeatureID in NewNode.features:
+        if utils.FeatureID_VB in NewNode.features:
             if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
-                NewNode.features.remove(VBFeatureID)
-                NewNode.features.add(VedFeatureID)
+                NewNode.features.remove(utils.FeatureID_VB)
+                NewNode.features.add(utils.FeatureID_Ved)
             if NewNode.text == normnode.text + "ing":
-                NewNode.features.remove(VBFeatureID)
-                NewNode.features.add(VingFeatureID)
+                NewNode.features.remove(utils.FeatureID_VB)
+                NewNode.features.add(utils.FeatureID_Ving)
 
 
 #   If the SearchType is not flexible, then search the origin word only.
 # Otherwise, after failed for the origin word, search for case-insensitive, _ed _ing _s...
 def SearchLexicon(word, SearchType='flexible'):
     # word = word.lower()
-    if word in _LexiconDict.keys():
-        return _LexiconDict.get(word)
+    if word in _LexiconDict:
+        return _LexiconDict[word]
 
     if SearchType != 'flexible':
         return None
@@ -376,7 +368,7 @@ def SearchLexicon(word, SearchType='flexible'):
 def SearchFeatures(word):
     lexicon = SearchLexicon(word)
     if lexicon is None:
-        return {}  # return empty feature set
+        return None  # return empty feature set
     return lexicon.features
 
 
@@ -386,6 +378,7 @@ def ApplyLexiconToNodes(NodeList):
         ApplyLexicon(node)
         node = node.next
     return NodeList
+
 
 def InitLengthSet():
     global C1ID, C2ID, C3ID, C4ID, C4plusID
@@ -427,6 +420,8 @@ def InitLengthSet():
             D1ID, D2ID, D3ID, D4ID, D4plusID,
             L1ID, L2ID, L3ID, L4ID, L4plusID
         }
+
+        logging.warning("Init Length Set")
 
 def ApplyWordLengthFeature(node):
     if not C1ID:

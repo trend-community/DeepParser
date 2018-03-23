@@ -317,7 +317,7 @@ def LexicalAnalyze(Sentence):
         for ruleid in WinningRules:
             cur.execute(strsql, [SentenceID, ruleid])
         cur.close()
-        DBCon.commit()
+        #DBCon.commit()
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
