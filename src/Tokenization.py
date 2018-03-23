@@ -109,7 +109,7 @@ class SentenceLinkedList:
             if p.Head0Text:
                 output_norms += [(p.norm, p.Head0Text)]
             else:
-                output_norms += [(p.norm,)]
+                output_norms += [(p.norm, '')]
             p = p.next
         return output_norms
 

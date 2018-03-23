@@ -74,20 +74,20 @@ def SearchPair(string, tagpair, Reverse=False):
     depth = 0
     if Reverse:
         i = len(string)-1
-        currentTagIndex = 1
-        targetTagIndex = 0
         direction = -1
+        currentTag = tagpair[1]
+        targetTag = tagpair[0]
     else:
         i = 0
-        currentTagIndex = 0
-        targetTagIndex = 1
         direction = 1
+        currentTag = tagpair[0]
+        targetTag = tagpair[1]
     while 0<=i<len(string):
-        if string[i] == tagpair[targetTagIndex]:
+        if string[i] == targetTag:
             depth -= 1
             if depth == -1: # found!
                 return i
-        if string[i] == tagpair[currentTagIndex]:
+        elif string[i] == currentTag:
             depth += 1
         i += direction
     logging.error(" Can't find a pair tag " + tagpair[0] + " in:" + string)
@@ -147,7 +147,7 @@ def IsAscii(Sentence):
 
 @lru_cache(50000)
 def RemoveExcessiveSpace(Content):
-    #Remove any whitespace around | sign, so it ismade as a word.
+    #Remove any whitespace around | sign, so it is made as a word.
     r = re.compile("\s*\|\s*", re.MULTILINE)
     Content = r.sub("|", Content)
 

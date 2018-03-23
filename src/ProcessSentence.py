@@ -54,15 +54,18 @@ def OutputWinningRules():
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
 def HeadMatch(strTokenList, StartPosition, ruleTokens):
+    HaveTempPointer = False
 
     for i in range(len(ruleTokens)):
         try:
             if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
-                RemoveTempPointer(strTokenList)
+                if HaveTempPointer:
+                    RemoveTempPointer(strTokenList)
                 return False  #  this rule does not fit for this string
             if ruleTokens[i].SubtreePointer:
                 StartPosition -= 1  # do not skip to next strToken, if this token is for Subtree.
             if ruleTokens[i].pointer:
+                HaveTempPointer = True
                 strTokenList.get(i + StartPosition).TempPointer = ruleTokens[i].pointer
         except RuntimeError as e:
             logging.error("Error in HeadMatch rule:" + str(ruleTokens))
@@ -84,11 +87,12 @@ def HeadMatch(strTokenList, StartPosition, ruleTokens):
 def RemoveTempPointer(StrList):
     x = StrList.head
     while x:
-        x.TempPointer = ''
+        if x.TempPointer:
+            x.TempPointer = ''
         x = x.next
 
 
-def MarkTempPointer(strtokens, rule, StrStartPosition):
+def MarkTempPointer_obsolete(strtokens, rule, StrStartPosition):
     VirtualRuleToken = 0
     for i in range(len(rule.Tokens)):
         if rule.Tokens[i].SubtreePointer:
@@ -144,13 +148,13 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 #from functools import lru_cache
 #@lru_cache(maxsize=100000)
 def ListMatch(list1, list2):
-    if len(list1) != len(list2):
-        logging.error("Coding error. The size should be the same in ListMatch")
-        return False
+    # if len(list1) != len(list2):
+    #     logging.error("Coding error. The size should be the same in ListMatch")
+    #     return False
     for i in range(len(list2)):
         if list2[i] == '' or \
             list1[i][0] == list2[i] or \
-                len(list1[i]) == 2 and list1[i][1] == list2[i]:
+                list1[i][1] and list1[i][1] == list2[i]:
             pass
         else:
             return False
@@ -197,7 +201,6 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         for rule in rulegroup.RuleList:
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
-
 
             if rule.norms and not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
                 continue
