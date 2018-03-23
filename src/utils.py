@@ -74,7 +74,8 @@ def InitGlobalFeatureID():
         FeatureID_Ving = FeatureOntology.GetFeatureID("Ving")
 
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
-
+        for IDList in FeatureOntology.BarTagIDs:
+            FeatureOntology.BarTagIDSet.update(set(IDList))
 
 # return -1 if failed. Should throw error?
 @lru_cache(1000000)

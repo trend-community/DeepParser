@@ -12,10 +12,6 @@ PipeLine = []
 
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
-    if strtokens.size >= 3:
-        AddSpace = IsAscii(strtokens.get(1).text) and IsAscii(strtokens.get(strtokens.size-2).text) and utils.IsAscii(strtokens.get(int(strtokens.size/2)).text)
-    else:
-        AddSpace = IsAscii(strtokens.get(1).text)
 
     p = strtokens.head
     counter = 0
@@ -26,7 +22,7 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
         result += p.text
         if counter == StopPosition:
             result += "</em>"
-        if AddSpace:
+        if strtokens.isPureAscii:
             result += " "
         p = p.next
         counter += 1
@@ -189,7 +185,6 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     counter = 0
 
     strtoken = strtokenlist.head
-    strnorms = strtokenlist.norms()
     while strtoken:
         # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
@@ -201,7 +196,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
 
-            if rule.norms and not ListMatch(strnorms[i:i+rule.StrTokenLength], rule.norms):
+            if rule.norms and not ListMatch(strtokenlist.norms[i:i+rule.StrTokenLength], rule.norms):
                 continue
             counter += 1
             #logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(len(rule.Tokens)) + " |" + rule.Origin )
@@ -217,7 +212,6 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 else:
                     WinningRules[WinningRule.ID] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
-                strnorms = strtokenlist.norms()     #the list is updated.
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)

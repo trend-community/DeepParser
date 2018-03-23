@@ -210,7 +210,7 @@ def FindSubtree(root, pointers):
     #logging.debug("This string has no relation of:" + str(pointers))
     return None
 
-CombinedPattern = re.compile('[| !]')
+
 def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition):
     if not rule:  # for the comparison of "[]", can match anything
         return True
@@ -229,10 +229,7 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition):
         logging.error("In LogicMatch(): Can't find strToken!")
         return False
 
-    #logging.debug("\t\t\tLogicMatch: " + rule + " | " + str(strToken))
-    #LogicMatchKey = [strToken, rule]
-
-    AndBlocks = [x for x in rule.split(" ") if x]
+    AndBlocks = rule.split()
     for AndBlock in AndBlocks:
         Not = False
         if AndBlock[0] == "!":
@@ -265,35 +262,29 @@ def LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition):
             return False
     return True
 
+
 @lru_cache(1000000)
 def LogicMatchText(ruletext, stringtext):
-    if not ruletext:
-        logging.warning("ruletext is empty in LogicMatchText!")
-        return True
-    if ruletext[0] == "!":      #Not
-        logging.error("Should not be here!")
-        #Result = not LogicMatchText(ruletext[1:], stringtext)
-    else:
-        OrBlocks = [x.strip() for x in ruletext.split("|") if x]
-        if len(OrBlocks) == 1:
-            if ruletext.lower() == stringtext.lower():
+    # if (ruletext, stringtext) in LogicMatchText_Cache:
+    #     return LogicMatchText_Cache[(ruletext, stringtext)]
+
+    if "|" in ruletext:
+        logging.warning("OrBlocks in LogicMatchText:" + ruletext + " ") #should have been split during compilation
+        OrBlocks = ruletext.split("|")
+        for OrBlock in OrBlocks:
+            if LogicMatchText(OrBlock, stringtext):
                 return True
-            else:
+    else:
+        if ruletext.lower() == stringtext.lower():
+            return True
+        else:
+            if ruletext.endswith('-') or ruletext.startswith('-'):
                 if len(ruletext) > 1 and (
                         ruletext.endswith('-') and stringtext.startswith(ruletext[:-1])
                         or ruletext.startswith('-') and stringtext.endswith(ruletext[1:])
                         ):
                     return True
-                else:
-                    return False
 
-        elif len(OrBlocks) > 1:
-            logging.warning("OrBlocks in LogicMatchText:" + ruletext + " ")
-            for OrBlock in OrBlocks:
-                if LogicMatchText(OrBlock, stringtext):
-                    return True
-        else:
-            raise RuntimeError("Why OrBlock is none?")
     return False
 
 
@@ -301,13 +292,11 @@ def LogicMatchText(ruletext, stringtext):
 #   then it is treated as stem.
 # this should have been taken care of by compilation.
 def LogicMatchFeatures(rule, features):
-    if not rule:
-        return True # for the comparison of "[]", can match anything
-
     if "|" in rule:
-        OrBlocks = [x.strip() for x in rule.split("|") if x]
+        OrBlocks = rule.split("|")
         for OrBlock in OrBlocks:
-            if LogicMatchFeatures(OrBlock, features):
+            featureID = FeatureOntology.GetFeatureID(OrBlock)
+            if featureID in features:
                 return True
     else:
         featureID = FeatureOntology.GetFeatureID(rule)
@@ -323,46 +312,6 @@ def LogicMatchFeatures(rule, features):
             return featureID in features
 
     return False
-
-
-LogicMatchFeatures_Cache = {}
-def LogicMatchFeatures_C(rule, strToken):
-    if not rule:
-        return True # for the comparison of "[]", can match anything
-
-    if not strToken:
-        logging.warning("Check the string token")
-        return False
-
-    signature = (rule, ".".join(map(str,strToken.features)))
-    if signature in LogicMatchFeatures_Cache:
-        return LogicMatchFeatures_Cache[signature]
-
-    LogicMatchFeatures_Cache[signature] = False
-    if "|" in rule:
-        OrBlocks = [x.strip() for x in rule.split("|") if x]
-        if len(OrBlocks) >= 1:
-            for OrBlock in OrBlocks:
-                if LogicMatchFeatures(OrBlock, strToken=strToken):
-                    LogicMatchFeatures_Cache[signature] = True
-                    return LogicMatchFeatures_Cache[signature]
-        else:
-            raise RuntimeError("Why OrBlock is none?")
-
-    else:
-        featureID = FeatureOntology.GetFeatureID(rule)
-        if featureID == -1:
-            logging.warning("Found a feature of rule that is not a feature in feature.txt")
-            logging.warning("rule text:" + rule)
-            logging.warning("This should not happen. Please rewirte the rule for compilation.")
-            return False
-            #return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
-        elif featureID == utils.FeatureID_FULLSTRING:
-            LogicMatchFeatures_Cache[signature] = True
-        else:
-            LogicMatchFeatures_Cache[signature] = featureID in strToken.features
-
-    return LogicMatchFeatures_Cache[signature]
 
 
 @lru_cache(100000)

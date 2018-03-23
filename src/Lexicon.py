@@ -124,8 +124,8 @@ def RealLength(x):
 def OutputLexicon(EnglishFlag=False):
     # print("//***Lexicon***")
     Output = ""
-    if _CommentDict.get("firstCommentLine"):
-        Output += _CommentDict.get("firstCommentLine") + "\n"
+    if "firstCommentLine" in _CommentDict:
+        Output += _CommentDict["firstCommentLine"] + "\n"
     oldWord = None
     if EnglishFlag:
         s = sorted(_LexiconDict.keys())
@@ -136,7 +136,7 @@ def OutputLexicon(EnglishFlag=False):
             Output += _CommentDict[oldWord]
             oldWord = word
 
-        Output += _LexiconDict.get(word).entry() + "\n"
+        Output += _LexiconDict[word].entry() + "\n"
         oldWord = word
 
     return Output
@@ -233,8 +233,8 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
         oldWord = "firstCommentLine"
         for line in dictionary:
             if line.startswith("//"):
-                if _CommentDict.get(oldWord):
-                    _CommentDict.update({oldWord: _CommentDict.get(oldWord) + line})
+                if oldWord in _CommentDict:
+                    _CommentDict.update({oldWord: _CommentDict[oldWord] + line})
                 else:
                     _CommentDict.update({oldWord: line})
                 continue
@@ -344,23 +344,23 @@ def SearchLexicon(word, SearchType='flexible'):
 
     word = word.lower()
     if word in _LexiconDict.keys():
-        return _LexiconDict.get(word)
+        return _LexiconDict[word]
 
     word_ed = re.sub("ed$", '', word)
     if word_ed in _LexiconDict.keys():
-        return _LexiconDict.get(word_ed)
+        return _LexiconDict[word_ed]
     word_d = re.sub("d$", '', word)
     if word_d in _LexiconDict.keys():
-        return _LexiconDict.get(word_d)
+        return _LexiconDict[word_d]
     word_ing = re.sub("ing$", '', word)
     if word_ing in _LexiconDict.keys():
-        return _LexiconDict.get(word_ing)
+        return _LexiconDict[word_ing]
     word_s = re.sub("s$", '', word)
     if word_s in _LexiconDict.keys():
-        return _LexiconDict.get(word_s)
+        return _LexiconDict[word_s]
     word_es = re.sub("es$", '', word)
     if word_es in _LexiconDict.keys():
-        return _LexiconDict.get(word_es)
+        return _LexiconDict[word_es]
 
     return None
 
@@ -421,7 +421,6 @@ def InitLengthSet():
             L1ID, L2ID, L3ID, L4ID, L4plusID
         }
 
-        logging.warning("Init Length Set")
 
 def ApplyWordLengthFeature(node):
     if not C1ID:
@@ -581,7 +580,7 @@ def LexiconLookup(strTokens, lookupsource):
             if lookupsource == LexiconLookupSource.External:
                 NewNode.ApplyFeature(utils.FeatureID_External)
             NewNode.sons = []  # For lookup, eliminate the sons
-            logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
+            #logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1
 

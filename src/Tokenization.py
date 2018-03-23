@@ -12,6 +12,9 @@ class SentenceLinkedList:
         self.head = None
         self.tail = None
         self.size = 0
+        self.norms = []
+        self.get_cache = {} # this cache is reset at each _setnorms().
+        self.isPureAscii = True     # set at append() and insert().
 
     def append(self, node):    #Add to the tail
         if not self.head:
@@ -23,6 +26,9 @@ class SentenceLinkedList:
             self.tail.next = node
             self.tail = node
         self.size += 1
+        self._setnorms()
+        if self.isPureAscii and IsAscii(node.text):
+            self.isPureAscii = False
 
     def insert(self, node, position):    #Add to the specific position
         if position == 0:
@@ -46,6 +52,9 @@ class SentenceLinkedList:
             x.prev = node
 
         self.size += 1
+        self._setnorms()
+        if self.isPureAscii and IsAscii(node.text):
+            self.isPureAscii = False
 
     def remove(self, node):
         if node == self.head:
@@ -59,8 +68,12 @@ class SentenceLinkedList:
             node.next.prev = node.prev
 
         self.size -= 1
+        self._setnorms()
 
     def get(self, index):
+        if index in self.get_cache:
+            return self.get_cache[index]
+
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't get.")
         if index >= self.size or index < 0:
@@ -72,13 +85,13 @@ class SentenceLinkedList:
             p = self.head
             for i in range(index):
                 p = p.next
-            return p
         else:   # for
             p = self.tail
-            index = self.size - index -1
-            for i in range(index):
+            for i in range(self.size - index -1):
                 p = p.prev
-            return p
+
+        self.get_cache[index] = p
+        return p
         # logging.error(self.__str__())
         # raise RuntimeError("SentenceLinkedList.get(" + str(index) + ") should not get to here.")
 
@@ -91,29 +104,13 @@ class SentenceLinkedList:
         output += str(p)
         return output
 
-    def norms(self):
-        output_norms = []
+    def _setnorms(self):
+        self.norms = []
         p = self.head
         while p:
-            if p.Head0Text:
-                output_norms += [(p.norm, p.Head0Text)]
-            else:
-                output_norms += [(p.norm, '')]
+            self.norms += [(p.norm, p.Head0Text)]
             p = p.next
-        return output_norms
-
-    # def toJSON(self):
-    #     a = JsonClass()
-    #     a.text = self.text
-    #     if self.norm != self.text:
-    #         a.norm = self.norm
-    #     if self.atom != self.text:
-    #         a.atom = self.atom
-    #     a.features = [FeatureOntology.GetFeatureName(f) for f in self.features]
-    #
-    #     a.StartOffset = self.StartOffset
-    #     a.EndOffset = self.EndOffset
-
+        self.get_cache.clear()
 
     #
     # def signature(self, start, limit):
@@ -199,6 +196,7 @@ class SentenceLinkedList:
             self.tail = NewNode
 
         self.size = self.size - count + 1
+        self._setnorms()
 
         #logging.debug("NewNode.text: " + NewNode.text + " features:" + str(NewNode.features))
         #logging.debug("combined as:" + str(NewNode))
@@ -281,7 +279,6 @@ class SentenceNode(object):
         return output.strip()
 
     def ApplyFeature(self, featureID):
-#        == do the bartag in here?
         self.features.add(featureID)
         FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
         if FeatureNode and FeatureNode.ancestors:
@@ -300,8 +297,7 @@ class SentenceNode(object):
                 continue  # already process before.
 
             if Action[-1] == "-":
-                if Action[0] == "^":
-
+                if Action[0] == "^":    #Remove UpperRelationship
                     if "." in Action:
                         if self.UpperRelationship == Action.split(".", 1)[1][-1]:
                             # TODO:  actually break the token. not just delattr
@@ -338,7 +334,7 @@ class SentenceNode(object):
 
             if Action[0] == "^":
                 if "." in Action:
-                    self.UpperRelationship = Action.split(".", 1)[1]
+                    self.UpperRelationship = Action.split(".")[-1]
                     RelationActionID = FeatureOntology.GetFeatureID(self.UpperRelationship)
                     if RelationActionID != -1:
                         self.ApplyFeature(RelationActionID)
@@ -368,7 +364,6 @@ class SentenceNode(object):
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
         if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
             FeatureOntology.ProcessBarTags(self.features)
-
 
     def GetFeatures(self):
         featureString = ""

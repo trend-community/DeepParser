@@ -24,6 +24,7 @@ BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC'
             ['Pred'],
             ['CL']   ]
 BarTagIDs = []
+BarTagIDSet = set()
 
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
@@ -264,21 +265,23 @@ def GetFeatureName(featureID):
 
 
 # For all bar tags in the list, keep only the last one.
-def ProcessBarTags(featurelist):
+def ProcessBarTags(featureset):
     MaxBarTagLevel = -1
-    for f in featurelist:
+    for f in featureset:
+        if f not in BarTagIDSet:
+            continue
         taglevel, _ = IndexIn2DArray(f, BarTagIDs)
         if taglevel > -1:
             if MaxBarTagLevel < taglevel:
                 MaxBarTagLevel = taglevel
 
-    featurelist_copy = featurelist.copy()
+    featureset_copy = featureset.copy()
     if MaxBarTagLevel > -1:
-        for f in featurelist_copy:
+        for f in featureset_copy:
             taglevel, _ = IndexIn2DArray(f, BarTagIDs)
             if taglevel > -1:
                 if taglevel != MaxBarTagLevel:
-                    featurelist.remove(f)
+                    featureset.remove(f)
 
 
 if __name__ == "__main__":

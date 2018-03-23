@@ -82,7 +82,7 @@ if __name__ == "__main__":
     import cProfile, pstats
     cProfile.run("ProcessFile(args.inputfile)", 'restats')
     p = pstats.Stats('restats')
-    p.sort_stats('time').print_stats(30)
+    p.sort_stats('time').print_stats(60)
 
     # import os
     # import psutil

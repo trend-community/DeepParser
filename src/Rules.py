@@ -112,6 +112,7 @@ class RuleToken(object):
         output += " "  # should be a space. use _ in dev mode.
         return output
 
+
 class RuleChunk(object):
     def __init__(self):
         self.StartOffset = -1
@@ -1498,6 +1499,7 @@ def _PreProcess_CompileHash(OneList):
 
         for token in rule.Tokens:   #remove extra [] in match body.
             token.word = token.word.strip("[|]")
+            token.word = token.word.strip()
 
 def _CheckFeature_returnword(word):
     try:
