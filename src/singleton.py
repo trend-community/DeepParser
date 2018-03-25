@@ -71,7 +71,6 @@ class SingleInstance:
         self.initialized = True
 
     def __del__(self):
-
         if not self.initialized:
             return
         try:
@@ -87,8 +86,8 @@ class SingleInstance:
                     os.unlink(self.lockfile)
         except Exception as e:
             if logger:
-                logger.warning("singleton error:")
-                logger.warning(e)
+                logger.debug("singleton error:")
+                logger.debug(e)
             else:
                 print("Unloggable error: %s" % e)
             #sys.exit()

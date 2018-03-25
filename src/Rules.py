@@ -95,6 +95,11 @@ class RuleToken(object):
         self.pointer = ''
         self.action = ''
         self.SubtreePointer = ''
+        self.AndFeatures = set()
+        self.OrFeatures = set()
+        self.NotFeatures = set()
+        self.AndText = ''
+        self.NotText = ''
 
     def __str__(self):
         output = ""
@@ -272,32 +277,32 @@ class Rule:
         cur.execute(strsql, [rulefileid, self.body()])
         resultrecord = cur.fetchone()
         if resultrecord:
-            resultid = resultrecord[0]
+            self.ID = resultrecord[0]
             strsql = "UPDATE ruleinfo set status=1, verifytime=DATETIME('now') where ID=?"
-            cur.execute(strsql, [resultid,])
+            cur.execute(strsql, [self.ID,])
             strsql = "DELETE from rulenodes where ruleid=?"
-            cur.execute(strsql, [resultid, ])
+            cur.execute(strsql, [self.ID, ])
             strsql = "DELETE from rulechunks where ruleid=?"
-            cur.execute(strsql, [resultid, ])
+            cur.execute(strsql, [self.ID, ])
+
         else:
             strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
                         "norms, origin, comment, createtime, verifytime) " \
                             "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
             cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1,
                                  '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
-            resultid = cur.lastrowid
+            self.ID = cur.lastrowid
 
         strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer) values(?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Tokens)):
-            cur.execute(strsql_node, [resultid, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
+            cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
         strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Chunks)):
-            cur.execute(strsql_chunk, [resultid, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
+            cur.execute(strsql_chunk, [self.ID, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
                                  self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
                                  self.Chunks[i].HeadOffset, self.Chunks[i].Action
                                  ])
         cur.close()
-        return resultid
 
 
     #For head (son) node, only apply negative action, and
@@ -707,6 +712,16 @@ def ProcessTokens(Tokens):
                         node.word = "[" + actionMatch.group(1) + "]"
                         node.action = actionMatch.group(2)
 
+        orQuoteMatch = re.search("(['\"/])(\S*\|\S*?)\\1", node.word, re.DOTALL)
+        if orQuoteMatch:
+            expandedQuotes = ExpandQuotedOrs(orQuoteMatch.group(2), orQuoteMatch.group(1))
+            node.word = node.word.replace(orQuoteMatch.group(2), expandedQuotes)
+
+        notOrMatch = re.findall("!(\S*\|\S*)", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrTo(match)
+                node.word = node.word.replace(match, expandAnd)
 
         if node.word and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
@@ -731,6 +746,25 @@ def ProcessTokens(Tokens):
 #             #            logging.warning("not a ligit action: " + string[index] + " in " + string )
 #             return -1
 #     return -1
+
+def ExpandQuotedOrs(text, sign):
+    if "(" in text:
+        logging.info("Not a task in this function for expanding " + text)
+        return text
+    if sign in text[1:-1]:
+        logging.info("There is sign inside of text, no need to do expanding")
+        return text
+
+    return text.replace("|", sign+"|"+sign)
+
+def ExpandNotOrTo(text):
+    if "(" in text:
+        logging.info("Not a task in this function for expanding " + text)
+        return text
+    if "!" in text:
+        logging.error("there should be no ! in text:" + text)
+        raise Exception("There should be no ! for this rule")
+    return " !".join(text.split("|"))
 
 
 # The previous step already search up to the close tag.
@@ -883,7 +917,7 @@ def LoadRules(RuleLocation):
 
 
 def RuleFileOlderThanDB(RuleLocation):
-    #return False
+    return False
     cur = DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
@@ -1356,12 +1390,12 @@ def _ExpandOrBlock(OneList):
     return Modified
 
 
-def _ProcessOrToken(word):
+def _ProcessOrToken_ExpandAll(word):
     word = word.strip("[|]")
-    spaceseparated = word.split(" ")
+    spaceseparated = word.split()
     i = 0
     for i in range(len(spaceseparated)):
-        if spaceseparated[i].find("'|")>0 or spaceseparated[i].find("/|")>0 or spaceseparated[i].find("\"|")>0:
+        if spaceseparated[i].find("|")>0:
             #this is the piece we need to separate
             break
     if i > 0:
@@ -1375,95 +1409,89 @@ def _ProcessOrToken(word):
         rightpieces = ""
 
     orlist = spaceseparated[i].split("|")
-    textlist = [x for x in orlist if len(x)>2 and (x[0]=="'" and x[-1]=="'" or x[0]=="/" and x[-1]=="/"  or x[0]=="\"" and x[-1]=="\"")]
-    nottextlist = set(orlist) - set(textlist)
-
-    if nottextlist:
-        orlist = ["|".join(sorted(nottextlist)) ] + textlist
-    else:
-        orlist = textlist
 
     return orlist, "["+leftpieces, rightpieces+"]"
 
 
-#Expand | inside of one token. Should be done after the _ExpandOrBlock and compilation.
+#only expand the text, not the feature.
+def _ProcessOrToken(word):
+    word = word.strip("[|]")
+    spaceseparated = word.split()
+    i = 0
+    for i in range(len(spaceseparated)):
+        if spaceseparated[i].find("'|")>0 or spaceseparated[i].find("/|")>0 or spaceseparated[i].find("\"|")>0 \
+               or spaceseparated[i].find("|'") > 0 or spaceseparated[i].find("|/") > 0 or spaceseparated[i].find("|\"") > 0:
+            #this is the piece we need to separate
+            break
+    if i > 0:
+        leftpieces = " ".join(spaceseparated[:i])
+    else:
+        leftpieces = ""
+
+    if i < len(spaceseparated):
+        rightpieces = " ".join(spaceseparated[i+1:])
+    else:
+        rightpieces = ""
+
+    orlist = spaceseparated[i].split("|")
+    # textlist = [x for x in orlist if len(x)>2 and (x[0]=="'" and x[-1]=="'" or x[0]=="/" and x[-1]=="/"  or x[0]=="\"" and x[-1]=="\"")]
+    # nottextlist = set(orlist) - set(textlist)
+
+    # if nottextlist:
+    #     orlist = ["|".join(sorted(nottextlist)) ] + textlist
+    # else:
+    #     orlist = textlist
+
+    return orlist, "["+leftpieces, rightpieces+"]"
+
+
+#Expand | inside of one token without (). Should be done after the _ExpandOrBlock and compilation.
 # in here, each "or" operator should be one feature or one word.
 def _ExpandOrToken(OneList):
     Modified = False
     # counter = 0
     for rule in OneList:
         if len(rule.RuleName) > 200:
-            logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
+            logging.error("Rule Name is too long. Stop processing this rule:\n" + str(rule))
             continue
         Expand = False
         for tokenindex in range(len(rule.Tokens)):
             token = rule.Tokens[tokenindex]
 
-            if token.word.find("|") < 0:
-                continue
+            if token.word.find("'|") > 0 or token.word.find("/|") > 0 or token.word.find("\"|") > 0 \
+                    or token.word.find("|'") > 0 or token.word.find("|/") > 0 or token.word.find("|\"") > 0:
+                #only expand the Text .
+                orlist, leftBlock, rightBlock = _ProcessOrToken(token.word)
+                if orlist is None:
+                    logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
+                    continue  # failed to process. might be pair tag issue.
 
-            #Process  a|b|'c|d|e'|f. Change it to a|b|'c'|'d'|'e'|f
-            ormatch = re.match("^(.*')(.*?)('.*)$", token.word)
-            if ormatch:
-                innerquote = ormatch.group(2)
-                if "|" in innerquote and "'" not in innerquote:
-                    innerquote2 = innerquote.replace("|", "'|'")
-                    token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
-                    logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+                for orpiece in orlist:
+                    # left of the token:
+                    newrule = Rule()
+                    newrule.FileName = rule.FileName
+                    newrule.Origin = rule.Origin
+                    newrule.comment = rule.comment
+                    newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
+                    newrule.RuleContent = rule.RuleContent
+                    for tokenindex_pre in range(tokenindex):
+                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
 
-            #Process  a|b|/c|d|e/|f. Change it to a|b|/c/|/d/|/e/|f
-            ormatch = re.match("^(.*/)(.*?)(/.*)$", token.word)
-            if ormatch:
-                innerquote = ormatch.group(2)
-                if "|" in innerquote and "/" not in innerquote:
-                    innerquote2 = innerquote.replace("|", "/|/")
-                    token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
-                    logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+                    #current token
+                    node = copy.copy(token)
+                    node.word = leftBlock + " " + orpiece + " " + rightBlock
+                    newrule.Tokens.append(node)
 
-                # Process  a|b|/c|d|e/|f. Change it to a|b|/c/|/d/|/e/|f
-            ormatch = re.match("^(.*\")(.*?)(\".*)$", token.word)
-            if ormatch:
-                innerquote = ormatch.group(2)
-                if "|" in innerquote and "\"" not in innerquote:
-                    innerquote2 = innerquote.replace("|", "\"|\"")
-                    token.word = ormatch.group(1) + innerquote2 + ormatch.group(3)
-                    logging.debug("or modification: from " + ormatch.group(2) + " to " + innerquote2)
+                    # right of the token:
+                    for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                    newrule.SetStrTokenLength()
+                    newrule.Chunks = copy.copy(rule.Chunks)
+                    OneList.append(newrule)
 
-            orIndex = token.word.find("'|") + token.word.find("|'") + token.word.find("/|") + token.word.find("|/")
-            if orIndex < 0:
-                continue
-
-            orlist, leftBlock, rightBlock = _ProcessOrToken(token.word)
-            if orlist is None:
-                logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
-                continue  # failed to process. might be pair tag issue.
-
-            for orpiece in orlist:
-                # left of the token:
-                newrule = Rule()
-                newrule.FileName = rule.FileName
-                newrule.Origin = rule.Origin
-                newrule.comment = rule.comment
-                newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                newrule.RuleContent = rule.RuleContent
-                for tokenindex_pre in range(tokenindex):
-                    newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
-
-                #current token
-                node = copy.copy(token)
-                node.word = leftBlock + " " + orpiece + " " + rightBlock
-                newrule.Tokens.append(node)
-
-                # right of the token:
-                for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
-                    newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
-                newrule.SetStrTokenLength()
-                newrule.Chunks = copy.copy(rule.Chunks)
-                OneList.append(newrule)
-
-            Expand = True
-            # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
-            break   # don't work on the next | in this rule. wait for the next round.
+                Expand = True
+                # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+                break   # don't work on the next | in this rule. wait for the next round.
 
         if Expand:
             OneList.remove(rule)
@@ -1498,8 +1526,26 @@ def _PreProcess_CompileHash(OneList):
             rule.norms = []
 
         for token in rule.Tokens:   #remove extra [] in match body.
-            token.word = token.word.strip("[|]")
-            token.word = token.word.strip()
+            token.word = token.word.strip("[|]").strip()
+
+            Features = token.word.split()
+            for f in Features:
+                if f[0] == "!":
+                    if "\"" in f or "'" in f or "/" in f:
+                        token.NotText = f
+                    else:
+                        token.NotFeatures.add(FeatureOntology.GetFeatureID(f[1:]))
+                else:
+                    if "|" in f:
+                        token.OrFeatures = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
+                    elif "\"" in f or "'" in f or "/" in f:
+                        if token.AndText:
+                            logging.error("There should be only one text in one token:" + str(rule))
+                        token.AndText = f
+                    else:
+                        token.AndFeatures.add(FeatureOntology.GetFeatureID(f))
+
+
 
 def _CheckFeature_returnword(word):
     try:

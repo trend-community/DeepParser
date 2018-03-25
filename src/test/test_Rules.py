@@ -721,6 +721,30 @@ third line};""")
         print(new)
         self.assertEqual(new, "this is @#$%@leftparenthesis@, @#$%@rightparenthesis@, @#$%@singlequote@, @#$%@coln@, @#$%@equal@ as origin")
 
+    def test_OrBlocks(self):
+        word = "[a b !'c|d|e'|f g]"
+        orQuoteMatch = re.search("(')(\S*\|\S*?)\\1", word, re.DOTALL)
+        if orQuoteMatch:
+            print(orQuoteMatch.group(1))
+            print(orQuoteMatch.group(2))
+            self.assertEqual(orQuoteMatch.group(1), "'")
+            expandedQuotes = ExpandQuotedOrs(orQuoteMatch.group(2), orQuoteMatch.group(1))
+            word = word.replace(orQuoteMatch.group(2), expandedQuotes)
+        self.assertEqual(word, "[a b !'c'|'d'|'e'|f g]")
+
+        notOrMatch = re.search("!(\S*\|\S*)", word, re.DOTALL)
+        if notOrMatch:
+            expandAnd = ExpandNotOrTo(notOrMatch.group(1))
+            word = word.replace(notOrMatch.group(1), expandAnd)
+        self.assertEqual(word, "[a b !'c' !'d' !'e' !f g]")
+
+        word = "[c1 !CD !time !'加'|'减'|'乘'|'除']"
+        notOrMatch = re.search("!(\S*\|\S*)", word, re.DOTALL)
+        if notOrMatch:
+            self.assertEqual(notOrMatch.group(1), "'加'|'减'|'乘'|'除']")
+            expandAnd = ExpandNotOrTo(notOrMatch.group(1))
+            word = word.replace(notOrMatch.group(1), expandAnd)
+        self.assertEqual(word, "[c1 !CD !time !'加' !'减' !'乘' !'除']")
 
     # def test_ExtractParentSonActions(self):
     #     a, b = Rule.ExtractParentSonActions("a b -c NEW x y")

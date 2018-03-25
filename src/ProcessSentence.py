@@ -341,31 +341,31 @@ def LoadCommon():
     #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
 
     XLocation = '../../fsa/X/'
-
-    Lexicon.LoadLexicon(XLocation + 'LexX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
-
-    Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
-
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
-
-    Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
-    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
-    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
+    #
+    # Lexicon.LoadLexicon(XLocation + 'LexX.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
+    # Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
+    #
+    # Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
+    # Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
+    # Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
+    #
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
+    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
+    #
+    # Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
+    # Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
+    # Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
