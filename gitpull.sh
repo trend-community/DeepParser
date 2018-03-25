@@ -30,3 +30,6 @@ echo " \c" >> revision.txt
  echo "" >> revision.txt
  date >> revision.txt
 
+cd ../parser/data
+cp parser.empty.db parser.db
+
