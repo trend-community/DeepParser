@@ -49,31 +49,34 @@ def OutputWinningRules():
 
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
-def HeadMatch(strTokenList, StartPosition, ruleTokens):
+def HeadMatch(strTokenList, StartPosition, rule, FailedRules):
     HaveTempPointer = False
 
-    for i in range(len(ruleTokens)):
+    for i in range(rule.TokenLength):
         try:
-            if not LogicMatch(strTokenList, i+StartPosition, ruleTokens[i].word, ruleTokens, i):
+            if not LogicMatch(strTokenList, i+StartPosition, rule.Tokens[i], rule.Tokens, i):
+        #    if not LogicMatch_old(strTokenList, i + StartPosition, ruleTokens[i].word, ruleTokens, i):
                 if HaveTempPointer:
                     RemoveTempPointer(strTokenList)
+                if (rule.ID, i) in Rules.RuleIdenticalNetwork:
+                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, i)])
                 return False  #  this rule does not fit for this string
-            if ruleTokens[i].SubtreePointer:
+            if rule.Tokens[i].SubtreePointer:
                 StartPosition -= 1  # do not skip to next strToken, if this token is for Subtree.
-            if ruleTokens[i].pointer:
+            if rule.Tokens[i].pointer:
                 HaveTempPointer = True
-                strTokenList.get(i + StartPosition).TempPointer = ruleTokens[i].pointer
+                strTokenList.get(i + StartPosition).TempPointer = rule.Tokens[i].pointer
         except RuntimeError as e:
-            logging.error("Error in HeadMatch rule:" + str(ruleTokens))
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text)
+            logging.error("Error in HeadMatch rule:" + str(rule.Tokens))
+            logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text)
             logging.error(e)
             # raise
         except Exception as e:
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
+            logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
         except IndexError as e:
-            logging.error("Using " + ruleTokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
+            logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
     #RemoveTempPointer(strTokenList)
@@ -90,7 +93,7 @@ def RemoveTempPointer(StrList):
 
 def MarkTempPointer_obsolete(strtokens, rule, StrStartPosition):
     VirtualRuleToken = 0
-    for i in range(len(rule.Tokens)):
+    for i in range(rule.TokenLength):
         if rule.Tokens[i].SubtreePointer:
             VirtualRuleToken += 1
         if rule.Tokens[i].pointer:
@@ -105,14 +108,14 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         raise(RuntimeError("wrong string to apply rule?"))
     StoreWinningRule(strtokens, rule, StartPosition)
 
-    if len(rule.Tokens) == 0:
+    if rule.TokenLength == 0:
         logging.error("Lenth = 0, error! Need to revisit the parsing process")
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
 
     #MarkTempPointer(strtokens, rule, StartPosition)
     VirtualRuleToken = 0
-    for i in range(len(rule.Tokens)):
+    for i in range(rule.TokenLength):
         if rule.Tokens[i].SubtreePointer:
             VirtualRuleToken += 1
 
@@ -178,6 +181,7 @@ def ListMatch_UsingCache(list1, list2):
     return True
 
 
+#FailedRules: gets set according to RuleIdenticalNetwork. gets reset when apply rule.
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
     i = 0
@@ -192,15 +196,20 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
         WinningRuleSize = 0
+        FailedRules = set()
         for rule in rulegroup.RuleList:
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
+            if rule.ID in FailedRules:
+                continue
 
             if rule.norms and not ListMatch(strtokenlist.norms[i:i+rule.StrTokenLength], rule.norms):
+                if (rule.ID, rule.TokenLength) in Rules.RuleIdenticalNetwork:
+                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, rule.TokenLength)])
                 continue
             counter += 1
-            #logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(len(rule.Tokens)) + " |" + rule.Origin )
-            result = HeadMatch(strtokenlist, i, rule.Tokens)
+            #logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(rule.TokenLength) + " |" + rule.Origin )
+            result = HeadMatch(strtokenlist, i, rule, FailedRules)
             if result:
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
@@ -341,31 +350,31 @@ def LoadCommon():
     #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
 
     XLocation = '../../fsa/X/'
-    #
-    # Lexicon.LoadLexicon(XLocation + 'LexX.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
-    # Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
-    #
-    # Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-    # Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-    # Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
-    #
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
-    # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
-    #
-    # Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
-    # Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
-    # Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
+
+    Lexicon.LoadLexicon(XLocation + 'LexX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
+
+    Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
+    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
+    Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
+
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
+    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
+
+    Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
+    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
+    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 

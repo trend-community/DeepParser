@@ -237,6 +237,7 @@ class SentenceNode(object):
         Lexicon.ApplyWordLengthFeature(self)
         self.Head0Text = ''
         self.TempPointer = ''
+        self.FailedRuleTokens = set()
 
     #     #From webservice, only word/StartOffset/features are set,
     #     #    and the features are "list", need to change to "set"
@@ -285,6 +286,7 @@ class SentenceNode(object):
             self.features.update(FeatureNode.ancestors)
 
     def ApplyActions(self, actinstring):
+        self.FailedRuleTokens.clear()
         Actions = actinstring.split()
         #logging.debug("Word:" + self.text)
 

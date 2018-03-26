@@ -2,6 +2,7 @@
 import copy
 from datetime import datetime
 from utils import *
+import utils
 
 # import FeatureOntology
 # usage: to output rules list, run:
@@ -12,7 +13,7 @@ from LogicOperation import SeparateOrBlocks as LogicOperation_SeparateOrBlocks
 import FeatureOntology
 
 RuleGroupDict = {}
-
+RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
 
 class RuleGroup(object):
     idCounter = 0
@@ -99,7 +100,16 @@ class RuleToken(object):
         self.OrFeatures = set()
         self.NotFeatures = set()
         self.AndText = ''
+        self.AndTextMatchtype = ''
         self.NotText = ''
+        self.NotTextMatchtype = ''
+        self.FullString = True
+
+    def __eq__(self, other):    #only compare the matching part, not the action part.
+        if self.word.strip() == other.word.strip(): # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatures...
+            return True
+        else:
+            return False
 
     def __str__(self):
         output = ""
@@ -139,6 +149,7 @@ class Rule:
         self.Origin = ''
         self.RuleContent = ''
         self.Tokens = []
+        self.TokenLength = 0
         self.StrTokenLength = -1
         self.Chunks = []
         self.comment = ''
@@ -149,7 +160,8 @@ class Rule:
         for t in self.Tokens:
             if t.SubtreePointer:
                 VirtualTokenNum += 1
-        self.StrTokenLength = len(self.Tokens) - VirtualTokenNum
+        self.TokenLength = len(self.Tokens)
+        self.StrTokenLength = self.TokenLength - VirtualTokenNum
 
     def __lt__(self, other):
         return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
@@ -245,6 +257,8 @@ class Rule:
             output += self.RuleName + " == {"
 
             if len(self.Tokens) == 0:
+                #logging.error("This rule does not have ruletoken:" + self.RuleContent + " " + self.comment)
+                # mostly for the Macro.
                 output += self.RuleContent
         else:
             output += "[RuleName]=" + self.RuleName + '\n'
@@ -289,12 +303,12 @@ class Rule:
             strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
                         "norms, origin, comment, createtime, verifytime) " \
                             "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, len(self.Tokens), 1,
+            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
                                  '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
             self.ID = cur.lastrowid
 
         strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer) values(?, ?, ?, ?, ?, ?)"
-        for i in range(len(self.Tokens)):
+        for i in range(self.TokenLength):
             cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
         strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Chunks)):
@@ -908,12 +922,36 @@ def LoadRules(RuleLocation):
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         _PreProcess_CompileHash(rulegroup.RuleList)
-        rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: len(x.Tokens), reverse=True)
+        rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: x.TokenLength, reverse=True)
         _OutputRuleDB(rulegroup)
 
+    BuildIdenticalNetwork(rulegroup)
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
     logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
+
+
+def BuildIdenticalNetwork(rg):
+    for rule in rg.RuleList:
+        for i in range( rule.TokenLength-1):
+            if rule.Tokens[i].word == "[]" or rule.Tokens[i].word == "":
+                continue
+            for comparerule in rg.RuleList:
+                if comparerule.ID == rule.ID:
+                    continue
+                if comparerule.TokenLength < i+1:
+                    continue
+                if comparerule.TokenLength > rule.TokenLength:
+                    continue    #only care for the rules that is shorter.
+                Identical = True
+                for j in range(i+1):
+                    if rule.Tokens[j] != comparerule.Tokens[j]:
+                        Identical = False
+                        break
+                if Identical:
+                    if (rule.ID, i) not in RuleIdenticalNetwork:
+                        RuleIdenticalNetwork[(rule.ID, i)] = set()
+                    RuleIdenticalNetwork[(rule.ID, i)].add(comparerule.ID)
 
 
 def RuleFileOlderThanDB(RuleLocation):
@@ -946,7 +984,7 @@ def LoadRulesFromDB(rulegroup):
     rulefileid = resultrecord[0]
 
     #order by tokenlength desc, and by hits desc.
-    strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
+    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment
                     from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? group by r.id
                         order by tokenlength desc, count(h.ruleid ) desc """
     # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
@@ -962,12 +1000,13 @@ def LoadRulesFromDB(rulegroup):
         rule.ID = int(row[0])
         rule.RuleName = row[1]
         rule.StrTokenLength = int(row[2])
-        if row[3]:
-            rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") for x in row[3].split("/")]
+        rule.TokenLength = int(row[3])
+        if row[4]:
+            rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") for x in row[4].split("/")]
         else:
             rule.norms = []
-        rule.Origin = row[4]
-        rule.comment = row[5]
+        rule.Origin = row[5]
+        rule.comment = row[6]
 
         cur.execute(strsql_node, [rule.ID,])
         noderows = cur.fetchall()
@@ -1065,7 +1104,7 @@ def _ExpandRuleWildCard_List(OneList):
     for rule in OneList:
         Expand = False
         # for token in rule.Tokens:
-        for tokenindex in range(len(rule.Tokens)):
+        for tokenindex in range(rule.TokenLength):
             token = rule.Tokens[tokenindex]
             if token.repeat != [1, 1]:
                 for repeat_num in range(token.repeat[0], token.repeat[1] + 1):
@@ -1102,7 +1141,7 @@ def _ExpandRuleWildCard_List(OneList):
                         if origin_node.pointer:
                             NextIsPointer = True
                             NextPointer = origin_node.pointer
-                    for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                    for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                         new_node = copy.copy(rule.Tokens[tokenindex_post])
                         if tokenindex_post == tokenindex + 1:
                             if NextIsStart:
@@ -1185,7 +1224,7 @@ def _ExpandParenthesis(OneList):
             logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
             continue
         Expand = False
-        for tokenindex in range(len(rule.Tokens)):
+        for tokenindex in range(rule.TokenLength):
             if  _RemoveExcessiveParenthesis(rule.Tokens[tokenindex]):
                 RemovedExcessive = True
             token = rule.Tokens[tokenindex]
@@ -1217,7 +1256,7 @@ def _ExpandParenthesis(OneList):
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
                 for subtoken in subTokenlist:
                     newrule.Tokens.append(subtoken)
-                for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                     newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                 newrule.SetStrTokenLength()
                 OneList.append(newrule)
@@ -1294,7 +1333,7 @@ def _ExpandOrBlock(OneList):
             logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
             continue
         Expand = False
-        for tokenindex in range(len(rule.Tokens)):
+        for tokenindex in range(rule.TokenLength):
             token = rule.Tokens[tokenindex]
             orIndex = token.word.find(")|") + 1
             if orIndex <= 0:
@@ -1340,7 +1379,7 @@ def _ExpandOrBlock(OneList):
             for subtoken in subTokenlist:
                 newrule.Tokens.append(subtoken)
 
-            for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+            for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
             newrule.SetStrTokenLength()
             OneList.append(newrule)
@@ -1374,7 +1413,7 @@ def _ExpandOrBlock(OneList):
             for subtoken in subTokenlist:
                 newrule.Tokens.append(subtoken)
 
-            for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+            for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                 newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
             newrule.SetStrTokenLength()
             OneList.append(newrule)
@@ -1455,7 +1494,7 @@ def _ExpandOrToken(OneList):
             logging.error("Rule Name is too long. Stop processing this rule:\n" + str(rule))
             continue
         Expand = False
-        for tokenindex in range(len(rule.Tokens)):
+        for tokenindex in range(rule.TokenLength):
             token = rule.Tokens[tokenindex]
 
             if token.word.find("'|") > 0 or token.word.find("/|") > 0 or token.word.find("\"|") > 0 \
@@ -1483,7 +1522,7 @@ def _ExpandOrToken(OneList):
                     newrule.Tokens.append(node)
 
                     # right of the token:
-                    for tokenindex_post in range(tokenindex + 1, len(rule.Tokens)):
+                    for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                         newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
                     newrule.SetStrTokenLength()
                     newrule.Chunks = copy.copy(rule.Chunks)
@@ -1532,7 +1571,7 @@ def _PreProcess_CompileHash(OneList):
             for f in Features:
                 if f[0] == "!":
                     if "\"" in f or "'" in f or "/" in f:
-                        token.NotText = f
+                        token.NotText, token.NotTextMatchtype =  LogicOperation_CheckPrefix(f[1:])
                     else:
                         token.NotFeatures.add(FeatureOntology.GetFeatureID(f[1:]))
                 else:
@@ -1541,11 +1580,13 @@ def _PreProcess_CompileHash(OneList):
                     elif "\"" in f or "'" in f or "/" in f:
                         if token.AndText:
                             logging.error("There should be only one text in one token:" + str(rule))
-                        token.AndText = f
+                        token.AndText, token.AndTextMatchtype = LogicOperation_CheckPrefix(f)
                     else:
                         token.AndFeatures.add(FeatureOntology.GetFeatureID(f))
 
-
+            if utils.FeatureID_FULLSTRING in token.AndFeatures:
+                token.AndFeatures.remove(utils.FeatureID_FULLSTRING)
+                token.FullString = True
 
 def _CheckFeature_returnword(word):
     try:
