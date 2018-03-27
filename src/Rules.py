@@ -13,7 +13,7 @@ from LogicOperation import SeparateOrBlocks as LogicOperation_SeparateOrBlocks
 import FeatureOntology
 
 RuleGroupDict = {}
-RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
+#RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
 
 class RuleGroup(object):
     idCounter = 0
@@ -47,9 +47,9 @@ def ResetRules(rg):
 
 
 def ResetAllRules():
-    global RuleGroupDict, RuleIdenticalNetwork
+    global RuleGroupDict
     RuleGroupDict = {}
-    RuleIdenticalNetwork = {}
+    #RuleIdenticalNetwork = {}
 
 # If it is one line, that it is one rule;
 # if it has several lines in {} or () block, then it is one rule;
@@ -947,33 +947,33 @@ def LoadRules(RuleLocation):
         rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: x.TokenLength, reverse=True)
         _OutputRuleDB(rulegroup)
 
-    BuildIdenticalNetwork(rulegroup)
+    #BuildIdenticalNetwork(rulegroup)
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
     logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
 
 
-def BuildIdenticalNetwork(rg):
-    for rule in rg.RuleList:
-        for i in range( rule.TokenLength-1):
-            if rule.Tokens[i].word == "[]" or rule.Tokens[i].word == "":
-                continue
-            for comparerule in rg.RuleList:
-                if comparerule.ID == rule.ID:
-                    continue
-                if comparerule.TokenLength < i+1:
-                    continue
-                if comparerule.TokenLength > rule.TokenLength:
-                    continue    #only care for the rules that is shorter.
-                Identical = True
-                for j in range(i+1):
-                    if rule.Tokens[j] != comparerule.Tokens[j]:
-                        Identical = False
-                        break
-                if Identical:
-                    if (rule.ID, i) not in RuleIdenticalNetwork:
-                        RuleIdenticalNetwork[(rule.ID, i)] = set()
-                    RuleIdenticalNetwork[(rule.ID, i)].add(comparerule.ID)
+# def BuildIdenticalNetwork(rg):
+#     for rule in rg.RuleList:
+#         for i in range( rule.TokenLength-1):
+#             if rule.Tokens[i].word == "[]" or rule.Tokens[i].word == "":
+#                 continue
+#             for comparerule in rg.RuleList:
+#                 if comparerule.ID == rule.ID:
+#                     continue
+#                 if comparerule.TokenLength < i+1:
+#                     continue
+#                 if comparerule.TokenLength > rule.TokenLength:
+#                     continue    #only care for the rules that is shorter.
+#                 Identical = True
+#                 for j in range(i+1):
+#                     if rule.Tokens[j] != comparerule.Tokens[j]:
+#                         Identical = False
+#                         break
+#                 if Identical:
+#                     if (rule.ID, i) not in RuleIdenticalNetwork:
+#                         RuleIdenticalNetwork[(rule.ID, i)] = set()
+#                     RuleIdenticalNetwork[(rule.ID, i)].add(comparerule.ID)
 
 
 def RuleFileOlderThanDB(RuleLocation):

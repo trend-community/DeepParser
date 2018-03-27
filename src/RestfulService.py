@@ -108,7 +108,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', "Application/json; charset=utf-8")
         self.end_headers()
-        self.wfile.write("Reloaded!")
+        self.wfile.write("Reloaded!".encode("utf-8"))
 
     def GetFeatureID(self, word):
         self.send_response(200)

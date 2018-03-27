@@ -49,7 +49,7 @@ def OutputWinningRules():
 
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
-def HeadMatch(strTokenList, StartPosition, rule, FailedRules):
+def HeadMatch(strTokenList, StartPosition, rule):
     HaveTempPointer = False
 
     for i in range(rule.TokenLength):
@@ -58,8 +58,8 @@ def HeadMatch(strTokenList, StartPosition, rule, FailedRules):
         #    if not LogicMatch_old(strTokenList, i + StartPosition, ruleTokens[i].word, ruleTokens, i):
                 if HaveTempPointer:
                     RemoveTempPointer(strTokenList)
-                if (rule.ID, i) in Rules.RuleIdenticalNetwork:
-                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, i)])
+#                if (rule.ID, i) in Rules.RuleIdenticalNetwork:
+#                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, i)])
                 return False  #  this rule does not fit for this string
             if rule.Tokens[i].SubtreePointer:
                 StartPosition -= 1  # do not skip to next strToken, if this token is for Subtree.
@@ -204,12 +204,12 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 continue
 
             if rule.norms and not ListMatch(strtokenlist.norms[i:i+rule.StrTokenLength], rule.norms):
-                if (rule.ID, rule.TokenLength) in Rules.RuleIdenticalNetwork:
-                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, rule.TokenLength)])
+#                if (rule.ID, rule.TokenLength) in Rules.RuleIdenticalNetwork:
+#                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, rule.TokenLength)])
                 continue
             counter += 1
             #logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(rule.TokenLength) + " |" + rule.Origin )
-            result = HeadMatch(strtokenlist, i, rule, FailedRules)
+            result = HeadMatch(strtokenlist, i, rule)
             if result:
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
