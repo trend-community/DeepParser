@@ -48,7 +48,9 @@ def ResetRules(rg):
 
 def ResetAllRules():
     global RuleGroupDict
-    RuleGroupDict = {}
+    for rulefile in RuleGroupDict:
+        del RuleGroupDict[rulefile].RuleList[:]
+    RuleGroupDict.clear()
     #RuleIdenticalNetwork = {}
 
 # If it is one line, that it is one rule;
@@ -305,14 +307,15 @@ class Rule:
             cur.execute(strsql, [self.ID, ])
             strsql = "DELETE from rulechunks where ruleid=?"
             cur.execute(strsql, [self.ID, ])
+            strsql = "DELETE from ruleinfo where id=?"
+            cur.execute(strsql, [self.ID, ])
 
-        else:
-            strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
-                        "norms, origin, comment, createtime, verifytime) " \
-                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-            cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
-                                 '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
-            self.ID = cur.lastrowid
+        strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
+                    "norms, origin, comment, createtime, verifytime) " \
+                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+        cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
+                             '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
+        self.ID = cur.lastrowid
 
         strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype) values(?, ?, ?, ?, ?, ?, ?, ?, ?)"
         strsql_node_feature = "INSERT into rulenode_features (rulenodeid, featureid, type) values(?,?,?)"
@@ -929,8 +932,6 @@ def LoadRules(RuleLocation):
         #             unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
         #             rulegroup.UnitTest.append(unittest)
 
-        logging.info("Before expanding, Rule Size:" + str(len(rulegroup.RuleList)))
-
         while _ExpandRuleWildCard_List(rulegroup.RuleList):
             pass
 
@@ -991,7 +992,7 @@ def RuleFileOlderThanDB(RuleLocation):
     FileDBTime = resultrecord[1]    #utc time.
     FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
 
-    logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
+#    logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
     return FileDiskTime < FileDBTime
 
 
@@ -1007,7 +1008,7 @@ def LoadRulesFromDB(rulegroup):
 
     #order by tokenlength desc, and by hits desc.
     strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment
-                    from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? group by r.id
+                    from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? and status=1 group by r.id
                         order by tokenlength desc, count(h.ruleid ) desc """
     # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
     #                 from ruleinfo r    where rulefileid=?

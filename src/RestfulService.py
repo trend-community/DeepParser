@@ -6,7 +6,8 @@ except: #windows? ignore it.
     pass
 import ProcessSentence, FeatureOntology
 import Graphviz
-from Rules import ResetAllRules, LoadRules
+#from Rules import ResetAllRules, LoadRules
+import Rules
 import utils
 from datetime import datetime
 
@@ -99,13 +100,14 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         if ReloadTask.lower() == "/lexicon":
             #Not ready to work on reloading lexicon yet.
             pass
-        ResetAllRules()
+        Rules.ResetAllRules()
+        ProcessSentence.WinningRuleDict.clear()
         XLocation = '../../fsa/X/'
         for action in ProcessSentence.PipeLine:
             if action.startswith("FSA"):
                 Rulefile = action[3:].strip()
                 Rulefile = os.path.join(XLocation, Rulefile)
-                LoadRules(Rulefile)
+                Rules.LoadRules(Rulefile)
 
         self.send_response(200)
         self.send_header('Content-type', "Application/json; charset=utf-8")
