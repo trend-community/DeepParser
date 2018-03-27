@@ -381,22 +381,12 @@ def LoadCommon():
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
     logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
-    if ParserConfig.get("main", "runtype") == "Debug":
-        RuleFolder = XLocation
-    else:
-        RuleFolder = ParserConfig.get("main", "compiledfolder")
+    RuleFolder = XLocation
     for action in PipeLine:
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             Rulefile = os.path.join(RuleFolder, Rulefile)
             Rules.LoadRules(Rulefile)
-
-    # Rules.ExpandRuleWildCard()
-    # Rules.ExpandParenthesisAndOrBlock()
-    # Rules.ExpandRuleWildCard()
-    # Rules.PreProcess_CheckFeatures()
-    # Rules.PreProcess_CompileHash()
-    # Rules.SortByLength()
 
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")

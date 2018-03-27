@@ -1,7 +1,6 @@
 
-import FeatureOntology
 from utils import *
-import utils
+
 #not, and, or
 #compare type: word/norm/stem/feature
 
@@ -230,10 +229,10 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         logging.error("In LogicMatch(): Can't find strToken!")
         return False
 
-    # if RuleToken.word in strToken.FailedRuleTokens:
-    #     return False
+    if RuleToken.word in strToken.FailedRuleTokens:
+        return False
 
-    #AndFeatures, OrFeatures, NotFeatures, AndText, NotText
+    #AndFeatures, OrFeatures, NotFeatures, AndText, NotTexts
     if RuleToken.AndFeatures:
         for f in RuleToken.AndFeatures:
             if f not in strToken.features:
@@ -246,7 +245,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
 
     if RuleToken.AndText:
         #ruletext, matchtype = CheckPrefix(RuleToken.AndText)
-        if RuleToken.FullString and strToken.Head0Text:
+        if  strToken.Head0Text and not RuleToken.FullString:
             word = strToken.Head0Text
         else:
             if RuleToken.AndTextMatchtype == "text":
@@ -263,17 +262,19 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     if RuleToken.OrFeatures:
         CommonOrFeatures = RuleToken.OrFeatures.intersection(strToken.features)
         if len(CommonOrFeatures) == 0:
+#            strToken.FailedRuleTokens.add(RuleToken.word)
             return False    #we need at least one common features.
 
     if RuleToken.NotFeatures:
         for f in RuleToken.NotFeatures:
             if f in strToken.features:
+#                strToken.FailedRuleTokens.add(RuleToken.word)
                 return False
         # CommonNotFeatures = RuleToken.NotFeatures.intersection(strToken.features)
         # if len(CommonNotFeatures) > 0:
         #     return False    #can't have any of NotFeatures
 
-    if RuleToken.NotText:
+    if RuleToken.NotTexts:
         #ruletext, matchtype = CheckPrefix(RuleToken.NotText)
         if RuleToken.FullString and strToken.Head0Text:
             word = strToken.Head0Text
@@ -284,8 +285,10 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
                 word = strToken.norm
             else:
                 word = strToken.atom
-        if LogicMatchText(RuleToken.NotText, word):
-            return False
+        for NotText in RuleToken.NotTexts:
+            if LogicMatchText(NotText, word):
+    #            strToken.FailedRuleTokens.add(RuleToken.word)
+                return False
 
     return True
 

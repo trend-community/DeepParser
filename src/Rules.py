@@ -46,6 +46,11 @@ def ResetRules(rg):
     rg.MacroDict = {}  # not sure which one to use yet
 
 
+def ResetAllRules():
+    global RuleGroupDict, RuleIdenticalNetwork
+    RuleGroupDict = {}
+    RuleIdenticalNetwork = {}
+
 # If it is one line, that it is one rule;
 # if it has several lines in {} or () block, then it is one rule;
 # otherwise (it has multiple lines but not in one block), process the first line,
@@ -101,7 +106,7 @@ class RuleToken(object):
         self.NotFeatures = set()
         self.AndText = ''
         self.AndTextMatchtype = ''
-        self.NotText = ''
+        self.NotTexts = set()
         self.NotTextMatchtype = ''
         self.FullString = True
 
@@ -294,6 +299,8 @@ class Rule:
             self.ID = resultrecord[0]
             strsql = "UPDATE ruleinfo set status=1, verifytime=DATETIME('now') where ID=?"
             cur.execute(strsql, [self.ID,])
+            strsql = "DELETE from rulenode_features where rulenodeid in (SELECT ID from rulenodes where ruleid=?)"
+            cur.execute(strsql, [self.ID, ])
             strsql = "DELETE from rulenodes where ruleid=?"
             cur.execute(strsql, [self.ID, ])
             strsql = "DELETE from rulechunks where ruleid=?"
@@ -307,9 +314,22 @@ class Rule:
                                  '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
             self.ID = cur.lastrowid
 
-        strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer) values(?, ?, ?, ?, ?, ?)"
+        strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype) values(?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        strsql_node_feature = "INSERT into rulenode_features (rulenodeid, featureid, type) values(?,?,?)"
+        strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
         for i in range(self.TokenLength):
-            cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer])
+            cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer,
+                        self.Tokens[i].AndText, self.Tokens[i].AndTextMatchtype, self.Tokens[i].NotTextMatchtype])
+            nodeid = cur.lastrowid
+            for fid in self.Tokens[i].AndFeatures:
+                cur.execute(strsql_node_feature, [nodeid, fid, 1])
+            for fid in self.Tokens[i].OrFeatures:
+                cur.execute(strsql_node_feature, [nodeid, fid, 2])
+            for fid in self.Tokens[i].NotFeatures:
+                cur.execute(strsql_node_feature, [nodeid, fid, 3])
+            for NotText in self.Tokens[i].NotTexts:
+                cur.execute(strsql_node_text, [nodeid, NotText, 2])
+
         strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Chunks)):
             cur.execute(strsql_chunk, [self.ID, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
@@ -909,6 +929,8 @@ def LoadRules(RuleLocation):
         #             unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
         #             rulegroup.UnitTest.append(unittest)
 
+        logging.info("Before expanding, Rule Size:" + str(len(rulegroup.RuleList)))
+
         while _ExpandRuleWildCard_List(rulegroup.RuleList):
             pass
 
@@ -955,7 +977,7 @@ def BuildIdenticalNetwork(rg):
 
 
 def RuleFileOlderThanDB(RuleLocation):
-    return False
+    #return False
     cur = DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
@@ -990,8 +1012,12 @@ def LoadRulesFromDB(rulegroup):
     # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
     #                 from ruleinfo r    where rulefileid=?
     #                     order by tokenlength desc"""
-    strsql_node = "SELECT matchbody, action, pointer, subtreepointer from rulenodes where ruleid=? order by sequence"
+    strsql_node = "SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"
+    strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
+    strsql_node_text = "select text from rulenode_texts where rulenodeid=? and type=?"
+#    strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
     strsql_chunk = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
+
     cur.execute(strsql_rule, [rulefileid, ])
     rows = cur.fetchall()
     for row in rows:
@@ -1012,10 +1038,32 @@ def LoadRulesFromDB(rulegroup):
         noderows = cur.fetchall()
         for noderow in noderows:
             token = RuleToken()
-            token.word = noderow[0]
-            token.action = noderow[1]
-            token.pointer = noderow[2]
-            token.SubtreePointer = noderow[3]
+            nodeid = int(noderow[0])
+            token.word = noderow[1]
+            token.action = noderow[2]
+            token.pointer = noderow[3]
+            token.SubtreePointer = noderow[4]
+            token.AndText = noderow[5]
+            token.AndTextMatchtype = noderow[6]
+            token.NotTextMatchtype = noderow[7]
+
+            cur.execute(strsql_node_feature, [nodeid, 1])
+            featurerows = cur.fetchall()
+            for featurerow in featurerows:
+                token.AndFeatures.add(int(featurerow[0]))
+            cur.execute(strsql_node_feature, [nodeid, 2])
+            featurerows = cur.fetchall()
+            for featurerow in featurerows:
+                token.OrFeatures.add(int(featurerow[0]))
+            cur.execute(strsql_node_feature, [nodeid, 3])
+            featurerows = cur.fetchall()
+            for featurerow in featurerows:
+                token.NotFeatures.add(int(featurerow[0]))
+            cur.execute(strsql_node_text, [nodeid, 2])
+            featurerows = cur.fetchall()
+            for featurerow in featurerows:
+                token.NotTexts.add(featurerow[0])
+
             rule.Tokens.append(token)
 
         cur.execute(strsql_chunk, [rule.ID,])
@@ -1558,12 +1606,6 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
 
 def _PreProcess_CompileHash(OneList):
     for rule in OneList:
-        rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
-                                                  and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else ''
-                      for token in rule.Tokens if not token.SubtreePointer ]
-        if len("".join(rule.norms)) == 0:
-            rule.norms = []
-
         for token in rule.Tokens:   #remove extra [] in match body.
             token.word = token.word.strip("[|]").strip()
 
@@ -1571,7 +1613,8 @@ def _PreProcess_CompileHash(OneList):
             for f in Features:
                 if f[0] == "!":
                     if "\"" in f or "'" in f or "/" in f:
-                        token.NotText, token.NotTextMatchtype =  LogicOperation_CheckPrefix(f[1:])
+                        NotText, token.NotTextMatchtype =  LogicOperation_CheckPrefix(f[1:])
+                        token.NotTexts.add(NotText)
                     else:
                         token.NotFeatures.add(FeatureOntology.GetFeatureID(f[1:]))
                 else:
@@ -1587,6 +1630,15 @@ def _PreProcess_CompileHash(OneList):
             if utils.FeatureID_FULLSTRING in token.AndFeatures:
                 token.AndFeatures.remove(utils.FeatureID_FULLSTRING)
                 token.FullString = True
+
+        # rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
+        #                                           and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else ''
+        #               for token in rule.Tokens if not token.SubtreePointer ]
+        rule.norms = [token.AndText if token.AndTextMatchtype=='norm' and "-" not in token.AndText and "^" != token.AndText[0] else ''
+                      for token in rule.Tokens if token.SubtreePointer == '' ]
+        if len("".join(rule.norms)) == 0:
+            rule.norms = []
+
 
 def _CheckFeature_returnword(word):
     try:
@@ -1723,17 +1775,20 @@ def _OutputRuleDB(rulegroup):
     cur.execute(strsql, [rulefileid, startdatetime])
     cur.close()
     DBCon.commit()
-
-#sqlite3 parser.db
+"""
+sqlite3 parser.db
 ### ruleinfo.body is the body part of each token. for unique comparison.
-# CREATE TABLE rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
-# CREATE TABLE rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
-# CREATE TABLE sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
-# CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
-# CREATE TABLE rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , pointer TEXT, subtreepointer TEXT, CONSTRAINT unique_position UNIQUE(ruleid, sequence));
-# CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, origin TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
 
+CREATE TABLE rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
+CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, origin TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
+CREATE TABLE rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
+CREATE TABLE rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , pointer TEXT, subtreepointer TEXT, andtext TEXT, andtextmatchtype TEXT, nottext TEXT, nottextmatchtype TEXT, CONSTRAINT unique_position UNIQUE(ruleid, sequence));
+CREATE TABLE rulenode_features (rulenodeid INT, featureid INT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid, featureid));
+CREATE TABLE rulenode_texts (rulenodeid INT, `text` TEXT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid, `text`));
+CREATE TABLE sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
+CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
 
+"""
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
