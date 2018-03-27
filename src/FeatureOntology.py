@@ -225,7 +225,7 @@ def SearchFeatureOntology(featureID):
 def GetFeatureID(feature):
     if not _FeatureList:    #for some clients that the _FeatureList is not load locally.
         try:
-            GetFeatureIDURL = ParserConfig.get("main", "url_larestfulservice") + "/GetFeatureID/"
+            GetFeatureIDURL = ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
         except IOError:
             return -1
@@ -246,7 +246,7 @@ def GetFeatureID(feature):
 
 def GetFeatureName(featureID):
     if len(_FeatureList) == 0:
-        GetFeatureNameURL = ParserConfig.get("main", "url_larestfulservice") + "/GetFeatureName/"
+        GetFeatureNameURL = ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureName/"
         try:
             ret = requests.get(GetFeatureNameURL + str(featureID))
             ret.raise_for_status()

@@ -1634,7 +1634,7 @@ def _PreProcess_CompileHash(OneList):
         # rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
         #                                           and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else ''
         #               for token in rule.Tokens if not token.SubtreePointer ]
-        rule.norms = [token.AndText if token.AndTextMatchtype=='norm' and "-" not in token.AndText and "^" != token.AndText[0] else ''
+        rule.norms = [token.AndText.lower() if token.AndTextMatchtype=='norm' and "-" not in token.AndText and "^" != token.AndText[0] else ''
                       for token in rule.Tokens if token.SubtreePointer == '' ]
         if len("".join(rule.norms)) == 0:
             rule.norms = []
