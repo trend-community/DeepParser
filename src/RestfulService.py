@@ -63,12 +63,16 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             if  Type  == "simple":
                 output_type = "text/html;"
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+            elif  Type  == "simpleEx":
+                output_type = "text/plain;"
+                output_text = utils.OutputStringTokens_oneliner(nodes, mode = "simpleEx", NoFeature =True)
             elif Type == "json2":
                 output_type = "text/html;"
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
             elif Type == "parsetree":
                 output_type = "text/html;"
                 orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON(), Debug=Debug)
+                logging.info(str(orgdata))
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
                 if Debug:

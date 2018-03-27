@@ -264,6 +264,30 @@ class SentenceNode(object):
             output += ":" + featureString
         return output
 
+    def oneliner_ex(self):
+        output = ""
+        if self.sons:
+            #output += "<"
+            output += "&lt;"
+
+            # add BarFeature and UpperRelationship info
+            feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+            BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
+            if BarFeature:
+                output += BarFeature
+                if self.UpperRelationship:
+                    output += "-" + self.UpperRelationship + ' '
+                else:
+                    output += ' '
+
+            for son in self.sons:
+                output += son.oneliner_ex() + " "
+            output = output.strip() + "&gt;"
+        else:
+            output += self.text
+        return output.strip()
+
+
     def oneliner(self, NoFeature = True):
         output = ""
         if self.sons:
@@ -278,6 +302,7 @@ class SentenceNode(object):
             if featureString:
                 output += ":" + featureString + ";"
         return output.strip()
+
 
     def ApplyFeature(self, featureID):
         self.features.add(featureID)

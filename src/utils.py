@@ -238,14 +238,18 @@ def OutputStringTokens_json(strTokens):
     return output
 
 
-def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
+def OutputStringTokens_oneliner(strTokenList, mode='simple', NoFeature=False):
     output = ""
     node = strTokenList.head
     while node:
         if output:
             output += " "
-        output += node.oneliner(NoFeature)
+        if mode == 'simpleEx':
+            output += node.oneliner(NoFeature)
+        else:
+            output += node.oneliner_ex()
         node = node.next
+    logging.info('final output ' + output )
     return output
 
 
