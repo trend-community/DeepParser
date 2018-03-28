@@ -508,13 +508,7 @@ def _Tokenize_Space(sentence):
 
 
 # for the mix of Chinese/Ascii. Should be called for all sentences.
-def Tokenize_CnEnMix_not_mature(sentence):
-    subsentence = []
-    subsentence_isascii = []
-    isascii = True
-    isdigit = True
-    isascii_prev = True     #will be overwritten immediately when i==0
-    substart = 0
+def Tokenize_CnEnMix(sentence):
     sentence = ReplaceCuobieziAndFanti(sentence)
 
     segmentedlist = _Tokenize_Lexicon_minseg(sentence)
@@ -523,37 +517,70 @@ def Tokenize_CnEnMix_not_mature(sentence):
     start = 0
     SpaceQ = False
     HanziQ = False
+    spacetoken = None
+    attribute_prev = None
     for t in segmentedlist:
-        if t[0] == " ": #
+        isspace = t[0].isspace()
+        if isspace: #
+            attribute_prev = None
             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
-            if HanziQ:
-                token = SentenceNode(t)
-                token.StartOffset = start
-                token.EndOffset = start + len(t)
-                token.ApplyFeature(utils.FeatureID_CM)
+            if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
+                spacetoken = SentenceNode(t)
+                spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
+                spacetoken.atom = ' '
+                spacetoken.StartOffset = start
+                spacetoken.EndOffset = start + len(t)
+                spacetoken.ApplyFeature(utils.FeatureID_CM)
                 HanziQ = False
-                TokenList.append(token)
+                #TokenList.append(spacetoken)
             SpaceQ = True
             start = start + len(t)
             continue
-        token = SentenceNode(t)
-        token.StartOffset = start
-        token.EndOffset = start + len(t)
-        HanziQ = not IsAscii(t)
 
-        if SpaceQ:
-            token.ApplyFeature(utils.FeatureID_SpaceQ)
-            SpaceQ = False
+        Hanzi = not IsAscii(t)
+        ispunctuate = t[0] in string.punctuation
+        if ispunctuate or Hanzi or len(t) > 1:         #when len(t)>1, that is a word.
+            attribute_prev = None
+            token = SentenceNode(t)
+            token.StartOffset = start
+            token.EndOffset = start + len(t)
+            HanziQ = not IsAscii(t)
 
-        TokenList.append(token)
-        start = start + len(t)
+            if SpaceQ:
+                token.ApplyFeature(utils.FeatureID_SpaceQ)
+                SpaceQ = False
+                if HanziQ and not IsAscii(TokenList.tail.norm):
+                    #if the previous is space, the last one in TokenList is Hanzi, and current one is Hanzi
+                    # then add space token with the CM feature.
+                    TokenList.append(spacetoken)
+
+            TokenList.append(token)
+            start = start + len(t)
+            continue
+
+        #t is len of 1.
+        isdigit = t.isdigit()
+        isalpha = t.isalpha()
+        if attribute_prev == [Hanzi, isdigit, isalpha, isspace]:
+            TokenList.tail.text += t
+            TokenList.tail.norm += t
+            TokenList.tail.atom += t
+            TokenList.tail.EndOffset += 1
+            Lexicon.ApplyWordLengthFeature(TokenList.tail)
+            start += 1
+        else:
+            attribute_prev = [Hanzi, isdigit, isalpha, isspace]
+            token = SentenceNode(t)
+            TokenList.append(token)
+            token.StartOffset = start
+            token.EndOffset = start + 1
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
     return TokenList
 
 
 # for the mix of Chinese/Ascii. Should be called for all sentences.
-def Tokenize_CnEnMix(sentence):
+def Tokenize_CnEnMix_origin(sentence):
     subsentence = []
     subsentence_isascii = []
     isascii = True
@@ -589,6 +616,7 @@ def Tokenize_CnEnMix(sentence):
     start = 0
     SpaceQ = False
     HanziQ = False
+    spacetoken = None
     for t in segmentedlist:
         if t[0] == " ": #
             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)

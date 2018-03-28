@@ -110,7 +110,7 @@ class RuleToken(object):
         self.AndTextMatchtype = ''
         self.NotTexts = set()
         self.NotTextMatchtype = ''
-        self.FullString = True
+        self.FullString = False
 
     def __eq__(self, other):    #only compare the matching part, not the action part.
         if self.word.strip() == other.word.strip(): # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatures...

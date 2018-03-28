@@ -33,5 +33,5 @@ echo " \c" >> revision.txt
 cd ../parser/data
 cp parser.empty.db parser.db
 
-cd ../parser/temp
-curl "http://localhost:5001/Reload/" > Reloaded.html &
+#cd ../temp
+#curl "http://localhost:5001/Reload/" > Reloaded.html &

@@ -347,7 +347,7 @@ def GenerateLexPlus():
                 # canPB feature
                 newWord = first + "得" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
                     newNode = LexiconNode(newWord)
@@ -368,7 +368,7 @@ def GenerateLexPlus():
                     newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
                     newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
-                        copyFeatures = featuresID.copy()
+                        copyFeatures = set(featuresID.copy())
                         if cpbID in copyFeatures:
                             copyFeatures.remove(cpbID)
                         copyFeatures.add(canPBID)
@@ -383,7 +383,7 @@ def GenerateLexPlus():
 
                 newWord = first + "不" + first + "得" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
@@ -399,7 +399,7 @@ def GenerateLexPlus():
 
                 newWord = first + "不" + first + "的" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
@@ -415,7 +415,7 @@ def GenerateLexPlus():
 
                 newWord = first + "没" + first + "得" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
@@ -432,7 +432,7 @@ def GenerateLexPlus():
 
                 newWord = first + "没" + first + "的" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
@@ -449,7 +449,7 @@ def GenerateLexPlus():
 
                 newWord = first + "不" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(cannotPBID)
@@ -470,7 +470,7 @@ def GenerateLexPlus():
                     newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
                     newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                     newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(cannotPBID)
@@ -488,7 +488,7 @@ def GenerateLexPlus():
                             newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
                             newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                             newWord not in _LexiconDictDefXOrig.keys()):
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(cannotPBID)
@@ -508,7 +508,7 @@ def GenerateLexPlus():
                     (newWord not in _LexiconDictL.keys())) and (newWord not in _LexiconDictI.keys()) and (
                     (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
-                        copyFeatures = featuresID.copy()
+                        copyFeatures = set(featuresID.copy())
                         if cpbID in copyFeatures:
                             copyFeatures.remove(cpbID)
                         copyFeatures.add(cannotPBID)
@@ -522,7 +522,7 @@ def GenerateLexPlus():
                         logging.debug("duplicate8 :" + newWord)
 
                 if notDeID in featuresID:
-                    copyFeatures = featuresID.copy()
+                    copyFeatures = set(featuresID.copy())
                     copyFeatures.add(canPBID)
                     newWord = first + "的" + second
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
@@ -557,7 +557,7 @@ def GenerateLexPlus():
                             logging.debug("duplicate10 :" + newWord)
 
             if abID in featuresID and len(word) == 2:
-                copyFeatures = featuresID.copy()
+                copyFeatures = set(featuresID.copy())
                 first = word[0]
                 second = word[1]
                 newWord = first + first + second + second

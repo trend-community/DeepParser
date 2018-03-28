@@ -187,3 +187,11 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(7, NodeList.size)
         self.assertEqual(NodeList.get(2).text, " ")
         self.assertEqual(NodeList.get(3).text, "之间")
+    def testSegmentation_mixed(self):
+
+        t = "ios5越狱,美化成功;哈哈"
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(12, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        self.assertEqual(NodeList.get(1).text, "5")
+        #self.assertEqual(NodeList.get(3).text, "之间")
