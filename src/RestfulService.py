@@ -67,7 +67,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
             elif  Type  == "simpleEx":
                 output_type = "text/plain;"
-                output_text = utils.OutputStringTokens_oneliner(nodes, mode = "simpleEx", NoFeature =True)
+                output_text = utils.OutputStringTokens_oneliner_ex(nodes, NoFeature =True)
             elif Type == "json2":
                 output_type = "text/html;"
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()

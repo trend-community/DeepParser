@@ -42,6 +42,12 @@ IMPOSSIBLESTRINGSLASH = "@#$%@slash@"   #for the norms only.
 # for baseline format
 SYM_HEAD = '^'
 SYM_LINK = '-'
+SYM_PARENTHESIS = { # key is embeddig depth, starting from 0
+        0 : ['<', '>'],
+        1 : ['(', ')'],
+        2 : ['[', ']'],
+        3 : ['{', '}']
+        }
 
 from enum import Enum
 class LexiconLookupSource(Enum):
@@ -242,18 +248,41 @@ def OutputStringTokens_json(strTokens):
     return output
 
 
-def OutputStringTokens_oneliner(strTokenList, mode='simple', NoFeature=False):
+def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
     output = ""
     node = strTokenList.head
     while node:
         if output:
             output += " "
-        if mode == 'simple':
-            output += node.oneliner(NoFeature)
-        elif mode == 'simpleEx':
-            output += node.oneliner_ex()
+        output += node.oneliner(NoFeature)
         node = node.next
-    logging.info('final output ' + output )
+    return output
+
+
+def OutputStringTokens_oneliner_ex(strTokenList, NoFeature=False):
+    output = ""
+    node = strTokenList.head
+    while node:
+        if output:
+            output += " "
+        layer_counter = [0]
+        output += node.oneliner_ex(layer_counter)
+        node = node.next
+
+    # urgly resolution for SPACE format
+    output = re.sub('(\(\S*?) +', r'\1  ', output)
+    output = re.sub('(\[\S*?) +', r'\1   ', output)
+    output = re.sub('(\{\S*?) +', r'\1    ', output)
+
+    output = re.sub('(\S*?)(\))', r'\1  \2', output)
+    output = re.sub('(\S*?)(\])', r'\1   \2', output)
+    output = re.sub('(\S*?)(\})', r'\1    \2', output)
+
+    output = re.sub('\> +\<', '> <', output)
+    output = re.sub('\) +\(', ')  (', output)
+    output = re.sub('\] +\[', ']   [', output)
+    output = re.sub('\} +\{', '}    {', output)
+
     return output
 
 
@@ -324,3 +353,12 @@ def DBInsertOrGetID(tablename, tablefields, values):
         resultid = cur.lastrowid
     cur.close()
     return resultid
+
+
+def format_parenthesis(text, count):
+    # get symbol by layer count
+    left_p = SYM_PARENTHESIS[count%4][0] * int(count/4 + 1)
+    right_p = SYM_PARENTHESIS[count%4][1] * int(count/4 + 1)
+    text += right_p # add right parenthesis
+    return text.replace(IMPOSSIBLESTRINGLP, left_p) # replace left symbol
+

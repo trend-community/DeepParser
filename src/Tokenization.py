@@ -291,16 +291,20 @@ class SentenceNode(object):
         return ret
         
         
-    def oneliner_ex(layer_counter, self):
+    def oneliner_ex(self, layer_counter):
         output = ""
-
         if self.sons:
-            layer_counter += 1
-            output += "<"
+            output += IMPOSSIBLESTRINGLP
             output += self.get_chunk_label() # add XP AND syntactic role label 
+
+            if layer_counter[0] > 0:
+                layer_counter[0] -= 1
+
             for son in self.sons:
-                output += son.oneliner_ex() + " "
-            output = output.strip() + ">"
+                output += son.oneliner_ex(layer_counter) + " "
+
+            output = utils.format_parenthesis(output.strip(), layer_counter[0])
+            layer_counter[0] += 1
         else:
             output += self.get_leaf_label() # add syntactic role label OR head label 
             output += self.text
