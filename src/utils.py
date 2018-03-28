@@ -39,6 +39,10 @@ IMPOSSIBLESTRINGCOLN = "@#$%@coln@"
 IMPOSSIBLESTRINGEQUAL = "@#$%@equal@"
 IMPOSSIBLESTRINGSLASH = "@#$%@slash@"   #for the norms only.
 
+# for baseline format
+SYM_HEAD = '^'
+SYM_LINK = '-'
+
 from enum import Enum
 class LexiconLookupSource(Enum):
     Exclude = 0
@@ -244,9 +248,9 @@ def OutputStringTokens_oneliner(strTokenList, mode='simple', NoFeature=False):
     while node:
         if output:
             output += " "
-        if mode == 'simpleEx':
+        if mode == 'simple':
             output += node.oneliner(NoFeature)
-        else:
+        elif mode == 'simpleEx':
             output += node.oneliner_ex()
         node = node.next
     logging.info('final output ' + output )
