@@ -84,6 +84,11 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(NodeList.size, 4)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
+        t = "有 "
+        NodeList = Tokenize(t)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(NodeList.size, 5)
+
         t = "很少有 科普"
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())

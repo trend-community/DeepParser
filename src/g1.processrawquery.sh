@@ -19,10 +19,12 @@
 #  nohup sh g1.processrawquery.sh /nlpengine.dev/queries/data/g0.raw.txt ../data/g0.P /nlpengine.dev/fsa/X/Q/rule /nlpengine.dev/fsa/X/Q/lexicon /nlpengine.dev/fsa/X/Q/temp /nlpengine.dev/fsa/X/AllLexicon.txt &
 
 mkdir -p $5
-sed -e "s/[\x00\x02-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
+perl -pi -e 's/\x01/\t/g' $1
+
+sed -e "s/[\x00-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
 sed -e "s/[[:punct:]]/ /g" $5/raw_wo_ctrl2.txt > $5/raw_wo_ctrl.txt
-LC_ALL=C grep -Pv "\x01[1-9]$" $5/raw_wo_ctrl.txt  > $5/raw_wo_ctrl.10plus.txt
-LC_ALL=C grep -Pv "\x01[1-9][0-0]$" $5/raw_wo_ctrl.10plus.txt  > $5/raw_wo_ctrl.100plus.txt
+LC_ALL=C grep -Pv "\t[1-9]$" $5/raw_wo_ctrl.txt  > $5/raw_wo_ctrl.10plus.txt
+LC_ALL=C grep -Pv "\t[1-9][0-0]$" $5/raw_wo_ctrl.10plus.txt  > $5/raw_wo_ctrl.100plus.txt
 python3 g1.norm.py $5/raw_wo_ctrl.100plus.txt ../../fsa/X/LexBlacklist.txt ../../fsa/X/LexBlacklist_TopChars.txt $5/dictoutput.txt $2 2>../temp/g1.norm.error.txt
 
 python3 g1.generatewordlist.py $5 $2     2>../temp/g1.generatewordlist.error.txt

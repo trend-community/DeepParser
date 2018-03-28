@@ -6,8 +6,10 @@ except: #windows? ignore it.
     pass
 import ProcessSentence, FeatureOntology
 import Graphviz
-from Rules import ResetAllRules, LoadRules
+#from Rules import ResetAllRules, LoadRules
+import Rules
 import utils
+from datetime import datetime
 
 from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
 #from urlparse import urlparse, parse_qs
@@ -31,8 +33,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.GetFeatureID(link.path[14:])
             elif link.path.startswith('/GetFeatureName/'):
                 self.GetFeatureName(int(link.path[16:]))
-            elif link.path.startswith('/Reload/'):
-                self.Reload(link.path[8:])
+            elif link.path.startswith('/Reload'):
+                self.Reload(link.path[7:])
             elif link.path in ['/gchart_loader.js', '/favicon.ico']:
                 self.feed_file(link.path[1:])
             else:
@@ -99,20 +101,24 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             self.send_response(500)
 
     def Reload(self, ReloadTask):
-        if ReloadTask.lower() == "lexicon":
+        if ReloadTask.lower() == "/lexicon":
+            #Not ready to work on reloading lexicon yet.
             pass
-        ResetAllRules()
-        XLocation = '../../fsa/X/'
-        for action in ProcessSentence.PipeLine:
-            if action.startswith("FSA"):
-                Rulefile = action[3:].strip()
-                Rulefile = os.path.join(XLocation, Rulefile)
-                LoadRules(Rulefile)
+        Rules.ResetAllRules()
+        ProcessSentence.WinningRuleDict.clear()
+        # XLocation = '../../fsa/X/'
+        # for action in ProcessSentence.PipeLine:
+        #     if action.startswith("FSA"):
+        #         Rulefile = action[3:].strip()
+        #         Rulefile = os.path.join(XLocation, Rulefile)
+        #         Rules.LoadRules(Rulefile)
 
         self.send_response(200)
         self.send_header('Content-type', "Application/json; charset=utf-8")
         self.end_headers()
-        self.wfile.write("Reloaded!".encode("utf-8"))
+        Reply = "Reloaded rules at " + str(datetime.now())
+
+        self.wfile.write(Reply.encode("utf-8"))
 
     def GetFeatureID(self, word):
         self.send_response(200)

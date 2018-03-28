@@ -108,7 +108,7 @@ class SentenceLinkedList:
         self.norms = []
         p = self.head
         while p:
-            self.norms += [(p.norm, p.Head0Text)]
+            self.norms += [(p.norm.lower(), p.Head0Text.lower())]
             p = p.next
         self.get_cache.clear()
 
@@ -482,6 +482,51 @@ def _Tokenize_Space(sentence):
     if substart < len(sentence):
         segments += [sentence[substart:]]
     return segments
+
+
+# for the mix of Chinese/Ascii. Should be called for all sentences.
+def Tokenize_CnEnMix_not_mature(sentence):
+    subsentence = []
+    subsentence_isascii = []
+    isascii = True
+    isdigit = True
+    isascii_prev = True     #will be overwritten immediately when i==0
+    substart = 0
+    sentence = ReplaceCuobieziAndFanti(sentence)
+
+    segmentedlist = _Tokenize_Space(sentence)
+
+    TokenList = SentenceLinkedList()
+    start = 0
+    SpaceQ = False
+    HanziQ = False
+    for t in segmentedlist:
+        if t[0] == " ": #
+            TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
+            if HanziQ:
+                token = SentenceNode(t)
+                token.StartOffset = start
+                token.EndOffset = start + len(t)
+                token.ApplyFeature(utils.FeatureID_CM)
+                HanziQ = False
+                TokenList.append(token)
+            SpaceQ = True
+            start = start + len(t)
+            continue
+        token = SentenceNode(t)
+        token.StartOffset = start
+        token.EndOffset = start + len(t)
+        HanziQ = not IsAscii(t)
+
+        if SpaceQ:
+            token.ApplyFeature(utils.FeatureID_SpaceQ)
+            SpaceQ = False
+
+        TokenList.append(token)
+        start = start + len(t)
+
+#    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+    return TokenList
 
 
 # for the mix of Chinese/Ascii. Should be called for all sentences.

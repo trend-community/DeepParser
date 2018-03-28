@@ -106,8 +106,8 @@ for line in fin:
     line = line.strip()
     # print line.encode('utf8')
     try:
-        s = line.split('\x01', 2)
-        [query, freqstring] = line.split('\x01', 2)
+        #s = line.split('\t', 2)
+        [query, freqstring] = line.split('\t', 2)
         freq = int(freqstring)
         if freq < Freq_Basic:       # remove item that less than 10.
             continue
