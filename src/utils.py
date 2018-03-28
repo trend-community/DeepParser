@@ -312,16 +312,18 @@ def LastItemIn2DArray(xlist, array):
 
 def InitDB():
     global DBCon
-    DBCon = sqlite3.connect('../data/parser.db')
-    cur = DBCon.cursor()
-    cur.execute("PRAGMA synchronous=2;")
-    cur.execute("PRAGMA journal_mode=0;")
-    cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
-    cur.close()
-    DBCon.commit()
-    logging.info("DBCon Init")
-    atexit.register(CloseDB)
-
+    try:
+        DBCon = sqlite3.connect('../data/parser.db')
+        cur = DBCon.cursor()
+        cur.execute("PRAGMA synchronous=2;")
+        cur.execute("PRAGMA journal_mode=0;")
+        cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
+        cur.close()
+        DBCon.commit()
+        logging.info("DBCon Init")
+        atexit.register(CloseDB)
+    except sqlite3.OperationalError:
+        logging.error("Database file does not exists!")
 
 def CloseDB():
     DBCon.commit()

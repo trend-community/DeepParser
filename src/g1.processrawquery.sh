@@ -21,7 +21,7 @@
 mkdir -p $5
 perl -pi -e 's/\x01/\t/g' $1
 
-LC_ALL=C sed -e "s/[\x00-\x09\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt
+LC_ALL=C sed -e "s/[\x00-\x08\x0b-\x0c\x0e-\x1a]//g" $1 > $5/raw_wo_ctrl2.txt   #only keep \t \r \n
 LC_ALL=C sed -e "s/[[:punct:]]/ /g" $5/raw_wo_ctrl2.txt > $5/raw_wo_ctrl.txt
 LC_ALL=C grep -Pv "\t[1-9]$" $5/raw_wo_ctrl.txt  > $5/raw_wo_ctrl.10plus.txt
 LC_ALL=C grep -Pv "\t[1-9][0-0]$" $5/raw_wo_ctrl.10plus.txt  > $5/raw_wo_ctrl.100plus.txt

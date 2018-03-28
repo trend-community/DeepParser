@@ -1,6 +1,8 @@
 import unittest
 from Tokenization import *
 
+from FeatureOntology import LoadFeatureOntology
+LoadFeatureOntology('../../fsa/Y/feature.txt')
 class TokenizationTest(unittest.TestCase):
     def testToken(self):
         t = SentenceNode("good")
@@ -24,9 +26,15 @@ class TokenizationTest(unittest.TestCase):
         t = "this is a good desk, for study"
         NodeList = Tokenize(t)
         print(NodeList)
+        self.assertEqual(NodeList.size, 8)
 
         NodeList.combine(7, 1)
         print(NodeList)
+        self.assertEqual(NodeList.size, 8)
+
+        NodeList.combine(6, 2)
+        print(NodeList)
+        self.assertEqual(NodeList.size, 7)
 
     def testListChinese(self):
         t = "中文语义识别研究"
@@ -87,7 +95,7 @@ class TokenizationTest(unittest.TestCase):
         t = "有 "
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(NodeList.size, 5)
+        self.assertEqual(NodeList.size, 1)
 
         t = "很少有 科普"
         NodeList = Tokenize(t)
@@ -170,7 +178,7 @@ class TokenizationTest(unittest.TestCase):
         t = "a    beautiful 巴西 brazil 在   north  america"  # 2/2
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(9, NodeList.size)
+        self.assertEqual(7, NodeList.size)
         self.assertEqual(NodeList.get(2).text, "巴西")
 
         t = "a 中文 之间的    空格"  # 2/2

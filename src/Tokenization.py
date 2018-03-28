@@ -517,7 +517,7 @@ def Tokenize_CnEnMix_not_mature(sentence):
     substart = 0
     sentence = ReplaceCuobieziAndFanti(sentence)
 
-    segmentedlist = _Tokenize_Space(sentence)
+    segmentedlist = _Tokenize_Lexicon_minseg(sentence)
 
     TokenList = SentenceLinkedList()
     start = 0
@@ -592,13 +592,15 @@ def Tokenize_CnEnMix(sentence):
     for t in segmentedlist:
         if t[0] == " ": #
             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
-            if HanziQ:
-                token = SentenceNode(t)
-                token.StartOffset = start
-                token.EndOffset = start + len(t)
-                token.ApplyFeature(utils.FeatureID_CM)
+            if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
+                spacetoken = SentenceNode(t)
+                spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
+                spacetoken.atom = ' '
+                spacetoken.StartOffset = start
+                spacetoken.EndOffset = start + len(t)
+                spacetoken.ApplyFeature(utils.FeatureID_CM)
                 HanziQ = False
-                TokenList.append(token)
+                #TokenList.append(spacetoken)
             SpaceQ = True
             start = start + len(t)
             continue
@@ -610,6 +612,10 @@ def Tokenize_CnEnMix(sentence):
         if SpaceQ:
             token.ApplyFeature(utils.FeatureID_SpaceQ)
             SpaceQ = False
+            if HanziQ and not IsAscii(TokenList.tail.norm):
+                #if the previous is space, the last one in TokenList is Hanzi, and current one is Hanzi
+                # then add space token with the CM feature.
+                TokenList.append(spacetoken)
 
         TokenList.append(token)
         start = start + len(t)
