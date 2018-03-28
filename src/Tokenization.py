@@ -264,6 +264,53 @@ class SentenceNode(object):
             output += ":" + featureString
         return output
 
+
+    def get_chunk_label(self):
+        feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
+        if BarFeature:
+            if self.UpperRelationship == 'H':
+                return SYM_HEAD + BarFeature + ' '
+            elif self.UpperRelationship:
+                return BarFeature + SYM_LINK + self.UpperRelationship + ' '
+            else:
+                return BarFeature + ' '
+        return ''  
+        
+        
+    def get_leaf_label(self):
+        ret = ''
+        feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
+        if self.UpperRelationship == 'H':
+            ret += SYM_HEAD
+        elif self.UpperRelationship: # add syntactic role lable
+            ret += self.UpperRelationship
+        if BarFeature and BarFeature[-1] == 'P': # BarFeature is XP
+            ret += BarFeature
+        return ret
+        
+        
+    def oneliner_ex(self, layer_counter):
+        output = ""
+        if self.sons:
+            output += IMPOSSIBLESTRINGLP
+            output += self.get_chunk_label() # add XP AND syntactic role label 
+
+            if layer_counter[0] > 0:
+                layer_counter[0] -= 1
+
+            for son in self.sons:
+                output += son.oneliner_ex(layer_counter) + " "
+
+            output = utils.format_parenthesis(output.strip(), layer_counter[0])
+            layer_counter[0] += 1
+        else:
+            output += self.get_leaf_label() # add syntactic role label OR head label 
+            output += self.text
+        return output.strip()
+
+
     def oneliner(self, NoFeature = True):
         output = ""
         if self.sons:
@@ -278,6 +325,7 @@ class SentenceNode(object):
             if featureString:
                 output += ":" + featureString + ";"
         return output.strip()
+
 
     def ApplyFeature(self, featureID):
         self.features.add(featureID)
