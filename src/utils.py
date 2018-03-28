@@ -274,9 +274,9 @@ def OutputStringTokens_oneliner_ex(strTokenList, NoFeature=False):
     output = re.sub('(\[\S*?) +', r'\1   ', output)
     output = re.sub('(\{\S*?) +', r'\1    ', output)
 
-    output = re.sub('(\S*?)(\))', r'\1  \2', output)
-    output = re.sub('(\S*?)(\])', r'\1   \2', output)
-    output = re.sub('(\S*?)(\})', r'\1    \2', output)
+    output = re.sub('(\S*?)(\)\)|\))', r'\1  \2', output)
+    output = re.sub('(\S*?)(\]\]|\])', r'\1   \2', output)
+    output = re.sub('(\S*?)(\}\}|\})', r'\1    \2', output)
 
     output = re.sub('\> +\<', '> <', output)
     output = re.sub('\) +\(', ')  (', output)
