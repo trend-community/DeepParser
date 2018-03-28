@@ -74,7 +74,6 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             elif Type == "parsetree":
                 output_type = "text/html;"
                 orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON(), Debug=Debug)
-                logging.info(str(orgdata))
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
                 if Debug:
