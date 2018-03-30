@@ -259,7 +259,21 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
     return output
 
 
-def OutputStringTokens_oneliner_ex(strTokenList, NoFeature=False):
+def OutputStringTokens_oneliner_merge(strTokenList):
+    output = ""
+    node = strTokenList.head
+    while node:
+        if output:
+            output += " "
+        layer_counter = [0]
+        output += node.oneliner_merge(layer_counter)
+        node = node.next
+    output = re.sub('[<>]', '', output)
+    output = re.sub(' ', '/', output)
+    return output
+
+
+def OutputStringTokens_oneliner_ex(strTokenList):
     output = ""
     node = strTokenList.head
     while node:
@@ -269,7 +283,7 @@ def OutputStringTokens_oneliner_ex(strTokenList, NoFeature=False):
         output += node.oneliner_ex(layer_counter)
         node = node.next
 
-    # urgly resolution for SPACE format
+    # ugly resolution for SPACE format
     output = re.sub('(\(\S*?) +', r'\1  ', output)
     output = re.sub('(\[\S*?) +', r'\1   ', output)
     output = re.sub('(\{\S*?) +', r'\1    ', output)
@@ -282,7 +296,6 @@ def OutputStringTokens_oneliner_ex(strTokenList, NoFeature=False):
     output = re.sub('\) +\(', ')  (', output)
     output = re.sub('\] +\[', ']   [', output)
     output = re.sub('\} +\{', '}    {', output)
-
     return output
 
 
@@ -364,3 +377,7 @@ def format_parenthesis(text, count):
     text += right_p # add right parenthesis
     return text.replace(IMPOSSIBLESTRINGLP, left_p) # replace left symbol
 
+def has_overlap(listA, listB):
+    if len([i for i in listA if i in listB]) > 0:
+        return True
+    return False

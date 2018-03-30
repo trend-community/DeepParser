@@ -292,6 +292,10 @@ class SentenceNode(object):
         
         
     def oneliner_ex(self, layer_counter):
+        '''
+            oneliner function - EX version(add labels, use diff parenthesis, ...)
+            details in fsa/Y/FSAspecs
+        '''
         output = ""
         if self.sons:
             output += IMPOSSIBLESTRINGLP
@@ -312,11 +316,14 @@ class SentenceNode(object):
 
 
     def oneliner(self, NoFeature = True):
+        '''
+            basic oneliner function
+        '''
         output = ""
         if self.sons:
             output += "<"
             for son in self.sons:
-                output += son.oneliner() + " "
+                output += son.oneliner(layer_counter) + " "
             output = output.strip() + ">"
         else:
             output = self.text
@@ -325,6 +332,44 @@ class SentenceNode(object):
             if featureString:
                 output += ":" + featureString + ";"
         return output.strip()
+
+
+    def oneliner_merge(self, layer_counter):
+        '''
+            oneliner function - merge some tokens for KG
+        '''
+        output = ""
+        if self.sons:
+            output += "<"
+
+            if layer_counter[0] > 0:
+                layer_counter[0] -= 1
+
+            for son in self.sons:
+                output += son.oneliner_merge(layer_counter) + " "
+            output = output.strip() + ">"
+
+            layer_counter[0] += 1
+            logging.info('layer_counter:' + str(layer_counter) + ' node:' + self.text + ' output:' + output)
+            if self.should_merge():
+                merged = '<' + self.text.replace(' ', '') + '>'
+                logging.info('merged:' + merged)
+                output = re.sub('<.*>', merged, output)
+        else:
+            output = self.text
+        return output.strip()
+
+
+    def should_merge(self):
+        feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features]
+        text_len = len(self.text.replace(' ', ''))
+        logging.info('feature_names:' + str(feature_names) + ' node len:' + str(len(self.text.replace(' ', ''))))
+        if utils.has_overlap(feature_names, FeatureOntology.MergeTokenList) > 0 \
+                and 2 <= text_len <= 5:
+            return True
+        elif ('mn' in feature_names or 'NP' in feature_names) and 2 <= text_len <= 4:
+            return True
+        return False
 
 
     def ApplyFeature(self, featureID):

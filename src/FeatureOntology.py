@@ -25,6 +25,7 @@ BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC'
             ['CL']   ]
 BarTagIDs = []
 BarTagIDSet = set()
+MergeTokenList = ['+++', 'nnn', 'mn', 'N', 'NE', 'DE']
 
 #_CreateFeatureList = False
 _MissingFeatureSet = set()

@@ -67,7 +67,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
             elif  Type  == "simpleEx":
                 output_type = "text/plain;"
-                output_text = utils.OutputStringTokens_oneliner_ex(nodes, NoFeature =True)
+                output_text = utils.OutputStringTokens_oneliner_ex(nodes)
+            elif  Type  == "simpleMerge":
+                output_type = "text/plain;"
+                output_text = utils.OutputStringTokens_oneliner_merge(nodes)
             elif Type == "json2":
                 output_type = "text/html;"
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
@@ -146,6 +149,7 @@ def init():
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
         charttemplate = templatefile.read()
