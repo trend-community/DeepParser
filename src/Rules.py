@@ -104,7 +104,7 @@ class RuleToken(object):
         self.action = ''
         self.SubtreePointer = ''
         self.AndFeatures = set()
-        self.OrFeatures = set()
+        self.OrFeatureGroups = []
         self.NotFeatures = set()
         self.AndText = ''
         self.AndTextMatchtype = ''
@@ -113,7 +113,7 @@ class RuleToken(object):
         self.FullString = False
 
     def __eq__(self, other):    #only compare the matching part, not the action part.
-        if self.word.strip() == other.word.strip(): # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatures...
+        if self.word.strip() == other.word.strip(): # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
             return True
         else:
             return False
@@ -326,8 +326,8 @@ class Rule:
             nodeid = cur.lastrowid
             for fid in self.Tokens[i].AndFeatures:
                 cur.execute(strsql_node_feature, [nodeid, fid, 1])
-            for fid in self.Tokens[i].OrFeatures:
-                cur.execute(strsql_node_feature, [nodeid, fid, 2])
+            # for fid in self.Tokens[i].OrFeatures:
+            #     cur.execute(strsql_node_feature, [nodeid, fid, 2])
             for fid in self.Tokens[i].NotFeatures:
                 cur.execute(strsql_node_feature, [nodeid, fid, 3])
             for NotText in self.Tokens[i].NotTexts:
@@ -978,7 +978,7 @@ def LoadRules(RuleLocation):
 
 
 def RuleFileOlderThanDB(RuleLocation):
-    #return False
+    return False
     cur = DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
@@ -1620,7 +1620,8 @@ def _PreProcess_CompileHash(OneList):
                         token.NotFeatures.add(FeatureOntology.GetFeatureID(f[1:]))
                 else:
                     if "|" in f:
-                        token.OrFeatures = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
+                        OrFeatureGroup = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
+                        token.OrFeatureGroups.append(OrFeatureGroup)
                     elif "\"" in f or "'" in f or "/" in f:
                         if token.AndText:
                             logging.error("There should be only one text in one token:" + str(rule))

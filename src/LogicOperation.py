@@ -232,7 +232,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     if RuleToken.word in strToken.FailedRuleTokens:
         return False
 
-    #AndFeatures, OrFeatures, NotFeatures, AndText, NotTexts
+    #AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
     if RuleToken.AndFeatures:
         for f in RuleToken.AndFeatures:
             if f not in strToken.features:
@@ -258,21 +258,19 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
             strToken.FailedRuleTokens.add(RuleToken.word)
             return False
 
-
-    if RuleToken.OrFeatures:
-        CommonOrFeatures = RuleToken.OrFeatures.intersection(strToken.features)
+    for OrFeatureGroup in RuleToken.OrFeatureGroups:
+        CommonOrFeatures = OrFeatureGroup.intersection(strToken.features)
         if len(CommonOrFeatures) == 0:
 #            strToken.FailedRuleTokens.add(RuleToken.word)
             return False    #we need at least one common features.
 
-    if RuleToken.NotFeatures:
-        for f in RuleToken.NotFeatures:
-            if f in strToken.features:
+    for f in RuleToken.NotFeatures:
+        if f in strToken.features:
 #                strToken.FailedRuleTokens.add(RuleToken.word)
-                return False
-        # CommonNotFeatures = RuleToken.NotFeatures.intersection(strToken.features)
-        # if len(CommonNotFeatures) > 0:
-        #     return False    #can't have any of NotFeatures
+            return False
+    # CommonNotFeatures = RuleToken.NotFeatures.intersection(strToken.features)
+    # if len(CommonNotFeatures) > 0:
+    #     return False    #can't have any of NotFeatures
 
     if RuleToken.NotTexts:
         #ruletext, matchtype = CheckPrefix(RuleToken.NotText)
