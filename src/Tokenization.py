@@ -323,7 +323,7 @@ class SentenceNode(object):
         if self.sons:
             output += "<"
             for son in self.sons:
-                output += son.oneliner(layer_counter) + " "
+                output += son.oneliner() + " "
             output = output.strip() + ">"
         else:
             output = self.text
