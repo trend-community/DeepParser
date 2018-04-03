@@ -608,8 +608,8 @@ def Tokenize_CnEnMix(sentence):
         isalpha = t.isalpha()
         if attribute_prev == [Hanzi, isdigit, isalpha, isspace]:
             TokenList.tail.text += t
-            TokenList.tail.norm += t
-            TokenList.tail.atom += t
+            TokenList.tail.norm += t.lower()
+            TokenList.tail.atom += t.lower()
             TokenList.tail.EndOffset += 1
             Lexicon.ApplyWordLengthFeature(TokenList.tail)
             start += 1
@@ -623,78 +623,78 @@ def Tokenize_CnEnMix(sentence):
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
     return TokenList
 
-
-# for the mix of Chinese/Ascii. Should be called for all sentences.
-def Tokenize_CnEnMix_origin(sentence):
-    subsentence = []
-    subsentence_isascii = []
-    isascii = True
-    isdigit = True
-    isascii_prev = True     #will be overwritten immediately when i==0
-    substart = 0
-    sentence = ReplaceCuobieziAndFanti(sentence)
-
-    for i in range(len(sentence)):
-        isascii = IsAscii(sentence[i])
-        if i == 0:
-            isascii_prev = isascii
-            continue
-        if isascii != isascii_prev:
-            subsentence += [ sentence[substart:i]]
-            substart = i
-            subsentence_isascii.append( isascii_prev)
-            isascii_prev = isascii
-
-    #last part
-    if substart < len(sentence):
-        subsentence += [sentence[substart:]]
-    subsentence_isascii.append(isascii)
-
-    segmentedlist = []
-    for i in range(len(subsentence)):
-        if subsentence_isascii[i]:
-            segmentedlist += _Tokenize_Space(subsentence[i])
-        else:
-            segmentedlist += _Tokenize_Lexicon_minseg(subsentence[i])
-
-    TokenList = SentenceLinkedList()
-    start = 0
-    SpaceQ = False
-    HanziQ = False
-    spacetoken = None
-    for t in segmentedlist:
-        if t[0] == " ": #
-            TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
-            if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
-                spacetoken = SentenceNode(t)
-                spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
-                spacetoken.atom = ' '
-                spacetoken.StartOffset = start
-                spacetoken.EndOffset = start + len(t)
-                spacetoken.ApplyFeature(utils.FeatureID_CM)
-                HanziQ = False
-                #TokenList.append(spacetoken)
-            SpaceQ = True
-            start = start + len(t)
-            continue
-        token = SentenceNode(t)
-        token.StartOffset = start
-        token.EndOffset = start + len(t)
-        HanziQ = not IsAscii(t)
-
-        if SpaceQ:
-            token.ApplyFeature(utils.FeatureID_SpaceQ)
-            SpaceQ = False
-            if HanziQ and not IsAscii(TokenList.tail.norm):
-                #if the previous is space, the last one in TokenList is Hanzi, and current one is Hanzi
-                # then add space token with the CM feature.
-                TokenList.append(spacetoken)
-
-        TokenList.append(token)
-        start = start + len(t)
-
-#    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-    return TokenList
+#
+# # for the mix of Chinese/Ascii. Should be called for all sentences.
+# def Tokenize_CnEnMix_origin(sentence):
+#     subsentence = []
+#     subsentence_isascii = []
+#     isascii = True
+#     isdigit = True
+#     isascii_prev = True     #will be overwritten immediately when i==0
+#     substart = 0
+#     sentence = ReplaceCuobieziAndFanti(sentence)
+#
+#     for i in range(len(sentence)):
+#         isascii = IsAscii(sentence[i])
+#         if i == 0:
+#             isascii_prev = isascii
+#             continue
+#         if isascii != isascii_prev:
+#             subsentence += [ sentence[substart:i]]
+#             substart = i
+#             subsentence_isascii.append( isascii_prev)
+#             isascii_prev = isascii
+#
+#     #last part
+#     if substart < len(sentence):
+#         subsentence += [sentence[substart:]]
+#     subsentence_isascii.append(isascii)
+#
+#     segmentedlist = []
+#     for i in range(len(subsentence)):
+#         if subsentence_isascii[i]:
+#             segmentedlist += _Tokenize_Space(subsentence[i])
+#         else:
+#             segmentedlist += _Tokenize_Lexicon_minseg(subsentence[i])
+#
+#     TokenList = SentenceLinkedList()
+#     start = 0
+#     SpaceQ = False
+#     HanziQ = False
+#     spacetoken = None
+#     for t in segmentedlist:
+#         if t[0] == " ": #
+#             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
+#             if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
+#                 spacetoken = SentenceNode(t)
+#                 spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
+#                 spacetoken.atom = ' '
+#                 spacetoken.StartOffset = start
+#                 spacetoken.EndOffset = start + len(t)
+#                 spacetoken.ApplyFeature(utils.FeatureID_CM)
+#                 HanziQ = False
+#                 #TokenList.append(spacetoken)
+#             SpaceQ = True
+#             start = start + len(t)
+#             continue
+#         token = SentenceNode(t)
+#         token.StartOffset = start
+#         token.EndOffset = start + len(t)
+#         HanziQ = not IsAscii(t)
+#
+#         if SpaceQ:
+#             token.ApplyFeature(utils.FeatureID_SpaceQ)
+#             SpaceQ = False
+#             if HanziQ and not IsAscii(TokenList.tail.norm):
+#                 #if the previous is space, the last one in TokenList is Hanzi, and current one is Hanzi
+#                 # then add space token with the CM feature.
+#                 TokenList.append(spacetoken)
+#
+#         TokenList.append(token)
+#         start = start + len(t)
+#
+# #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+#     return TokenList
 
 
 def ReplaceCuobieziAndFanti(sentence):
