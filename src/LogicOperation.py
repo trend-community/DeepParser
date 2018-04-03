@@ -245,6 +245,10 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
 
     if RuleToken.AndText:
         #ruletext, matchtype = CheckPrefix(RuleToken.AndText)
+        if "^" in RuleToken.AndText:
+            #This is a pointer!
+            return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
+
         if  strToken.Head0Text and not RuleToken.FullString:
             word = strToken.Head0Text
         else:

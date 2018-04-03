@@ -433,69 +433,76 @@ def ApplyWordLengthFeature(node):
     if wordlength < 1:
         pass
     elif wordlength == 1:
-        if node.text.isnumeric():
-            node.ApplyFeature(D1ID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L1ID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D1ID)
             node.ApplyFeature(C1ID)
     elif wordlength == 2:
-        if node.text.isnumeric():
-            node.ApplyFeature(D2ID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L2ID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D2ID)
             node.ApplyFeature(C2ID)
     elif wordlength == 3:
-        if node.text.isnumeric():
-            node.ApplyFeature(D3ID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L3ID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D3ID)
             node.ApplyFeature(C3ID)
     elif wordlength == 4:
-        if node.text.isnumeric():
-            node.ApplyFeature(D4ID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L4ID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D4ID)
             node.ApplyFeature(C4ID)
     elif wordlength == 5:
-        if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L4plusID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D4plusID)
             node.ApplyFeature(C5ID)
+            node.ApplyFeature(C4plusID)
     elif wordlength == 6:
-        if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L4plusID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D4plusID)
             node.ApplyFeature(C6ID)
-
+            node.ApplyFeature(C4plusID)
     elif wordlength == 7:
-        if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L4plusID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D4plusID)
             node.ApplyFeature(C7ID)
+            node.ApplyFeature(C4plusID)
+            node.ApplyFeature(C6plusID)
     elif wordlength == 8:
-        if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L4plusID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D4plusID)
             node.ApplyFeature(C8ID)
+            node.ApplyFeature(C4plusID)
+            node.ApplyFeature(C6plusID)
     else:
-        if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
-        elif IsAscii(node.text):
+        if IsAscii(node.text):
             node.ApplyFeature(L4plusID)
         else:
+            if node.text.isnumeric():
+                node.ApplyFeature(D4plusID)
             node.ApplyFeature(C8plusID)
+            node.ApplyFeature(C4plusID)
+            node.ApplyFeature(C6plusID)
     return
 
 
