@@ -42,8 +42,10 @@ def ProcessFile(FileName):
             print(nodes)
         if args.mode == 'json':
             print(nodes.root().CleanOutput().toJSON())
-        else:
+        elif  args.mode == 'simple':
             print(OutputStringTokens_oneliner(nodes, NoFeature=True))
+        else:   #simpleEx
+            print(OutputStringTokens_oneliner_ex(nodes))
 
     if args.winningrules:
         print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--mode", help="json/simple", choices=['json', 'simple'])
+    parser.add_argument("--mode", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'])
     parser.add_argument("--winningrules")
     parser.add_argument("--extra")
 

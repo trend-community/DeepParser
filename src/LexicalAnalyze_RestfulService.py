@@ -6,11 +6,11 @@ import concurrent.futures
 
 import singleton
 me = singleton.SingleInstance()
-LexicalAnalyzeURL = ParserConfig.get("client", "url_larestfulservice") + "/LexicalAnalyze?Type=simple&Sentence="
+LexicalAnalyzeURL = ParserConfig.get("client", "url_larestfulservice") + "/LexicalAnalyze?Type=simple"
 
 
 def LATask(Sentence):
-    ret = requests.get(LexicalAnalyzeURL + "\"" +  urllib.parse.quote(Sentence) + "\"")
+    ret = requests.get(LexicalAnalyzeURL + "&Sentence=\"" +  urllib.parse.quote(Sentence) + "\"")
 
     return ret.text
 
@@ -18,6 +18,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
+    parser.add_argument("--mode", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'])
     args = parser.parse_args()
 
     DebugMode = False
@@ -49,6 +50,7 @@ if __name__ == "__main__":
                 UnitTest.append(unittest)
 
     logging.info("Start processing sentences")
+    LexicalAnalyzeURL += "&Type=" + args.mode
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
     # We can use a with statement to ensure threads are cleaned up promptly

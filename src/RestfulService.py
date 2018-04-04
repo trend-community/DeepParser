@@ -63,7 +63,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         Debug = "Debug" in queries
         if nodes:
             if  Type  == "simple":
-                output_type = "text/html;"
+                output_type = "text/plain;"
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
             elif  Type  == "simpleEx":
                 output_type = "text/plain;"

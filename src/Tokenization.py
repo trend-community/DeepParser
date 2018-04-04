@@ -292,10 +292,10 @@ class SentenceNode(object):
         
         
     def oneliner_ex(self, layer_counter):
-        '''
+        """
             oneliner function - EX version(add labels, use diff parenthesis, ...)
             details in fsa/Y/FSAspecs
-        '''
+        """
         output = ""
         if self.sons:
             output += IMPOSSIBLESTRINGLP
@@ -316,9 +316,9 @@ class SentenceNode(object):
 
 
     def oneliner(self, NoFeature = True):
-        '''
+        """
             basic oneliner function
-        '''
+        """
         output = ""
         if self.sons:
             output += "<"
@@ -335,9 +335,9 @@ class SentenceNode(object):
 
 
     def oneliner_merge(self, layer_counter):
-        '''
+        """
             oneliner function - merge some tokens for KG
-        '''
+        """
         output = ""
         if self.sons:
             output += "<"

@@ -196,61 +196,66 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(NodeList.get(1).text, "5")
         #self.assertEqual(NodeList.get(3).text, "之间")
 
-        XLocation = '../../fsa/X/'
-
-        Lexicon.LoadLexicon(XLocation + 'LexX.txt')
+        # XLocation = '../../fsa/X/'
+        #
+        # Lexicon.LoadLexicon(XLocation + 'LexX.txt')
         Lexicon.LoadSegmentLexicon()
+        #
+        # t = "3d显示"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size)
+        # t = "3D显示"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        # t = "3d播放"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        # t = "3D播放"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
 
-        t = "3d显示"
+        t = "1500和1000"
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size)
-        t = "3D显示"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
-        t = "3d播放"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
-        t = "3D播放"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        self.assertEqual(3, NodeList.size) #lexicon not loaded. "越狱" is not a word.
 
-        Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
-        Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
-
-        Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-        Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-        Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
-
-        Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
-        Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
-        Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
-        Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
-        Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
-        Lexicon.LoadSegmentLexicon()
-        t = "3d显示"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size)
-        t = "3D显示"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
-        t = "3d播放"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
-        t = "3D播放"
-        NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        # Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
+        # Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
+        #
+        # Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
+        # Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
+        # Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
+        #
+        # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
+        # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
+        # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
+        # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
+        # Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
+        # Lexicon.LoadSegmentLexicon()
+        # t = "3d显示"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size)
+        # t = "3D显示"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        # t = "3d播放"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+        # t = "3D播放"
+        # NodeList = Tokenize(t)
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
