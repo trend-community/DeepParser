@@ -4,6 +4,7 @@ cd "$(dirname "$0")/.."
 
 cd fsa
 git checkout X/summaryLex.txt
+rm X/AllLexicon_Extra.txt
 git checkout X/AllLexicon_Extra.txt
 git checkout X/SegmentSlash.txt
 git fetch
