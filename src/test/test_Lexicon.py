@@ -77,3 +77,11 @@ class LexiconTest(unittest.TestCase):
         LexiconLookup(NodeList, LexiconLookupSource.defLex)
         self.assertEqual(NodeList.size, 3)
         self.assertFalse(utils.FeatureID_OOV in NodeList.head.features)
+
+    def test_ApplyWordLengthFeature(self):
+        Sentence="李四abc456,sab98中文"
+        NodeList = Tokenization.Tokenize(Sentence)
+        ApplyLexiconToNodes(NodeList)
+        self.assertTrue(C1ID in NodeList.head.features)
+        self.assertTrue(D1ID in NodeList.get(1).features)
+

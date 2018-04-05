@@ -148,7 +148,7 @@ class SentenceLinkedList:
             sons.append(p)
             p = p.next
 
-        if IsAscii(NewTextList):
+        if IsAscii_List(NewTextList):
             NewText = " ".join(NewTextList)
             NewNorm = " ".join(NewNormList)
             NewAtom = " ".join(NewAtomList)

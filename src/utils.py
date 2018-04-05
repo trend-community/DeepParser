@@ -151,9 +151,17 @@ def IsCD(word):
         return False
 
 
+def IsAscii_List(Sentences):
+    if isinstance(Sentences, list):
+        Sentence = "".join(Sentences)
+    else:
+        logging.error("This is not a list")
+
+    return IsAscii(Sentence)
+
+
+@lru_cache(50000)
 def IsAscii(Sentence):
-    if isinstance(Sentence, list):
-        Sentence = "".join(Sentence)
     try:
         Sentence.encode(encoding='utf-8').decode('ascii')
     except UnicodeDecodeError:
@@ -162,6 +170,16 @@ def IsAscii(Sentence):
         return False
     else:
         return True
+
+
+@lru_cache(50000)
+def IsAlphaLetter(Sentence):
+    if not hasattr(IsAlphaLetter, "letters"):
+        IsAlphaLetter.letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    for c in Sentence:
+        if c not in IsAlphaLetter.letters:
+            return False
+    return True
 
 
 @lru_cache(50000)
