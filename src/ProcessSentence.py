@@ -185,7 +185,7 @@ def ListMatch_UsingCache(list1, list2):
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
     i = 0
-    logging.info("Matching using file:" + RuleFileName)
+    logging.debug("Matching using file:" + RuleFileName)
     counter = 0
 
     strtoken = strtokenlist.head
@@ -214,7 +214,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
         if WinningRule:
-            logging.info("Found winning rule at counter: " + str(counter))
+            logging.debug("Found winning rule at counter: " + str(counter))
             try:
                 if WinningRule.ID not in WinningRules:
                     WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
