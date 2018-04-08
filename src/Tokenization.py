@@ -269,25 +269,32 @@ class SentenceNode(object):
         feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
         BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
         if BarFeature:
-            if self.UpperRelationship == 'H':
-                return SYM_HEAD + BarFeature + ' '
+            if self.UpperRelationship == SYM_PAIR_HEAD[0]:
+                return SYM_PAIR_HEAD[1] + BarFeature + ' '
             elif self.UpperRelationship:
-                return BarFeature + SYM_LINK + self.UpperRelationship + ' '
+                return BarFeature + SYM_HYPHEN + self.UpperRelationship + ' '
             else:
                 return BarFeature + ' '
         return ''  
         
         
     def get_leaf_label(self):
+        if not self.text: # deal with empty node
+            return ''
         ret = ''
-        feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        feature_names = [FeatureOntology.GetFeatureName(f) \
+                for f in self.features if f not in FeatureOntology.NotShowList]
         BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
-        if self.UpperRelationship == 'H':
-            ret += SYM_HEAD
-        elif self.UpperRelationship: # add syntactic role lable
-            ret += self.UpperRelationship
-        if BarFeature and BarFeature[-1] == 'P': # BarFeature is XP
-            ret += BarFeature
+        if not self.UpperRelationship and BarFeature:                       # syntactic role is empty
+            ret = BarFeature 
+        elif self.UpperRelationship == SYM_PAIR_HEAD[0] and BarFeature:     # syntactic role is HEAD
+            ret = SYM_PAIR_HEAD[1] + BarFeature
+        elif self.UpperRelationship == SYM_PAIR_HEAD[0] and not BarFeature:
+            ret = SYM_PAIR_HEAD[1]
+        elif self.UpperRelationship != SYM_PAIR_HEAD[0] and BarFeature:     # syntactic role is not HEAD
+            ret = BarFeature + SYM_HYPHEN + self.UpperRelationship 
+        elif self.UpperRelationship != SYM_PAIR_HEAD[0] and not BarFeature:
+            ret = self.UpperRelationship
         return ret
         
         

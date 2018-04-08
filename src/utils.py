@@ -40,8 +40,8 @@ IMPOSSIBLESTRINGEQUAL = "@#$%@equal@"
 IMPOSSIBLESTRINGSLASH = "@#$%@slash@"   #for the norms only.
 
 # for baseline format
-SYM_HEAD = '^'
-SYM_LINK = '-'
+SYM_PAIR_HEAD = ('H', '^')
+SYM_HYPHEN = '-'
 SYM_PARENTHESIS = { # key is embeddig depth, starting from 0
         0 : ['<', '>'],
         1 : ['(', ')'],
