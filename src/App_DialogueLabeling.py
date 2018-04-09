@@ -205,7 +205,7 @@ if __name__ == "__main__":
 #        for s in root['sons']:  # ignore the root
         pairlist = AccumulateNodes(root)
         result = "".join([pair[0]+"_" + pair[1] + " " if pair[1] else pair[0] for pair in pairlist])
-        if args.inputfile == "no":
+        if args.filter == "no":
             print(result)
         else:
             if Filtering(root) and not Blacklist(root):
