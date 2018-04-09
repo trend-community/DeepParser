@@ -73,18 +73,16 @@ def SeparateValues():
 #                      "color", "taste", "size", "length", "weight",
 #                      "height", "temp", "prod"
 #                   )
-filterfeatures = ("color", "height", "length", "width", "size",
-                  "volt", "electricity", "weight", "density", "temp")
+filterfeatures = ( "height", "length", "width", "size",
+                  "volt", "electricity", "weight",  "temp")
 
 blacklistfeatures = ("price", "money")
 
 def Filtering(node):
-
-    for f in node["features"]:
-        if f in filterfeatures:
-            return True
-
     if 'sons' in node:
+        for f in node["features"]:
+            if f in filterfeatures:
+                return True
         for s in node['sons']:
             if Filtering(s):
                 return True
@@ -194,6 +192,8 @@ if __name__ == "__main__":
                 Content, _ = utils.SeparateComment(line.strip())
                 UnitTest.append(Content)
 
+    count_total = 0
+    count_output = 0
     for Sentence in UnitTest:
         LexicalAnalyzeURL = utils.ParserConfig.get("client", "url_larestfulservice") + "/LexicalAnalyze?Type=json&Sentence="
         try:
@@ -203,15 +203,18 @@ if __name__ == "__main__":
             continue
         root =  jsonpickle.decode(ret.text)
 #        for s in root['sons']:  # ignore the root
+        count_total += 1
         pairlist = AccumulateNodes(root)
         result = "".join([pair[0]+"_" + pair[1] + " " if pair[1] else pair[0] for pair in pairlist])
         if args.filter == "no":
             print(result)
+            count_output += 1
         else:
             if Filtering(root) and not Blacklist(root):
                 print(result )
+                count_output += 1
 
         #AccumulateNodes(root)
 
-    print("Done. ")
+    print("Done. Processed " + str(count_total) + " records, " + str(count_output) + " records are good.")
 
