@@ -123,7 +123,7 @@ class RuleToken(object):
         for _ in range(self.StartChunk):
             output += "<"
         output += self.pointer
-        t = "[" + self.word.strip("[|]") + "]"
+        t = "[" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
         if self.action:
             t = t.replace("]", ":" + self.action + "]")
         output += t
@@ -366,6 +366,7 @@ class Rule:
         rulebody = ''
         for token in self.Tokens:
             rulebody += str(token)
+        rulebody = rulebody.replace("\<", IMPOSSIBLESTRINGLESS).replace("\>", IMPOSSIBLESTRINGGREATER)
 
         if rulebody.count('<') > 4 :
             logging.warning("This rule has more than 4 chunks:")
@@ -763,7 +764,7 @@ def ProcessTokens(Tokens):
         if node.word and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
-        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
+        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=").replace("\>", ">").replace("\<", "<")
         node.action = node.action.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
 
 # Avoid [(AS:action)|sjfa]

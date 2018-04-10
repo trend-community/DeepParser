@@ -61,15 +61,15 @@ def CloseDB():
 def SeparateValues():
     """ one time thing, to separate the values by "," signs.
     """
-    separators=['、',  '；', ';', ' ', ',', '，']
+    separators=['、',  '；', ';', ' ', ',', '，', '/']
     cur = KGExtraDB.cursor()
-    sqlinsert = """ insert or ignore into attribute_cloth (com_attr_group_name, com_attr_name, com_attr_value)
+    sqlinsert = """ insert or ignore into attribute (com_attr_group_name, com_attr_name, com_attr_value)
                     values(?, ?, ?)"""
-    sqldelete = """ delete from attribute_cloth where com_attr_group_name=? and com_attr_name=? 
+    sqldelete = """ delete from attribute where com_attr_group_name=? and com_attr_name=? 
                     and com_attr_value=?"""
-    sqlsearch = """select com_attr_group_name, com_attr_name, com_attr_value from attribute_cloth 
+    sqlsearch = """select com_attr_group_name, com_attr_name, com_attr_value from attribute 
                 where com_attr_name = '颜色' and
-                    (com_attr_value like '%、%' or  com_attr_value like '% %'
+                    (com_attr_value like '%、%' or  com_attr_value like '% %' or com_attr_value like '%/%'
                     or com_attr_value like '%,%' or  com_attr_value like '%，%' 
                     or com_attr_value like '%;%' or  com_attr_value like '%；%'  )"""
     cur.execute(sqlsearch)

@@ -97,7 +97,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                 # logging.debug(node.word)
             oldWord = blocks[0]
 
-    logging.debug("Finish loading lexicon" + lexiconLocation)
+    logging.info("Finish loading lexicon" + lexiconLocation)
 
 
 def FeatureNotCopy():
@@ -700,8 +700,9 @@ def printSenti(posloc, negloc):
 
 
 if __name__ == "__main__":
-
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
     if len(sys.argv) != 1:
         print("Usage: python OrgLex.py")

@@ -38,6 +38,8 @@ IMPOSSIBLESTRINGSQ = "@#$%@singlequote@"
 IMPOSSIBLESTRINGCOLN = "@#$%@coln@"
 IMPOSSIBLESTRINGEQUAL = "@#$%@equal@"
 IMPOSSIBLESTRINGSLASH = "@#$%@slash@"   #for the norms only.
+IMPOSSIBLESTRINGGREATER = "@#$%@greater@"   #for chunks only.
+IMPOSSIBLESTRINGLESS = "@#$%@less@"   #for chunks only.
 
 # for baseline format
 SYM_PAIR_HEAD = ('H', '^')
