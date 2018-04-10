@@ -47,6 +47,9 @@ def Init():
         AttributeNames.add(row[0])
     cur.close()
 
+    SeparateValues()
+    exit()
+
 
 def CloseDB():
     KGExtraDB.commit()
@@ -54,19 +57,35 @@ def CloseDB():
     logging.info("DBCon closed.")
 
 
+
 def SeparateValues():
     """ one time thing, to separate the values by "," signs.
     """
+    separators=['、',  '；', ';', ' ', ',', '，']
     cur = KGExtraDB.cursor()
-    strsearch = """select com_attr_group_name, com_attr_name, com_attr_value from attribute 
-                where  com_attr_value like '%、%' or  com_attr_value like '%;%' com_attr_value like '%；%'"""
-    cur.execute(strsearch)
+    sqlinsert = """ insert or ignore into attribute_cloth (com_attr_group_name, com_attr_name, com_attr_value)
+                    values(?, ?, ?)"""
+    sqldelete = """ delete from attribute_cloth where com_attr_group_name=? and com_attr_name=? 
+                    and com_attr_value=?"""
+    sqlsearch = """select com_attr_group_name, com_attr_name, com_attr_value from attribute_cloth 
+                where com_attr_name = '颜色' and
+                    (com_attr_value like '%、%' or  com_attr_value like '% %'
+                    or com_attr_value like '%,%' or  com_attr_value like '%，%' 
+                    or com_attr_value like '%;%' or  com_attr_value like '%；%'  )"""
+    cur.execute(sqlsearch)
     rows = cur.fetchall()
     for row in rows:
         com_attr_group_name = row[0]
         com_attr_name = row[1]
         combinedvalue = row[2]
-
+        for separator in separators:
+            if separator in combinedvalue:
+                logging.warning(combinedvalue)
+                values = [v.strip() for v in combinedvalue.split(separator) if v.strip()]
+                for value in values:
+                    cur.execute(sqlinsert, [com_attr_group_name, com_attr_name, value])
+                cur.execute(sqldelete, [com_attr_group_name, com_attr_name, combinedvalue])
+                break   #not to work on next separator
 
 # filterfeatures = ("measure", "attrC",
 #                      "orgNE", "comNE", "prodNE", "brand",
