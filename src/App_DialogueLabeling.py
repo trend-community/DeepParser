@@ -235,8 +235,12 @@ if __name__ == "__main__":
         for line in RuleFile:
             if line.strip():
                 Content, _ = utils.SeparateComment(line.strip())
-                sku, question = Content.split("|")
-                UnitTest[question] = sku
+                #sku, question\
+                combined= Content.split("|")
+                if len(combined)<2:
+                    logging.warning("There is no | sign")
+                    continue
+                UnitTest["|".join(combined[1:])] = combined[0]
 
     count_total = 0
     count_output = 0
