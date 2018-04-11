@@ -39,13 +39,13 @@ def ProcessFile(FileName):
             continue
 
         if DebugMode:
-            print(nodes)
+            print(TestSentence + '\t' + nodes)
         if args.mode == 'json':
-            print(nodes.root().CleanOutput().toJSON())
+            print(TestSentence + '\t' + nodes.root().CleanOutput().toJSON())
         elif  args.mode == 'simple':
-            print(OutputStringTokens_oneliner(nodes, NoFeature=True))
+            print(TestSentence + '\t' + OutputStringTokens_oneliner(nodes, NoFeature=True))
         else:   #simpleEx
-            print(OutputStringTokens_oneliner_ex(nodes))
+            print(TestSentence + '\t' + OutputStringTokens_oneliner_ex(nodes))
 
     if args.winningrules:
         print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     import cProfile, pstats
     cProfile.run("ProcessFile(args.inputfile)", 'restats')
     p = pstats.Stats('restats')
-    p.sort_stats('time').print_stats(60)
+    #p.sort_stats('time').print_stats(60)
 
     # import os
     # import psutil
