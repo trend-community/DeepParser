@@ -285,8 +285,9 @@ def OutputStringTokens_oneliner_merge(strTokenList):
     while node:
         if output:
             output += " "
-        layer_counter = [0]
-        output += node.oneliner_merge(layer_counter)
+        layer_counter = 0
+        node_output, _ = node.oneliner_merge(layer_counter)
+        output += node_output
         node = node.next
     output = re.sub('[<>]', '', output)
     output = re.sub(' ', '/', output)
@@ -299,8 +300,9 @@ def OutputStringTokens_oneliner_ex(strTokenList):
     while node:
         if output:
             output += " "
-        layer_counter = [0]
-        output += node.oneliner_ex(layer_counter)
+        layer_counter = 0
+        node_output, _ = node.oneliner_ex(layer_counter)
+        output += node_output
         node = node.next
 
     # ugly resolution for SPACE format
