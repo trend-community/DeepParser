@@ -324,7 +324,7 @@ def LexicalAnalyze(Sentence):
             cur.close()
         except sqlite3.OperationalError:
             logging.warning("data writting error. ignore")
-        #DBCon.commit()
+        DBCon.commit()
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:

@@ -394,6 +394,7 @@ def DBInsertOrGetID(tablename, tablefields, values):
         except sqlite3.OperationalError:
             logging.warning("data writting error. ignore")
             resultid = -1
+        DBCon.commit()
     cur.close()
     return resultid
 
