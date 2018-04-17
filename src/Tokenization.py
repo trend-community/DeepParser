@@ -307,18 +307,19 @@ class SentenceNode(object):
             output += IMPOSSIBLESTRINGLP
             output += self.get_chunk_label() # add XP AND syntactic role label 
 
-            if layer_counter[0] > 0:
-                layer_counter[0] -= 1
+            if layer_counter > 0:
+                layer_counter -= 1
 
             for son in self.sons:
-                output += son.oneliner_ex(layer_counter) + " "
+                son_output, layer_counter = son.oneliner_ex(layer_counter)
+                output += son_output + " "
 
-            output = utils.format_parenthesis(output.strip(), layer_counter[0])
-            layer_counter[0] += 1
+            output = utils.format_parenthesis(output.strip(), layer_counter)
+            layer_counter += 1
         else:
             output += self.get_leaf_label() # add syntactic role label OR head label 
             output += self.text
-        return output.strip()
+        return output.strip(), layer_counter
 
 
     def oneliner(self, NoFeature = True):
@@ -348,14 +349,14 @@ class SentenceNode(object):
         if self.sons:
             output += "<"
 
-            if layer_counter[0] > 0:
-                layer_counter[0] -= 1
+            if layer_counter > 0:
+                layer_counter -= 1
 
             for son in self.sons:
                 output += son.oneliner_merge(layer_counter) + " "
             output = output.strip() + ">"
 
-            layer_counter[0] += 1
+            layer_counter += 1
             logging.info('layer_counter:' + str(layer_counter) + ' node:' + self.text + ' output:' + output)
             if self.should_merge():
                 merged = '<' + self.text.replace(' ', '') + '>'
