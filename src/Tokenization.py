@@ -575,23 +575,27 @@ def Tokenize_CnEnMix(sentence):
         isspace = t[0].isspace()
         if isspace: #
             attribute_prev = None
-            TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
-            if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
-                spacetoken = SentenceNode(t)
-                spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
-                spacetoken.atom = ' '
-                spacetoken.StartOffset = start
-                spacetoken.EndOffset = start + len(t)
-                spacetoken.ApplyFeature(utils.FeatureID_CM)
-                HanziQ = False
-                #TokenList.append(spacetoken)
-            SpaceQ = True
+            if SpaceQ and spacetoken:
+                spacetoken.text += t
+                spacetoken.EndOffset += len(t)
+            else:
+                TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
+                if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
+                    spacetoken = SentenceNode(t)
+                    spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
+                    spacetoken.atom = ' '
+                    spacetoken.StartOffset = start
+                    spacetoken.EndOffset = start + len(t)
+                    spacetoken.ApplyFeature(utils.FeatureID_CM)
+                    HanziQ = False
+                    #TokenList.append(spacetoken)
+                SpaceQ = True
             start = start + len(t)
             continue
 
-        Hanzi = not IsAscii(t)
+        isHanzi = not IsAscii(t)
         ispunctuate = t[0] in string.punctuation
-        if ispunctuate or Hanzi or len(t) > 1:         #when len(t)>1, that is a word.
+        if ispunctuate or isHanzi or len(t) > 1:         #when len(t)>1, that is a word.
             attribute_prev = None
             token = SentenceNode(t)
             token.StartOffset = start
@@ -613,20 +617,20 @@ def Tokenize_CnEnMix(sentence):
         #t is len of 1.
         isdigit = t.isdigit()
         isalpha = t.isalpha()
-        if attribute_prev == [Hanzi, isdigit, isalpha, isspace]:
+        if attribute_prev == [isHanzi, isdigit, isalpha, isspace]:
             TokenList.tail.text += t
             TokenList.tail.norm += t.lower()
             TokenList.tail.atom += t.lower()
-            TokenList.tail.EndOffset += 1
+            TokenList.tail.EndOffset += len(t)
             Lexicon.ApplyWordLengthFeature(TokenList.tail)
-            start += 1
+            start += len(t)
         else:
-            attribute_prev = [Hanzi, isdigit, isalpha, isspace]
+            attribute_prev = [isHanzi, isdigit, isalpha, isspace]
             token = SentenceNode(t)
             TokenList.append(token)
             token.StartOffset = start
-            token.EndOffset = start + 1
-            start += 1
+            token.EndOffset = start + len(t)
+            start += len(t)
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
     return TokenList

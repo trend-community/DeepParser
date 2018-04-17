@@ -35,6 +35,7 @@ class TokenizationTest(unittest.TestCase):
 
         t = "蓝色   有jd 3452 j34lm3n2吗"
         NodeList = Tokenize(t)
+        print(NodeList)
         self.assertEqual(NodeList.size, 13)
         NodeList.combine(3, 2)
         self.assertEqual(NodeList.size, 12)
@@ -43,6 +44,35 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(NodeList.size, 11)
         print(NodeList)
         print(NodeList.root())
+
+    def testOffset(self):
+        t = "1 3  6   10"
+        NodeList = Tokenize(t)
+        self.assertEqual(NodeList.size, 4)
+        self.assertEqual(NodeList.get(1).StartOffset, 2)
+        self.assertEqual(NodeList.get(1).EndOffset, 3)
+        self.assertEqual(NodeList.get(2).StartOffset, 5)
+        self.assertEqual(NodeList.get(2).EndOffset, 6)
+        self.assertEqual(NodeList.get(3).StartOffset, 9)
+        self.assertEqual(NodeList.get(3).EndOffset, 11)
+
+        t = "1a3bc6def10"
+        NodeList = Tokenize(t)
+        self.assertEqual(NodeList.size, 7)
+        self.assertEqual(NodeList.get(2).StartOffset, 2)
+        self.assertEqual(NodeList.get(2).EndOffset, 3)
+        self.assertEqual(NodeList.get(4).StartOffset, 5)
+        self.assertEqual(NodeList.get(4).EndOffset, 6)
+        self.assertEqual(NodeList.get(6).StartOffset, 9)
+        self.assertEqual(NodeList.get(6).EndOffset, 11)
+
+        t = "蓝色   有jd 3452 j34lm3n2吗"
+        NodeList = Tokenize(t)
+        self.assertEqual(NodeList.size, 13)
+        self.assertEqual(NodeList.get(2).StartOffset, 2)
+        self.assertEqual(NodeList.get(2).EndOffset, 5)
+        self.assertEqual(NodeList.get(3).StartOffset, 5)
+        self.assertEqual(NodeList.get(3).EndOffset, 6)
 
     def testListHead(self):
         t = "this is a good desk, for study"
