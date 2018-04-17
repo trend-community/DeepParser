@@ -387,9 +387,13 @@ def DBInsertOrGetID(tablename, tablefields, values):
     if resultrecord:
         resultid = resultrecord[0]
     else:
-        strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
-        cur.execute(strsql, values)
-        resultid = cur.lastrowid
+        try:
+            strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
+            cur.execute(strsql, values)
+            resultid = cur.lastrowid
+        except sqlite3.OperationalError:
+            logging.error("data writting error. ignore")
+            resultid = -1
     cur.close()
     return resultid
 
