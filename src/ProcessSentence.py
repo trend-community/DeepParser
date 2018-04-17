@@ -314,12 +314,16 @@ def LexicalAnalyze(Sentence):
 
         WinningRules = DynamicPipeline(NodeList)
 
-        cur = DBCon.cursor()
-        strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
-                        VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
-        for ruleid in WinningRules:
-            cur.execute(strsql, [SentenceID, ruleid])
-        cur.close()
+        try:
+            cur = DBCon.cursor()
+            strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
+                            VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
+
+            for ruleid in WinningRules:
+                cur.execute(strsql, [SentenceID, ruleid])
+            cur.close()
+        except sqlite3.OperationalError:
+            logging.warning("data writting error. ignore")
         #DBCon.commit()
         logging.debug("-End LexicalAnalyze")
 

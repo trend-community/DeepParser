@@ -392,7 +392,7 @@ def DBInsertOrGetID(tablename, tablefields, values):
             cur.execute(strsql, values)
             resultid = cur.lastrowid
         except sqlite3.OperationalError:
-            logging.error("data writting error. ignore")
+            logging.warning("data writting error. ignore")
             resultid = -1
     cur.close()
     return resultid
