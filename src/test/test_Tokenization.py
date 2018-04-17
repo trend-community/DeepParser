@@ -15,12 +15,34 @@ class TokenizationTest(unittest.TestCase):
     def testList(self):
         t = "this is a good desk, for study"
         NodeList = Tokenize(t)
-        print(NodeList)
-        #NodeList.combine(3, 2)
-        print(NodeList)
+        self.assertEqual(NodeList.size, 8)
 
         NodeList.combine(3, 1)
+        self.assertEqual(NodeList.size, 8)
+        NodeList.combine(3, 2)
+        self.assertEqual(NodeList.size, 7)
+
+    def testSpaceInCombine(self):
+        t = "a b  c   d    e"
+        NodeList = Tokenize(t)
+        self.assertEqual(NodeList.size, 5)
+        NodeList.combine(3, 2)
+        self.assertEqual(NodeList.size, 4)
         print(NodeList)
+        NodeList.combine(2, 2)
+        self.assertEqual(NodeList.size, 3)
+        print(NodeList)
+
+        t = "蓝色   有jd 3452 j34lm3n2吗"
+        NodeList = Tokenize(t)
+        self.assertEqual(NodeList.size, 13)
+        NodeList.combine(3, 2)
+        self.assertEqual(NodeList.size, 12)
+        print(NodeList)
+        NodeList.combine(2, 2)
+        self.assertEqual(NodeList.size, 11)
+        print(NodeList)
+        print(NodeList.root())
 
     def testListHead(self):
         t = "this is a good desk, for study"

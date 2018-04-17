@@ -137,25 +137,24 @@ class SentenceLinkedList:
         startnode = self.get(start)
         endnode = self.get(start+count-1)
         p = startnode
-        NewTextList = []
-        NewNormList = []
-        NewAtomList = []
         sons = []
+        EndOffset = p.StartOffset
+        NewText = ""
+        NewNorm = ""
+        NewAtom = ""
         for i in range(count):
-            NewTextList.append(p.text)
-            NewNormList.append(p.norm)
-            NewAtomList.append(p.atom)
+            if i == 0:
+                spaces = ""
+            else:
+                spaces = " " * (p.StartOffset - EndOffset)
+            EndOffset = p.EndOffset
+            NewText += spaces + p.text
+            NewNorm += spaces + p.norm
+            NewAtom += spaces + p.atom
+
             sons.append(p)
             p = p.next
 
-        if IsAscii_List(NewTextList):
-            NewText = " ".join(NewTextList)
-            NewNorm = " ".join(NewNormList)
-            NewAtom = " ".join(NewAtomList)
-        else:
-            NewText = "".join(NewTextList)
-            NewNorm = "".join(NewNormList)
-            NewAtom = "".join(NewAtomList)
         NewNode = SentenceNode(NewText)
         NewNode.norm = NewNorm
         NewNode.atom = NewAtom
@@ -626,6 +625,7 @@ def Tokenize_CnEnMix(sentence):
             TokenList.append(token)
             token.StartOffset = start
             token.EndOffset = start + 1
+            start += 1
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
     return TokenList

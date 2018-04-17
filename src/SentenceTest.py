@@ -37,7 +37,8 @@ if __name__ == "__main__":
                 print(jsonpickle.dumps(nodes.root()))
 
             Failed = True
-            for WinningRule in WinningRules:
+            for WinningRuleID in WinningRules:
+                WinningRule = WinningRules[WinningRuleID]
                 if WinningRule.startswith(unittestnode.RuleName):
                     print ("***Found " +WinningRule + " for: \n\t" + TestSentence)
                     Failed = False

@@ -1752,6 +1752,7 @@ def OutputRuleFiles(FolderLocation):
 
 
 def _OutputRuleDB(rulegroup):
+    return  #disable, to avoid locking.
     cur = DBCon.cursor()
     startdatetime = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
