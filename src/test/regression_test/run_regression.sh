@@ -15,8 +15,8 @@ testFileNamePrefix=$1
 
 # 获取今天的日期和昨天的日期
 date=`date +%Y%m%d`
-#yesterday=`date -v-1d +%Y%m%d`
-yesterday=20180408
+yesterday=`date -d '1 days ago' +%Y%m%d`
+#yesterday=20180408
 
 # 输出文件保存的目录，默认是~/temp
 if [ ! -n "$2" ];then
@@ -26,7 +26,7 @@ else
 fi
 
 # 运行 parser 分析程序
-resFileName=${testFileNamePrefix}_regtest_${date}.txt
+resFileName=${testFileNamePrefix}_regtest_${date}.txt.out
 regressionInput=~/git/fsa/test/input/${testFileNamePrefix}.txt 
 regressionOutput=${outputFilePath}/${resFileName} 
 cd ../..  # go to 'src' dir
@@ -34,7 +34,7 @@ python LexicalAnalyze.py ${regressionInput} > ${regressionOutput} --mode simple
 echo "regression_test.py is done."
 
 # 运行 diff 比较程序
-baseFileName=${testFileNamePrefix}_regtest_${yesterday}.txt
+baseFileName=${testFileNamePrefix}_regtest_${yesterday}.txt.out
 diffInput=${outputFilePath}/${baseFileName} 
 diffOutput=${outputFilePath}/${resFileName} 
 cd test/regression_test # from 'src' back to this dir
