@@ -32,10 +32,14 @@ echo " \c" >> revision.txt
 # 1.stop  parser service
 echo '-------------------'
 echo 'stop parser'
+# mac centos
 pid=`ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print $2'}`
 if [[ ! -z $pid ]];then
     kill -9 $pid
 fi
+#ubuntu
+kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print $2'})
+
 
 # 2.restart  parser
 mkdir log
