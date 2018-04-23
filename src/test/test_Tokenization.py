@@ -2,7 +2,12 @@ import unittest
 from Tokenization import *
 
 from FeatureOntology import LoadFeatureOntology
+XLocation = '../../fsa/X/'
 LoadFeatureOntology('../../fsa/Y/feature.txt')
+Lexicon.LoadLexicon(XLocation + 'LexX.txt', lookupSource=LexiconLookupSource.Exclude)
+Lexicon.LoadSegmentLexicon()
+
+
 class TokenizationTest(unittest.TestCase):
     def testToken(self):
         t = SentenceNode("good")
@@ -36,12 +41,12 @@ class TokenizationTest(unittest.TestCase):
         t = "蓝色   有jd 3452 j34lm3n2吗"
         NodeList = Tokenize(t)
         print(NodeList)
-        self.assertEqual(NodeList.size, 13)
-        NodeList.combine(3, 2)
         self.assertEqual(NodeList.size, 12)
+        NodeList.combine(3, 2)
+        self.assertEqual(NodeList.size, 11)
         print(NodeList)
         NodeList.combine(2, 2)
-        self.assertEqual(NodeList.size, 11)
+        self.assertEqual(NodeList.size, 10)
         print(NodeList)
         print(NodeList.root())
 
@@ -68,11 +73,11 @@ class TokenizationTest(unittest.TestCase):
 
         t = "蓝色   有jd 3452 j34lm3n2吗"
         NodeList = Tokenize(t)
-        self.assertEqual(NodeList.size, 13)
-        self.assertEqual(NodeList.get(2).StartOffset, 2)
-        self.assertEqual(NodeList.get(2).EndOffset, 5)
-        self.assertEqual(NodeList.get(3).StartOffset, 5)
-        self.assertEqual(NodeList.get(3).EndOffset, 6)
+        self.assertEqual(NodeList.size, 12)
+        self.assertEqual(NodeList.get(1).StartOffset, 2)
+        self.assertEqual(NodeList.get(1).EndOffset, 5)
+        self.assertEqual(NodeList.get(2).StartOffset, 5)
+        self.assertEqual(NodeList.get(2).EndOffset, 6)
 
     def testListHead(self):
         t = "this is a good desk, for study"
@@ -126,9 +131,9 @@ class TokenizationTest(unittest.TestCase):
 
 
     def testSegmentation(self):
-        t = "中文语义识别研究"
-
+        Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
         Lexicon.LoadSegmentLexicon()
+        t = "中文语义识别研究"
 
         NodeList = Tokenize(t)
         print(NodeList)
@@ -232,6 +237,11 @@ class TokenizationTest(unittest.TestCase):
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
         self.assertEqual(7, NodeList.size)
         self.assertEqual(NodeList.get(2).text, "巴西")
+        self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(0).features)
+        self.assertTrue(utils.FeatureID_SpaceQ in NodeList.get(1).features)
+        self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(1).features)
+        self.assertTrue(utils.FeatureID_SpaceQ in NodeList.get(2).features)
+        self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(2).features)
 
         t = "a 中文 之间的    空格"  # 2/2
         NodeList = Tokenize(t)
@@ -239,13 +249,17 @@ class TokenizationTest(unittest.TestCase):
         self.assertEqual(7, NodeList.size)
         self.assertEqual(NodeList.get(2).text, " ")
         self.assertEqual(NodeList.get(3).text, "之间")
+
+        self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(0).features)
+        self.assertTrue(utils.FeatureID_SpaceQ in NodeList.get(1).features)
+
     def testSegmentation_mixed(self):
 
         t = "ios5越狱,美化成功;哈哈"
         NodeList = Tokenize(t)
         print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-        self.assertEqual(12, NodeList.size) #lexicon not loaded. "越狱" is not a word.
-        self.assertEqual(NodeList.get(1).text, "5")
+        self.assertEqual(7, NodeList.size) #lexicon is loaded
+        self.assertEqual(NodeList.get(0).text, "ios5")
         #self.assertEqual(NodeList.get(3).text, "之间")
 
         # XLocation = '../../fsa/X/'

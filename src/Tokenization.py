@@ -595,7 +595,7 @@ def Tokenize_CnEnMix(sentence):
 
         isHanzi = not IsAscii(t)
         ispunctuate = t[0] in string.punctuation
-        if ispunctuate or isHanzi or len(t) > 1:         #when len(t)>1, that is a word.
+        if ispunctuate or isHanzi:# or len(t) > 1:         #when len(t)>1, that is a word.
             attribute_prev = None
             token = SentenceNode(t)
             token.StartOffset = start
@@ -627,6 +627,9 @@ def Tokenize_CnEnMix(sentence):
         else:
             attribute_prev = [isHanzi, isdigit, isalpha, isspace]
             token = SentenceNode(t)
+            if SpaceQ:
+                token.ApplyFeature(utils.FeatureID_SpaceQ)
+                SpaceQ = False
             TokenList.append(token)
             token.StartOffset = start
             token.EndOffset = start + len(t)

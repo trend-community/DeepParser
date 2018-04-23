@@ -26,8 +26,8 @@ def warmup():
     for r in results1:
         print("(%s)-[%s]->(%s)" % (r[0].id, r[1], r[2].labels))
 
-neo4jserver = "10.153.152.253"
-db = GraphDatabase("http://" + neo4jserver + ":7474", username="neo4j", password="work")
+neo4jserver = "10.182.8.14"
+db = GraphDatabase("http://" + neo4jserver + ":80", username="neo4j", password="work")
 
 QClean = """MATCH (n) WHERE size((n)--())=0    DELETE (n)"""    #delete isolate nodes
 QDuplicate = "MATCH (n) with n as map  CREATE (copy) set copy=map "
@@ -35,11 +35,11 @@ QDuplicate = "MATCH (n) with n as map  CREATE (copy) set copy=map "
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     logging.info("Connected:")
-    db.query(QClean)
+    #db.query(QClean)
 
     for i in range(10):
         SpeedTest()
-        db.query(QDuplicate)
+        #db.query(QDuplicate)
     SpeedTest()
 
 
