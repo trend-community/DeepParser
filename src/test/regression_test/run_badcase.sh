@@ -3,9 +3,12 @@ set -e -x
 outputPath=$1
 date=`date +%Y%m%d`
 
+cd ../..  # go to 'src' dir
+
 #  get data
-cat ../../../../fsa/test/input/badcase/*badcase.txt > badcase.all.${date}
+dbPath=~/git/fsa/test/input/badcase/badcase.db
+sqlite3 ${dbPath} "SELECT query FROM badcase WHERE is_fixed=0" >  badcase.all.${date}
 
 # run
-cd ../..  # go to 'src' dir
-python LexicalAnalyze.py badcase.all.${date} > ${outputPath}/badcase.all.${date}.out --mode simple
+python LexicalAnalyze.py badcase.all.${date} > ${outputPath}/badcase.all.${date}.txt --mode simple
+rm badcase.all.${date}

@@ -26,18 +26,18 @@ else
 fi
 
 # 运行 parser 分析程序
-resFileName=${testFileNamePrefix}_regtest_${date}.txt.out
+resFileName=${testFileNamePrefix}_regtest_${date}.txt
 regressionInput=~/git/fsa/test/input/${testFileNamePrefix}.txt 
-regressionOutput=${outputFilePath}/${resFileName} 
+regressionOutput=${outputFilePath}/output/${resFileName} 
 cd ../..  # go to 'src' dir
 python LexicalAnalyze.py ${regressionInput} > ${regressionOutput} --mode simple
 echo "regression_test.py is done."
 
 # 运行 diff 比较程序
-baseFileName=${testFileNamePrefix}_regtest_${yesterday}.txt.out
-diffInput=${outputFilePath}/${baseFileName} 
-diffOutput=${outputFilePath}/${resFileName} 
+baseFileName=${testFileNamePrefix}_regtest_${yesterday}.txt
+diffInput=${outputFilePath}/output/${baseFileName} 
+diffOutput=${outputFilePath}/output/${resFileName} 
 cd test/regression_test # from 'src' back to this dir
-python diff.py ${diffInput} ${diffOutput} ${regressionInput} > ${outputFilePath}/${testFileNamePrefix}.${date}.diff
+python diff.py ${diffInput} ${diffOutput} ${regressionInput} > ${outputFilePath}/diff/${testFileNamePrefix}.${date}.diff
 echo "diff.py is done."
 
