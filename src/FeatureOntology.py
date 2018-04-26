@@ -15,7 +15,7 @@ _AliasDict = {}
 _FeatureOntologyDict = {}
 NotCopyList = []
 NotShowList = []
-BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC', 'CC', 'DT', 'SYM', 'Punc'],
+BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC', 'CC', 'DT', 'SYM', 'Punc', 'XE'],
             ['NE', 'DE', 'NG', 'RP'],
             ['AP','VG'],
             ['NP'],

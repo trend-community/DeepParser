@@ -3,8 +3,8 @@
 ## output: 2 files: KeywordSales.txt, FeatureSales.txt
 
 
-import logging, sys, re, os, argparse
-import requests, json, jsonpickle
+import logging,  os, argparse
+import requests,  jsonpickle
 import utils
 
 import singleton
