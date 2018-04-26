@@ -298,7 +298,7 @@ def LexicalAnalyze(Sentence):
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
-        SentenceID = DBInsertOrGetID("sentences", ["sentence", ] , [Sentence, ] )
+
         #I can compare the "verify" time with lexicon/rule file. But now we do not have
         #   lexicon file time (assume it is changing all the time), so ignore this part now
         #   until the lexicon/rule are more stable.
@@ -315,6 +315,7 @@ def LexicalAnalyze(Sentence):
         WinningRules = DynamicPipeline(NodeList)
 
         if ParserConfig.get("main", "runtype") == "Debug":
+            SentenceID = DBInsertOrGetID("sentences", ["sentence", ], [Sentence, ])
             try:
                 cur = DBCon.cursor()
                 strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
@@ -393,6 +394,7 @@ def LoadCommon():
             Rulefile = os.path.join(RuleFolder, Rulefile)
             Rules.LoadRules(Rulefile)
 
+    DBCon.commit()
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
@@ -400,8 +402,11 @@ def LoadCommon():
         logging.debug("Start writing temporary lex file.")
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
+    else:
+        DBCon.close()
+        logging.info("DBCon closed.")
     logging.debug("Done of LoadCommon!")
-    DBCon.commit()
+
         #print(Lexicon.OutputLexicon(False))
 
 if __name__ == "__main__":
