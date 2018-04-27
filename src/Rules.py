@@ -954,6 +954,7 @@ def LoadRules(RuleLocation):
     logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
 
+    return RuleFileName
 
 # def BuildIdenticalNetwork(rg):
 #     for rule in rg.RuleList:

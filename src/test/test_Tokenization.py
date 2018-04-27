@@ -325,3 +325,11 @@ class TokenizationTest(unittest.TestCase):
         # NodeList = Tokenize(t)
         # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
         # self.assertEqual(2, NodeList.size) #lexicon not loaded. "越狱" is not a word.
+
+    # def testFinal(self):
+    #     import ProcessSentence
+    #     ProcessSentence.LoadCommonLexicon(XLocation = '../../fsa/X/')
+    #     t = "一共有3G"
+    #     NodeList = Tokenize(t)
+    #     self.assertEqual(NodeList.size, 4)
+    #     self.assertEqual(NodeList.head.text, "一共")

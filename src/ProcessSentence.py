@@ -348,15 +348,7 @@ def LoadPipeline(PipelineLocation):
                 continue
             PipeLine.append(action.strip())
 
-
-def LoadCommon():
-    #FeatureOntology.LoadFullFeatureList('../../fsa/extra/featurelist.txt')
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    #Lexicon.LoadLexicon('../../fsa/Y/lexY.txt')
-    #Lexicon.LoadLexicon('../../fsa/X/QueryLexicon.txt')
-
-    XLocation = '../../fsa/X/'
-
+def LoadCommonLexicon(XLocation):
     Lexicon.LoadLexicon(XLocation + 'LexX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
@@ -382,6 +374,13 @@ def LoadCommon():
     Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
     Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
+def LoadCommon():
+    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+
+    XLocation = '../../fsa/X/'
+
+    LoadCommonLexicon(XLocation)
+
     LoadPipeline(XLocation + 'pipelineX.txt')
 
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
@@ -392,7 +391,9 @@ def LoadCommon():
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             Rulefile = os.path.join(RuleFolder, Rulefile)
-            Rules.LoadRules(Rulefile)
+            RuleFileName = Rules.LoadRules(Rulefile)
+            if RuleFileName != Rulefile:
+                PipeLine[PipeLine.index(action)] = "FSA " + RuleFileName
 
     DBCon.commit()
     if ParserConfig.get("main", "runtype") == "Debug":
