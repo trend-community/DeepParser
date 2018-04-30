@@ -34,7 +34,8 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
         node.upperRelation = inputnode['UpperRelationship']
     nodelist.append(node)
 
-    if 'sons' in inputnode.keys():
+    if 'sons' in inputnode.keys() and  "0" not in node.features:
+        #if this node is 0, don't show the sons. April 30, 2018. Ben
         for son in inputnode['sons']:
             CreateFlatTree(son, nodelist, Debug, node.id)
 

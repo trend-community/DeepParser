@@ -363,9 +363,12 @@ def InitDB():
         logging.error("Database file does not exists!")
 
 def CloseDB():
-    DBCon.commit()
-    DBCon.close()
-    logging.info("DBCon closed.")
+    try:
+        DBCon.commit()
+        DBCon.close()
+        logging.info("DBCon closed.")
+    except sqlite3.ProgrammingError:
+        logging.info("DBCon is closed.")
 
 # try:
 #     if not DBCon:
