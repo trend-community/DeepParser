@@ -18,6 +18,8 @@
 #bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder systemlexiconfilelocation
 #  nohup sh g1.processrawquery.sh /nlpengine.dev/queries/data/g0.raw.txt ../data/g0.P /nlpengine.dev/fsa/X/Q/rule /nlpengine.dev/fsa/X/Q/lexicon /nlpengine.dev/fsa/X/Q/temp /nlpengine.dev/fsa/X/AllLexicon.txt &
 
+set -x
+
 mkdir -p $5
 perl -pi -e 's/\x01/\t/g' $1
 

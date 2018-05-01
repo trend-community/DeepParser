@@ -30,6 +30,9 @@ minLogPw = -21  # Zetta-words
 
 def viterbi1(strSent, maxPhraseLen=20, isRecursive=True):
     ## init
+    if querydict[strSent] == -4: #System Lexicon
+        return [strSent]
+
     sent = ['^'] + strSent.split()
     sentLen = len(sent)
     bestPhrase = copy.deepcopy(sent)
