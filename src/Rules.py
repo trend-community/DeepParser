@@ -383,7 +383,7 @@ class Rule:
         Chunk1_2 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
         Chunk1_1 = re.match("(.*)<(.+)>(.*)", rulebody)
 
-        if Chunk2_3_1:
+        if Chunk2_3_1:      #"(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_3_1.group(1).count('[')
             tokencount_2 = Chunk2_3_1.group(2).count('[')
             tokencount_3 = Chunk2_3_1.group(3).count('[')
@@ -431,14 +431,17 @@ class Rule:
                 elif "++" in c3.Action or ("^^." in c1.Action and "^^." in c2.Action ):
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
                 else:
-                    logging.error(" There is no ++ for anyt tokens.  Can't determined the head!")
-                    logging.error(str(self))
-                    logging.error(jsonpickle.dumps(c))
+                    if not self.RuleName.startswith("CleanRule"):
+                        logging.error(" There is no ++ for any tokens.  Can't determined the head!")
+                        logging.warning(" Set to the last chunk")
+                        logging.error(str(self))
+                    #logging.error(jsonpickle.dumps(c))
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
             self.Chunks.append(c)
-        elif Chunk2_2:
+        elif Chunk2_2:      #"(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_2.group(1).count('[')
             tokencount_2 = Chunk2_2.group(2).count('[')
             tokencount_3 = Chunk2_2.group(3).count('[')
@@ -471,14 +474,17 @@ class Rule:
                 elif "^^." in c1.Action or "++" in c2.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
                 else:
-                    logging.error(" There is no ^^. or ++ for both tokens.  Can't determined the head!")
-                    logging.error(str(self))
-                    logging.error(jsonpickle.dumps(c))
+                    if not self.RuleName.startswith("CleanRule"):
+                        logging.warning(" There is no ^^. or ++ for both tokens.  Can't determined the head!")
+                        logging.warning(" Set to the second chunk")
+                        logging.warning(str(self))
+                        #logging.warning(jsonpickle.dumps(c))
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
             self.Chunks.append(c)
-        elif Chunk2_1:
+        elif Chunk2_1:      #"(.*)<(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_1.group(1).count('[')
             tokencount_2 = Chunk2_1.group(2).count('[')
             tokencount_3 = Chunk2_1.group(3).count('[')
@@ -502,14 +508,15 @@ class Rule:
                 c.HeadOffset = tokencount_2
                 if "^^." not in c1.Action and "++" not in c1.Action:
                     c.HeadConfidence = 0
-                    logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
-                    logging.debug(str(self))
-                    logging.debug(jsonpickle.dumps(c))
+                    if not self.RuleName.startswith("CleanRule"):
+                        logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
+                        logging.debug(str(self))
+                        logging.debug(jsonpickle.dumps(c))
 
             c.StringChunkLength = c.Length - VirtualTokenNum
             self.Chunks.append(c)
 
-        elif Chunk1_3:
+        elif Chunk1_3:      #"(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)"
             tokencount_1 = Chunk1_3.group(1).count('[')
             tokencount_2 = Chunk1_3.group(2).count('[')
             c1 = self.CreateChunk(tokencount_1, tokencount_2)
@@ -525,7 +532,7 @@ class Rule:
             c3 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3+tokencount_4+tokencount_5, tokencount_6)
             self.Chunks.append(c3)
 
-        elif Chunk1_2:
+        elif Chunk1_2:      #"(.*)<(.+)>(.*)<(.+)>(.*)"
             tokencount_1 = Chunk1_2.group(1).count('[')
             tokencount_2 = Chunk1_2.group(2).count('[')
             c1 = self.CreateChunk(tokencount_1, tokencount_2)
@@ -536,7 +543,7 @@ class Rule:
             c2 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3, tokencount_4)
             self.Chunks.append(c2)
 
-        elif Chunk1_1:
+        elif Chunk1_1:      #"(.*)<(.+)>(.*)"
             prefix = Chunk1_1.group(1)
             tokencount_prefix = prefix.count('[')
 
@@ -598,9 +605,13 @@ class Rule:
                            Length=Length, HeadOffset=0)
 
         if c.HeadOffset == -1:
-            logging.warning("Can't find head in this rule:")
-            logging.warning(self.Origin)
-            logging.warning(str(self))
+            if not self.RuleName.startswith("CleanRule"):
+                logging.warning("Can't find head in this rule:")
+                logging.warning("\tSet to the last token")
+                logging.warning(self.Origin)
+                logging.warning(str(self))
+            c.HeadOffset = c.Length
+
 
         c.StringChunkLength = c.Length - VirtualTokenNum
         c.ChunkLevel = ChunkLevel
