@@ -24,7 +24,7 @@ mkdir -p $5
 #perl -pi -e 's/\x01/\t/g' $1
 
 LC_ALL=C grep -Pva "\t[1-9]$" $1  > $5/raw.10plus.txt
-#LC_ALL=C grep -Pv "\t1[0-9]$" $5/raw.10plus.txt  > $5/raw.100plus.txt
+#LC_ALL=C grep -Pv "\t1[0-9]$" $5/raw.10plus.txt  > $5/raw.100plus.txt  # that removed some useful words. might be able to add up to more than 100. sample: 格纹
 sed -e "s/[[:punct:]]/ /g" $5/raw.10plus.txt > $5/raw.10plus.nopunct.txt    #has to be executed manually to get the Chinese punct correct.
 LC_ALL=C sed -e "s/[\x00-\x08\x0b-\x0c\x0e-\x1a]//g"  $5/raw.10plus.nopunct.txt  > $5/raw_wo_ctrl.10plus.nopunct.txt        #only keep \t \r \n
 t
@@ -46,8 +46,9 @@ do
     grep -va "<" $outputfile | grep -Fxv -f $5/SystemLexicon.txt > $newlexiconname &
 
     newrulename="$3/CleanRule_$filename"
-    echo "$filename QRule ==  // $filename \n" > $newrulename
-    grep -a "<" $outputfile | awk '1;!(NR%2000){print "QRule ==";}' >> $newrulename &
+    echo "CleanRule_$filename ==  // $filename \n" > $newrulename
+    # 1, search for rule; 2, add quotes for english word, 3, add rule name for each 2000 lines. | awk '1;!(NR%2000){print "CleanRule_$filename ==";}'
+    grep -a "<" $outputfile | sed  -E  's/([< ])([a-z0-9A-Z][a-z0-9A-Z]*)([ >])/\1\["\2"\]\3/g'   >> $newrulename &
 done
 
 echo "done. analyzing blacklisted lexicons."
