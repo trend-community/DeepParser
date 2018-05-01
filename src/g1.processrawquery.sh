@@ -24,11 +24,11 @@ mkdir -p $5
 #perl -pi -e 's/\x01/\t/g' $1
 
 LC_ALL=C grep -Pva "\t[1-9]$" $1  > $5/raw.10plus.txt
-LC_ALL=C grep -Pv "\t[1-9][0-9]$" $5/raw.10plus.txt  > $5/raw.100plus.txt
-sed -e "s/[[:punct:]]/ /g" $5/raw.100plus.txt > $5/raw.100plus.nopunct.txt    #has to be executed manually to get the Chinese punct correct.
-LC_ALL=C sed -e "s/[\x00-\x08\x0b-\x0c\x0e-\x1a]//g"  $5/raw.100plus.nopunct.txt  > $5/raw_wo_ctrl.100plus.nopunct.txt        #only keep \t \r \n
+#LC_ALL=C grep -Pv "\t1[0-9]$" $5/raw.10plus.txt  > $5/raw.100plus.txt
+sed -e "s/[[:punct:]]/ /g" $5/raw.10plus.txt > $5/raw.10plus.nopunct.txt    #has to be executed manually to get the Chinese punct correct.
+LC_ALL=C sed -e "s/[\x00-\x08\x0b-\x0c\x0e-\x1a]//g"  $5/raw.10plus.nopunct.txt  > $5/raw_wo_ctrl.10plus.nopunct.txt        #only keep \t \r \n
 t
-python3 g1.norm.py $5/raw_wo_ctrl.100plus.nopunct.txt ../../fsa/X/LexBlacklist.txt ../../fsa/X/LexBlacklist_TopChars.txt $5/dictoutput.txt $2 2>../temp/g1.norm.error.txt
+python3 g1.norm.py $5/raw_wo_ctrl.10plus.nopunct.txt ../../fsa/X/LexBlacklist.txt ../../fsa/X/LexBlacklist_TopChars.txt $5/dictoutput.txt $2 2>../temp/g1.norm.error.txt
 
 python3 g1.generatewordlist.py $5 $2     2>../temp/g1.generatewordlist.error.txt
 
