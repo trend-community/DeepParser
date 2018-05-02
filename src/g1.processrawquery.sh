@@ -48,7 +48,7 @@ do
     newrulename="$3/CleanRule_$filename"
     echo "CleanRule_$filename ==  // $filename \n" > $newrulename
     # 1, search for rule; 2, add quotes for english word, 3, add rule name for each 2000 lines. | awk '1;!(NR%2000){print "CleanRule_$filename ==";}'
-    grep -a "<" $outputfile | sed  -E  's/([< ])([a-z0-9A-Z][a-z0-9A-Z]*)([ >])/\1\["\2"\]\3/g'   >> $newrulename &
+    grep -a "<" $outputfile | sed  -E  's/([< ])([a-z0-9A-Z][a-z0-9A-Z]*)([ >])/\1\[\x27\2\x27\]\3/g'   >> $newrulename &
 done
 
 echo "done. analyzing blacklisted lexicons."

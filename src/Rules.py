@@ -25,6 +25,8 @@ class RuleGroup(object):
         self.MacroDict = {}
         self.UnitTest = []
         self.LoadedFromDB = False
+        self.HashRules = {}
+        self.NoHashRules = {}
 
     def __lt__(self, other):
         return self.ID < other.ID
