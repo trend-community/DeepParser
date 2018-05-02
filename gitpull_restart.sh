@@ -44,6 +44,6 @@ kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print
 # 2.restart  parser
 mkdir log
 cd src
-
+mv ../log/restfulservice.log "../log/restfulservice.$(date +"%Y%m%dT%H%M").log"
 nohup python3 RestfulService.py > ../log/restfulservice.log 2>&1 &
 echo 'RestfulService is restarted.'
