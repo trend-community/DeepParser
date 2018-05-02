@@ -237,7 +237,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     return WinningRules
 
 
-def DynamicPipeline(NodeList):
+def DynamicPipeline(NodeList, schema):
     WinningRules = {}
 
     for action in PipeLine:
@@ -245,6 +245,10 @@ def DynamicPipeline(NodeList):
             continue
         if action == "apply lexicons":
             continue
+
+        if action == "SEGMENTATION COMPLETE" and schema == "segonly":
+            break
+
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -293,7 +297,7 @@ def PrepareJSandJM(nodes):
         p = p.prev
 
 
-def LexicalAnalyze(Sentence):
+def LexicalAnalyze(Sentence, schema = "full"):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
 
@@ -312,7 +316,7 @@ def LexicalAnalyze(Sentence):
 
         PrepareJSandJM(NodeList)
 
-        WinningRules = DynamicPipeline(NodeList)
+        WinningRules = DynamicPipeline(NodeList, schema)
 
         if ParserConfig.get("main", "runtype") == "Debug":
             SentenceID = DBInsertOrGetID("sentences", ["sentence", ], [Sentence, ])

@@ -49,7 +49,14 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         Sentence = urllib.parse.unquote(queries["Sentence"])
         Type = "json"
         if "Type" in queries:
-            Type = queries["Type"]
+            Type = queries["Type"].lower()
+        if "type" in queries:
+            Type = queries["type"].lower()
+        schema = "full"
+        if "Schema" in queries:
+            schema = queries["Schema"].lower()
+        if "schema" in queries:
+            schema = queries["schema"].lower()
 
         if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
             Sentence = Sentence[1:-1]
@@ -57,7 +64,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         #     return "Quote your sentence in double quotes please"
         logging.info(Sentence)
 
-        nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence)
+        nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence, schema)
         # return  str(nodes)
         # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
         Debug = "Debug" in queries

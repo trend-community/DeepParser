@@ -26,7 +26,7 @@ class RuleGroup(object):
         self.UnitTest = []
         self.LoadedFromDB = False
         self.HashRules = {}
-        self.NoHashRules = {}
+        self.NoHashRules = []
 
     def __lt__(self, other):
         return self.ID < other.ID
@@ -961,6 +961,12 @@ def LoadRules(RuleLocation):
         _PreProcess_CompileHash(rulegroup.RuleList)
         rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: x.TokenLength, reverse=True)
         _OutputRuleDB(rulegroup)
+        for r in rulegroup.RuleList:
+            if r.norms:
+                norms = "".join(r.norms)
+                rulegroup.HashRules[norms] = r
+            else:
+                rulegroup.NoHashRules.append(r)
 
     #BuildIdenticalNetwork(rulegroup)
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
@@ -1071,6 +1077,7 @@ def LoadRulesFromDB(rulegroup):
             featurerows = cur.fetchall()
             for featurerow in featurerows:
                 token.OrFeatures.add(int(featurerow[0]))
+                # TODO: Modified as OrFeatureGroup. Need to save to DB properly.
             cur.execute(strsql_node_feature, [nodeid, 3])
             featurerows = cur.fetchall()
             for featurerow in featurerows:

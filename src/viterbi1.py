@@ -121,13 +121,13 @@ def LoadDictFromPickle(dictpath="../data/g1.words.P"):
         querydict[word] = math.log10(querydict[word]) - logN
 
 
-def LoadDictFromLexicon(dictpath):
+def LoadDictFromLexicon(dictpath, value):
     global querydict
     print("Before loading from lexicon, size:" + str(len(querydict)))
     with open(dictpath) as lexicondict:
         for line in lexicondict:
             if len(line.strip()) >= 2:
-                querydict[normalize(line.strip())] = -4 #each lexicon word is 1/10000 of total query.
+                querydict[normalize(line.strip())] = value
     print("After loading from lexicon, size:" + str(len(querydict)))
     if '中 介' in querydict:
         print("querydict['中 介']=" + str(querydict['中 介']))
