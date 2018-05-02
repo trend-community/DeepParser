@@ -507,6 +507,7 @@ class SentenceNode(object):
 
     def CleanOutput_Propagate(self, propogate_features=None):
         Features_ToPropogate = {utils.FeatureID_Subj, utils.FeatureID_Obj, utils.FeatureID_Pred}
+        propogate_f = Features_ToPropogate.intersection(self.features)
 
         a = JsonClass()
         a.text = self.text
@@ -515,11 +516,12 @@ class SentenceNode(object):
         if self.atom != self.text:
             a.atom = self.atom
         a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+
         if utils.FeatureID_H in self.features and propogate_features:
             logging.info("\t\tApplying " + str(propogate_features) + " to " + str(self))
             a.features.extend([FeatureOntology.GetFeatureName(f) for f in propogate_features])
+            propogate_f.update(propogate_features)
 
-        propogate_f = Features_ToPropogate.intersection(self.features)
         a.StartOffset = self.StartOffset
         a.EndOffset = self.EndOffset
         if self.UpperRelationship:
