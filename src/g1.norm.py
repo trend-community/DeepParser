@@ -148,6 +148,6 @@ querydict[''] = N
 pickle.dump( querydict, open(args.outputdict, "wb") )
 
 fout = codecs.open(args.output, 'wb', encoding='utf-8')
-for phrase in sorted(querydict, key=querydict.get): fout.write(phrase + '\t' + str(querydict[phrase]) + '\n')
+for phrase in sorted(querydict, key=querydict.get, reverse=True): fout.write(phrase + '\t' + str(querydict[phrase]) + '\n')
 fout.close()
 print("Total freq:" + str(N))
