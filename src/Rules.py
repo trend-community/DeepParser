@@ -591,11 +591,11 @@ class Rule:
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif "^." not in token.action:
                 if c.HeadConfidence < 2:
-                    c.HeadConfidence = HeadOffset + 1
-                    c.HeadOffset = i
+                    c.HeadConfidence =  1
+                    c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
 
-        self.Tokens[HeadOffset].action += " H ^.H"  #add Head for the head token.
+        self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H"  #add Head for the head token.
         return VirtualTokenNum
 
 

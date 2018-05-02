@@ -44,7 +44,7 @@ do
     echo "processing $f ..."
     filename=$(basename "$f")
     outputfile="$3/temp/Mixed_$filename"
-    python3 g1.sent.py  "$f" "$outputfile" $3 $3/temp/SystemLexicon.txt $3/temp/SystemLexicon_defLex.txt
+    python3 g1.sent.py  "$f" "$outputfile" $2 $3/temp/SystemLexicon.txt $3/temp/SystemLexicon_defLex.txt
 
     newlexiconname="$3/lexicon/CleanLexicon_$filename"
     grep -va "<" $outputfile | grep -Fxv -f $3/temp/SystemLexicon.txt > $newlexiconname &

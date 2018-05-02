@@ -38,8 +38,7 @@ def ProcessFile(FileName):
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
 
-        if DebugMode:
-            print(TestSentence + '\t' + nodes)
+
         if args.mode == 'json':
             print(TestSentence + '\t' + nodes.root().CleanOutput().toJSON())
         elif  args.mode == 'simple':
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     level = logging.WARNING
     if args.debug:
         DebugMode = True
-        level = logging.DEBUG
+        level = logging.INFO
 
     if args.mode == 'json':
         pass
