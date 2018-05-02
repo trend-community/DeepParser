@@ -350,13 +350,13 @@ class Rule:
     @staticmethod
     def ExtractParentSonActions( actinstring):
 
-        if "+++" in actinstring:    # if there is +++, then all are parentaction.
-            return actinstring, ""
+        # if "+++" in actinstring:    # if there is +++, then all are parentaction.
+        #     return actinstring, ""    #May 2nd, not to apply this rule.
 
         actions = set(actinstring.split())
 
         #SonActionString = " ".join([a for a in actions if a[-2:] != "++"   or a == '+++' ])
-        ParentActions = [a for a in actions if a[-2:] == "++" and a != '+++']
+        ParentActions = [a for a in actions if a[-2:] == "++" ]
         ParentActions.extend( [a for a in actions if a[0:2] == "^^"]        )
 
         SonActions = list(actions - set(ParentActions))

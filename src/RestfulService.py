@@ -58,6 +58,12 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         if "schema" in queries:
             schema = queries["schema"].lower()
 
+        action = ""
+        if "Action" in queries:
+            action = queries["Action"].lower()
+        if "action" in queries:
+            action = queries["action"].lower()
+
         if len(Sentence) >= 2 and Sentence[0] in "\"“”" and Sentence[-1] in "\"“”":
             Sentence = Sentence[1:-1]
         # else:
@@ -94,7 +100,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 output_text = chart
             else:
                 output_type = "Application/json;"
-                output_text =nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()
+                if action == "headdown":
+                    output_text = nodes.root().CleanOutput_Propagate().toJSON()
+                else:
+                    output_text =nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()
 
             try:
                 self.send_response(200)

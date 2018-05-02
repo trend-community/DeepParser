@@ -31,6 +31,11 @@ FeatureID_VB = None
 FeatureID_Ved = None
 FeatureID_Ving = None
 
+FeatureID_H = None
+FeatureID_Subj = None
+FeatureID_Obj = None
+FeatureID_Pred = None
+
 IMPOSSIBLESTRING = "@#$%@impossible@"
 IMPOSSIBLESTRINGLP = "@#$%@leftparenthesis@"
 IMPOSSIBLESTRINGRP = "@#$%@rightparenthesis@"
@@ -63,6 +68,7 @@ def InitGlobalFeatureID():
     global FeatureID_CD, FeatureID_punc, FeatureID_SYM, FeatureID_NNP, FeatureID_External
     global FeatureID_OOV,FeatureID_CM, FeatureID_NEW, FeatureID_SpaceQ, FeatureID_SpaceH, FeatureID_FULLSTRING
     global FeatureID_VB, FeatureID_Ved, FeatureID_Ving
+    global FeatureID_H, FeatureID_Subj, FeatureID_Obj, FeatureID_Pred
     if not FeatureID_JS2:
         import FeatureOntology
         FeatureID_JS = FeatureOntology.GetFeatureID("JS")
@@ -84,6 +90,11 @@ def InitGlobalFeatureID():
         FeatureID_VB = FeatureOntology.GetFeatureID("VB")
         FeatureID_Ved = FeatureOntology.GetFeatureID("Ved")
         FeatureID_Ving = FeatureOntology.GetFeatureID("Ving")
+
+        FeatureID_H = FeatureOntology.GetFeatureID("H")
+        FeatureID_Subj = FeatureOntology.GetFeatureID("Subj")
+        FeatureID_Obj = FeatureOntology.GetFeatureID("Obj")
+        FeatureID_Pred = FeatureOntology.GetFeatureID("Pred")
 
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
         for IDList in FeatureOntology.BarTagIDs:
@@ -156,10 +167,10 @@ def IsCD(word):
 def IsAscii_List(Sentences):
     if isinstance(Sentences, list):
         Sentence = "".join(Sentences)
+        return IsAscii(Sentence)
     else:
         logging.error("This is not a list")
-
-    return IsAscii(Sentence)
+        return False
 
 
 @lru_cache(50000)
