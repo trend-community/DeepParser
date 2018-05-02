@@ -89,7 +89,12 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
             elif Type == "parsetree":
                 output_type = "text/html;"
-                orgdata = Graphviz.orgChart(nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON(), Debug=Debug)
+                if action == "headdown":
+                    output_json = nodes.root().CleanOutput_Propagate().toJSON()
+                else:
+                    output_json =nodes.root().CleanOutput(KeepOriginFeature=Debug).toJSON()
+
+                orgdata = Graphviz.orgChart(output_json, Debug=Debug)
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
                 if Debug:

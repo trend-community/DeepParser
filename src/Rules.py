@@ -574,7 +574,6 @@ class Rule:
                 c.HeadConfidence = 5
                 c.HeadOffset = HeadOffset + i
                 c.Action, token.action = self.ExtractParentSonActions(token.action)
-                token.action += " ^.H"
             elif token.pointer == "^H":
                 if c.HeadConfidence < 5:
                     c.HeadConfidence = 4
@@ -596,6 +595,7 @@ class Rule:
                     c.HeadOffset = i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
 
+        self.Tokens[HeadOffset].action += " H ^.H"  #add Head for the head token.
         return VirtualTokenNum
 
 
