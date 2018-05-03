@@ -4,7 +4,7 @@ from Tokenization import *
 from FeatureOntology import LoadFeatureOntology
 XLocation = '../../fsa/X/'
 LoadFeatureOntology('../../fsa/Y/feature.txt')
-Lexicon.LoadLexicon(XLocation + 'LexX.txt', lookupSource=LexiconLookupSource.Exclude)
+Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt', lookupSource=LexiconLookupSource.Exclude)
 Lexicon.LoadSegmentLexicon()
 
 
@@ -252,6 +252,14 @@ class TokenizationTest(unittest.TestCase):
 
         self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(0).features)
         self.assertTrue(utils.FeatureID_SpaceQ in NodeList.get(1).features)
+
+    def test4G(self):
+        t = "4G网络"
+        NodeList = Tokenize(t)
+        self.assertEqual(2, NodeList.size)
+        t = "4g网"
+        NodeList = Tokenize(t)
+        self.assertEqual(2, NodeList.size)
 
     def testSegmentation_mixed(self):
 

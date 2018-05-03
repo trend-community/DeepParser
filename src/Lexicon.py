@@ -204,8 +204,14 @@ def LoadSegmentLexicon():
                 combinedword = word.replace("/", "")
                 _LexiconSegmentSlashDict[combinedword] = word
                 if combinedword not in _LexiconSegmentDict:
-                    _LexiconSegmentDict[
-                        combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+                    _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+
+    for word in list(_LexiconSegmentDict):
+        if word.lower() != word:
+            _LexiconSegmentDict[word.lower()] = _LexiconSegmentDict[word]
+        if word.upper() != word:
+            _LexiconSegmentDict[word.upper()] = _LexiconSegmentDict[word]
+
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 
 
