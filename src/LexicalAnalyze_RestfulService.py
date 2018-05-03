@@ -18,7 +18,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--mode", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'])
+    parser.add_argument("--schema")
+    parser.add_argument("--action")
+    parser.add_argument("--type", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'],
+                        default='json')
     args = parser.parse_args()
 
     DebugMode = False
@@ -50,23 +53,28 @@ if __name__ == "__main__":
                 UnitTest.append(unittest)
 
     logging.info("Start processing sentences")
-    LexicalAnalyzeURL += "&Type=" + args.mode
+    LexicalAnalyzeURL += "&type=" + args.type
+    if args.schema:
+        LexicalAnalyzeURL += "&schema=" + args.schema
+    if args.action:
+        LexicalAnalyzeURL += "&action=" + args.action
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
     # We can use a with statement to ensure threads are cleaned up promptly
         # Start the load operations and mark each future with its URL
         future_to_url = {executor.submit(LATask, ut.TestSentence): ut.TestSentence for ut in UnitTest}
         future_new = {}
+        logging.info("There are " + str(len(future_to_url)) + " to process.")
         for future in concurrent.futures.as_completed(future_to_url):
             s = future_to_url[future]
             try:
                 data = future.result()
             except Exception as exc:
-                logging.warning('%r generated an exception.' % (s, ))
+                logging.debug('%r generated an exception.' % (s, ))
                 future_new[executor.submit(LATask, s)] = s
             else:
                 Result[s] = data
-        logging.info("Check future_new")
+        logging.info("Redo the failed items: size=" + str(len(future_new)))
         for future in concurrent.futures.as_completed(future_new):
             s = future_new[future]
             try:
