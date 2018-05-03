@@ -248,6 +248,8 @@ def DynamicPipeline(NodeList, schema):
 
         if action == "SEGMENTATION COMPLETE" and schema == "segonly":
             break
+        if action == "NEGATION COMPLETE" and schema == "negationcomplete":
+            break
 
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()

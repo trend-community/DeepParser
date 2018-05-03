@@ -49,7 +49,7 @@ do
     newlexiconname="$3/lexicon/CleanLexicon_$filename"
     grep -va "<" $outputfile | grep -Fxv -f $3/temp/SystemLexicon.txt > $newlexiconname &
 
-    newrulename="$3/rule/CleanRule_$filename_ngram"
+    newrulename="$3/rule/CleanRule_$filename"
     echo "CleanRule_$filename ==  // $filename \n" > $newrulename
     # 1, search for rule; 2, add quotes for english word, 3, add rule name for each 2000 lines. | awk '1;!(NR%2000){print "CleanRule_$filename ==";}'
     grep -a "<" $outputfile | sed  -E  's/([< ])([a-z0-9A-Z][a-z0-9A-Z]*)([ >])/\1\[\x27\2\x27\]\3/g'   >> $newrulename &
