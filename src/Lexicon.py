@@ -209,10 +209,10 @@ def LoadSegmentLexicon():
     for word in list(_LexiconSegmentDict):
         if IsAscii(word):
             del _LexiconSegmentDict[word] #remove English words. They should be separate natually by space or numbers or punc.
-        # if word.lower() != word:
-        #     _LexiconSegmentDict[word.lower()] = _LexiconSegmentDict[word]
-        # if word.upper() != word:
-        #     _LexiconSegmentDict[word.upper()] = _LexiconSegmentDict[word]
+        if word.lower() != word:
+            _LexiconSegmentDict[word.lower()] = _LexiconSegmentDict[word]
+        if word.upper() != word:
+            _LexiconSegmentDict[word.upper()] = _LexiconSegmentDict[word]
 
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 
