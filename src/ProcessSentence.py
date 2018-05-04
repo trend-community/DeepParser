@@ -330,8 +330,10 @@ def LexicalAnalyze(Sentence, schema = "full"):
                 for ruleid in WinningRules:
                     cur.execute(strsql, [SentenceID, ruleid])
                 cur.close()
-            except sqlite3.OperationalError:
-                logging.warning("data writting error. ignore")
+            except (sqlite3.OperationalError,sqlite3.DatabaseError)  as e:
+                logging.warning("data writting error. ignore." )
+                logging.warning("SQL:" + strsql)
+                logging.warning("Error:" + str(e))
             DBCon.commit()
         logging.debug("-End LexicalAnalyze")
 
