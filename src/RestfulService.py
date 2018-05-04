@@ -24,6 +24,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         return host
 
     def do_GET(self):
+        # if hasattr(self.server, "active_children") and self.server.active_children:
+        #     logging.warning("Server Active Children:" + str(len(self.server.active_children)) )
+        #     if len(self.server.active_children) > 3:
+        #         logging.error("Server is too busy to serve!")
+        #         self.send_response(500)
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
@@ -169,7 +174,7 @@ def init():
     global charttemplate
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s][%(process)d : %(thread)d] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s][%(process)d : %(thread)d] %(message)s')
     
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
@@ -192,7 +197,7 @@ if __name__ == "__main__":
     try:
         httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
     except:     #windows?
-        httpd = HTTPServer(('0.0.0.0', startport), ProcessSentence_Handler)
+        httpd = HTTPServer(('0.0.0.0', startport), ProcessSentence_Handler, request_queue_size=5)
         logging.warning("Running without multi-process support.")
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")

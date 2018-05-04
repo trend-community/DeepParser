@@ -207,10 +207,12 @@ def LoadSegmentLexicon():
                     _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
 
     for word in list(_LexiconSegmentDict):
-        if word.lower() != word:
-            _LexiconSegmentDict[word.lower()] = _LexiconSegmentDict[word]
-        if word.upper() != word:
-            _LexiconSegmentDict[word.upper()] = _LexiconSegmentDict[word]
+        if IsAscii(word):
+            del _LexiconSegmentDict[word] #remove English words. They should be separate natually by space or numbers or punc.
+        # if word.lower() != word:
+        #     _LexiconSegmentDict[word.lower()] = _LexiconSegmentDict[word]
+        # if word.upper() != word:
+        #     _LexiconSegmentDict[word.upper()] = _LexiconSegmentDict[word]
 
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
 

@@ -25,6 +25,7 @@ output:
 import copy
 
 querydict = {}
+lookupset = set()
 minLogPw = -21  # Zetta-words
 
 
@@ -133,6 +134,23 @@ def LoadDictFromLexicon(dictpath, value):
         print("querydict['中 介']=" + str(querydict['中 介']))
     if '军 刀 黑' in querydict:
         print("querydict['军 刀 黑']=" + str(querydict['军 刀 黑']))
+    if '胖 妹 妹' in querydict:
+        print("querydict['胖 妹 妹']=" + str(querydict['胖 妹 妹']))
+
+def LoadLookupDictFromLexicon(dictpath):
+    global querydict
+    print("Before loading from lexicon, size:" + str(len(querydict)))
+    with open(dictpath) as lexicondict:
+        for line in lexicondict:
+            if len(line.strip()) >= 2:
+                lookupset.add(normalize(line.strip()))
+    print("After loading lookup dict from lexicon, size:" + str(len(lookupset)))
+    if '中 介' in lookupset:
+        print("['中 介'] in lookupset" )
+    if '军 刀 黑' in lookupset:
+        print("['军 刀 黑'] in lookupset" )
+    if '胖 妹 妹' in lookupset:
+        print("['胖 妹 妹'] in lookupset" )
 
 
 if __name__ == "__main__":
