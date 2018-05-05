@@ -10,7 +10,7 @@ import Graphviz
 import Rules
 import utils
 from datetime import datetime
-
+from configparser import NoOptionError
 from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
 #from urlparse import urlparse, parse_qs
 # query_components = parse_qs(urlparse(self.path).query)
@@ -51,7 +51,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             self.send_response(500)
 
     def LexicalAnalyze(self, queries):
-        Sentence = urllib.parse.unquote(queries["Sentence"])
+        Sentence = urllib.parse.unquote(queries["Sentence"])[:MAXQUERYSENTENCELENGTH]
         Type = "json"
         if "Type" in queries:
             Type = queries["Type"].lower()
@@ -172,6 +172,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
 def init():
     global charttemplate
+    global MAXQUERYSENTENCELENGTH
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s][%(process)d : %(thread)d] %(message)s')
@@ -181,6 +182,10 @@ def init():
         charttemplate = templatefile.read()
 
     ProcessSentence.LoadCommon()
+    try:
+        MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
+    except (KeyError, NoOptionError):
+        MAXQUERYSENTENCELENGTH = 30
     #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
