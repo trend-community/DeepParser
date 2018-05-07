@@ -500,7 +500,8 @@ class SentenceNode(object):
         if self.UpperRelationship:
             a.UpperRelationship = self.UpperRelationship
 
-        if self.sons:
+        if self.sons \
+                and "0" not in a.features:  #not to export lower than 0
             a.sons = [s.CleanOutput(KeepOriginFeature) for s in self.sons]
 
         return a

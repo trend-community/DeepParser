@@ -206,8 +206,9 @@ def LoadSegmentLexicon():
                 if combinedword not in _LexiconSegmentDict:
                     _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
 
+#    logging.warning("4g:" + str(_LexiconSegmentDict["4g"]) + "4G:" + str(_LexiconSegmentDict["4G"]) )
     for word in list(_LexiconSegmentDict):
-        if IsAscii(word):
+        if IsAlphaLetter(word):
             del _LexiconSegmentDict[word] #remove English words. They should be separate natually by space or numbers or punc.
             continue
         if word.lower() != word:

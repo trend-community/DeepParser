@@ -54,9 +54,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         Sentence = urllib.parse.unquote(queries["Sentence"])[:MAXQUERYSENTENCELENGTH]
         Type = "json"
         if "Type" in queries:
-            Type = queries["Type"].lower()
+            Type = queries["Type"]
         if "type" in queries:
-            Type = queries["type"].lower()
+            Type = queries["type"]
         schema = "full"
         if "Schema" in queries:
             schema = queries["Schema"].lower()
