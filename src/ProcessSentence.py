@@ -248,7 +248,7 @@ def DynamicPipeline(NodeList, schema):
 
         if action == "SEGMENTATION COMPLETE" and schema == "segonly":
             break
-        if action == "NEGATION COMPLETE" and schema == "negationcomplete":
+        if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
         if action.startswith("FSA"):
@@ -321,8 +321,8 @@ def LexicalAnalyze(Sentence, schema = "full"):
         WinningRules = DynamicPipeline(NodeList, schema)
 
         if ParserConfig.get("main", "runtype") == "Debug":
-            SentenceID = DBInsertOrGetID("sentences", ["sentence", ], [Sentence, ])
             try:
+                SentenceID = DBInsertOrGetID("sentences", ["sentence", ], [Sentence, ])
                 cur = DBCon.cursor()
                 strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
                                 VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
@@ -412,7 +412,7 @@ def LoadCommon():
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
     else:
-        DBCon.close()
+        #DBCon.close()
         logging.info("DBCon closed.")
     logging.debug("Done of LoadCommon!")
 

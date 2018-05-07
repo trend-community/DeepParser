@@ -303,7 +303,8 @@ class SentenceNode(object):
             details in fsa/Y/FSAspecs
         """
         output = ""
-        if self.sons:
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
             output += IMPOSSIBLESTRINGLP
             output += self.get_chunk_label() # add XP AND syntactic role label 
 
@@ -327,7 +328,8 @@ class SentenceNode(object):
             basic oneliner function
         """
         output = ""
-        if self.sons:
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
             output += "<"
             for son in self.sons:
                 output += son.oneliner() + " "
@@ -346,7 +348,8 @@ class SentenceNode(object):
             oneliner function - merge some tokens for KG
         """
         output = ""
-        if self.sons:
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
             output += "<"
 
             if layer_counter > 0:
@@ -501,7 +504,7 @@ class SentenceNode(object):
             a.UpperRelationship = self.UpperRelationship
 
         if self.sons \
-                and "0" not in a.features:  #not to export lower than 0
+                and utils.FeatureID_0 not in self.features:  #not to export lower than 0
             a.sons = [s.CleanOutput(KeepOriginFeature) for s in self.sons]
 
         return a
@@ -528,7 +531,8 @@ class SentenceNode(object):
         if self.UpperRelationship:
             a.UpperRelationship = self.UpperRelationship
 
-        if self.sons:
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
             a.sons = [s.CleanOutput_Propagate(propogate_f) for s in self.sons]
 
         return a
@@ -550,7 +554,8 @@ class SentenceNode(object):
         a.EndOffset = self.EndOffset
         if self.UpperRelationship:
             a.UpperRelationship = self.UpperRelationship
-        if self.sons:
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
             a.sons = [s.CleanOutput_FeatureLeave() for s in self.sons]
 
         #logging.info("in featureleave" + str(self) + "f:" + str(features))

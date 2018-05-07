@@ -405,8 +405,9 @@ def DBInsertOrGetID(tablename, tablefields, values):
             strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
             cur.execute(strsql, values)
             resultid = cur.lastrowid
-        except sqlite3.OperationalError:
+        except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
             logging.warning("data writting error. ignore")
+            logging.warning(str(e))
             resultid = -1
         DBCon.commit()
     cur.close()

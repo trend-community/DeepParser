@@ -28,7 +28,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         #     logging.warning("Server Active Children:" + str(len(self.server.active_children)) )
         #     if len(self.server.active_children) > 3:
         #         logging.error("Server is too busy to serve!")
-        #         self.send_response(500)
+        #         self.ReturnBlank()
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
@@ -48,7 +48,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         except Exception as e:
             logging.error("Unknown exception in do_GET")
             logging.error(str(e))
-            self.send_response(500)
+            self.ReturnBlank()
 
     def LexicalAnalyze(self, queries):
         Sentence = urllib.parse.unquote(queries["Sentence"])[:MAXQUERYSENTENCELENGTH]
@@ -123,10 +123,16 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 logging.info("Done with" + Sentence)
             except Exception as e:
                 logging.error(e)
-                self.send_response(500)
+                self.ReturnBlank()
         else:
             logging.error("nodes is blank")
-            self.send_response(500)
+            self.ReturnBlank()
+
+    def ReturnBlank(self):
+        self.send_response(200)
+        self.send_header('Content-type', "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write("".encode("utf-8"))
 
     def Reload(self, ReloadTask):
         if ReloadTask.lower() == "/lexicon":
