@@ -87,6 +87,6 @@ if __name__ == "__main__":
 
     for ut in UnitTest:
         if ut.TestSentence in Result:
-            print(Result[ut.TestSentence])
+            print(Result[ut.TestSentence]  + '\t' + ut.TestSentence)
         else:
             print("Failed: " + ut.TestSentence )

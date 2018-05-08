@@ -40,11 +40,11 @@ def ProcessFile(FileName):
 
 
         if args.type == 'json':
-            print(TestSentence + '\t' + nodes.root().CleanOutput().toJSON())
+            print(nodes.root().CleanOutput().toJSON() + '\t' + TestSentence)
         elif  args.type == 'simple':
-            print(TestSentence + '\t' + OutputStringTokens_oneliner(nodes, NoFeature=True))
+            print(OutputStringTokens_oneliner(nodes, NoFeature=True) + '\t' + TestSentence)
         else:   #simpleEx
-            print(TestSentence + '\t' + OutputStringTokens_oneliner_ex(nodes))
+            print(OutputStringTokens_oneliner_ex(nodes) + '\t' + TestSentence)
 
     if args.winningrules:
         print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
