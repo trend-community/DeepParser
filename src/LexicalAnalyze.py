@@ -39,9 +39,9 @@ def ProcessFile(FileName):
             continue
 
 
-        if args.mode == 'json':
+        if args.type == 'json':
             print(TestSentence + '\t' + nodes.root().CleanOutput().toJSON())
-        elif  args.mode == 'simple':
+        elif  args.type == 'simple':
             print(TestSentence + '\t' + OutputStringTokens_oneliner(nodes, NoFeature=True))
         else:   #simpleEx
             print(TestSentence + '\t' + OutputStringTokens_oneliner_ex(nodes))
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--mode", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'])
+    parser.add_argument("--type", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'])
     parser.add_argument("--winningrules")
     parser.add_argument("--extra")
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         DebugMode = True
         level = logging.INFO
 
-    if args.mode == 'json':
+    if args.type == 'json':
         pass
 
     for handler in logging.root.handlers[:]:

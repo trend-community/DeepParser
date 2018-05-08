@@ -24,11 +24,12 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         return host
 
     def do_GET(self):
-        # if hasattr(self.server, "active_children") and self.server.active_children:
-        #     logging.warning("Server Active Children:" + str(len(self.server.active_children)) )
-        #     if len(self.server.active_children) > 3:
-        #         logging.error("Server is too busy to serve!")
-        #         self.ReturnBlank()
+        if hasattr(self.server, "active_children") and self.server.active_children:
+            logging.warning("Server Active Children:" + str(len(self.server.active_children)) )
+            if len(self.server.active_children) > 10:
+                logging.error("Server is too busy to serve!")
+                self.ReturnBlank()
+                return
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
@@ -49,6 +50,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             logging.error("Unknown exception in do_GET")
             logging.error(str(e))
             self.ReturnBlank()
+            return
 
     def LexicalAnalyze(self, queries):
         Sentence = urllib.parse.unquote(queries["Sentence"])[:MAXQUERYSENTENCELENGTH]
@@ -187,7 +189,7 @@ def init():
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
         charttemplate = templatefile.read()
 
-    ProcessSentence.LoadCommon()
+    #ProcessSentence.LoadCommon()
     try:
         MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
     except (KeyError, NoOptionError):
