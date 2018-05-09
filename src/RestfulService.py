@@ -28,7 +28,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if hasattr(self.server, "active_children") and self.server.active_children:
-            if len(self.server.active_children) > 3:
+            if len(self.server.active_children) > 10:
                 logging.info("Server Active Children:" + str(len(self.server.active_children)) )
                 logging.error("Server is too busy to serve!")
                 self.send_error(504, "Server Busy")
