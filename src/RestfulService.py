@@ -16,6 +16,9 @@ from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPSe
 # query_components = parse_qs(urlparse(self.path).query)
 # imsi = query_components["imsi"]
 #from urlparse import urlparse
+import time
+
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 class ProcessSentence_Handler(BaseHTTPRequestHandler):
     def address_string(self):
@@ -25,8 +28,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if hasattr(self.server, "active_children") and self.server.active_children:
-            #logging.info("Server Active Children:" + str(len(self.server.active_children)) )
-            if len(self.server.active_children) > 100:
+            if len(self.server.active_children) > 3:
+                logging.info("Server Active Children:" + str(len(self.server.active_children)) )
                 logging.error("Server is too busy to serve!")
                 self.send_error(504, "Server Busy")
                 #self.ReturnBlank()
@@ -78,6 +81,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         # else:
         #     return "Quote your sentence in double quotes please"
         logging.info(Sentence)
+        starttime = current_milli_time()
 
         nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence, schema)
         # return  str(nodes)
@@ -125,6 +129,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(output_text.encode("utf-8"))
                 logging.info("Done with" + Sentence)
+                logging.info("[TIME] " + str(current_milli_time()-starttime))
             except Exception as e:
                 logging.error(e)
                 self.send_error(500, "Error in processing")
