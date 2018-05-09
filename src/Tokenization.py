@@ -30,6 +30,21 @@ class SentenceLinkedList:
         if self.isPureAscii and IsAscii(node.text):
             self.isPureAscii = False
 
+    def appendnodelist(self, nodelist):    #Add to the tail
+        logging.info("nodelist to append: " + str(nodelist))
+        if not self.head:
+            self.head = nodelist.head
+            self.tail = nodelist.tail
+        else:
+            nodelist.head.prev = self.tail
+            #node.next = None       #if the node has next, then keep the next.
+            self.tail.next = nodelist.head
+            self.tail = nodelist.tail
+        self.size += nodelist.size
+        self._setnorms()
+        # if self.isPureAscii and IsAscii(node.text):
+        #     self.isPureAscii = False
+
     def insert(self, node, position):    #Add to the specific position
         if position == 0:
             if not self.head:

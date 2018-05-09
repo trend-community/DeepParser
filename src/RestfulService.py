@@ -201,13 +201,13 @@ def init():
     try:
         MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
     except (KeyError, NoOptionError):
-        MAXQUERYSENTENCELENGTH = 30
+        MAXQUERYSENTENCELENGTH = 100
     #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
 class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
-    ForkingMixIn.max_children = 4   # default: max_children = 40
+    ForkingMixIn.max_children = 5   # default: max_children = 40
     HTTPServer.request_queue_size = 5   #default: request_queue_size = 5
     pass
 

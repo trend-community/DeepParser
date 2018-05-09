@@ -147,7 +147,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 #from functools import lru_cache
 #@lru_cache(maxsize=100000)
 def ListMatch(list1, list2):
-    # if len(list1) != len(list2):
+    # if len(list1) != 2 or  len(list1[0]) != len(list2):
     #     logging.error("Coding error. The size should be the same in ListMatch")
     #     return False
     for i in range(len(list2)):
@@ -299,35 +299,63 @@ def PrepareJSandJM(nodes):
         p = p.prev
 
 
+def SeparateSentence(Sentence):
+    PUNCSet = {"?", "!", ";", "...", ",", "。", "？", "！", "；", "，"}
+    punclist = []
+    i_prev = 0
+    for i in range(len(Sentence)):
+        if Sentence[i] in PUNCSet and (i_prev+5) < i < (len(Sentence) - 5):
+            punclist.append(i)
+            i_prev = i
+
+    start = 0
+    SubSentences = []
+    for separator in punclist:
+        SubSentences.append( Sentence[start:separator+1])
+        start = separator+1
+    if start < len(Sentence):
+        SubSentences.append(Sentence[start:])
+
+    logging.info(str(SubSentences))
+    return SubSentences
+
+
 def LexicalAnalyze(Sentence, schema = "full"):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
 
-        #I can compare the "verify" time with lexicon/rule file. But now we do not have
-        #   lexicon file time (assume it is changing all the time), so ignore this part now
-        #   until the lexicon/rule are more stable.
+        ResultNodeList = None
+        ResultWinningRules = {}
+        for SubSentence in SeparateSentence(Sentence):
+            NodeList = Tokenization.Tokenize(SubSentence)
+            if not NodeList or NodeList.size == 0:
+                return None, None
 
-        NodeList = Tokenization.Tokenize(Sentence)
-        if not NodeList or NodeList.size == 0:
-            return None, None
+            Lexicon.ApplyLexiconToNodes(NodeList)
+            #print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
-        Lexicon.ApplyLexiconToNodes(NodeList)
-        #print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
-
-        PrepareJSandJM(NodeList)
-
-        WinningRules = DynamicPipeline(NodeList, schema)
+            PrepareJSandJM(NodeList)
+            WinningRules = DynamicPipeline(NodeList, schema)
+            if ResultNodeList:
+                logging.info("tail:" + str(ResultNodeList.tail))
+                if not ResultNodeList.tail.text:
+                    ResultNodeList.remove(ResultNodeList.tail)
+                NodeList.remove(NodeList.head)
+                ResultNodeList.appendnodelist(NodeList)
+            else:
+                ResultNodeList = NodeList
+            ResultWinningRules.update(WinningRules)
 
         if ParserConfig.get("main", "runtype") == "Debug":
+            strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
+                            VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
             try:
                 SentenceID = DBInsertOrGetID("sentences", ["sentence", ], [Sentence, ])
                 cur = DBCon.cursor()
-                strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
-                                VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
 
-                for ruleid in WinningRules:
+                for ruleid in ResultWinningRules:
                     cur.execute(strsql, [SentenceID, ruleid])
                 cur.close()
             except (sqlite3.OperationalError,sqlite3.DatabaseError)  as e:
@@ -343,7 +371,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.error(traceback.format_exc())
         return None, None
 
-    return NodeList, WinningRules
+    return ResultNodeList, ResultWinningRules
 
 
 def LoadPipeline(PipelineLocation):
@@ -424,7 +452,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "iOS5.0的输入法好用了些![酷]"
+    target = "a, b c"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
