@@ -27,13 +27,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         return host
 
     def do_GET(self):
-        if hasattr(self.server, "active_children") and self.server.active_children:
-            if len(self.server.active_children) > 10:
-                logging.info("Server Active Children:" + str(len(self.server.active_children)) )
-                logging.error("Server is too busy to serve!")
-                self.send_error(504, "Server Busy")
-                #self.ReturnBlank()
-                return
+        # if hasattr(self.server, "active_children") and self.server.active_children:
+        #     if len(self.server.active_children) > 10:
+        #         logging.info("Server Active Children:" + str(len(self.server.active_children)) )
+        #         logging.error("Server is too busy to serve!")
+        #         self.send_error(504, "Server Busy")
+        #         #self.ReturnBlank()
+        #         return
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
@@ -207,6 +207,8 @@ def init():
 
 class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
+    ForkingMixIn.max_children = 4   # default: max_children = 40
+    HTTPServer.request_queue_size = 5   #default: request_queue_size = 5
     pass
 
 

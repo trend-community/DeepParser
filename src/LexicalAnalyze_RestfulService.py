@@ -70,7 +70,7 @@ if __name__ == "__main__":
             try:
                 data = future.result()
             except Exception as exc:
-                logging.debug('%r generated an exception.' % (s, ))
+                logging.debug('%r generated an exception: \n %s' % (s, exc))
                 future_new[executor.submit(LATask, s)] = s
             else:
                 if data:
@@ -83,7 +83,7 @@ if __name__ == "__main__":
             try:
                 data = future.result()
             except Exception as exc:
-                logging.warning('%r Failed at second try: %s' % (s, exc))
+                logging.warning('%r Failed at second try: \n %s' % (s, exc))
             else:
                 Result[s] = data
         logging.info("Done of retrieving data")
