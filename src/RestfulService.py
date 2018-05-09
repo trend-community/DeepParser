@@ -215,8 +215,9 @@ if __name__ == "__main__":
     init()
     parser = argparse.ArgumentParser()
     parser.add_argument("--port")
-    if parser.port:
-        startport = int(parser.port)
+    args = parser.parse_args()
+    if args.port:
+        startport = int(args.port)
     else:
         startport = int(utils.ParserConfig.get("website", "port"))
 
