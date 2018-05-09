@@ -339,7 +339,6 @@ def LexicalAnalyze(Sentence, schema = "full"):
             PrepareJSandJM(NodeList)
             WinningRules = DynamicPipeline(NodeList, schema)
             if ResultNodeList:
-                logging.info("tail:" + str(ResultNodeList.tail))
                 if not ResultNodeList.tail.text:
                     ResultNodeList.remove(ResultNodeList.tail)
                 NodeList.remove(NodeList.head)

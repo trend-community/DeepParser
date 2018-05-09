@@ -16,7 +16,7 @@ from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPSe
 # query_components = parse_qs(urlparse(self.path).query)
 # imsi = query_components["imsi"]
 #from urlparse import urlparse
-import time
+import time, argparse
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -207,15 +207,19 @@ def init():
 
 class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
-    ForkingMixIn.max_children = 5   # default: max_children = 40
-    HTTPServer.request_queue_size = 5   #default: request_queue_size = 5
-    pass
+    ForkingMixIn.max_children = 4   # default: max_children = 40
+    HTTPServer.request_queue_size = 4   #default: request_queue_size = 5
 
 
 if __name__ == "__main__":
     init()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port")
+    if parser.port:
+        startport = int(parser.port)
+    else:
+        startport = int(utils.ParserConfig.get("website", "port"))
 
-    startport = int(utils.ParserConfig.get("website", "port"))
     print("Running in port " + str(startport))
     try:
         httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)

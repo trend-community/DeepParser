@@ -31,7 +31,6 @@ class SentenceLinkedList:
             self.isPureAscii = False
 
     def appendnodelist(self, nodelist):    #Add to the tail
-        logging.info("nodelist to append: " + str(nodelist))
         if not self.head:
             self.head = nodelist.head
             self.tail = nodelist.tail
