@@ -46,4 +46,8 @@ mkdir log
 cd src
 mv ../log/restfulservice.log "../log/restfulservice.$(date +"%Y%m%dT%H%M").log"
 nohup python3 RestfulService.py > ../log/restfulservice.log 2>&1 &
+nohup python3 RestfulService.py --port 5002 >> ../log/restfulservice.log 2>&1 &
+nohup python3 RestfulService.py --port 5003 >> ../log/restfulservice.log 2>&1 &
+nohup python3 RestfulService.py --port 5004 >> ../log/restfulservice.log 2>&1 &
+
 echo 'RestfulService is restarted.'
