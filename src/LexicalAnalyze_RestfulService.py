@@ -73,7 +73,10 @@ if __name__ == "__main__":
                 logging.debug('%r generated an exception.' % (s, ))
                 future_new[executor.submit(LATask, s)] = s
             else:
-                Result[s] = data
+                if data:
+                    Result[s] = data
+                else:
+                    future_new[executor.submit(LATask, s)] = s
         logging.info("Redo the failed items: size=" + str(len(future_new)))
         for future in concurrent.futures.as_completed(future_new):
             s = future_new[future]

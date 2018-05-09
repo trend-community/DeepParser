@@ -25,10 +25,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if hasattr(self.server, "active_children") and self.server.active_children:
-            logging.warning("Server Active Children:" + str(len(self.server.active_children)) )
-            if len(self.server.active_children) > 10:
+            #logging.info("Server Active Children:" + str(len(self.server.active_children)) )
+            if len(self.server.active_children) > 100:
                 logging.error("Server is too busy to serve!")
-                self.ReturnBlank()
+                self.send_error(504, "Server Busy")
+                #self.ReturnBlank()
                 return
         link = urllib.parse.urlparse(self.path)
         try:
@@ -45,11 +46,12 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.feed_file(link.path[1:])
             else:
                 logging.error("Wrong link.")
-                self.send_response(500)
+                self.send_error(404)
         except Exception as e:
             logging.error("Unknown exception in do_GET")
             logging.error(str(e))
-            self.ReturnBlank()
+            self.send_error(500, "Unknown exception")
+            #self.ReturnBlank()
             return
 
     def LexicalAnalyze(self, queries):
@@ -125,7 +127,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 logging.info("Done with" + Sentence)
             except Exception as e:
                 logging.error(e)
-                self.ReturnBlank()
+                self.send_error(500, "Error in processing")
+                #self.ReturnBlank()
         else:
             logging.error("nodes is blank")
             self.ReturnBlank()
@@ -189,7 +192,7 @@ def init():
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
         charttemplate = templatefile.read()
 
-    #ProcessSentence.LoadCommon()
+    ProcessSentence.LoadCommon()
     try:
         MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
     except (KeyError, NoOptionError):
