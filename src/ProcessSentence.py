@@ -1,4 +1,5 @@
 import traceback
+import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules
 from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
@@ -320,7 +321,61 @@ def SeparateSentence(Sentence):
     return SubSentences
 
 
+def LATask( SubSentence, schema):
+    NodeList = Tokenization.Tokenize(SubSentence)
+    if not NodeList or NodeList.size == 0:
+        return None, None
+
+    Lexicon.ApplyLexiconToNodes(NodeList)
+    # print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
+
+    PrepareJSandJM(NodeList)
+
+    WinningRules = DynamicPipeline(NodeList, schema)
+    return NodeList, WinningRules
+
+
 def LexicalAnalyze(Sentence, schema = "full"):
+    try:
+        logging.debug("-Start LexicalAnalyze: tokenize")
+
+        Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
+
+        ResultNodeList = None
+        ResultWinningRules = {}
+        SubSentences = SeparateSentence(Sentence)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            Result = {}
+
+            future_to_subsentence = {executor.submit(LATask, SubSentence, schema): SubSentence for SubSentence in SubSentences}
+            for future in concurrent.futures.as_completed(future_to_subsentence):
+                (NodeList, WinningRules) = future.result()
+                Result[future_to_subsentence[future]] = NodeList
+                ResultWinningRules.update(WinningRules)
+        #logging.warning("submitted into " + str(len(Result)) + " threads to process.")
+        for SubSentence in SubSentences:
+            NodeList = Result[SubSentence]
+            # logging.info("before adding " + SubSentence + ", the nodelist is: " + str(ResultNodeList))
+            # logging.info("\t the new nodes are: " + str(NodeList))
+            if ResultNodeList:
+                if not ResultNodeList.tail.text:
+                    ResultNodeList.remove(ResultNodeList.tail)
+
+                NodeList.remove(NodeList.head)
+                ResultNodeList.appendnodelist(NodeList)
+            else:
+                ResultNodeList = NodeList
+        logging.debug("-End LexicalAnalyze")
+
+    except Exception as e:
+        logging.error("Overall Error in LexicalAnalyze:")
+        logging.error(e)
+        logging.error(traceback.format_exc())
+        return None, None
+
+    return ResultNodeList, ResultWinningRules
+
+def LexicalAnalyze_old(Sentence, schema = "full"):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
 
@@ -337,6 +392,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
             #print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
             PrepareJSandJM(NodeList)
+
             WinningRules = DynamicPipeline(NodeList, schema)
             if ResultNodeList:
                 if not ResultNodeList.tail.text:
