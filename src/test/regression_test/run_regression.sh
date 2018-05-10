@@ -30,7 +30,7 @@ resFileName=${testFileNamePrefix}_regtest_${date}.txt
 regressionInput=~/git/fsa/test/input/${testFileNamePrefix}.txt 
 regressionOutput=${outputFilePath}/output/${resFileName} 
 cd ../..  # go to 'src' dir
-python LexicalAnalyze.py ${regressionInput} > ${regressionOutput} --mode simple
+python LexicalAnalyze.py ${regressionInput} > ${regressionOutput} --type simple
 echo "regression_test.py is done."
 
 # 运行 diff 比较程序
