@@ -4,7 +4,7 @@ try:
     from socketserver import ThreadingMixIn, ForkingMixIn
 except: #windows? ignore it.
     pass
-import ProcessSentence, FeatureOntology, Cache
+import ProcessSentence, FeatureOntology
 import Graphviz
 #from Rules import ResetAllRules, LoadRules
 import Rules

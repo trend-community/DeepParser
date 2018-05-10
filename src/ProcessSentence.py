@@ -1,7 +1,7 @@
 import traceback
 import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
-import Rules
+import Rules, Cache
 from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
 from utils import *
 import utils
