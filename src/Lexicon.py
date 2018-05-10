@@ -171,7 +171,7 @@ def LoadSegmentLexicon():
         for line in dictionary:
             word, _ = SeparateComment(line)
             if word:
-                word = word.replace("/", "")
+                word = word.replace("/", "").lower()
                 _LexiconSegmentDict[word] = 0.9
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
@@ -206,7 +206,6 @@ def LoadSegmentLexicon():
                 if combinedword not in _LexiconSegmentDict:
                     _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
 
-#    logging.warning("4g:" + str(_LexiconSegmentDict["4g"]) + "4G:" + str(_LexiconSegmentDict["4G"]) )
     for word in list(_LexiconSegmentDict):
         if IsAlphaLetter(word):
             del _LexiconSegmentDict[word] #remove English words. They should be separate natually by space or numbers or punc.
@@ -217,6 +216,8 @@ def LoadSegmentLexicon():
             _LexiconSegmentDict[word.upper()] = _LexiconSegmentDict[word]
 
     logging.info("Size of SegmentSlash: " + str(len(_LexiconSegmentSlashDict)))
+    #logging.warning("4g:" + str(_LexiconSegmentDict["4g"]) + "4G:" + str(_LexiconSegmentDict["4G"]) )
+    #logging.warning("u盘:" + str(_LexiconSegmentDict["u盘"]) + "U盘:" + str(_LexiconSegmentDict["U盘"]) )
 
 
 # for Cuobiezi and Fanti. The format is: good: bad1 bad2 bad3
@@ -573,14 +574,14 @@ def LexiconLookup(strTokens, lookupsource):
         j = i
         pi = pi.next
         pj = pi
-        combinedText = pj.text
+        combinedText = pi.text.lower()
         combinedCount = 1
         while pj.next:
             j += 1
             pj = pj.next
             if not pj.text:
                 continue
-            combinedText += pj.text
+            combinedText += pj.text.lower()
             combinedCount += 1
             if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
                 logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")

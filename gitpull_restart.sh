@@ -45,9 +45,8 @@ kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print
 mkdir log
 cd src
 mv ../log/restfulservice.log "../log/restfulservice.$(date +"%Y%m%dT%H%M").log"
-nohup python3 RestfulService.py > ../log/restfulservice.log 2>&1 &
-nohup python3 RestfulService.py --port 5002 >> ../log/restfulservice.log 2>&1 &
-nohup python3 RestfulService.py --port 5003 >> ../log/restfulservice.log 2>&1 &
-nohup python3 RestfulService.py --port 5004 >> ../log/restfulservice.log 2>&1 &
+for ((i=5001; i<=5016; i++)); do
+    nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
+done
 
 echo 'RestfulService is restarted.'

@@ -447,6 +447,10 @@ class SentenceNode(object):
                         if bar0id in self.features:
                             self.features.remove(bar0id)
 
+                    for bar0id in [utils.FeatureID_AC, utils.FeatureID_NC, utils.FeatureID_VC]:
+                        if bar0id in self.features:
+                            self.features.remove(bar0id)
+
                     FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
                     self.ApplyFeature(FeatureID)
                 continue
