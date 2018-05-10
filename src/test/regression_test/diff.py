@@ -12,7 +12,7 @@ def load(filename):
             f.append('NULL')
 
         try:
-            ret_dict[f[0]] = f[1]
+            ret_dict[f[1]] = f[0]
         except:
             print('Error field:' + line)
     fr.close()
