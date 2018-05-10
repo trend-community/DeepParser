@@ -317,7 +317,7 @@ def SeparateSentence(Sentence):
     if start < len(Sentence):
         SubSentences.append(Sentence[start:])
 
-    logging.info(str(SubSentences))
+    #logging.info(str(SubSentences))
     return SubSentences
 
 
@@ -334,8 +334,9 @@ def LATask( SubSentence, schema):
     WinningRules = DynamicPipeline(NodeList, schema)
     return NodeList, WinningRules
 
-
-def LexicalAnalyze(Sentence, schema = "full"):
+"""After testing, the _multithread version is not faster than normal one.
+abandened. """
+def LexicalAnalyze_multithread(Sentence, schema = "full"):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
 
@@ -375,11 +376,13 @@ def LexicalAnalyze(Sentence, schema = "full"):
 
     return ResultNodeList, ResultWinningRules
 
-def LexicalAnalyze_old(Sentence, schema = "full"):
+def LexicalAnalyze(Sentence, schema = "full"):
     try:
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
+        if Sentence in Cache.SentenceCache:
+            return Cache.SentenceCache[Sentence], None  #assume ResultWinningRules is none.
 
         ResultNodeList = None
         ResultWinningRules = {}
@@ -426,7 +429,12 @@ def LexicalAnalyze_old(Sentence, schema = "full"):
         logging.error(traceback.format_exc())
         return None, None
 
+    Cache.SentenceCache[Sentence] = ResultNodeList
+    Cache.WriteSentenceDB(Sentence, ResultNodeList)
+
     return ResultNodeList, ResultWinningRules
+
+
 
 
 def LoadPipeline(PipelineLocation):

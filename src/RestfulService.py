@@ -4,7 +4,7 @@ try:
     from socketserver import ThreadingMixIn, ForkingMixIn
 except: #windows? ignore it.
     pass
-import ProcessSentence, FeatureOntology
+import ProcessSentence, FeatureOntology, Cache
 import Graphviz
 #from Rules import ResetAllRules, LoadRules
 import Rules
@@ -222,11 +222,8 @@ if __name__ == "__main__":
         startport = int(utils.ParserConfig.get("website", "port"))
 
     print("Running in port " + str(startport))
-    try:
-        httpd = ThreadedHTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
-    except:     #windows?
-        httpd = HTTPServer(('0.0.0.0', startport), ProcessSentence_Handler, request_queue_size=5)
-        logging.warning("Running without multi-process support.")
+    httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
+    httpd.request_queue_size = 1
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')
