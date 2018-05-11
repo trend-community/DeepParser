@@ -1028,6 +1028,7 @@ def LoadRulesFromDB(rulegroup):
     rulefileid = resultrecord[0]
 
     #order by tokenlength desc, and by hits desc.
+    #note: order using hit can have less than 1% benefit. not worth the trouble.
     strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment
                     from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? and status=1 group by r.id
                         order by tokenlength desc, count(h.ruleid ) desc """

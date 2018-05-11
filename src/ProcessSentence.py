@@ -301,7 +301,7 @@ def PrepareJSandJM(nodes):
 
 
 def SeparateSentence(Sentence):
-    PUNCSet = {"?", "!", ";", "...", ",", "。", "？", "！", "；", "，"}
+    PUNCSet = {"?", "!", ";", "...", ",", "。", "？", "！", "；", "，", "\t"}
     punclist = []
     i_prev = 0
     for i in range(len(Sentence)):
@@ -407,20 +407,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
             ResultWinningRules.update(WinningRules)
 
         if ParserConfig.get("main", "runtype") == "Debug":
-            strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
-                            VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
-            try:
-                SentenceID = DBInsertOrGetID("sentences", ["sentence", ], [Sentence, ])
-                cur = DBCon.cursor()
-
-                for ruleid in ResultWinningRules:
-                    cur.execute(strsql, [SentenceID, ruleid])
-                cur.close()
-            except (sqlite3.OperationalError,sqlite3.DatabaseError)  as e:
-                logging.warning("data writting error. ignore." )
-                logging.warning("SQL:" + strsql)
-                logging.warning("Error:" + str(e))
-            DBCon.commit()
+            Cache.WriteWinningRules(Sentence, ResultWinningRules)
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
@@ -474,6 +461,8 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
 def LoadCommon():
+    import Cache
+    Cache.LoadSentenceDB()
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     XLocation = '../../fsa/X/'

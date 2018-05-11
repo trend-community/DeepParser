@@ -406,6 +406,7 @@ InitDB()
 def DBInsertOrGetID(tablename, tablefields, values):
     cur = DBCon.cursor()
     strsql = "SELECT ID from " + tablename + " where " + " AND ".join(field + "=?" for field in tablefields ) + "  limit 1"
+    logging.info(strsql)
     cur.execute(strsql, values)
     resultrecord = cur.fetchone()
     if resultrecord:
@@ -413,6 +414,66 @@ def DBInsertOrGetID(tablename, tablefields, values):
     else:
         try:
             strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
+            logging.info(strsql)
+            cur.execute(strsql, values)
+            resultid = cur.lastrowid
+        except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
+            logging.warning("data writting error. ignore")
+            logging.warning(str(e))
+            resultid = -1
+        DBCon.commit()
+    cur.close()
+    return resultid
+
+def DBInsertOrUpdate(tablename, keyfield, keyvalue, tablefields, values):
+    cur = DBCon.cursor()
+    strsql = "SELECT ID from " + tablename + " where " + keyfield + "=?  limit 1"
+    logging.info(strsql)
+    logging.info("keyvalue:" + keyvalue)
+    cur.execute(strsql, (keyvalue,))
+    resultrecord = cur.fetchone()
+    if resultrecord:
+        resultid = resultrecord[0]
+        try:
+            strsql = "update  " + tablename + "set " + ",".join([ field + " = ?" for field in tablefields])  \
+                    + " , verifytime=DATETIME('now') where ID=?"
+
+            logging.info(strsql)
+            cur.execute(strsql, values.extend([resultid]))
+            resultid = cur.lastrowid
+        except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
+            logging.warning("data writting error. ignore")
+            logging.warning(str(e))
+            resultid = -1
+        DBCon.commit()
+    else:
+        try:
+            strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ", createtime) VALUES(" \
+                     + ",".join("?" for _ in tablefields) + ", DATETIME('now'))"
+            logging.info(strsql)
+            cur.execute(strsql, values)
+            resultid = cur.lastrowid
+        except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
+            logging.warning("data writting error. ignore")
+            logging.warning(str(e))
+            resultid = -1
+        DBCon.commit()
+    cur.close()
+    return resultid
+
+def DBInsertOrIgnore(tablename, keyfield, keyvalue, tablefields, values):
+    cur = DBCon.cursor()
+    strsql = "SELECT ID from " + tablename + " where " + keyfield + "=?  limit 1"
+    logging.info(strsql)
+    logging.info("keyvalue:" + keyvalue)
+    cur.execute(strsql, (keyvalue,))
+    resultrecord = cur.fetchone()
+    if resultrecord:
+        resultid = resultrecord[0]
+    else:
+        try:
+            strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ", createtime) VALUES(" \
+                     + ",".join("?" for _ in tablefields) + ", DATETIME('now'))"
             cur.execute(strsql, values)
             resultid = cur.lastrowid
         except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:

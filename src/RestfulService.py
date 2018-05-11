@@ -16,7 +16,7 @@ from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPSe
 # query_components = parse_qs(urlparse(self.path).query)
 # imsi = query_components["imsi"]
 #from urlparse import urlparse
-import time, argparse
+import time, argparse, traceback
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -53,6 +53,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         except Exception as e:
             logging.error("Unknown exception in do_GET")
             logging.error(str(e))
+            traceback.print_exc()
             self.send_error(500, "Unknown exception")
             #self.ReturnBlank()
             return
@@ -80,7 +81,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             Sentence = Sentence[1:-1]
         # else:
         #     return "Quote your sentence in double quotes please"
-        logging.info(Sentence)
+        logging.info("[START] " + Sentence)
         starttime = current_milli_time()
 
         nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence, schema)
@@ -112,9 +113,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
                 if Debug:
                     winningrulestring = ""
-                    for rule in winningrules:
-                        winningrulestring +=  winningrules[rule] + "\n"
-                    chart = chart.replace("<!-- EXTRA -->", winningrulestring)
+                    if winningrules:
+                        for rule in winningrules:
+                            winningrulestring +=  winningrules[rule] + "\n"
+                        chart = chart.replace("<!-- EXTRA -->", winningrulestring)
                 output_text = chart
             else:
                 output_type = "Application/json;"
@@ -128,7 +130,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', output_type + " charset=utf-8")
                 self.end_headers()
                 self.wfile.write(output_text.encode("utf-8"))
-                logging.info("Done with" + Sentence)
+                logging.info("[COMPLETE] " + Sentence)
                 logging.info("[TIME] " + str(current_milli_time()-starttime))
             except Exception as e:
                 logging.error(e)
