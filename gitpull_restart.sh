@@ -45,7 +45,7 @@ kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print
 mkdir log
 cd src
 mv ../log/restfulservice.log "../log/restfulservice.$(date +"%Y%m%dT%H%M").log"
-for ((i=5001; i<=5010; i++)); do
+for ((i=5001; i<=5004; i++)); do
     nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
 done
 
