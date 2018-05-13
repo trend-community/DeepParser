@@ -25,9 +25,9 @@ echo " \c" >> revision.txt
  echo "" >> revision.txt
  date >> revision.txt
 
-#cd ../parser/data
-#cp parser.empty.db parser.db
-#cd ..
+cd ../parser/data
+cp parser.empty.db parser.db
+cd ..
 
 # 1.stop  parser service
 echo '-------------------'
