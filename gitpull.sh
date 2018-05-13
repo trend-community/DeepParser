@@ -25,8 +25,8 @@ echo " \c" >> revision.txt
  echo "" >> revision.txt
  date >> revision.txt
 
-#cd ../parser/data
-#cp parser.empty.db parser.db
+cd ../parser/data
+cp parser.empty.db parser.db
 
 #cd ../temp
 #curl "http://localhost:5001/Reload/" > Reloaded.html &

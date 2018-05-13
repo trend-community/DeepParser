@@ -1,5 +1,7 @@
 
 from utils import *
+import pickle
+import Cache
 
 #not, and, or
 #compare type: word/norm/stem/feature
@@ -225,18 +227,25 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     else:
         strToken = StrTokenList.get(StrPosition)
 
+    # #strToken.signature = pickle.dumps({"w": strToken.text, "f": strToken.features})
+    # if (strToken.signature, RuleToken.word) in Cache.LogicalMatchCache:
+    #     # logging.warning("\t\thit the LogicalMatch_Cache!")
+    #     # logging.warning(" " + str(strToken) + " in rule token" + str(RuleToken))
+    #     return Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)]
+
     if not strToken:
         logging.error("In LogicMatch(): Can't find strToken!")
         return False
 
-    if RuleToken.word in strToken.FailedRuleTokens:
-        return False
+    # if RuleToken.word in strToken.FailedRuleTokens:
+    #     return False
 
     #AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
     if RuleToken.AndFeatures:
         for f in RuleToken.AndFeatures:
             if f not in strToken.features:
-                strToken.FailedRuleTokens.add(RuleToken.word)
+                #strToken.FailedRuleTokens.add(RuleToken.word)
+                # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
                 return False
 
         # CommonAndFeatutures = RuleToken.AndFeatures.intersection(strToken.features)
@@ -246,7 +255,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     if RuleToken.AndText:
         #ruletext, matchtype = CheckPrefix(RuleToken.AndText)
         if "^" in RuleToken.AndText:
-            #This is a pointer!
+            #This is a pointer! do not add into LogicalMatch_Cache[signature].
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
 
         if  strToken.Head0Text and not RuleToken.FullString:
@@ -259,17 +268,20 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
             else:
                 word = strToken.atom
         if not LogicMatchText(RuleToken.AndText, word):
-            strToken.FailedRuleTokens.add(RuleToken.word)
+            #strToken.FailedRuleTokens.add(RuleToken.word)
+            # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
             return False
 
     for OrFeatureGroup in RuleToken.OrFeatureGroups:
         CommonOrFeatures = OrFeatureGroup.intersection(strToken.features)
         if len(CommonOrFeatures) == 0:
 #            strToken.FailedRuleTokens.add(RuleToken.word)
+#             Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
             return False    #we need at least one common features.
 
     for f in RuleToken.NotFeatures:
         if f in strToken.features:
+            # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
 #                strToken.FailedRuleTokens.add(RuleToken.word)
             return False
     # CommonNotFeatures = RuleToken.NotFeatures.intersection(strToken.features)
@@ -289,9 +301,10 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
                 word = strToken.atom
         for NotText in RuleToken.NotTexts:
             if LogicMatchText(NotText, word):
+                # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
     #            strToken.FailedRuleTokens.add(RuleToken.word)
                 return False
-
+    #Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = True
     return True
 
 #

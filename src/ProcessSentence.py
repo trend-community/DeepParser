@@ -1,5 +1,5 @@
 import traceback
-import concurrent.futures
+import concurrent.futures, copy
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
 from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
@@ -151,14 +151,23 @@ def ListMatch(list1, list2):
     # if len(list1) != 2 or  len(list1[0]) != len(list2):
     #     logging.error("Coding error. The size should be the same in ListMatch")
     #     return False
-    for i in range(len(list2)):
-        if list2[i] == '' or \
-            list1[i][0] == list2[i] or \
-                list1[i][1] and list1[i][1] == list2[i]:
+    # for i in range(num):
+    #     if list2[i] == '' or \
+    #         list1[i][0] == list2[i] or \
+    #             list1[i][1] and list1[i][1] == list2[i]:
+    #         pass
+    #     else:
+    #         return False
+
+    i = -1
+    for l2item in list2:
+        i += 1
+        if l2item == '' or \
+            list1[i][0] == l2item or \
+            list1[i][1] and list1[i][1] == l2item:
             pass
         else:
             return False
-
     return True
 
 #Note: the _UsingCache version is slower: 25 seconds instead of 16 seconds, for 100 sentences.
@@ -181,6 +190,30 @@ def ListMatch_UsingCache(list1, list2):
     ListMatchCache[l_hash] = True
     return True
 
+#
+# def ConstructNorms(strtokenlist, start):
+#     MaxGramSize = 10    #only care for 10 ngram and less.
+#
+#     StrNorms = []
+#     for i in range( MaxGramSize):
+#         if start+i >= len(strtokenlist.norms):
+#             break
+#
+#         newset = set()
+#         if i == 0:
+#             if strtokenlist.norms[start+i][1]:
+#                 newset.update(strtokenlist.norms[start+i][1])
+#             newset.update(strtokenlist.norms[start+i][0])
+#         else:
+#             newset2 = set()
+#             for strnorms in StrNorms[i - 1]:
+#                 if strtokenlist.norms[start+i][1]:
+#                     strnorms_copy = copy.copy(strnorms) + strtokenlist.norms[start+i][1]
+#                     newset2.add(strnorms_copy)
+#                 newset2.add( strnorms + strtokenlist.norms[start+i][0])
+#             newset.update(newset2)
+#         StrNorms.append(newset)
+#     return StrNorms
 
 #FailedRules: gets set according to RuleIdenticalNetwork. gets reset when apply rule.
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
@@ -190,23 +223,29 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     counter = 0
 
     strtoken = strtokenlist.head
+
     while strtoken:
         # strsignatures = strtokenlist.signature(i, min([RuleSizeLimit, strtokenlist.size-i]))
 
         #logging.debug("Checking tokens start from:" + strtoken.text)
         WinningRule = None
         rulegroup = Rules.RuleGroupDict[RuleFileName]
-        WinningRuleSize = 0
-        FailedRules = set()
+        #WinningRuleSize = 0
+        #StrNorms = ConstructNorms(strtokenlist, i)
+        # MaxGramSize = 10
+
         for rule in rulegroup.RuleList:
             if rule.StrTokenLength > strtokenlist.size-i:
                 continue
-            if rule.ID in FailedRules:
-                continue
+            # if MaxGramSize > rule.StrTokenLength:
+            #     for strnorms in StrNorms[rule.StrTokenLength-1]:
+            #         if strnorms in rulegroup.NormHash:
+            #             WinningRule = rulegroup.NormHash[strnorms]
+            #             break
+            # if WinningRule:
+            #     break
 
             if rule.norms and not ListMatch(strtokenlist.norms[i:i+rule.StrTokenLength], rule.norms):
-#                if (rule.ID, rule.TokenLength) in Rules.RuleIdenticalNetwork:
-#                    FailedRules.update(Rules.RuleIdenticalNetwork[(rule.ID, rule.TokenLength)])
                 continue
             counter += 1
             #logging.info("    HeadMatch for rule " + str(rule.ID) + " length:" + str(rule.TokenLength) + " |" + rule.Origin )
@@ -321,7 +360,10 @@ def SeparateSentence(Sentence):
     return SubSentences
 
 
-def LATask( SubSentence, schema):
+def LexicalAnalyzeTask( SubSentence, schema):
+#    if SubSentence in Cache.SentenceCache:
+#        return Cache.SentenceCache[SubSentence], None  # assume ResultWinningRules is none.
+
     NodeList = Tokenization.Tokenize(SubSentence)
     if not NodeList or NodeList.size == 0:
         return None, None
@@ -332,6 +374,10 @@ def LATask( SubSentence, schema):
     PrepareJSandJM(NodeList)
 
     WinningRules = DynamicPipeline(NodeList, schema)
+    if schema == "full":
+        Cache.SentenceCache[SubSentence] = NodeList
+        Cache.WriteSentenceDB(SubSentence, NodeList)
+
     return NodeList, WinningRules
 
 """After testing, the _multithread version is not faster than normal one.
@@ -348,7 +394,7 @@ def LexicalAnalyze_multithread(Sentence, schema = "full"):
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             Result = {}
 
-            future_to_subsentence = {executor.submit(LATask, SubSentence, schema): SubSentence for SubSentence in SubSentences}
+            future_to_subsentence = {executor.submit(LexicalAnalyzeTask, SubSentence, schema): SubSentence for SubSentence in SubSentences}
             for future in concurrent.futures.as_completed(future_to_subsentence):
                 (NodeList, WinningRules) = future.result()
                 Result[future_to_subsentence[future]] = NodeList
@@ -381,22 +427,12 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
-        if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None  #assume ResultWinningRules is none.
 
         ResultNodeList = None
         ResultWinningRules = {}
         for SubSentence in SeparateSentence(Sentence):
-            NodeList = Tokenization.Tokenize(SubSentence)
-            if not NodeList or NodeList.size == 0:
-                return None, None
 
-            Lexicon.ApplyLexiconToNodes(NodeList)
-            #print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
-
-            PrepareJSandJM(NodeList)
-
-            WinningRules = DynamicPipeline(NodeList, schema)
+            NodeList, WinningRules = LexicalAnalyzeTask(SubSentence, schema)
             if ResultNodeList:
                 if not ResultNodeList.tail.text:
                     ResultNodeList.remove(ResultNodeList.tail)
@@ -404,9 +440,10 @@ def LexicalAnalyze(Sentence, schema = "full"):
                 ResultNodeList.appendnodelist(NodeList)
             else:
                 ResultNodeList = NodeList
-            ResultWinningRules.update(WinningRules)
+            if WinningRules:
+                ResultWinningRules.update(WinningRules)
 
-        if ParserConfig.get("main", "runtype") == "Debug":
+        if ParserConfig.get("main", "runtype").lower() == "debug":
             Cache.WriteWinningRules(Sentence, ResultWinningRules)
         logging.debug("-End LexicalAnalyze")
 
@@ -416,12 +453,8 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.error(traceback.format_exc())
         return None, None
 
-    Cache.SentenceCache[Sentence] = ResultNodeList
-    Cache.WriteSentenceDB(Sentence, ResultNodeList)
 
     return ResultNodeList, ResultWinningRules
-
-
 
 
 def LoadPipeline(PipelineLocation):

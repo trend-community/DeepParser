@@ -372,9 +372,9 @@ def InitDB():
         DBCon = sqlite3.connect('../data/parser.db')
         #DBCon.setLockingEnabled(False);
         cur = DBCon.cursor()
-        cur.execute("PRAGMA read_uncommitted = true;")
-        cur.execute("PRAGMA synchronous=OFF;")
-        cur.execute("PRAGMA journal_mode=0;")
+        #cur.execute("PRAGMA read_uncommitted = true;")
+        #cur.execute("PRAGMA synchronous=OFF;")
+        cur.execute("PRAGMA journal_mode=WAL;")
         cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
         cur.close()
         DBCon.commit()

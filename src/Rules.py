@@ -27,6 +27,7 @@ class RuleGroup(object):
         self.LoadedFromDB = False
         self.HashRules = {}
         self.NoHashRules = []
+        #self.NormHash = {}  # write to norm.
 
     def __lt__(self, other):
         return self.ID < other.ID
@@ -95,7 +96,10 @@ def SeparateRules(multilineString):
 
 
 class RuleToken(object):
+    idCounter = 0
     def __init__(self):
+        RuleToken.idCounter += 1
+        self.ID = RuleToken.idCounter
         self.StartChunk = 0
         self.EndChunk = 0
         self.repeat = [1,1]
@@ -958,7 +962,7 @@ def LoadRules(RuleLocation):
             pass
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
-        _PreProcess_CompileHash(rulegroup.RuleList)
+        _PreProcess_CompileHash(rulegroup)
         rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: x.TokenLength, reverse=True)
         _OutputRuleDB(rulegroup)
         for r in rulegroup.RuleList:
@@ -1280,7 +1284,7 @@ def _RemoveExcessiveParenthesis(token):
         else:
             after = ""
 
-        #logging.info("Removing excessive parenthesis in: " + token.word)
+        logging.info("Removing excessive parenthesis in: " + token.word)
         token.word = before + token.word[StartParenthesesPosition+1:EndParenthesesPosition] + after
         #logging.info("\t\t as: " + token.word)
         return True
@@ -1628,8 +1632,8 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
     _ExpandOrToken(OneList)
 
 
-def _PreProcess_CompileHash(OneList):
-    for rule in OneList:
+def _PreProcess_CompileHash(rulegroup):
+    for rule in rulegroup.RuleList:
         for token in rule.Tokens:   #remove extra [] in match body.
             token.word = token.word.strip("[|]").strip()
 
@@ -1663,6 +1667,14 @@ def _PreProcess_CompileHash(OneList):
                       for token in rule.Tokens if token.SubtreePointer == '' ]
         if len("".join(rule.norms)) == 0:
             rule.norms = []
+
+        # if rule.norms and all(rule.norms): #all values are true
+        #     logging.info("This rule is all norms:" + str(rule))
+        #     logging.info("The norms are:" + "_".join(rule.norms))
+        #     logging.info("The norms are:" + str(rule.norms))
+        #
+        #     #rulegroup.NormHash["".join(rule.norms)] = rule
+        #     #rulegroup.RuleList.remove(rule)
 
 
 def _CheckFeature_returnword(word):

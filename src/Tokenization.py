@@ -1,7 +1,7 @@
 #!/bin/python
 #Process Sentence tokens.
 
-import string
+import string, pickle
 import FeatureOntology, Lexicon
 import utils    #for the Feature_...
 from utils import *
@@ -250,7 +250,8 @@ class SentenceNode(object):
         Lexicon.ApplyWordLengthFeature(self)
         self.Head0Text = ''
         self.TempPointer = ''
-        self.FailedRuleTokens = set()
+        #self.FailedRuleTokens = set()
+        #self.signature = None
 
     #     #From webservice, only word/StartOffset/features are set,
     #     #    and the features are "list", need to change to "set"
@@ -401,9 +402,10 @@ class SentenceNode(object):
         FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
         if FeatureNode and FeatureNode.ancestors:
             self.features.update(FeatureNode.ancestors)
+        #self.signature=pickle.dumps({"w":self.text, "f": self.features})
 
     def ApplyActions(self, actinstring):
-        self.FailedRuleTokens.clear()
+        #self.FailedRuleTokens.clear()
         Actions = actinstring.split()
         #logging.debug("Word:" + self.text)
 
@@ -487,6 +489,8 @@ class SentenceNode(object):
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
         if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
             FeatureOntology.ProcessBarTags(self.features)
+
+        #self.signature = pickle.dumps({"w": self.text, "f": self.features})
 
     def GetFeatures(self):
         featureString = ""

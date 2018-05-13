@@ -2,18 +2,18 @@
 from utils import *
 import pickle
 SentenceCache = {}
-
+# LogicalMatchCache = {}
 
 def WriteSentenceDB(Sentence, NodeList):
     NodePickle = pickle.dumps(NodeList)
-    logging.warning("NodePickle=" + str(NodePickle))
-    logging.warning("\tLength:" + str(len(NodePickle)))
+    #logging.warning("NodePickle=" + str(NodePickle))
+    #logging.warning("\tLength:" + str(len(NodePickle)))
     #DBInsertOrUpdate("sentences", "sentence", Sentence, ["result"], [NodePickle])
 
     cur = DBCon.cursor()
     strsql = "SELECT ID from sentences where sentence=?  limit 1"
-    logging.info(strsql)
-    logging.info("keyvalue:" + Sentence)
+    # logging.info(strsql)
+    # logging.info("keyvalue:" + Sentence)
     cur.execute(strsql, (Sentence,))
     resultrecord = cur.fetchone()
     if resultrecord:
@@ -21,33 +21,34 @@ def WriteSentenceDB(Sentence, NodeList):
         try:
             strsql = "update  sentences set result=? , verifytime=DATETIME('now') where ID=?"
 
-            logging.info(strsql)
+            # logging.info(strsql)
             cur.execute(strsql, [sqlite3.Binary(NodePickle), resultid])
             resultid = cur.lastrowid
         except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
             logging.warning("data writting error. ignore")
             logging.warning(str(e))
             resultid = -1
-        DBCon.commit()
     else:
         try:
             strsql = "INSERT into sentences (sentence, result, createtime)" \
                      "values(?, ?, DATETIME('now'))"
-            logging.info(strsql)
+            # logging.info(strsql)
             cur.execute(strsql, [Sentence, sqlite3.Binary(NodePickle)])
             resultid = cur.lastrowid
-            logging.info("Resultid=" + str(resultid))
+            # logging.info("Resultid=" + str(resultid))
         except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
             logging.warning("data writting error. ignore")
             logging.warning(str(e))
             resultid = -1
-        DBCon.commit()
     cur.close()
+    DBCon.commit()
     return resultid
 
 
 def LoadSentenceDB():
     global SentenceCache
+    if ParserConfig.get("main", "runtype").lower() == "debug":
+        return  #don't load when it is in debug mode.
     cur = DBCon.cursor()
     strSQL = "select sentence, result from sentences where result is not null"
     cur.execute(strSQL)
@@ -72,3 +73,14 @@ def WriteWinningRules(Sentence, WinningRules):
         logging.warning("SQL:" + strsql)
         logging.warning("Error:" + str(e))
     DBCon.commit()
+
+
+# def CheckLogitMatchCache(strtokenlist, i, rule):
+#     start = strtokenlist.get(i)
+#     for ruletoken in rule.Tokens:
+#         if ruletoken.SubtreePointer:
+#             return False    # we don't deal with SubtreePointer in this cache
+#         if (start.signature, ruletoken.word) in LogicalMatchCache:
+#             return True
+#         start = start.next
+#     return False
