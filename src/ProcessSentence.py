@@ -219,7 +219,7 @@ def ListMatch_UsingCache(list1, list2):
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
     i = 0
-    logging.debug("Matching using file:" + RuleFileName)
+    #logging.debug("Matching using file:" + RuleFileName)
     counter = 0
 
     strtoken = strtokenlist.head

@@ -569,6 +569,9 @@ class Rule:
     def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset = 0):
 
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
+        if Length == 0:
+            return 0
+
         for i in range(Length):
             token = self.Tokens[StartOffset + i]
             if token.SubtreePointer:
@@ -599,7 +602,8 @@ class Rule:
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
 
-        self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H"  #add Head for the head token.
+        if c.HeadConfidence > 0:
+            self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  #add Head for the head token.
         return VirtualTokenNum
 
 
