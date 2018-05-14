@@ -29,5 +29,3 @@ cd ../parser/data
 rm parser.db*
 cp parser.empty.db parser.db
 
-#cd ../temp
-#curl "http://localhost:5001/Reload/" > Reloaded.html &
