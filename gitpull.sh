@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 cd fsa
 git checkout X/summaryLex.txt
 rm X/AllLexicon_Extra.txt
-git checkout X/AllLexicon_Extra.txt
+#git checkout X/AllLexicon_Extra.txt   #removed from repository.
 git checkout X/SegmentSlash.txt
 git fetch
 git pull
@@ -26,6 +26,7 @@ echo " \c" >> revision.txt
  date >> revision.txt
 
 cd ../parser/data
+rm parser.db*
 cp parser.empty.db parser.db
 
 #cd ../temp
