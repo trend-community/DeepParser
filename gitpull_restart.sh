@@ -1,5 +1,5 @@
 #!/usr/bin/env bash  
-#echo "$(dirname "$0")"
+#use the gitpull.sh for normal process.
 bash gitpull.sh
 
 
