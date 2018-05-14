@@ -7,6 +7,7 @@ git checkout X/summaryLex.txt
 rm X/AllLexicon_Extra.txt
 #git checkout X/AllLexicon_Extra.txt   #removed from repository.
 git checkout X/SegmentSlash.txt
+git checkout X/defPlus.txt
 git fetch
 git pull
  git log --pretty=format:'%h' -n 1 > ../parser/revision.txt 
