@@ -2,7 +2,6 @@
 from utils import *
 import utils
 import pickle
-from threading import Thread
 SentenceCache = {}
 # LogicalMatchCache = {}
 
@@ -57,7 +56,7 @@ def LoadSentenceDB():
     if ParserConfig.get("main", "runtype").lower() == "debug":
         return  #don't load when it is in debug mode.
     try:
-        cur = DBCon.cursor()
+        cur = utils.DBCon.cursor()
         strSQL = "select sentence, result from sentences where result is not null"
         cur.execute(strSQL)
         rows = cur.fetchall()

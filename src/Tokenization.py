@@ -1,7 +1,7 @@
 #!/bin/python
 #Process Sentence tokens.
 
-import string, pickle
+import string
 import FeatureOntology, Lexicon
 import utils    #for the Feature_...
 from utils import *

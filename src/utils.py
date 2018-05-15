@@ -1,7 +1,6 @@
 import logging, re, json, jsonpickle, configparser, os
 import sqlite3
 from functools import lru_cache
-import atexit
 
 
 ParserConfig = configparser.ConfigParser()
