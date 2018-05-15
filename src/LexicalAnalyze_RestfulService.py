@@ -1,18 +1,25 @@
 import argparse
 import FeatureOntology, Rules
-import requests, urllib
+import requests, urllib, random
 from utils import *
 import concurrent.futures
 
 import singleton
 me = singleton.SingleInstance()
-LexicalAnalyzeURL = ParserConfig.get("client", "url_larestfulservice") + "/LexicalAnalyze?Type=simple"
+
+def LexicalAnalyzeURL():
+    if not hasattr(LexicalAnalyzeURL, "Servers"):
+        LexicalAnalyzeURL.Servers = [x.strip() for x in ParserConfig.get("client", "url_larestfulservice").splitlines() if x]
+    rand = random.randrange(len(LexicalAnalyzeURL.Servers))
+    return LexicalAnalyzeURL.Servers[rand] + "/LexicalAnalyze?1=1"
 
 
-def LATask(Sentence):
-    ret = requests.get(LexicalAnalyzeURL + "&Sentence=\"" +  urllib.parse.quote(Sentence) + "\"")
-
+def LATask(extraparameter, Sentence):
+    url = LexicalAnalyzeURL() + extraparameter + "&Sentence=" +  urllib.parse.quote("\"" + Sentence + "\"")
+    print(url)
+    ret = requests.get(url)
     return ret.text
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -53,16 +60,16 @@ if __name__ == "__main__":
                 UnitTest.append(unittest)
 
     logging.info("Start processing sentences")
-    LexicalAnalyzeURL += "&type=" + args.type
+    extra = "&type=" + args.type
     if args.schema:
-        LexicalAnalyzeURL += "&schema=" + args.schema
+        extra += "&schema=" + args.schema
     if args.action:
-        LexicalAnalyzeURL += "&action=" + args.action
+        extra += "&action=" + args.action
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
     # We can use a with statement to ensure threads are cleaned up promptly
         # Start the load operations and mark each future with its URL
-        future_to_url = {executor.submit(LATask, ut.TestSentence): ut.TestSentence for ut in UnitTest}
+        future_to_url = {executor.submit(LATask, extra, ut.TestSentence): ut.TestSentence for ut in UnitTest}
         future_new = {}
         logging.info("There are " + str(len(future_to_url)) + " to process.")
         for future in concurrent.futures.as_completed(future_to_url):
@@ -71,12 +78,12 @@ if __name__ == "__main__":
                 data = future.result()
             except Exception as exc:
                 logging.debug('%r generated an exception: \n %s' % (s, exc))
-                future_new[executor.submit(LATask, s)] = s
+                future_new[executor.submit(LATask, extra, s)] = s
             else:
                 if data:
                     Result[s] = data
                 else:
-                    future_new[executor.submit(LATask, s)] = s
+                    future_new[executor.submit(LATask, extra, s)] = s
         logging.info("Redo the failed items: size=" + str(len(future_new)))
         for future in concurrent.futures.as_completed(future_new):
             s = future_new[future]

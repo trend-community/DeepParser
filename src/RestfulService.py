@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
     print("Running in port " + str(startport))
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
-    httpd.request_queue_size = 1
+    httpd.request_queue_size = 0
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')
