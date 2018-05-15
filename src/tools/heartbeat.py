@@ -16,10 +16,15 @@ if __name__ == "__main__":
     for i in  range(len(servers)):
         starttime = current_milli_time()
         try:
+            logging.debug("start:")
             ret = requests.get(servers[i] + extra)
-            logging.info("[SERVER " + str(i) + "][TIME] " + str(current_milli_time() - starttime))
+            if 100 < ret.status_code < 400:
+                logging.info("[SERVER " + str(i) + "][TIME] " + str(current_milli_time() - starttime) )
+            else:
+                logging.error("[SERVER " + str(i) + "][TIME] " + str(current_milli_time() - starttime) + "\tresponse code:" + ret.status_code)
+
         except Exception as e:
-            logging.error("[SERVER " + str(i) + "][TIME] " + str(current_milli_time() - starttime))
+            logging.error("[SERVER " + str(i) + "][TIME] " + str(current_milli_time() - starttime)) + "\tException"
 
 
 
