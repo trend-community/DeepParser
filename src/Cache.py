@@ -11,44 +11,21 @@ SentenceCache = {}
 #     t.start()
 
 
-def WriteSentenceDB_Async(Sentence, NodeList):
+def WriteSentenceDB(Sentence, NodeList):
     NodePickle = pickle.dumps(NodeList)
     try:
         DBConnection = InitDB_T()
         cur = DBConnection.cursor()
-        strsql_id = "SELECT ID from sentences where sentence=?  limit 1"
-
-        cur.execute(strsql_id, (Sentence,))
-        resultrecord = cur.fetchone()
-        if resultrecord:
-            resultid = resultrecord[0]
-            try:
-                strsql = "update  sentences set result=? , verifytime=DATETIME('now') where ID=?"
-                cur.execute(strsql, [sqlite3.Binary(NodePickle), resultid])
-                resultid = cur.lastrowid
-            except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
-                logging.warning("data writting error. ignore")
-                logging.warning(str(e))
-                resultid = -1
-        else:
-            try:
-                strsql = "INSERT or ignore into sentences (sentence, result, createtime)" \
-                         "values(?, ?, DATETIME('now'))"
-                cur.execute(strsql, [Sentence, sqlite3.Binary(NodePickle)])
-                resultid = cur.lastrowid
-                # logging.info("Resultid=" + str(resultid))
-            except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
-                logging.warning("data writting error. ignore")
-                logging.warning(str(e))
-                resultid = -1
+        strsql = "replace into sentences (sentence, result, createtime)" \
+                 "values(?, ?, DATETIME('now'))"
+        cur.execute(strsql, [Sentence, sqlite3.Binary(NodePickle)])
         cur.close()
     except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
         logging.warning("WriteSentenceDB error. ignore")
         logging.warning(str(e))
-        resultid = -1
 
     CloseDB(DBConnection)
-    return resultid
+    return
 
 
 def LoadSentenceDB():
@@ -69,7 +46,6 @@ def LoadSentenceDB():
 
 
 def WriteWinningRules_Async(Sentence, WinningRules):
-
     strsql = """INSERT or IGNORE into rulehits (sentenceid, ruleid, createtime, verifytime)
                     VALUES(?, ?, DATETIME('now'), DATETIME('now'))"""
     try:

@@ -1,4 +1,4 @@
-import traceback
+import traceback, copy
 import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
@@ -362,8 +362,6 @@ def SeparateSentence(Sentence):
 
 
 def LexicalAnalyzeTask( SubSentence, schema):
-#    if SubSentence in Cache.SentenceCache:
-#        return Cache.SentenceCache[SubSentence], None  # assume ResultWinningRules is none.
 
     NodeList = Tokenization.Tokenize(SubSentence)
     if not NodeList or NodeList.size == 0:
@@ -375,13 +373,11 @@ def LexicalAnalyzeTask( SubSentence, schema):
     PrepareJSandJM(NodeList)
 
     WinningRules = DynamicPipeline(NodeList, schema)
-    if schema == "full":
-        Cache.SentenceCache[SubSentence] = NodeList
-        t = Thread(target=Cache.WriteSentenceDB_Async, args=(SubSentence, NodeList))
-        t.start()
-
+        # t = Thread(target=Cache.WriteSentenceDB, args=(SubSentence, NodeList))
+        # t.start()
 
     return NodeList, WinningRules
+
 
 """After testing, the _multithread version is not faster than normal one.
 abandened. """
@@ -430,6 +426,8 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
+        if Sentence in Cache.SentenceCache:
+            return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
 
         ResultNodeList = None
         ResultWinningRules = {}
@@ -439,13 +437,17 @@ def LexicalAnalyze(Sentence, schema = "full"):
             if ResultNodeList:
                 if not ResultNodeList.tail.text:
                     ResultNodeList.remove(ResultNodeList.tail)
-                NodeList.remove(NodeList.head)
+                if not NodeList.head.text:
+                    NodeList.remove(NodeList.head)
                 ResultNodeList.appendnodelist(NodeList)
             else:
                 ResultNodeList = NodeList
             if WinningRules:
                 ResultWinningRules.update(WinningRules)
 
+        if schema == "full":
+            Cache.SentenceCache[Sentence] = ResultNodeList
+            Cache.WriteSentenceDB(Sentence, ResultNodeList)
         # if ParserConfig.get("main", "runtype").lower() == "debug":
         #     t = Thread(target=Cache.WriteWinningRules_Async, args=(Sentence, ResultWinningRules))
         #     t.start()
