@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     servers = [x.strip() for x in Config.get("main", "servers").splitlines() if x]
     print(str(servers))
-    extra = '?Sentence=%22ab%20cd%22'
+    extra = '/LexicalAnalyze?Sentence=%22ab%20cd%22'
     for i in  range(len(servers)):
         starttime = current_milli_time()
         try:
