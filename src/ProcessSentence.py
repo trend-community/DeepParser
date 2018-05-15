@@ -1,5 +1,5 @@
 import traceback
-import concurrent.futures, copy
+import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
 from threading import Thread
