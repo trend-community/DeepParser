@@ -2,6 +2,7 @@ import traceback
 import concurrent.futures, copy
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
+from threading import Thread
 from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
 from utils import *
 import utils
@@ -376,7 +377,9 @@ def LexicalAnalyzeTask( SubSentence, schema):
     WinningRules = DynamicPipeline(NodeList, schema)
     if schema == "full":
         Cache.SentenceCache[SubSentence] = NodeList
-        Cache.WriteSentenceDB(SubSentence, NodeList)
+        t = Thread(target=Cache.WriteSentenceDB_Async, args=(SubSentence, NodeList))
+        t.start()
+
 
     return NodeList, WinningRules
 
@@ -443,8 +446,10 @@ def LexicalAnalyze(Sentence, schema = "full"):
             if WinningRules:
                 ResultWinningRules.update(WinningRules)
 
-        if ParserConfig.get("main", "runtype").lower() == "debug":
-            Cache.WriteWinningRules(Sentence, ResultWinningRules)
+        # if ParserConfig.get("main", "runtype").lower() == "debug":
+        #     t = Thread(target=Cache.WriteWinningRules_Async, args=(Sentence, ResultWinningRules))
+        #     t.start()
+            #Cache.WriteWinningRules(Sentence, ResultWinningRules)
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
@@ -494,6 +499,8 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
 def LoadCommon():
+    InitDB()
+
     import Cache
     Cache.LoadSentenceDB()
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
@@ -516,7 +523,7 @@ def LoadCommon():
             if RuleFileName != Rulefile:
                 PipeLine[PipeLine.index(action)] = "FSA " + RuleFileName
 
-    DBCon.commit()
+    CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
@@ -524,9 +531,8 @@ def LoadCommon():
         logging.debug("Start writing temporary lex file.")
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
-    else:
-        #DBCon.close()
-        logging.info("DBCon closed.")
+
+
     logging.debug("Done of LoadCommon!")
 
         #print(Lexicon.OutputLexicon(False))

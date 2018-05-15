@@ -377,20 +377,21 @@ def InitDB():
         cur.execute("PRAGMA journal_mode=WAL;")
         cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
         cur.close()
-        DBCon.commit()
+        #DBCon.commit()
         logging.info("DBCon Init")
-        atexit.register(CloseDB)
+        #atexit.register(CloseDB, (DBCon,))
     except sqlite3.OperationalError:
         logging.error("Database file does not exists!")
 
-def CloseDB():
+
+
+def CloseDB(tempDB):
     try:
-        DBCon.commit()
-        DBCon.close()
+        tempDB.commit()
+        tempDB.close()
         logging.info("DBCon closed.")
     except sqlite3.ProgrammingError:
         logging.info("DBCon is closed.")
-
 # try:
 #     if not DBCon:
 #         InitDB()    #initialize this
@@ -400,11 +401,10 @@ def CloseDB():
 
 
 DBCon = None
-InitDB()
-
+#
 #tablefields and values are lists.
-def DBInsertOrGetID(tablename, tablefields, values):
-    cur = DBCon.cursor()
+def DBInsertOrGetID(DBConnection, tablename, tablefields, values):
+    cur = DBConnection.cursor()
     strsql = "SELECT ID from " + tablename + " where " + " AND ".join(field + "=?" for field in tablefields ) + "  limit 1"
     logging.info(strsql)
     cur.execute(strsql, values)
@@ -421,12 +421,12 @@ def DBInsertOrGetID(tablename, tablefields, values):
             logging.warning("data writting error. ignore")
             logging.warning(str(e))
             resultid = -1
-        DBCon.commit()
+        DBConnection.commit()
     cur.close()
     return resultid
 
-def DBInsertOrUpdate(tablename, keyfield, keyvalue, tablefields, values):
-    cur = DBCon.cursor()
+def DBInsertOrUpdate(DBConnection, tablename, keyfield, keyvalue, tablefields, values):
+    cur = DBConnection.cursor()
     strsql = "SELECT ID from " + tablename + " where " + keyfield + "=?  limit 1"
     logging.info(strsql)
     logging.info("keyvalue:" + keyvalue)
@@ -445,7 +445,7 @@ def DBInsertOrUpdate(tablename, keyfield, keyvalue, tablefields, values):
             logging.warning("data writting error. ignore")
             logging.warning(str(e))
             resultid = -1
-        DBCon.commit()
+        DBConnection.commit()
     else:
         try:
             strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ", createtime) VALUES(" \
@@ -457,12 +457,12 @@ def DBInsertOrUpdate(tablename, keyfield, keyvalue, tablefields, values):
             logging.warning("data writting error. ignore")
             logging.warning(str(e))
             resultid = -1
-        DBCon.commit()
+        DBConnection.commit()
     cur.close()
     return resultid
 
-def DBInsertOrIgnore(tablename, keyfield, keyvalue, tablefields, values):
-    cur = DBCon.cursor()
+def DBInsertOrIgnore(DBConnection, tablename, keyfield, keyvalue, tablefields, values):
+    cur = DBConnection.cursor()
     strsql = "SELECT ID from " + tablename + " where " + keyfield + "=?  limit 1"
     logging.info(strsql)
     logging.info("keyvalue:" + keyvalue)
@@ -480,7 +480,7 @@ def DBInsertOrIgnore(tablename, keyfield, keyvalue, tablefields, values):
             logging.warning("data writting error. ignore")
             logging.warning(str(e))
             resultid = -1
-        DBCon.commit()
+        DBConnection.commit()
     cur.close()
     return resultid
 
