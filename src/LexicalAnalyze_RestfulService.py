@@ -1,22 +1,24 @@
-import argparse
-import FeatureOntology, Rules
+import argparse, logging, os, configparser
 import requests, urllib, random
-from utils import *
+#from utils import *
 import concurrent.futures
 
 import singleton
 me = singleton.SingleInstance()
 
+
+ParserConfig = configparser.ConfigParser()
+ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
+
 def LexicalAnalyzeURL():
     if not hasattr(LexicalAnalyzeURL, "Servers"):
         LexicalAnalyzeURL.Servers = [x.strip() for x in ParserConfig.get("client", "url_larestfulservice").splitlines() if x]
     rand = random.randrange(len(LexicalAnalyzeURL.Servers))
-    return LexicalAnalyzeURL.Servers[rand] + "/LexicalAnalyze?1=1"
+    return LexicalAnalyzeURL.Servers[rand] + "/LexicalAnalyze"
 
 
 def LATask(extraparameter, Sentence):
     url = LexicalAnalyzeURL() + extraparameter + "&Sentence=" +  urllib.parse.quote("\"" + Sentence + "\"")
-    print(url)
     ret = requests.get(url)
     return ret.text
 
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
+    #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     UnitTest = []
     if not os.path.exists(args.inputfile):
@@ -51,25 +53,19 @@ if __name__ == "__main__":
     with open(args.inputfile, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                RuleName, TestSentence = SeparateComment(line.strip())
-                if not TestSentence:    # For the testfile that only have test sentence, not rule name
-                    TestSentence = RuleName
-                    x = urllib.parse.quote(TestSentence)
-                    RuleName = ""
-                unittest = Rules.UnitTestNode(RuleName, TestSentence)
-                UnitTest.append(unittest)
+                UnitTest.append(line.strip())
 
-    logging.info("Start processing sentences")
-    extra = "&type=" + args.type
+    #logging.info("Start processing sentences")
+    extra = "?type=" + args.type
     if args.schema:
         extra += "&schema=" + args.schema
     if args.action:
         extra += "&action=" + args.action
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
-    # We can use a with statement to ensure threads are cleaned up promptly
+        # We can use a with statement to ensure threads are cleaned up promptly
         # Start the load operations and mark each future with its URL
-        future_to_url = {executor.submit(LATask, extra, ut.TestSentence): ut.TestSentence for ut in UnitTest}
+        future_to_url = {executor.submit(LATask, extra, sentence): sentence for sentence in UnitTest}
         future_new = {}
         logging.info("There are " + str(len(future_to_url)) + " to process.")
         for future in concurrent.futures.as_completed(future_to_url):
@@ -95,8 +91,8 @@ if __name__ == "__main__":
                 Result[s] = data
         logging.info("Done of retrieving data")
 
-    for ut in UnitTest:
-        if ut.TestSentence in Result:
-            print(Result[ut.TestSentence]  + '\t' + ut.TestSentence)
+    for sentence in UnitTest:
+        if sentence in Result:
+            print(Result[sentence]  + '\t' + sentence)
         else:
-            print("Failed: " + ut.TestSentence )
+            print("Failed: " + sentence )
