@@ -30,9 +30,9 @@ def ImportProperty_rest(line):
     #
     Cypher = "MATCH (n:产品{item_sku_id:'" + skuid + "' }) "
     Cypher += " MERGE (m:PRodAttrs{ name: '" + skuid + "_TITLE'}) "
-    Cypher += " set  m += {" + propertyname + ": '" + propertyvalue.strip() + "'} "
+    Cypher += " set  m += {`" + propertyname + "`: '" + propertyvalue.strip() + "'} "
     Cypher += " MERGE (n)-[:TITLE]->(m);"
-    logging.info(Cypher)
+    #logging.info(Cypher)
     db.query(Cypher)
 
 
