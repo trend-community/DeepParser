@@ -16,9 +16,13 @@ kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print
 
 
 # 2.restart  parser
-mv log log.$(date +"%Y%m%dT%H%M")
-mkdir log
-cd src
+cd log
+newlog=`date +"%Y%m%dT%H%M"`
+mkdir $newlog
+mv *.txt $newlog
+mv ../log* $newlog
+
+cd ../src
 for ((i=5001; i<=5004; i++)); do
     nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
 done
