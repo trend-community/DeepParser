@@ -14,7 +14,7 @@ def ImportProperty_rest(line):
     except Exception:
         logging.warning("Wrong line:" + line)
         return
-    logging.info("Start writing:" + skuid + "," + propertyname + "," + propertyvalue + ".")
+    logging.debug("Start writing:" + skuid + "," + propertyname + "," + propertyvalue + ".")
 
     if skuid == "item_sku_id":
         return  #first line.
@@ -29,7 +29,7 @@ def ImportProperty_rest(line):
     #                          "propertyvalue":propertyvalue})
     #
     Cypher = "MATCH (n:产品{item_sku_id:'" + skuid + "' }) "
-    Cypher += " MERGE (m:PRodAttrs{ name: '" + skuid + "_TITLE'}) "
+    Cypher += " MERGE (m:ProdAttrs{ name: '" + skuid + "_TITLE'}) "
     Cypher += " set  m += {`" + propertyname + "`: '" + propertyvalue.strip() + "'} "
     Cypher += " MERGE (n)-[:TITLE]->(m);"
     #logging.info(Cypher)
@@ -63,14 +63,22 @@ def ImportProperty_rest(line):
 #                              "propertyname":propertyname,
 #                              "propertyvalue":propertyvalue})
 
+def CheckDB():
+    Cypher = "match(n:产品) -[r:TITLE]->(m) return count(n), count(r);"
+    results = db.query(Cypher, returns=(int, int))
+    print("Currently there are " + str(results[0][0]) + " 产品 with " + str(results[0][0]) + " TITLE relations.")
+
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     args = parser.parse_args()
+    CheckDB()
 
     with open(args.inputfile, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
                 ImportProperty_rest(line.strip())
+
+    CheckDB()
