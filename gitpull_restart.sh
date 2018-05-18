@@ -18,13 +18,16 @@ kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print
 # 2.restart  parser
 cd log
 newlog=`date +"%Y%m%dT%H%M"`
-mkdir $newlog
-mv *.txt $newlog
-mv ../log* $newlog
+mkdir log_$newlog
+mv *.txt log_$newlog
+#mv ../log_* $newlog
 
 cd ../src
-for ((i=5001; i<=5004; i++)); do
+total=5
+for ((i=5001; i<5000+$total; i++)); do
+    echo starting $i of $total ...
     nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
+    sleep 20s
 done
 
 echo 'RestfulService is restarted.'
