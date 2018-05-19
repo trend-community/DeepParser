@@ -20,14 +20,14 @@ cd log
 newlog=`date +"%Y%m%dT%H%M"`
 mkdir log_$newlog
 mv *.txt log_$newlog
-#mv ../log_* $newlog
+mv ../log_* log
 
 cd ../src
-total=5
-for ((i=5001; i<5000+$total; i++)); do
+total=10
+for ((i=5001; i<5001+$total; i++)); do
     echo starting $i of $total ...
     nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
-    sleep 20s
+    sleep 10s
 done
 
 echo 'RestfulService is restarted.'
