@@ -445,7 +445,9 @@ def LexicalAnalyze(Sentence, schema = "full"):
             if WinningRules:
                 ResultWinningRules.update(WinningRules)
 
-        if schema == "full":
+        if schema == "full" and utils.runtype != "debug":
+            if len(Cache.SentenceCache) > utils.maxcachesize:
+                Cache.SentenceCache.popitem()   #remove random one from the list.
             Cache.SentenceCache[Sentence] = ResultNodeList
             Cache.WriteSentenceDB(Sentence, ResultNodeList)
         # if ParserConfig.get("main", "runtype").lower() == "debug":
@@ -459,7 +461,6 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.error(e)
         logging.error(traceback.format_exc())
         return None, None
-
 
     return ResultNodeList, ResultWinningRules
 

@@ -20,11 +20,11 @@ def WriteSentenceDB(Sentence, NodeList):
                  "values(?, ?, DATETIME('now'))"
         cur.execute(strsql, [Sentence, sqlite3.Binary(NodePickle)])
         cur.close()
+        CloseDB(DBConnection)
     except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
         logging.warning("WriteSentenceDB error. ignore")
         logging.warning(str(e))
 
-    CloseDB(DBConnection)
     return
 
 
@@ -34,12 +34,14 @@ def LoadSentenceDB():
         return  #don't load when it is in debug mode.
     try:
         cur = utils.DBCon.cursor()
-        strSQL = "select sentence, result from sentences where result is not null"
+        strSQL = "select sentence, result from sentences where result is not null order by createtime desc"
         cur.execute(strSQL)
         rows = cur.fetchall()
+
         for row in rows:
+            if len(SentenceCache) > maxcachesize:
+                return   #stop when reach limit.
             SentenceCache[row[0]] = pickle.loads(row[1])
-            logging.info("Cached:" + str(row[0]))
     except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
                 logging.warning("LoadSentenceDB error. ignore")
                 logging.warning(str(e))
@@ -60,12 +62,13 @@ def WriteWinningRules_Async(Sentence, WinningRules):
 
             for ruleid in WinningRules:
                 cur.execute(strsql, [SentenceID, ruleid])
-            cur.close()
+        cur.close()
+        CloseDB(DBConnection)
+
     except (sqlite3.OperationalError, sqlite3.DatabaseError)  as e:
         logging.warning("WriteWinningRules error. ignore.")
         logging.warning("SQL:" + strsql)
         logging.warning("Error:" + str(e))
-    CloseDB(DBConnection)
 
 
 def InitDB_T():   #thread-safe
@@ -78,11 +81,12 @@ def InitDB_T():   #thread-safe
         cur.execute("PRAGMA TEMP_STORE=MEMORY;")  # reference: https://www.sqlite.org/wal.html
         cur.close()
         tempDB.commit()
+        return tempDB
         #atexit.register(utils.CloseDB, (tempDB,))
     except sqlite3.OperationalError:
         logging.error("Database file does not exists!")
 
-    return tempDB
+    return None
 
 # def CheckLogitMatchCache(strtokenlist, i, rule):
 #     start = strtokenlist.get(i)

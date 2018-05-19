@@ -27,8 +27,3 @@ if __name__ == "__main__":
             logging.error("[SERVER " + servers[i] + "][TIME] " + str(current_milli_time() - starttime) + "\tException:" + str(e))
 
 
-
-
-
-
-

@@ -225,7 +225,9 @@ if __name__ == "__main__":
 
     print("Running in port " + str(startport))
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
-    httpd.request_queue_size = 1
+    if utils.runtype == "release":
+        httpd.request_queue_size = 0
+        #allow release_analyze to have normal queue size, as 5.
     httpd.serve_forever()
     print(" End of RestfulService_BaseHTTP.py")
     # app.test_client().get('/')

@@ -5,6 +5,8 @@ from functools import lru_cache
 
 ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
+maxcachesize = int(ParserConfig.get("main", "maxcachesize"))
+runtype = ParserConfig.get("main", "runtype").lower()
 
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)

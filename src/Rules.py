@@ -1288,7 +1288,7 @@ def _RemoveExcessiveParenthesis(token):
         else:
             after = ""
 
-        logging.info("Removing excessive parenthesis in: " + token.word)
+        logging.debug("Removing excessive parenthesis in: " + token.word)
         token.word = before + token.word[StartParenthesesPosition+1:EndParenthesesPosition] + after
         #logging.info("\t\t as: " + token.word)
         return True
