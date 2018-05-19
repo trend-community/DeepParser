@@ -19,8 +19,9 @@ kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print
 cd log
 newlog=`date +"%Y%m%dT%H%M"`
 mkdir log_$newlog
-mv *.txt log_$newlog
+mv *.log  log_$newlog
 mv ../log_* log
+mv ../log.* log
 
 cd ../src
 total=10
