@@ -34,13 +34,12 @@ def LoadSentenceDB():
         return  #don't load when it is in debug mode.
     try:
         cur = utils.DBCon.cursor()
-        strSQL = "select sentence, result from sentences where result is not null order by createtime desc"
+        strSQL = "select sentence, result from sentences where result is not null " \
+                 "order by createtime desc limit " + str(maxcachesize)
         cur.execute(strSQL)
         rows = cur.fetchall()
 
         for row in rows:
-            if len(SentenceCache) > maxcachesize:
-                return   #stop when reach limit.
             SentenceCache[row[0]] = pickle.loads(row[1])
     except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
                 logging.warning("LoadSentenceDB error. ignore")
