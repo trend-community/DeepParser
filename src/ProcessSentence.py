@@ -426,8 +426,8 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
-        if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
+        # if Sentence in Cache.SentenceCache:
+        #     return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
 
         ResultNodeList = None
         ResultWinningRules = {}
@@ -445,10 +445,10 @@ def LexicalAnalyze(Sentence, schema = "full"):
             if WinningRules:
                 ResultWinningRules.update(WinningRules)
 
-        if schema == "full" and utils.runtype != "debug":
-            if len(Cache.SentenceCache) < utils.maxcachesize:   # do not add more.
-                Cache.SentenceCache[Sentence] = ResultNodeList
-                Cache.WriteSentenceDB(Sentence, ResultNodeList)
+        # if schema == "full" and utils.runtype != "debug":
+        #     if len(Cache.SentenceCache) < utils.maxcachesize:
+        #         Cache.SentenceCache[Sentence] = ResultNodeList
+        #         Cache.WriteSentenceDB(Sentence, ResultNodeList)
         # if ParserConfig.get("main", "runtype").lower() == "debug":
         #     t = Thread(target=Cache.WriteWinningRules_Async, args=(Sentence, ResultWinningRules))
         #     t.start()
@@ -504,7 +504,7 @@ def LoadCommon():
     InitDB()
 
     import Cache
-    Cache.LoadSentenceDB()
+    #Cache.LoadSentenceDB()
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     XLocation = '../../fsa/X/'
