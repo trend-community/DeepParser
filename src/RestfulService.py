@@ -147,24 +147,33 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.wfile.write("".encode("utf-8"))
 
     def Reload(self, ReloadTask):
+        XLocation = '../../fsa/X/'
         if ReloadTask.lower() == "/lexicon":
-            #Not ready to work on reloading lexicon yet.
-            pass
-        Rules.ResetAllRules()
-        ProcessSentence.WinningRuleDict.clear()
-        # XLocation = '../../fsa/X/'
-        # for action in ProcessSentence.PipeLine:
-        #     if action.startswith("FSA"):
-        #         Rulefile = action[3:].strip()
-        #         Rulefile = os.path.join(XLocation, Rulefile)
-        #         Rules.LoadRules(Rulefile)
+            logging.info("Start loading lexicon...")
+
+            ProcessSentence.LoadCommonLexicon(XLocation)
+            Reply = "Reloaded lexicon at " + str(datetime.now())
+        else:
+            logging.info("Start loading rules...")
+            Rules.ResetAllRules()
+            ProcessSentence.WinningRuleDict.clear()
+            # XLocation = '../../fsa/X/'
+            # for action in ProcessSentence.PipeLine:
+            #     if action.startswith("FSA"):
+            #         Rulefile = action[3:].strip()
+            #         Rulefile = os.path.join(XLocation, Rulefile)
+            #         Rules.LoadRules(Rulefile)
+            for action in ProcessSentence.PipeLine:
+                if action.startswith("FSA"):
+                    Rulefile = action[3:].strip()
+                    Rules.LoadRules(XLocation, Rulefile)
+            Reply = "Reloaded rules at " + str(datetime.now())
 
         self.send_response(200)
-        self.send_header('Content-type', "Application/json; charset=utf-8")
+        self.send_header('Content-type', "text/html; charset=utf-8")
         self.end_headers()
-        Reply = "Reloaded rules at " + str(datetime.now())
-
         self.wfile.write(Reply.encode("utf-8"))
+
 
     def GetFeatureID(self, word):
         self.send_response(200)

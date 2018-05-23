@@ -17,6 +17,9 @@ _LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
 _LexiconFantiDict = {}
 
+CompositeKG  = []
+CompositeKGSetADict = {}
+
 # _LexiconLookupDict = {}     # extra dictionary for lookup purpose.
 # the same node is also saved in _LexiconDict
 # _LexiconBlacklist = []
@@ -230,6 +233,80 @@ def LoadExtraReference(lexiconLocation, thedict):
                 for badword in badwords.split():
                     thedict[badword] = goodword
     logging.info("Size of thedict: " + str(len(thedict)))
+
+
+def ApplyCompositeKG(NodeList):
+    TextSet = set()
+    node = NodeList.head
+    nodestack = set()
+    #Collect all the text into a TextSet.
+    while node:
+        TextSet.add(node.text)
+
+        if node.sons:
+            if node.next:
+                nodestack.add(node.next)
+            node = node.sons[0]
+        else:
+            node = node.next
+            if node == None and nodestack:
+                node = nodestack.pop()
+
+    node = NodeList.head
+    while node:
+        if node.text in CompositeKGSetADict:
+            for ID in CompositeKGSetADict[node.text]:
+                if len(CompositeKG[ID][1]) == 1:
+                    logging.info("CompositeKG Winner! Only has one composite set. ")
+                    node.norm = CompositeKG[ID][0]
+                    break
+                PassAllSets = True
+                for Set in CompositeKG[ID][1][1:]:
+                    if not TextSet.intersection(Set):
+#                        logging.info("Do not have any of Set in TextSet. This condition failed")
+                        PassAllSets = False
+                        break
+                if PassAllSets:
+                    node.norm = CompositeKG[ID][0]
+                    logging.info("CompositeKG Winner after tring  " + str(len(CompositeKG[ID][1])) + " conditions.:" + CompositeKG[ID][0])
+                    break
+        if node.sons:
+            if node.next:
+                nodestack.add(node.next)
+            node = node.sons[0]
+        else:
+            node = node.next
+            if node == None and nodestack:
+                node = nodestack.pop()
+
+
+def LoadCompositeKG(lexiconLocation):
+    CompositeKG.clear()
+    CompositeKGSetADict.clear()
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            code, _ = SeparateComment(line)
+            if code and "=" in code:
+                try:
+                    KGKey, Sets = code.split("=")
+                    CompositeConditions = []
+                    for Set in Sets.split(":"):
+                        CompositeConditions.append([x.strip() for x in Set.split("|")])
+                    CompositeKG.append((KGKey, CompositeConditions))
+                    for A in [x.strip() for x in CompositeConditions[0]]:
+                        if A not in CompositeKGSetADict:
+                            CompositeKGSetADict[A] = [len(CompositeKG)-1]
+                        else:
+                            CompositeKGSetADict[A].append(len(CompositeKG)-1)
+                except ValueError:
+                    logging.warning("This line is not correctly format to have 2 colons:" + code)
+                    continue
+
+    logging.info("Size of the CompositeKG: " + str(len(CompositeKG)))
+    # for i in range(len(CompositeKG)):
+    #     print("[" + str(i) + "]" + CompositeKG[i][0] + " = " + str(CompositeKG[i][1]) )
+    # for key in CompositeKGSetADict:
+    #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
 
 
 def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):

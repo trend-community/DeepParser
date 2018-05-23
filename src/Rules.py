@@ -908,18 +908,19 @@ def ProcessMacro(ruleContent, MacroDict):
 # -Sept, change to : until the next "==" or "::" is found, give the whole block to "InsetRuleInList"
 #   The rule.SetRule() will judge whether it is one whole rule (base on {}), or several rules (or condition),
 #       when it will process current rule, and give the rest as "remaining" for next round.
-def LoadRules(RuleLocation):
+def LoadRules(RuleFolder, RuleFileName):
     # global UnitTest, RuleFileList
     global RuleGroupDict
 
+    RuleLocation = os.path.join(RuleFolder, RuleFileName)
     if RuleLocation.startswith("."):
         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
 
-    RuleFileName = os.path.basename(RuleLocation)
-    logging.debug("Start Loading Rule " + RuleFileName)
+    #RuleFileName = os.path.basename(RuleLocation)
+    logging.debug("Start Loading Rule " + RuleLocation)
     rulegroup = RuleGroup(RuleFileName)
 
-    if RuleFileOlderThanDB(RuleLocation):
+    if RuleFileOlderThanDB(RuleFileName):
         rulegroup.LoadedFromDB = True
         LoadRulesFromDB(rulegroup)
     else:
@@ -981,7 +982,7 @@ def LoadRules(RuleLocation):
     logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
 
-    return RuleFileName
+    return
 
 # def BuildIdenticalNetwork(rg):
 #     for rule in rg.RuleList:

@@ -12,6 +12,7 @@ WinningRuleDict = {}
 invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
 PipeLine = []
 
+
 def MarkWinningTokens(strtokens, rule, StartPosition):
     result = ""
 
@@ -303,6 +304,13 @@ def DynamicPipeline(NodeList, schema):
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
+
+        if action.startswith("MarkqOqC"):
+            pass
+
+        if action == "APPLY COMPOSITE KG":
+            Lexicon.ApplyCompositeKG(NodeList)
+
     return  WinningRules
 
 
@@ -475,6 +483,8 @@ def LoadPipeline(PipelineLocation):
             PipeLine.append(action.strip())
 
 def LoadCommonLexicon(XLocation):
+    Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+
     Lexicon.LoadLexicon(XLocation + 'LexX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
@@ -501,6 +511,7 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
 def LoadCommon():
+
     InitDB()
 
     import Cache
@@ -516,14 +527,10 @@ def LoadCommon():
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
     logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
-    RuleFolder = XLocation
     for action in PipeLine:
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
-            Rulefile = os.path.join(RuleFolder, Rulefile)
-            RuleFileName = Rules.LoadRules(Rulefile)
-            if RuleFileName != Rulefile:
-                PipeLine[PipeLine.index(action)] = "FSA " + RuleFileName
+            Rules.LoadRules(XLocation, Rulefile)
 
     CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
@@ -532,7 +539,6 @@ def LoadCommon():
         FeatureOntology.OutputFeatureOntologyFile(ParserConfig.get("main", "compiledfolder"))
         logging.debug("Start writing temporary lex file.")
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
-
 
 
     logging.debug("Done of LoadCommon!")
