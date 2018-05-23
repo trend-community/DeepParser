@@ -41,6 +41,7 @@ def LoadSentenceDB():
 
         for row in rows:
             SentenceCache[row[0]] = pickle.loads(row[1])
+        logging.info("SentenceCache size:" + str(len(SentenceCache)))
     except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
                 logging.warning("LoadSentenceDB error. ignore")
                 logging.warning(str(e))

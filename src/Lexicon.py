@@ -268,6 +268,7 @@ def ApplyCompositeKG(NodeList):
                         break
                 if PassAllSets:
                     node.norm = CompositeKG[ID][0]
+                    node.ApplyFeature(utils.FeatureID_comPair)
                     logging.info("CompositeKG Winner after tring  " + str(len(CompositeKG[ID][1])) + " conditions.:" + CompositeKG[ID][0])
                     break
         if node.sons:
