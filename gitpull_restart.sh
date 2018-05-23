@@ -7,7 +7,7 @@ bash gitpull.sh
 echo '-------------------'
 echo 'stop parser'
 # mac centos
-pid=`ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print $2'}`
+pid=`ps aux | grep ' RestfulService.py ' | grep -v grep | awk {'print $2'}`
 if [[ ! -z $pid ]];then
     kill -9 $pid
 fi
