@@ -1836,6 +1836,10 @@ def OutputRuleFiles(FolderLocation):
         rg = RuleGroupDict[RuleFile]
         output = OutputRules(rg, "concise")
         FileLocation = os.path.join(FolderLocation, rg.FileName)
+        DirectoryLocation = os.path.dirname(FileLocation)
+        if not os.path.exists(DirectoryLocation):
+            os.makedirs(DirectoryLocation)
+
         with open(FileLocation, "w", encoding="utf-8") as writer:
             writer.write(output)
 
