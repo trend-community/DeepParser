@@ -69,6 +69,7 @@ class LexiconLookupSource(Enum):
     Exclude = 0
     defLex = 1
     External = 2
+    oQcQ = 3
 
 
 def InitGlobalFeatureID():

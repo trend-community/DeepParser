@@ -12,6 +12,7 @@ _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
+_LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
 _LexiconSegmentDict = {}  # from main2017. used for segmentation onln. there is no feature.
 _LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
@@ -259,6 +260,7 @@ def ApplyCompositeKG(NodeList):
                 if len(CompositeKG[ID][1]) == 1:
                     logging.info("CompositeKG Winner! Only has one composite set. ")
                     node.norm = CompositeKG[ID][0]
+                    node.ApplyFeature(utils.FeatureID_comPair)
                     break
                 PassAllSets = True
                 for Set in CompositeKG[ID][1][1:]:
@@ -466,6 +468,8 @@ def ApplyLexiconToNodes(NodeList):
     while node:
         ApplyLexicon(node)
         node = node.next
+
+    #LexiconoQoCLookup(NodeList)
     return NodeList
 
 
@@ -677,6 +681,51 @@ def LexiconLookup(strTokens, lookupsource):
                 NewNode.ApplyFeature(utils.FeatureID_External)
             NewNode.sons = []  # For lookup, eliminate the sons
             #logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
+        else:
+            i = i - 1
+
+
+def LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
+    if lookupsource!=LexiconLookupSource.oQcQ:
+        logging.error("This is only for oQcQ source.")
+    sentenceLenth = strTokens.size
+    bestScore = [1 for _ in range(sentenceLenth + 1)]
+
+    i = 0
+
+    pi = strTokens.head
+    while pi.next:
+        i += 1
+        j = i
+        pi = pi.next
+        pj = pi
+        combinedText = pi.text.lower()
+        combinedCount = 1
+        while pj.next:
+            j += 1
+            pj = pj.next
+            if not pj.text:
+                continue
+            combinedText += pj.text.lower()
+            combinedCount += 1
+            if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
+                logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+                bestScore[j] = combinedCount
+
+    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+
+    i = strTokens.size - 1
+    while i > 0:
+        if bestScore[i] > 1:
+            FirstNodeID = i - bestScore[i] + 1
+            LastNodeID = i+1
+            strTokens.get(FirstNodeID-1).ApplyFeature(GetFeatureID("oBR"))
+            strTokens.get(FirstNodeID).ApplyFeature(GetFeatureID("oQ"))
+            strTokens.get(LastNodeID).ApplyFeature(GetFeatureID("cQ"))
+            strTokens.get(LastNodeID+1).ApplyFeature(GetFeatureID("cBR"))
+            logging.warning("Applying oQcQ to:" + str(strTokens.get(FirstNodeID)) + " to " + str(strTokens.get(LastNodeID)))
+
+            i = i - bestScore[i]
         else:
             i = i - 1
 
