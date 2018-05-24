@@ -645,6 +645,9 @@ def ApplyLexicon(node, lex=None):
 # Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens, lookupsource):
+    if lookupsource == LexiconLookupSource.oQcQ:
+        return _LexiconoQoCLookup(strTokens)
+
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth + 1)]
 
@@ -685,7 +688,7 @@ def LexiconLookup(strTokens, lookupsource):
             i = i - 1
 
 
-def LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
+def _LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
     if lookupsource!=LexiconLookupSource.oQcQ:
         logging.error("This is only for oQcQ source.")
     sentenceLenth = strTokens.size
@@ -723,7 +726,6 @@ def LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
             strTokens.get(FirstNodeID).ApplyFeature(GetFeatureID("oQ"))
             strTokens.get(LastNodeID).ApplyFeature(GetFeatureID("cQ"))
             strTokens.get(LastNodeID+1).ApplyFeature(GetFeatureID("cBR"))
-            logging.warning("Applying oQcQ to:" + str(strTokens.get(FirstNodeID)) + " to " + str(strTokens.get(LastNodeID)))
 
             i = i - bestScore[i]
         else:

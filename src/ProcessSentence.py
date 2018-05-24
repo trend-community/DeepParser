@@ -379,7 +379,7 @@ def LexicalAnalyzeTask( SubSentence, schema):
     # print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
     PrepareJSandJM(NodeList)
-    Lexicon.LexiconoQoCLookup(NodeList)
+    #Lexicon.LexiconoQoCLookup(NodeList)
 
     WinningRules = DynamicPipeline(NodeList, schema)
         # t = Thread(target=Cache.WriteSentenceDB, args=(SubSentence, NodeList))
