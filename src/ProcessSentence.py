@@ -379,6 +379,7 @@ def LexicalAnalyzeTask( SubSentence, schema):
     # print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
     PrepareJSandJM(NodeList)
+    Lexicon.LexiconoQoCLookup(NodeList)
 
     WinningRules = DynamicPipeline(NodeList, schema)
         # t = Thread(target=Cache.WriteSentenceDB, args=(SubSentence, NodeList))
@@ -505,6 +506,8 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
     Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
+
+    Lexicon.LoadLexicon(XLocation + 'LexX-oQcQ.txt',    lookupSource=LexiconLookupSource.oQcQ)
 
     Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
     Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)

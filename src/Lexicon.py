@@ -387,7 +387,8 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                                     node.features.update(ancestors)
 
             if newNode:
-                _LexiconDict.update({node.text: node})
+                if lookupSource != LexiconLookupSource.oQcQ:
+                    _LexiconDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.Exclude:
                     _LexiconLookupSet[lookupSource].add(node.text)
                 elif "_" in node.text:
@@ -469,7 +470,6 @@ def ApplyLexiconToNodes(NodeList):
         ApplyLexicon(node)
         node = node.next
 
-    #LexiconoQoCLookup(NodeList)
     return NodeList
 
 
@@ -718,7 +718,7 @@ def LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
     while i > 0:
         if bestScore[i] > 1:
             FirstNodeID = i - bestScore[i] + 1
-            LastNodeID = i+1
+            LastNodeID = i
             strTokens.get(FirstNodeID-1).ApplyFeature(GetFeatureID("oBR"))
             strTokens.get(FirstNodeID).ApplyFeature(GetFeatureID("oQ"))
             strTokens.get(LastNodeID).ApplyFeature(GetFeatureID("cQ"))
