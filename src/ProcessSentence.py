@@ -510,6 +510,8 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
     Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
+    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
+
 def LoadCommon():
 
     InitDB()

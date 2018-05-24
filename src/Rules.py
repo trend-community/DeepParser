@@ -13,6 +13,7 @@ from LogicOperation import SeparateOrBlocks as LogicOperation_SeparateOrBlocks
 import FeatureOntology
 
 RuleGroupDict = {}
+_GlobalMacroDict = {}
 #RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
 
 class RuleGroup(object):
@@ -23,6 +24,8 @@ class RuleGroup(object):
         self.FileName = FileName
         self.RuleList = []
         self.MacroDict = {}
+        if _GlobalMacroDict:
+            self.MacroDict.update(_GlobalMacroDict)
         self.UnitTest = []
         self.LoadedFromDB = False
         self.HashRules = {}
@@ -47,6 +50,8 @@ class UnitTestNode(object):
 def ResetRules(rg):
     del rg.RuleList[:]
     rg.MacroDict = {}  # not sure which one to use yet
+    #global GlobalMacroDict
+
 
 
 def ResetAllRules():
@@ -54,6 +59,7 @@ def ResetAllRules():
     for rulefile in RuleGroupDict:
         del RuleGroupDict[rulefile].RuleList[:]
     RuleGroupDict.clear()
+    _GlobalMacroDict.clear()
     #RuleIdenticalNetwork = {}
 
 # If it is one line, that it is one rule;
@@ -893,6 +899,61 @@ def ProcessMacro(ruleContent, MacroDict):
             logging.warning("This macro " + macro + " does not exist.")
     return ruleContent
 
+
+def LoadGlobalMacro(RuleFolder, RuleFileName):
+    RuleLocation = os.path.join(RuleFolder, RuleFileName)
+    if RuleLocation.startswith("."):
+        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
+
+    rule = ''
+    try:
+        with open(RuleLocation, encoding="utf-8") as RuleFile:
+            for line in RuleFile:
+                line = line.strip().replace("：", ":")
+                if not line:
+                    continue
+
+                code, _ = SeparateComment(line)
+                if code.find("::") >= 0 or code.find("==") >= 0:
+                    if rule:
+
+                        node = Rule()
+                        node.FileName = RuleFileName # used in keeping record of the winning rules.
+                        node.SetRule(rule, _GlobalMacroDict)
+                        if node.RuleContent:
+                            if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
+                                if node.RuleName in _GlobalMacroDict:
+                                    logging.warning(
+                                        "This macro name " + node.RuleName + " is already used for Macro " + str(
+                                            _GlobalMacroDict[node.RuleName]) \
+                                        + " \n but now you have: " + rule + "\n\n")
+                                    return
+                                _GlobalMacroDict.update({node.RuleName: node})
+                            else:
+                                logging.error("There should be no rule in this Global Macro File:" + rule)
+
+                        rule = ""
+                rule += "\n" + line
+
+            if rule:    #last one
+                node = Rule()
+                node.FileName = RuleFileName  # used in keeping record of the winning rules.
+                node.SetRule(rule, _GlobalMacroDict)
+                if node.RuleContent:
+                    if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
+                        if node.RuleName in _GlobalMacroDict:
+                            logging.warning(
+                                "This macro name " + node.RuleName + " is already used for Macro " + str(
+                                    _GlobalMacroDict[node.RuleName]) \
+                                + " \n but now you have: " + rule + "\n\n")
+                            return
+                        _GlobalMacroDict.update({node.RuleName: node})
+                    else:
+                        logging.error("There should be no rule in this Global Macro File:" + rule)
+
+    except UnicodeError:
+        logging.error("Error when processing " + RuleFileName)
+        logging.error("Currently rule=" + rule)
 
 # a rule is not necessary in one line.
 # if the line is end with ";", then this is one rule;
@@ -1835,7 +1896,7 @@ CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, veri
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-
+    LoadGlobalMacro('../../fsa/X/', 'GlobalMacro.txt')
     # LoadRules("../../fsa/Y/900NPy.xml")
     # LoadRules("../../fsa/Y/800VGy.txt")
     # # LoadRules("../../fsa/Y/1800VPy.xml")
@@ -1846,7 +1907,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
     #LoadRules("../../fsa/X/0defLexX.txt")
-    LoadRules("../../fsa/X/0test.txt")
+    LoadRules('../../fsa/X/', '0test.txt')
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")
