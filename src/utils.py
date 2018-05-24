@@ -41,6 +41,8 @@ FeatureID_AC = None
 FeatureID_NC = None
 FeatureID_VC = None
 
+FeatureID_comPair = None
+
 
 IMPOSSIBLESTRING = "@#$%@impossible@"
 IMPOSSIBLESTRINGLP = "@#$%@leftparenthesis@"
@@ -75,7 +77,7 @@ def InitGlobalFeatureID():
     global FeatureID_OOV,FeatureID_CM, FeatureID_NEW, FeatureID_SpaceQ, FeatureID_SpaceH, FeatureID_FULLSTRING
     global FeatureID_VB, FeatureID_Ved, FeatureID_Ving
     global FeatureID_H, FeatureID_Subj, FeatureID_Obj, FeatureID_Pred
-    global FeatureID_AC, FeatureID_NC, FeatureID_VC
+    global FeatureID_AC, FeatureID_NC, FeatureID_VC, FeatureID_comPair
     if not FeatureID_JS2:
         import FeatureOntology
         FeatureID_JS = FeatureOntology.GetFeatureID("JS")
@@ -106,6 +108,8 @@ def InitGlobalFeatureID():
         FeatureID_AC = FeatureOntology.GetFeatureID("AC")
         FeatureID_NC = FeatureOntology.GetFeatureID("NC")
         FeatureID_VC = FeatureOntology.GetFeatureID("VC")
+
+        FeatureID_comPair = FeatureOntology.GetFeatureID("comPair")
 
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
         for IDList in FeatureOntology.BarTagIDs:

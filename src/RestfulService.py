@@ -148,12 +148,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
     def Reload(self, ReloadTask):
         XLocation = '../../fsa/X/'
-        if ReloadTask.lower() == "/lexicon":
+        Reply = "Lexicon/Rule/All:"
+        if ReloadTask.lower() in ("/lexicon", "/all"):
             logging.info("Start loading lexicon...")
 
             ProcessSentence.LoadCommonLexicon(XLocation)
-            Reply = "Reloaded lexicon at " + str(datetime.now())
-        else:
+            Reply += "Reloaded lexicon at " + str(datetime.now())
+        if ReloadTask.lower() in ("/rule", "/all"):
             logging.info("Start loading rules...")
             Rules.ResetAllRules()
             ProcessSentence.WinningRuleDict.clear()
@@ -167,7 +168,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 if action.startswith("FSA"):
                     Rulefile = action[3:].strip()
                     Rules.LoadRules(XLocation, Rulefile)
-            Reply = "Reloaded rules at " + str(datetime.now())
+            Reply += "Reloaded rules at " + str(datetime.now())
 
         self.send_response(200)
         self.send_header('Content-type', "text/html; charset=utf-8")
