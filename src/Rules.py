@@ -50,8 +50,6 @@ class UnitTestNode(object):
 def ResetRules(rg):
     del rg.RuleList[:]
     rg.MacroDict = {}  # not sure which one to use yet
-    #global GlobalMacroDict
-
 
 
 def ResetAllRules():
@@ -927,7 +925,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
                                         "This macro name " + node.RuleName + " is already used for Macro " + str(
                                             _GlobalMacroDict[node.RuleName]) \
                                         + " \n but now you have: " + rule + "\n\n")
-                                    return
+                                    logging.warning("The new one will be used to replace the old one.")
                                 _GlobalMacroDict.update({node.RuleName: node})
                             else:
                                 logging.error("There should be no rule in this Global Macro File:" + rule)
@@ -946,7 +944,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
                                 "This macro name " + node.RuleName + " is already used for Macro " + str(
                                     _GlobalMacroDict[node.RuleName]) \
                                 + " \n but now you have: " + rule + "\n\n")
-                            return
+                            logging.warning("The new one will be used to replace the old one.")
                         _GlobalMacroDict.update({node.RuleName: node})
                     else:
                         logging.error("There should be no rule in this Global Macro File:" + rule)
@@ -1191,7 +1189,7 @@ def InsertRuleInList(string, rulegroup):
                 logging.warning("This macro name " + node.RuleName + " is already used for Macro " + str(
                     rulegroup.MacroDict[node.RuleName]) \
                                 + " \n but now you have: " + string + "\n\n")
-                return
+                logging.warning("The new one will be used to replace the old one.")
             rulegroup.MacroDict.update({node.RuleName: node})
         else:
             rulegroup.RuleList.append(node)
