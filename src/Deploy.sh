@@ -7,24 +7,29 @@ nluuser=nlu
 
 set -x
 
-mkdir /tmp/git
-rm -rf /tmp/git/*
-cp -r $rootdirectory/parser /tmp/git
-cp -r $rootdirectory/fsa   /tmp/git
+# if it comes with a parameter, then ignore package creation, just do the deployment.
+if [$# -eq 0]
+then
 
-cd /tmp/git/fsa
-rm -rf .git
-rm -rf test
+    mkdir /tmp/git
+    rm -rf /tmp/git/*
+    cp -r $rootdirectory/parser /tmp/git
+    cp -r $rootdirectory/fsa   /tmp/git
 
-cd /tmp/git/parser
-rm -rf compiled/*
-rm -rf log/*
-rm -rf temp/*
+    cd /tmp/git/fsa
+    rm -rf .git
+    rm -rf test
 
-cd /tmp/git
-tar --no-same-owner -zcvf parser_release.tar.gz *
+    cd /tmp/git/parser
+    rm -rf compiled/*
+    rm -rf log/*
+    rm -rf temp/*
 
-echo /tmp/git/parser_release.tar.gz is created.
+    cd /tmp/git
+    tar --no-same-owner -zcvf parser_release.tar.gz *
+
+    echo /tmp/git/parser_release.tar.gz is created.
+fi
 read -p "Press [Enter] key to start deploying. Press Ctrl-C to stop."
 
 

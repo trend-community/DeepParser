@@ -808,14 +808,14 @@ def ProcessTokens(Tokens):
 #         else:
 #             #            logging.warning("not a ligit action: " + string[index] + " in " + string )
 #             return -1
-#     return -1
+#     return -1  'abc'|'cde'|'dfs' = 'abc'|'cde'
 
 def ExpandQuotedOrs(text, sign):
     if "(" in text:
-        logging.info("Not a task in this function for expanding " + text)
+        logging.debug("Not a task in this function for expanding " + text)
         return text
     if sign in text[1:-1]:
-        logging.info("There is sign inside of text, no need to do expanding")
+        logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding")
         return text
 
     return text.replace("|", sign+"|"+sign)
