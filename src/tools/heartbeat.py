@@ -12,12 +12,12 @@ if __name__ == "__main__":
 
     servers = [x.strip() for x in Config.get("main", "servers").splitlines() if x]
     #print(str(servers))
-    extra = '/LexicalAnalyze?Sentence=%22ab%20cd%22'
+    link_extra = Config.get("main", "link_extra")
     for i in  range(len(servers)):
         starttime = current_milli_time()
         try:
             logging.debug("start:")
-            ret = requests.get(servers[i] + extra)
+            ret = requests.get(servers[i] + link_extra)
             if 100 < ret.status_code < 400:
                 logging.info("[SERVER " + servers[i] + "][TIME] " + str(current_milli_time() - starttime) )
             else:
