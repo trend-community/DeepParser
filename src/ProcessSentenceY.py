@@ -1,8 +1,8 @@
-import traceback
+import traceback, copy
 import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
-#from threading import Thread
+from threading import Thread
 from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
 from utils import *
 import utils
@@ -379,7 +379,6 @@ def LexicalAnalyzeTask( SubSentence, schema):
     # print("after ApplyLexiconToNodes" + OutputStringTokens_oneliner(NodeList))
 
     PrepareJSandJM(NodeList)
-    #Lexicon.LexiconoQoCLookup(NodeList)
 
     WinningRules = DynamicPipeline(NodeList, schema)
         # t = Thread(target=Cache.WriteSentenceDB, args=(SubSentence, NodeList))
@@ -435,8 +434,8 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
-        if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
+        # if Sentence in Cache.SentenceCache:
+        #     return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
 
         ResultNodeList = None
         ResultWinningRules = {}
@@ -454,10 +453,10 @@ def LexicalAnalyze(Sentence, schema = "full"):
             if WinningRules:
                 ResultWinningRules.update(WinningRules)
 
-        if schema == "full" and utils.runtype != "debug":
-            if len(Cache.SentenceCache) < utils.maxcachesize:
-                Cache.SentenceCache[Sentence] = ResultNodeList
-                Cache.WriteSentenceDB(Sentence, ResultNodeList)
+        # if schema == "full" and utils.runtype != "debug":
+        #     if len(Cache.SentenceCache) < utils.maxcachesize:
+        #         Cache.SentenceCache[Sentence] = ResultNodeList
+        #         Cache.WriteSentenceDB(Sentence, ResultNodeList)
         # if ParserConfig.get("main", "runtype").lower() == "debug":
         #     t = Thread(target=Cache.WriteWinningRules_Async, args=(Sentence, ResultWinningRules))
         #     t.start()
@@ -484,50 +483,29 @@ def LoadPipeline(PipelineLocation):
             PipeLine.append(action.strip())
 
 def LoadCommonLexicon(XLocation):
-    Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
 
-    Lexicon.LoadLexicon(XLocation + 'LexX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexY.txt')
+    Lexicon.LoadLexicon(XLocation + 'LEXICON_1.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexY-EnglishPunctuate.txt')
 
-    Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
+    Lexicon.LoadLexicon(XLocation + 'compoundY.txt', lookupSource=LexiconLookupSource.defLex)
+    Lexicon.LoadLexicon(XLocation + 'LEXICON_2.txt', lookupSource=LexiconLookupSource.defLex)
 
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
-
-    Lexicon.LoadLexicon(XLocation + 'LexX-oQcQ.txt',    lookupSource=LexiconLookupSource.oQcQ)
-
-    Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
-    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
-    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
-
-    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
+    Lexicon.LoadExtraReference(XLocation + 'CuobieziY.txt', Lexicon._LexiconCuobieziDict)
 
 def LoadCommon():
 
     InitDB()
 
     import Cache
-    Cache.LoadSentenceDB()
+    #Cache.LoadSentenceDB()
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    XLocation = '../../fsa/X/'
+    XLocation = '../../fsa/Y/'
 
     LoadCommonLexicon(XLocation)
 
-    LoadPipeline(XLocation + 'pipelineX.txt')
+    LoadPipeline(XLocation + 'pipelineY.txt')
 
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
     logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))

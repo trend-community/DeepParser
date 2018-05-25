@@ -12,6 +12,7 @@ _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
+_LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
 _LexiconSegmentDict = {}  # from main2017. used for segmentation onln. there is no feature.
 _LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
@@ -259,6 +260,7 @@ def ApplyCompositeKG(NodeList):
                 if len(CompositeKG[ID][1]) == 1:
                     logging.info("CompositeKG Winner! Only has one composite set. ")
                     node.norm = CompositeKG[ID][0]
+                    node.ApplyFeature(utils.FeatureID_comPair)
                     break
                 PassAllSets = True
                 for Set in CompositeKG[ID][1][1:]:
@@ -385,7 +387,8 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                                     node.features.update(ancestors)
 
             if newNode:
-                _LexiconDict.update({node.text: node})
+                if lookupSource != LexiconLookupSource.oQcQ:
+                    _LexiconDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.Exclude:
                     _LexiconLookupSet[lookupSource].add(node.text)
                 elif "_" in node.text:
@@ -466,6 +469,7 @@ def ApplyLexiconToNodes(NodeList):
     while node:
         ApplyLexicon(node)
         node = node.next
+
     return NodeList
 
 
@@ -641,6 +645,9 @@ def ApplyLexicon(node, lex=None):
 # Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens, lookupsource):
+    if lookupsource == LexiconLookupSource.oQcQ:
+        return _LexiconoQoCLookup(strTokens)
+
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth + 1)]
 
@@ -677,6 +684,50 @@ def LexiconLookup(strTokens, lookupsource):
                 NewNode.ApplyFeature(utils.FeatureID_External)
             NewNode.sons = []  # For lookup, eliminate the sons
             #logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
+        else:
+            i = i - 1
+
+
+def _LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
+    if lookupsource!=LexiconLookupSource.oQcQ:
+        logging.error("This is only for oQcQ source.")
+    sentenceLenth = strTokens.size
+    bestScore = [1 for _ in range(sentenceLenth + 1)]
+
+    i = 0
+
+    pi = strTokens.head
+    while pi.next:
+        i += 1
+        j = i
+        pi = pi.next
+        pj = pi
+        combinedText = pi.text.lower()
+        combinedCount = 1
+        while pj.next:
+            j += 1
+            pj = pj.next
+            if not pj.text:
+                continue
+            combinedText += pj.text.lower()
+            combinedCount += 1
+            if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
+                logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+                bestScore[j] = combinedCount
+
+    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+
+    i = strTokens.size - 1
+    while i > 0:
+        if bestScore[i] > 1:
+            FirstNodeID = i - bestScore[i] + 1
+            LastNodeID = i
+            strTokens.get(FirstNodeID-1).ApplyFeature(GetFeatureID("oBR"))
+            strTokens.get(FirstNodeID).ApplyFeature(GetFeatureID("oQ"))
+            strTokens.get(LastNodeID).ApplyFeature(GetFeatureID("cQ"))
+            strTokens.get(LastNodeID+1).ApplyFeature(GetFeatureID("cBR"))
+
+            i = i - bestScore[i]
         else:
             i = i - 1
 

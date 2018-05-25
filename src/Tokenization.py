@@ -544,7 +544,7 @@ class SentenceNode(object):
         a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
 
         if utils.FeatureID_H in self.features and propogate_features:
-            logging.info("\t\tApplying " + str(propogate_features) + " to " + str(self))
+            #logging.info("\t\tApplying " + str(propogate_features) + " to " + str(self))
             a.features.extend([FeatureOntology.GetFeatureName(f) for f in propogate_features])
             propogate_f.update(propogate_features)
 

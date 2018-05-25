@@ -7,21 +7,20 @@ bash gitpull.sh
 echo '-------------------'
 echo 'stop parser'
 # mac centos
-pid=`ps aux | grep ' RestfulService.py ' | grep -v grep | awk {'print $2'}`
+pid=`ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'}`
 if [[ ! -z $pid ]];then
     kill -9 $pid
 fi
 #ubuntu
-kill -9 $(ps aux | grep 'python3 RestfulService.py' | grep -v grep | awk {'print $2'})
+kill -9 $(ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'})
 
 
 # 2.restart  parser
 cd log
 newlog=`date +"%Y%m%dT%H%M"`
+#tar czf    log_$newlog.tar.gz *.log	#for future. not easy to search text.
 mkdir log_$newlog
-mv *.log  log_$newlog
-mv ../log_* log
-mv ../log.* log
+mv *.log log_$newlog
 
 cd ../src
 total=10
