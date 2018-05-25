@@ -242,7 +242,7 @@ def ApplyCompositeKG(NodeList):
     nodestack = set()
     #Collect all the text into a TextSet.
     while node:
-        TextSet.add(node.text)
+        TextSet.add(node.text.lower())
 
         if node.sons:
             if node.next:
@@ -255,8 +255,8 @@ def ApplyCompositeKG(NodeList):
 
     node = NodeList.head
     while node:
-        if node.text in CompositeKGSetADict:
-            for ID in CompositeKGSetADict[node.text]:
+        if node.text.lower() in CompositeKGSetADict:
+            for ID in CompositeKGSetADict[node.text.lower()]:
                 if len(CompositeKG[ID][1]) == 1:
                     logging.info("CompositeKG Winner! Only has one composite set. ")
                     node.norm = CompositeKG[ID][0]
@@ -294,9 +294,9 @@ def LoadCompositeKG(lexiconLocation):
                     KGKey, Sets = code.split("=")
                     CompositeConditions = []
                     for Set in Sets.split(":"):
-                        CompositeConditions.append([x.strip() for x in Set.split("|")])
+                        CompositeConditions.append([x.strip().lower() for x in Set.split("|")])
                     CompositeKG.append((KGKey, CompositeConditions))
-                    for A in [x.strip() for x in CompositeConditions[0]]:
+                    for A in [x for x in CompositeConditions[0]]:
                         if A not in CompositeKGSetADict:
                             CompositeKGSetADict[A] = [len(CompositeKG)-1]
                         else:
