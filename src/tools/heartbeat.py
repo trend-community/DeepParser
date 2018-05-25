@@ -7,7 +7,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 if __name__ == "__main__":
     logging.basicConfig( level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    Config = configparser.ConfigParser()
+    Config = configparser.RawConfigParser()
     Config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'heartbeat.ini'))
 
     servers = [x.strip() for x in Config.get("main", "servers").splitlines() if x]
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     for i in  range(len(servers)):
         starttime = current_milli_time()
         try:
-            logging.debug("start:")
+            logging.debug("start:" + link_extra)
             ret = requests.get(servers[i] + link_extra)
             if 100 < ret.status_code < 400:
                 logging.info("[SERVER " + servers[i] + "][TIME] " + str(current_milli_time() - starttime) )
