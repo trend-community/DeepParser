@@ -175,6 +175,7 @@ class SentenceLinkedList:
         NewNode.sons = sons
         NewNode.StartOffset = startnode.StartOffset
         NewNode.EndOffset = endnode.EndOffset
+        Lexicon.ApplyWordLengthFeature(NewNode)
         return NewNode, startnode, endnode
 
     def combine(self, start, count, headindex=0):
@@ -247,7 +248,7 @@ class SentenceNode(object):
         self.prev = None
         self.sons = []
         self.UpperRelationship = ''
-        Lexicon.ApplyWordLengthFeature(self)
+        #Lexicon.ApplyWordLengthFeature(self)
         self.Head0Text = ''
         self.TempPointer = ''
         #self.FailedRuleTokens = set()
@@ -677,7 +678,7 @@ def Tokenize_CnEnMix(sentence):
             TokenList.tail.norm += t.lower()
             TokenList.tail.atom += t.lower()
             TokenList.tail.EndOffset += len(t)
-            Lexicon.ApplyWordLengthFeature(TokenList.tail)
+            #Lexicon.ApplyWordLengthFeature(TokenList.tail)
             start += len(t)
         else:
             attribute_prev = [isHanzi, isdigit, isalpha, isspace]

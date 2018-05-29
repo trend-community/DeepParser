@@ -37,8 +37,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
-                queries = dict(qc.split("=") for qc in link.query.split("&"))
-                self.LexicalAnalyze(queries)
+                try:
+                    queries = dict(qc.split("=") for qc in link.query.split("&"))
+                    self.LexicalAnalyze(queries)
+                except ValueError:
+                    logging.error("Input query is not correct: " + link.query)
+                    self.send_error(500, "Link input error.")
+                    return
             elif link.path.startswith('/GetFeatureID/'):
                 self.GetFeatureID(link.path[14:])
             elif link.path.startswith('/GetFeatureName/'):
