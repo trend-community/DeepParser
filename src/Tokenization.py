@@ -28,6 +28,8 @@ class SentenceLinkedList:
         self.size += 1
         self._setnorms()
         if self.isPureAscii and IsAscii(node.text):
+            self.isPureAscii = True
+        else:
             self.isPureAscii = False
 
     def appendnodelist(self, nodelist):    #Add to the tail
@@ -68,6 +70,8 @@ class SentenceLinkedList:
         self.size += 1
         self._setnorms()
         if self.isPureAscii and IsAscii(node.text):
+            self.isPureAscii = True
+        else:
             self.isPureAscii = False
 
     def remove(self, node):

@@ -976,7 +976,7 @@ def LoadRules(RuleFolder, RuleFileName):
         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
 
     #RuleFileName = os.path.basename(RuleLocation)
-    logging.debug("Start Loading Rule " + RuleLocation)
+    logging.info("Start Loading Rule " + RuleLocation)
     rulegroup = RuleGroup(RuleFileName)
 
     if RuleFileOlderThanDB(RuleFileName):
@@ -1014,6 +1014,7 @@ def LoadRules(RuleFolder, RuleFileName):
         #             unittest = UnitTestNode(RuleName, TestSentence.strip("//"))
         #             rulegroup.UnitTest.append(unittest)
 
+        RuleNum_BeforeExpand = len(rulegroup.RuleList)
         while _ExpandRuleWildCard_List(rulegroup.RuleList):
             pass
 
@@ -1035,6 +1036,8 @@ def LoadRules(RuleFolder, RuleFileName):
                 rulegroup.HashRules[norms] = r
             else:
                 rulegroup.NoHashRules.append(r)
+        RuleNum_AfterExpand = len(rulegroup.RuleList)
+        logging.info("Rules from file:" + str(RuleNum_BeforeExpand) + " \t After expanded:" + str(RuleNum_AfterExpand))
 
     #BuildIdenticalNetwork(rulegroup)
     RuleGroupDict.update({rulegroup.FileName: rulegroup})

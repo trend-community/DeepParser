@@ -305,9 +305,6 @@ def DynamicPipeline(NodeList, schema):
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
 
-        if action.startswith("MarkqOqC"):
-            pass
-
         if action == "APPLY COMPOSITE KG":
             Lexicon.ApplyCompositeKG(NodeList)
 

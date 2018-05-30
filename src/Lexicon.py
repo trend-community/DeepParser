@@ -672,7 +672,7 @@ def LexiconLookup(strTokens, lookupsource):
                 logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[j] = combinedCount
 
-    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+    #logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
     i = strTokens.size - 1
     while i > 0:
@@ -715,7 +715,7 @@ def _LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
                 logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[j] = combinedCount
 
-    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+    #logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
     i = strTokens.size - 1
     while i > 0:
