@@ -1,5 +1,4 @@
 import json
-import random
 import utils, FeatureOntology  # using the BarTags.
 
 
@@ -73,7 +72,7 @@ def orgChart(json_input, Debug):
 if __name__ == "__main__":
     m_json_input = '{"EndOffset": 7, "StartOffset": 0, "features": [], "sons": [{"EndOffset": 7, "StartOffset": 0, "features": ["space", "0", "NP", "modJJ", "loc", "locNE", "inanim", "n", "npr", "XP", "Politics", "phy", "country", "countryNE", "place", "N", "natural", "earth"], "text": "中华人民共和国"}], "text": "中华人民共和国"}'
     # showGraph(json_input)
-    m_dataRows = orgChart(m_json_input)
+    m_dataRows = orgChart(m_json_input, Debug=True)
     print(str(m_dataRows))
 
 
