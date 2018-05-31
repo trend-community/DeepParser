@@ -240,7 +240,10 @@ class SentenceLinkedList:
 
 
 class SentenceNode(object):
+    idCounter = 0
     def __init__(self, word):
+        SentenceNode.idCounter += 1
+        self.ID = SentenceNode.idCounter
         self.text = word
         self.norm = word.lower()
         self.atom = word.lower()
