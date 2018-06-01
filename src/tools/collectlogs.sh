@@ -15,7 +15,7 @@ mkdir 138 > nil 2>&1
 rsync root@172.18.189.138:/export/App/git/parser/log/*.log 138/
 
 
-for f in $(find .   -name *.log)
+for f in $(find .   -name "restful*.log")
 do
   grep COMPLETE $f |grep -v "ab cd" | awk '{F=substr($0,1,10)".log";print >> F;close(F)}'
 done
