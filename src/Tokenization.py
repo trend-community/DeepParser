@@ -294,7 +294,7 @@ class SentenceNode(object):
             if self.UpperRelationship == SYM_PAIR_HEAD[0]:
                 return SYM_PAIR_HEAD[1] + BarFeature + ' '
             elif self.UpperRelationship:
-                return BarFeature + SYM_HYPHEN + self.UpperRelationship + ' '
+                return self.UpperRelationship + SYM_HYPHEN + BarFeature + ' '
             else:
                 return BarFeature + ' '
         return ''  
@@ -308,13 +308,13 @@ class SentenceNode(object):
                 for f in self.features if f not in FeatureOntology.NotShowList]
         BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
         if not self.UpperRelationship and BarFeature:                       # syntactic role is empty
-            ret = BarFeature 
+            ret = BarFeature  + "/" 
         elif self.UpperRelationship == SYM_PAIR_HEAD[0] and BarFeature:     # syntactic role is HEAD
-            ret = SYM_PAIR_HEAD[1] + BarFeature
+            ret = SYM_PAIR_HEAD[1] + BarFeature  + "/" 
         elif self.UpperRelationship == SYM_PAIR_HEAD[0] and not BarFeature:
             ret = SYM_PAIR_HEAD[1]
         elif self.UpperRelationship != SYM_PAIR_HEAD[0] and BarFeature:     # syntactic role is not HEAD
-            ret = BarFeature + SYM_HYPHEN + self.UpperRelationship 
+            ret = self.UpperRelationship + "/" # SYM_HYPHEN + BarFeature # Wei note: POS left out.  For leaf label POS, we do not really care in tracking as long as Relationship is right.
         elif self.UpperRelationship != SYM_PAIR_HEAD[0] and not BarFeature:
             ret = self.UpperRelationship
         return ret
@@ -341,7 +341,7 @@ class SentenceNode(object):
             output = utils.format_parenthesis(output.strip(), layer_counter)
             layer_counter += 1
         else:
-            output += self.get_leaf_label() # add syntactic role label OR head label 
+            output += self.get_leaf_label() # + " " # add syntactic role label OR head label 
             output += self.text
         return output.strip(), layer_counter
 
