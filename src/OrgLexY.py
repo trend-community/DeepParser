@@ -16,7 +16,7 @@ _compoundYCommentdict = {}
 _lexicon2dict = {}
 _lexicon2Commentdict = {}
 
-YDirLocation  = os.path.dirname(os.path.realpath(__file__))
+YDirLocation = os.path.dirname(os.path.realpath(__file__))
 tmpDirPath = YDirLocation + '/../../fsa/tmp/'
 if not os.path.exists(tmpDirPath):
     os.mkdir(tmpDirPath)
