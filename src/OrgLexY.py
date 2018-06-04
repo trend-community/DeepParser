@@ -152,9 +152,9 @@ def searchAtomOrNorm(atom):
     return None
 
 
-def enrichFeature():
-    for word in _lexYdict.keys():
-        node = _lexYdict.get(word)
+def enrichFeature(_lexDict):
+    for word in _lexDict.keys():
+        node = _lexDict.get(word)
         atom = node.atom
         norm = node.norm
         feature = node.features
@@ -164,13 +164,13 @@ def enrichFeature():
             if atomfeatures:
                 temp = feature.union(atomfeatures)
                 node.features = temp
-                _lexYdict.update({word: node})
+                _lexDict.update({word: node})
         elif norm != word:
             normfeatures = searchAtomOrNorm(norm)
             if normfeatures:
                 temp = feature.union(normfeatures)
                 node.features = temp
-                _lexYdict.update({word: node})
+                _lexDict.update({word: node})
 
 
 def printNewLex(newloc, _lexDict,_CommentDict):
@@ -206,7 +206,8 @@ if __name__ == "__main__":
         LoadLex(_lexLocationList[i], _lexCommentList[i], _lexDictList[i])
 
     # deal with feature enrichment
-    enrichFeature()
+    for i in range(0, len(_lexDictList)):
+        enrichFeature( _lexDictList[i])
 
     # compare the corresponding lexicons of same level
     compareLex(_lexYdict,_lexicon1dict)
