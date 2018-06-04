@@ -1,9 +1,8 @@
 # Organize lexY and LEXICON_1
 # Organize compound_Y and LEXICON_2
-import os
 from Lexicon import *
+import os
 from shutil import copyfile
-
 _lexYdict = {}
 _lexYCommentdict = {}
 _lexicon1dict = {}
@@ -15,6 +14,9 @@ _compoundYdict = {}
 _compoundYCommentdict = {}
 _lexicon2dict = {}
 _lexicon2Commentdict = {}
+
+_FeatureNotCopy = set()
+_MissingStem = set()
 
 YDirLocation = os.path.dirname(os.path.realpath(__file__))
 tmpDirPath = YDirLocation + '/../../fsa/tmp/'
@@ -29,6 +31,8 @@ compoundYLocation = YDirLocation + '/../../fsa/Y/compoundY.txt'
 tmpCompound = tmpDirPath + 'compoundYCopy.txt'
 lexicon2Location = YDirLocation + '/../../fsa/Y/LEXICON_2.txt'
 tmpLexicon2 = tmpDirPath + 'Lexicon2Copy.txt'
+
+paraFeatureNotCopy = YDirLocation + "/../../fsa/Y/FeatureNotCopy.txt"
 
 _lexLocationList = [lexYLocation, lexicon1Location, compoundYLocation, lexicon2Location]
 _lexDictList = [_lexYdict, _lexicon1dict, _compoundYdict, _lexicon2dict]
@@ -135,20 +139,31 @@ def compareLex(_LexiconDict1,_LexiconDict2):
         del _LexiconDict2[word]
 
 
-def searchAtomOrNorm(atom):
-    if atom in _lexYdict.keys():
-        features = _lexYdict.get(atom).features
-        return features
-    if atom in _lexicon1dict.keys():
-        features = _lexicon1dict.get(atom).features
-        return features
-    if atom in _compoundYdict.keys():
-        features = _compoundYdict.get(atom).features
-        return features
-    if atom in _lexicon2dict.keys():
-        features = _lexicon2dict.get(atom).features
-        return features
 
+def FeatureNotCopy():
+    with open(paraFeatureNotCopy, encoding='utf-8') as file:
+        for line in file:
+            if line.startswith("//"):
+                continue
+            line = line.strip()
+            line = GetFeatureID(line)
+            _FeatureNotCopy.add(line)
+
+
+def GetStemFeatures(word):
+    for d in _lexDictList:
+        if word in d.keys():
+            node = d.get(word)
+            features = node.features
+            copyFeatures = features.copy()
+
+            for ID in features:
+                if ID in _FeatureNotCopy:
+                    copyFeatures.remove(ID)
+                    # print ("feature not copy " + GetFeatureName(ID))
+            return copyFeatures
+    logging.debug("stem does not exist" + word)
+    _MissingStem.add(word)
     return None
 
 
@@ -160,13 +175,13 @@ def enrichFeature(_lexDict):
         feature = node.features
 
         if atom != word:
-            atomfeatures = searchAtomOrNorm(atom)
+            atomfeatures = GetStemFeatures(atom)
             if atomfeatures:
                 temp = feature.union(atomfeatures)
                 node.features = temp
                 _lexDict.update({word: node})
         elif norm != word:
-            normfeatures = searchAtomOrNorm(norm)
+            normfeatures = GetStemFeatures(norm)
             if normfeatures:
                 temp = feature.union(normfeatures)
                 node.features = temp
@@ -204,6 +219,8 @@ if __name__ == "__main__":
     # load each lexicon file and store into NODE structure
     for i in range(0, len(_lexDictList)):
         LoadLex(_lexLocationList[i], _lexCommentList[i], _lexDictList[i])
+
+    FeatureNotCopy()
 
     # deal with feature enrichment
     for i in range(0, len(_lexDictList)):
