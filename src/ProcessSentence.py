@@ -484,6 +484,7 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
 
     Lexicon.LoadLexicon(XLocation + 'LexX.txt')
+    Lexicon.LoadLexicon(XLocation + 'LexX-zidian.txt')
     Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
     Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
