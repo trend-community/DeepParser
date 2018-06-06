@@ -13,6 +13,8 @@ do
   grep INFO $f | awk '{F=substr($0,1,10)".log";print >> F;close(F)}'
 done
 
+rm -rf *.folder
+
 # sort and de-duplicate
 echo "start sorting, de-duplicating, and getQEResponse."
 for f in *.log
