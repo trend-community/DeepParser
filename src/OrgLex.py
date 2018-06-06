@@ -2,6 +2,8 @@ import shutil
 from Lexicon import *
 from shutil import copyfile
 
+_CommentDictZidian = {}
+_LexiconDictZidian = {}
 _CommentDictB = {}
 _LexiconDictB = {}
 _CommentDictP = {}
@@ -32,7 +34,7 @@ _LexiconDictLexPlusX = {}
 
 _MissingStem = set()
 _FeatureNotCopy = set()
-dictList = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
+dictList = [_LexiconDictZidian, _LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -75,6 +77,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                     node.norm = feature.strip('\'')
                 elif re.match('^/.*/$', feature):
                     node.atom = feature.strip('/')
+
                 elif re.search(u'[\u4e00-\u9fff]', feature):
                     node.norm = feature
                     continue
@@ -149,11 +152,13 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
             if _LexiconDict1 == _LexiconDictDefX:
                 # logging.debug("def " + word)
                 _LexiconDictDefPlusX.update({word:node1})
-            else:
+            elif _LexiconDict1 == _LexiconDictLexX:
                 # logging.debug("lexx " + word)
                 _LexiconDictLexPlusX.update({word:node1})
 
             removeWord.add(word)
+
+    # print (len(removeWord))
 
     for word in removeWord:
         if not lexXandOther:
@@ -650,7 +655,7 @@ def printMissingStem():
 
 def printSummaryLex():
     loc = dir_path + '/../../fsa/X/summaryLex.txt'
-    summary = [_LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP,_LexiconDictPlus, _LexiconDictDefPlus]
+    summary = [_LexiconDictZidian, _LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP,_LexiconDictPlus, _LexiconDictDefPlus]
     with open(loc, 'w', encoding='utf-8') as file:
         for dict in summary:
             if dict == _LexiconDictLexX:
@@ -696,6 +701,18 @@ def printSenti(posloc, negloc):
                 if nCID in features:
                     file.write(word + "\n")
 
+#
+# def OrgDanzi():
+#     for i in range(1, len(dictList)):
+#     #     danziSet = set()
+#         dict = dictList[i]
+#         for word in dict.keys():
+#             if len(word) == 1:
+#                 node = dict.get(word)
+#                 print ("words that will be put in danzi " + word)
+#                 _LexiconDictZidian.update({word: node})
+#                 # danziSet.add(word)
+
 
 
 
@@ -709,21 +726,39 @@ if __name__ == "__main__":
         exit(0)
     command = sys.argv[0]
 
+    paraZidian = dir_path + '/../../fsa/X/LexX-zidian.txt'
+    paraZidianTemp = dir_path + '/../../temp/X/LexX-zidian_copy.txt'
+
+    # if not os.path.exists(paraZidian):
+    #     with open(paraZidian,'w'): pass
+    #
+    #
+    if not os.path.exists(dir_path + '/../../temp/X/'):
+        os.mkdir(dir_path + '/../../temp/' )
+        os.mkdir(dir_path + '/../../temp/X/')
+
     paraB = dir_path + '/../../fsa/X/LexX-brandX.txt'
     paraBTemp = dir_path + '/../../temp/X/LexX-brandX_copy.txt'
+
     paraP = dir_path + '/../../fsa/X/LexX-perX.txt'
     paraPTemp = dir_path + '/../../temp/X/LexX-perX_copy.txt'
+
     paraL = dir_path + '/../../fsa/X/LexX-locX.txt'
     paraLTemp = dir_path + '/../../temp/X/LexX-locX_copy.txt'
+
     paraI = dir_path + '/../../fsa/X/LexX-idiomX.txt'
     paraITemp = dir_path + '/../../temp/X/LexX-idiomX_copy.txt'
+
     paraI4 = dir_path + '/../../fsa/X/LexX-idiomXdomain.txt'
     paraI4Temp = dir_path + '/../../temp/X/LexX-idiomXdomain_copy.txt'
+
     paraLex = dir_path + '/../../fsa/X/LexX.txt'
     paraLexTemp = dir_path + '/../../temp/X/LexX_copy.txt'
+
     paraDef = dir_path + '/../../fsa/X/defLexX.txt'
     paraDefTemp = dir_path + '/../../temp/X/defLexX_copy.txt'
 
+    copyfile(paraZidian, paraZidianTemp)
     copyfile(paraB, paraBTemp)
     copyfile(paraP, paraPTemp)
     copyfile(paraL, paraLTemp)
@@ -736,6 +771,7 @@ if __name__ == "__main__":
     LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
     FeatureNotCopy()
 
+    OrganizeLex(paraZidian, _CommentDictZidian, _LexiconDictZidian)
     OrganizeLex(paraB, _CommentDictB, _LexiconDictB)
     OrganizeLex(paraP, _CommentDictP, _LexiconDictP)
     OrganizeLex(paraL, _CommentDictL, _LexiconDictL)
@@ -744,6 +780,7 @@ if __name__ == "__main__":
     OrganizeLex(paraLex, _CommentDictLexX, _LexiconDictLexX)
     OrganizeLex(paraDef, _CommentDictDefX, _LexiconDictDefX)
 
+    _LexiconDictZidian = EnrichFeature(_LexiconDictZidian)
     _LexiconDictI = EnrichFeature(_LexiconDictI)
     _LexiconDictB = EnrichFeature(_LexiconDictB)
     _LexiconDictP = EnrichFeature(_LexiconDictP)
@@ -754,6 +791,11 @@ if __name__ == "__main__":
 
 
     AlignMain()
+    compareLex(_LexiconDictZidian, _LexiconDictB)
+    compareLex(_LexiconDictZidian, _LexiconDictP)
+    compareLex(_LexiconDictZidian, _LexiconDictL)
+    compareLex(_LexiconDictZidian, _LexiconDictI)
+    compareLex(_LexiconDictZidian, _LexiconDictI4)
 
     compareLex(_LexiconDictB, _LexiconDictP)
     compareLex(_LexiconDictB, _LexiconDictL)
@@ -774,8 +816,10 @@ if __name__ == "__main__":
     compareLex(_LexiconDictLexX, _LexiconDictL, lexXandOther=True)
     compareLex(_LexiconDictLexX, _LexiconDictI, lexXandOther=True)
     compareLex(_LexiconDictLexX, _LexiconDictI4, lexXandOther=True)
-    #
-    #
+
+    compareLex(_LexiconDictZidian, _LexiconDictLexX, lexXandOther=True)
+
+
     compareLex(_LexiconDictDefX, _LexiconDictB, lexXandOther=True)
     compareLex(_LexiconDictDefX, _LexiconDictP, lexXandOther=True)
     compareLex(_LexiconDictDefX, _LexiconDictL, lexXandOther=True)
@@ -783,12 +827,17 @@ if __name__ == "__main__":
     compareLex(_LexiconDictDefX, _LexiconDictI4, lexXandOther=True)
     compareLex(_LexiconDictDefX, _LexiconDictLexX, lexXandOther=True)
 
+    compareLex(_LexiconDictZidian, _LexiconDictDefX, lexXandOther=True)
+
     _LexiconDictDefXOrig = _LexiconDictDefX.copy()
     _LexiconDictLexXOrig = _LexiconDictLexX.copy()
 
     AddDefandLexX()
 
     FeaturesMorethanFour()
+
+    printNewLex(_CommentDictZidian, _LexiconDictZidian, paraZidian)
+
     printNewLex(_CommentDictB, _LexiconDictB, paraB)
 
     printNewLex(_CommentDictP, _LexiconDictP, paraP)
