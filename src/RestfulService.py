@@ -116,6 +116,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 orgdata = Graphviz.orgChart(output_json, Debug=Debug)
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
+                orgdata = Graphviz.dag(nodes)
+                chart = chart.replace("[[[DAGDATA]]]", str(orgdata))
+
                 if Debug:
                     winningrulestring = ""
                     if winningrules:

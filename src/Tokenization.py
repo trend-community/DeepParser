@@ -212,6 +212,7 @@ class SentenceLinkedList:
             endnode.next.prev = NewNode
         else:
             self.tail = NewNode
+        endnode.next = None
 
         self.size = self.size - count + 1
         self._setnorms()
