@@ -85,8 +85,11 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                     featureID = GetFeatureID(feature)
 
                     if featureID == -1:
-                        logging.debug("Missing Feature: " + feature)
-                        node.missingfeature += "\\" + feature
+                        logging.info("Missing Feature: " + feature)
+                        if not feature.startswith("\\"):
+                            node.missingfeature += "\\" + feature
+                        else:
+                            node.missingfeature = feature
 
                     node.features.add(featureID)
                     ontologynode = SearchFeatureOntology(featureID)
