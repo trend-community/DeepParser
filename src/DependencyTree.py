@@ -128,10 +128,11 @@ class DependencyTree:
         for subgraph in self.subgraphs:
             output += "\t" + str(subgraph) + "\n"
 
-        output += self.dagre_d3()
+        output += "digraph output:\n"
+        output += self.digraph()
         return output
 
-    def dagre_d3(self):
+    def digraph(self):
         output = "{"
         for node in self.nodes:
             output +=  "{} [label=\"{}\"];\n".format(node, self.nodes[node].text)

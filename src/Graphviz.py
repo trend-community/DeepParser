@@ -69,11 +69,11 @@ def orgChart(json_input, Debug):
     return dataRows
 
 
-def dag(nodes):
+def digraph(nodes):
     import DependencyTree
     x = DependencyTree.DependencyTree()
     x.transform(nodes)
-    return x.dagre_d3()
+    return x.digraph()
 
 
 if __name__ == "__main__":
