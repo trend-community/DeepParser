@@ -35,11 +35,11 @@ class DependencyTree:
         if root.text == '':
             root = root.next
         _subgraphs = []
+        # Collect all the leaf nodes into self.nodes.
         while root != nodelist.tail:
             #each "root" has a tree, independent from others.
             node = root
             nodestack = set()
-            # Collect all the leaf nodes into self.nodes.
             while node:
                 if node.sons:
                     if node.next:
@@ -65,6 +65,7 @@ class DependencyTree:
             self.roots.append(root.ID)
             root = root.next
 
+        #filling up the subgraphs.
         while _subgraphs:
             subgraph = _subgraphs.pop()
             node = subgraph.startnode
@@ -107,6 +108,7 @@ class DependencyTree:
                         self.roots[i] = _subgraph.head
 
         # now process the non-leaf, non-H points.
+        # copy information to self.graph
         for subgraph in self.subgraphs:
             for relation in subgraph.leaves:
                 if relation[0] not in self.nodes:
