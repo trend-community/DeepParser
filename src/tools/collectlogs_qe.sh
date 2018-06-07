@@ -1,4 +1,5 @@
 #!/bin/bash
+# contact: tianbing.lin@jd.com
 
 echo "start extracting."
 for a in `ls -1 *.tar.gz`;  do mkdir $a.folder; gzip -dc $a | tar  xf  - -C $a.folder; done
