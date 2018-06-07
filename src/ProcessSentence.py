@@ -309,7 +309,7 @@ def DynamicPipeline(NodeList, schema):
         #     Lexicon.ApplyCompositeKG(NodeList)
 
         if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
-            lookupSourceName = action[6:].strip()
+            lookupSourceName = action[6:action.index(":")].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
@@ -614,7 +614,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "讲真客服是好的，服务也是好的"
+    target = "最近工作忙于是就在网上下单一体式咯。"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
