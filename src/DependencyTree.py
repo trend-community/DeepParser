@@ -2,13 +2,14 @@
 #    some of the graph can be cyclic.
 # so it is required to have "root".
 
-import jsonpickle
+import jsonpickle, copy
 import utils    #for the Feature_...
 #from utils import *
+import Lexicon
 
 class SubGraph: #only used in initial transform.
     def __init__(self, node):
-        self.head = -1
+        self.headID = -1
         self.leaves = []
         self.startnode = node
 
@@ -16,13 +17,12 @@ class SubGraph: #only used in initial transform.
     def __str__(self):
         output = "{"
         for relation in self.leaves:
-            output += str(relation[0]) + "-" + relation[1] + "->" + str(self.head) + "; "
+            output += str(relation[0]) + "-" + relation[1] + "->" + str(self.headID) + "; "
         output += "}" + self.startnode.text
         return output
 
 
 class DependencyTree:
-
     def __init__(self):
         self.nodes = {}
         self.roots = []
@@ -47,7 +47,7 @@ class DependencyTree:
                     node = node.sons[0]
                 else:
                     if utils.FeatureID_JM not in node.features:
-                        self.nodes.update({node.ID : node})      # add leaf node to self.nodes.
+                        self.nodes.update({node.ID : copy.copy(node)})      # add leaf node to self.nodes.
 
                     if node == root:    #if node is in root level, don't get next.
                         if nodestack:
@@ -87,7 +87,9 @@ class DependencyTree:
                             subnode = subnode.sons[0]
                     else:
                         if utils.FeatureID_H in subnode.features:
-                            subgraph.head = subnode.ID
+                            subgraph.headID = subnode.ID
+                            subnode.features.update(subgraph.startnode.features)
+                            #Lexicon.ApplyWordLengthFeature(subnode)
                         else:
                             if utils.FeatureID_JM not in subnode.features:
                                 subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
@@ -95,7 +97,7 @@ class DependencyTree:
                         if subnode == None and nodestack:
                             subnode = nodestack.pop()
             else:
-                subgraph.head = subgraph.startnode.ID
+                subgraph.headID = subgraph.startnode.ID
 
             self.subgraphs.append(subgraph)     # add to the permanent subgraphs
 
@@ -104,7 +106,7 @@ class DependencyTree:
             if self.roots[i] not in self.nodes:
                 for _subgraph in self.subgraphs:
                     if _subgraph.startnode.ID == self.roots[i]:
-                        self.roots[i] = _subgraph.head
+                        self.roots[i] = _subgraph.headID
 
         # now process the non-leaf, non-H points.
         # copy information to self.graph
@@ -113,10 +115,10 @@ class DependencyTree:
                 if relation[0] not in self.nodes:
                     for _subgraph in self.subgraphs:
                         if _subgraph.startnode.ID == relation[0]:
-                            relation[0] = _subgraph.head
-                            print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.head))
+                            relation[0] = _subgraph.headID
+                            print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.headID))
                             break
-                self.graph.append([str(relation[0]), relation[1], str(subgraph.head)])
+                self.graph.append([str(relation[0]), relation[1], str(subgraph.headID)])
 
     def __str__(self):
         output = "Nodes:\n"
@@ -136,7 +138,7 @@ class DependencyTree:
     def digraph(self):
         output = "{"
         for node in self.nodes:
-            output +=  "{} [label=\"{}\"];\n".format(node, self.nodes[node].text)
+            output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, self.nodes[node].text, self.nodes[node].GetFeatures())
 
         output += "//edges:\n"
         for edge in self.graph:
