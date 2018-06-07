@@ -309,7 +309,7 @@ def DynamicPipeline(NodeList, schema):
         #     Lexicon.ApplyCompositeKG(NodeList)
 
         if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
-            lookupSourceName = action[6:].strip()
+            lookupSourceName = action[6:action.index(":")].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
@@ -562,6 +562,20 @@ def LoadCommon():
                 if encode:
                     Lexicon.LoadExtraReference(XLocation + encode, Lexicon._LexiconFantiDict)
 
+        if action.startswith("Lookup Main:"):
+            Mainfile = action[action.index(":")+1:].strip().split(",")
+            for main in Mainfile:
+                main = main.strip()
+                if main:
+                    Lexicon.LoadMainLexicon(XLocation + main)
+
+        if action.startswith("Lookup SegmentSlash:"):
+            Slashfile = action[action.index(":")+1:].strip().split(",")
+            for slash in Slashfile:
+                slash = slash.strip()
+                if slash:
+                    Lexicon.LoadSegmentSlash(XLocation + slash)
+
         if action.startswith("Lookup Lex:"):
             Lexfile = action[action.index(":")+1:].strip().split(",")
             for lex in Lexfile:
@@ -614,7 +628,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "讲真客服是好的，服务也是好的"
+    target = "声音扩展-*外接音箱"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
