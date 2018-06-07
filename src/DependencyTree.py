@@ -89,7 +89,7 @@ class DependencyTree:
                         if utils.FeatureID_H in subnode.features:
                             subgraph.headID = subnode.ID
                             subnode.features.update(subgraph.startnode.features)
-                            #Lexicon.ApplyWordLengthFeature(subnode)
+                            Lexicon.ApplyWordLengthFeature(subnode)
                         else:
                             if utils.FeatureID_JM not in subnode.features:
                                 subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
