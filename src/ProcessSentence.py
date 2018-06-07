@@ -299,7 +299,16 @@ def DynamicPipeline(NodeList, schema):
             # if NodeList:
             #     logging.debug(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-        if action.startswith("lookup"):
+        # if action.startswith("lookup"):
+        #     lookupSourceName = action[6:].strip()
+        #     for x in LexiconLookupSource:
+        #         if x.name == lookupSourceName:
+        #             Lexicon.LexiconLookup(NodeList, x)
+        #
+        # if action == "APPLY COMPOSITE KG":
+        #     Lexicon.ApplyCompositeKG(NodeList)
+
+        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
             lookupSourceName = action[6:].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
@@ -523,17 +532,48 @@ def LoadCommon():
 
     XLocation = '../../fsa/X/'
 
-    LoadCommonLexicon(XLocation)
+    # LoadCommonLexicon(XLocation)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
     logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
+    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
+    Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
 
     for action in PipeLine:
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             Rules.LoadRules(XLocation, Rulefile)
+
+        if action.startswith("Lookup Lex:"):
+            Lexfile = action[action.index(":")+1:].strip().split(",")
+            for lex in Lexfile:
+                lex = lex.strip()
+                Lexicon.LoadLexicon(XLocation + lex)
+
+
+        if action.startswith("Lookup defLex:"):
+            Compoundfile = action[action.index(":")+1:].strip().split(",")
+            for compound in Compoundfile:
+                compound = compound.strip()
+                Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.defLex)
+
+        if action.startswith("Lookup External:"):
+            Externalfile = action[action.index(":")+1:].strip().split(",")
+            for external in Externalfile:
+                external = external.strip()
+                Lexicon.LoadLexicon(XLocation + 'Q/lexicon/' + external,lookupSource=LexiconLookupSource.External)
+
+        if action.startswith("Lookup oQcQ:"):
+            oQoCfile = action[action.index(":")+1:].strip().split(",")
+            for oQoC in oQoCfile:
+                oQoC = oQoC.strip()
+                Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
+
+    Lexicon.LoadSegmentLexicon()
+    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
+    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
     CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
@@ -554,7 +594,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "a, b c"
+    target = "讲真客服是好的，服务也是好的"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
