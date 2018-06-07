@@ -166,18 +166,43 @@ def OutputLexiconFile(FolderLocation):
 #             _LexiconBlacklist.append(pattern)
 
 
-def LoadSegmentLexicon():
+def LoadMainLexicon(lexiconLocation):
     global _LexiconSegmentDict
-
-    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
-    lexiconLocation = XLocation + 'main2017.txt'
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             word, _ = SeparateComment(line)
             if word:
                 word = word.replace("/", "").lower()
                 _LexiconSegmentDict[word] = 0.9
-    logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
+    # logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+
+
+def LoadSegmentSlash(lexiconLocation):
+    global _LexiconSegmentDict
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if word:
+                combinedword = word.replace("/", "")
+                _LexiconSegmentSlashDict[combinedword] = word
+                if combinedword not in _LexiconSegmentDict:
+                    _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
+
+
+def LoadSegmentLexicon():
+    global _LexiconSegmentDict
+
+    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
+    # lexiconLocation = XLocation + 'main2017.txt'
+    # with open(lexiconLocation, encoding='utf-8') as dictionary:
+    #     for line in dictionary:
+    #         word, _ = SeparateComment(line)
+    #         if word:
+    #             word = word.replace("/", "").lower()
+    #             _LexiconSegmentDict[word] = 0.9
+    # logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
     if _LexiconDict:
         for word in _LexiconDict:
@@ -200,15 +225,15 @@ def LoadSegmentLexicon():
     #    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
-    lexiconLocation = XLocation + 'SegmentSlash.txt'
-    with open(lexiconLocation, encoding='utf-8') as dictionary:
-        for line in dictionary:
-            word, _ = SeparateComment(line)
-            if word:
-                combinedword = word.replace("/", "")
-                _LexiconSegmentSlashDict[combinedword] = word
-                if combinedword not in _LexiconSegmentDict:
-                    _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+    # lexiconLocation = XLocation + 'SegmentSlash.txt'
+    # with open(lexiconLocation, encoding='utf-8') as dictionary:
+    #     for line in dictionary:
+    #         word, _ = SeparateComment(line)
+    #         if word:
+    #             combinedword = word.replace("/", "")
+    #             _LexiconSegmentSlashDict[combinedword] = word
+    #             if combinedword not in _LexiconSegmentDict:
+    #                 _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
 
     for word in list(_LexiconSegmentDict):
         if IsAlphaLetter(word):
