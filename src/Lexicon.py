@@ -254,6 +254,8 @@ def LoadExtraReference(lexiconLocation, thedict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             code, _ = SeparateComment(line)
+            if "：" in code:
+                code = code.replace("：", ":")
             if code and ":" in code:
                 goodword, badwords = code.split(":", 1)
                 for badword in badwords.split():
@@ -318,6 +320,9 @@ def LoadCompositeKG(lexiconLocation):
                 try:
                     KGKey, Sets = code.split("=")
                     CompositeConditions = []
+                    if "：" in Sets:
+                        Sets = Sets.replace("：", ":")
+
                     for Set in Sets.split(":"):
                         CompositeConditions.append([x.strip().lower() for x in Set.split("|")])
                     CompositeKG.append((KGKey, CompositeConditions))
@@ -357,6 +362,10 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             code, comment = SeparateComment(line)
 
             code = code.replace("\:", utils.IMPOSSIBLESTRING)
+
+            # convert Chinese colon to English colon
+            if "：" in code:
+                code = code.replace("：", ":")
             blocks = [x.strip() for x in re.split(":", code) if x]
             if not blocks:
                 continue
