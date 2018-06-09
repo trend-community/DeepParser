@@ -1,6 +1,7 @@
 import json
 import utils, FeatureOntology  # using the BarTags.
-
+import Lexicon
+from utils import *
 
 class Node(object):
     counter = 1
@@ -22,6 +23,7 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
     node.endOffset = inputnode['EndOffset']
     node.startOffset = inputnode['StartOffset']
     node.features = inputnode['features']
+
     # if not hasattr(CreateFlatTree, "nodeid"):
     #     CreateFlatTree.nodeid = 1
     # else:
@@ -41,9 +43,24 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
     return
 
 
+def GetSourceLexicon(text):
+    source = None
+    # print (len(Lexicon._LexiconLookupSet[LexiconLookupSource.Exclude]))
+
+    if text in Lexicon._LexiconDict and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.defLex]) and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.External]) and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.oQcQ]):
+        source = "exclude"
+    if text in Lexicon._LexiconLookupSet[LexiconLookupSource.defLex]:
+        source = "defLex"
+    elif text in Lexicon._LexiconLookupSet[LexiconLookupSource.External]:
+        source = "external"
+    elif text in Lexicon._LexiconLookupSet[LexiconLookupSource.oQcQ]:
+        source = "oQcQ"
+    return source
+
 def orgChart(json_input, Debug):
     nodelist = []
     decoded = json.loads(json_input)
+    print (decoded)
     CreateFlatTree(decoded, nodelist, Debug)
     dataRows = []
     for node in nodelist:
@@ -52,7 +69,13 @@ def orgChart(json_input, Debug):
             manager = str(node.parentid)
         else:
             manager = ''    # root. parentid is zero
-        tooltip = ' '.join(node.features) + '\n' + " StartOffset: " + str(node.startOffset) + " EndOffset:" + str(node.endOffset)
+
+        source = GetSourceLexicon(node.text)
+        if source:
+            tooltip = ' '.join(node.features) + '\n' + " StartOffset: " + str(node.startOffset) + " EndOffset:" + str(node.endOffset) + "\nFrom: " + source
+        else:
+            tooltip = ' '.join(node.features) + '\n' + " StartOffset: " + str(node.startOffset) + " EndOffset:" + str(
+                node.endOffset)
         f = node.text
         f_extra = ""
         BarFeature = utils.LastItemIn2DArray(node.features, FeatureOntology.BarTags)
