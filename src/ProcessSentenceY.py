@@ -491,6 +491,8 @@ def LoadCommonLexicon(XLocation):
     Lexicon.LoadLexicon(XLocation + 'compoundY.txt', lookupSource=LexiconLookupSource.defLex)
     Lexicon.LoadLexicon(XLocation + 'LEXICON_2.txt', lookupSource=LexiconLookupSource.defLex)
 
+    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
+
     # Lexicon.LoadExtraReference(XLocation + 'CuobieziY.txt', Lexicon._LexiconCuobieziDict)
 
 def LoadCommon():
