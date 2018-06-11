@@ -434,12 +434,24 @@ class Rule:
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
-                if   "++" in c1.Action or ("^^." in c2.Action and "^^." in c3.Action ):
+                if   "^^." in c2.Action and "^^." in c3.Action :
                     c.HeadOffset = tokencount_2
-                elif "++" in c2.Action or ("^^." in c1.Action and "^^." in c3.Action ):
+                    c1.Action += " H ^.H "  # add Head for the chunk.
+                elif "^^." in c1.Action and "^^." in c3.Action :
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                elif "++" in c3.Action or ("^^." in c1.Action and "^^." in c2.Action ):
+                    c2.Action += " H ^.H "  # add Head for the chunk.
+                elif "^^." in c1.Action and "^^." in c2.Action :
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
+                    c3.Action += " H ^.H "  # add Head for the chunk.
+                elif    "++" in c1.Action :
+                    c.HeadOffset = tokencount_2
+                    c1.Action += " H ^.H "  # add Head for the chunk.
+                elif  "++" in c2.Action :
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                    c2.Action += " H ^.H "  # add Head for the chunk.
+                elif  "++" in c3.Action :
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
+                    c3.Action += " H ^.H "  # add Head for the chunk.
                 else:
                     if not self.RuleName.startswith("CleanRule"):
                         logging.error(" There is no ++ for any tokens.  Can't determined the head!")
@@ -447,6 +459,7 @@ class Rule:
                         logging.error(str(self))
                     #logging.error(jsonpickle.dumps(c))
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
+                    c3.Action += " H ^.H "  # add Head for the chunk.
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
@@ -479,10 +492,18 @@ class Rule:
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
-                if   "^^." in c2.Action or "++" in c1.Action:
+                if   "^^." in c2.Action: #or "++" in c1.Action:
                     c.HeadOffset = tokencount_2
-                elif "^^." in c1.Action or "++" in c2.Action:
+                    c1.Action += " H ^.H "  # add Head for the chunk.
+                elif "^^." in c1.Action: #or "++" in c2.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                    c2.Action += " H ^.H "  # add Head for the chunk.
+                elif  "++" in c1.Action:
+                    c.HeadOffset = tokencount_2
+                    c1.Action += " H ^.H "  # add Head for the chunk.
+                elif "++" in c2.Action:
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                    c2.Action += " H ^.H "  # add Head for the chunk.
                 else:
                     if not self.RuleName.startswith("CleanRule"):
                         logging.warning(" There is no ^^. or ++ for both tokens.  Can't determined the head!")
@@ -490,6 +511,7 @@ class Rule:
                         logging.warning(str(self))
                         #logging.warning(jsonpickle.dumps(c))
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
+                    c2.Action += " H ^.H "  # add Head for the chunk.
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
@@ -522,6 +544,7 @@ class Rule:
                         logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
                         logging.debug(str(self))
                         logging.debug(jsonpickle.dumps(c))
+                c1.Action += " H ^.H "  # add Head for the head token.
 
             c.StringChunkLength = c.Length - VirtualTokenNum
             self.Chunks.append(c)
@@ -600,7 +623,7 @@ class Rule:
                     c.HeadConfidence = 2
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif "^." not in token.action:
+            elif "^.H" in token.action or "^." not in token.action:
                 if c.HeadConfidence < 2:
                     c.HeadConfidence =  1
                     c.HeadOffset = HeadOffset + i

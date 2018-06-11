@@ -489,39 +489,6 @@ def LoadPipeline(PipelineLocation):
                 continue
             PipeLine.append(action.strip())
 
-def LoadCommonLexicon(XLocation):
-    Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
-
-    Lexicon.LoadLexicon(XLocation + 'LexX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-zidian.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
-
-    Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
-
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
-
-    Lexicon.LoadLexicon(XLocation + 'LexX-oQcQ.txt',    lookupSource=LexiconLookupSource.oQcQ)
-
-    Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
-    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
-    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
-
-    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
-
 def LoadCommon():
 
     InitDB()
@@ -531,8 +498,6 @@ def LoadCommon():
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
     XLocation = '../../fsa/X/'
-
-    # LoadCommonLexicon(XLocation)
 
     LoadPipeline(XLocation + 'pipelineX.txt')
 
@@ -583,7 +548,6 @@ def LoadCommon():
                 if lex:
                     Lexicon.LoadLexicon(XLocation + lex)
 
-
         if action.startswith("Lookup defLex:"):
             Compoundfile = action[action.index(":")+1:].strip().split(",")
             for compound in Compoundfile:
@@ -605,16 +569,7 @@ def LoadCommon():
                 if oQoC:
                     Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
 
-        if action.startswith("Lookup oQcQ:"):
-            oQoCfile = action[action.index(":")+1:].strip().split(",")
-            for oQoC in oQoCfile:
-                oQoC = oQoC.strip()
-                if oQoC:
-                    Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
-
-
     Lexicon.LoadSegmentLexicon()
-
 
     CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
