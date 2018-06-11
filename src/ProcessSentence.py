@@ -605,6 +605,13 @@ def LoadCommon():
                 if oQoC:
                     Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
 
+        if action.startswith("Lookup oQcQ:"):
+            oQoCfile = action[action.index(":")+1:].strip().split(",")
+            for oQoC in oQoCfile:
+                oQoC = oQoC.strip()
+                if oQoC:
+                    Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
+
 
     Lexicon.LoadSegmentLexicon()
 

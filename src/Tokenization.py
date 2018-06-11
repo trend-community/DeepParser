@@ -502,18 +502,16 @@ class SentenceNode(object):
         #self.signature = pickle.dumps({"w": self.text, "f": self.features})
 
     def GetFeatures(self):
-        featureString = ""
-        for feature in sorted(self.features):
+        featureList = []
+        for feature in self.features:
             if feature in FeatureOntology.NotShowList:
                 continue
             f = FeatureOntology.GetFeatureName(feature)
             if f:
-                if featureString:
-                    featureString += ","
-                featureString += f
+                featureList.append(f)
             else:
                 logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
-        return featureString
+        return ",".join(sorted(featureList))
 
     def CleanOutput(self, KeepOriginFeature=False):
         a = JsonClass()
@@ -522,10 +520,10 @@ class SentenceNode(object):
             a.norm = self.norm
         if self.atom != self.text:
             a.atom = self.atom
-        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList])
 
         if KeepOriginFeature:
-            a.features = [FeatureOntology.GetFeatureName(f) for f in self.features ]
+            a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features ])
             if self.Head0Text:
                 a.Head0Text = self.Head0Text
 

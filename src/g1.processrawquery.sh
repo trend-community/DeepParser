@@ -16,7 +16,7 @@
 # new steps, Oct 30.
 #Usage:
 #bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder systemlexiconfilelocation
-#  nohup sh g1.processrawquery.sh /nlpengine.dev/queries/data/g0.raw.txt ../data/g0.P /nlpengine.dev/fsa/X/Q /nlpengine.dev/fsa/X/ &
+#  nohup sh g1.processrawquery.sh /nlpengine/queries/data/g0.raw.txt ../data/g0.P /nlpengine/fsa/X/Q /nlpengine/fsa/X/ &
 
 set -x
 

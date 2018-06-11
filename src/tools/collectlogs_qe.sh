@@ -8,7 +8,7 @@ mkdir backup
 mv *.tar.gz backup
 
 echo "start separating and merging files according to timestamp."
-for f in $(find .   -name "info*.log" -o -name "catalina.out")
+for f in $(find .   -name "info*.log" -o -name "catalina.out" -o -name "catalina*.log")
 do
    echo "   merging $f "
   grep INFO $f | awk '{F=substr($0,1,10)".log";print >> F;close(F)}'
@@ -22,8 +22,12 @@ for f in *.log
 do
   echo "    processing $f"
   sort -u $f   > $f.sorted.txt
-  grep getQEResponse $f.sorted.txt > $f.getQEResponse.txt
+  grep getQEResponse $f.sorted.txt | grep -v jshLT_JSH_session > $f.getQEResponse.txt
   cut -d' ' -f 3 $f.getQEResponse.txt | cut -d':' -f 1-2  > $f.time.txt
+  grep "Has answer" $f.sorted.txt | rev| cut -d' ' -f 1 | rev  > $f.hasanswer.id
+  grep -xF -f $f.hasanswer.id $f > $f.hasanswer.log
+  cp $f.sorted.txt $f
+
 done
 
 wc 2018-06-*.getQEResponse.txt
