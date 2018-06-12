@@ -446,6 +446,7 @@ class SentenceNode(object):
                 if Action[-2] == "+":
                     if Action[-3] == "+":    #"+++"
                         self.ApplyFeature(utils.FeatureID_0)
+                        self.sons=[]        #remove the sons of this new comobined node.
                     else:                   #"X++":
                         #this should be in a chunk, only apply to the new node
                         HasBartagAction = True
