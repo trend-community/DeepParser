@@ -495,17 +495,33 @@ def LoadCommon():
 
     import Cache
     Cache.LoadSentenceDB()
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    XLocation = '../../fsa/X/'
+    PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+    XLocation = os.path.dirname(PipeLineLocation) + "/"
 
-    LoadPipeline(XLocation + 'pipelineX.txt')
+    FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
+    GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+    PunctuatefileLocation = os.path.join(XLocation,"../Y/LexY-EnglishPunctuate.txt")
+
+
+    FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
+
+    # XLocation = '../../fsa/X/'
+
+
+    LoadPipeline(PipeLineLocation)
 
     logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
     logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
-    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
 
-    Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+    RuleFolder = os.path.dirname(GlobalmacroLocation)
+    RuleFileName = os.path.basename(GlobalmacroLocation)
+    Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
+
+    if "/X/" in XLocation:
+        Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+    else:
+        Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
         if action.startswith("FSA"):

@@ -923,6 +923,8 @@ def ProcessMacro(ruleContent, MacroDict):
 
 def LoadGlobalMacro(RuleFolder, RuleFileName):
     RuleLocation = os.path.join(RuleFolder, RuleFileName)
+    
+
     if RuleLocation.startswith("."):
         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
 
