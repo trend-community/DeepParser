@@ -139,12 +139,21 @@ class DependencyTree:
         output += self.digraph()
         return output
 
+    def onlyOneRelation(self, startnode):
+        relation = 0
+        for edge in self.graph:
+            if startnode == edge[2]:
+                relation = relation + 1
+
+        if relation == 1:
+            return True
+        return False
 
     def getDanzi(self, node):
 
         for edge in self.graph:
             if str(edge[2]) == str(node):
-                if  len(self.nodes[node].text) == 1 and len(self.nodes[int(edge[0])].text) == 1:
+                if  len(self.nodes[node].text) == 1 and len(self.nodes[int(edge[0])].text) == 1 and self.onlyOneRelation(edge[2]):
                     if self.nodes[int(edge[0])].StartOffset < self.nodes[node].StartOffset:
                         parent =  self.nodes[int(edge[0])].text + self.nodes[node].text
                     else:
@@ -181,7 +190,7 @@ if __name__ == "__main__":
     import ProcessSentence
     ProcessSentence.LoadCommon()
 
-    Sentence = "本来上台领奖的人是张三"
+    Sentence = "为什么是他不是她"
     nodelist, _ = ProcessSentence.LexicalAnalyze(Sentence)
 
     nodelist_str = jsonpickle.dumps(nodelist)
