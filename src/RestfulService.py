@@ -241,7 +241,8 @@ if __name__ == "__main__":
     else:
         startport = int(utils.ParserConfig.get("website", "port"))
 
-    print("Running in port " + str(startport))
+    print("Running in port {}".format(startport))
+    logging.warning("Running in port {}".format(startport))
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
     if utils.runtype == "release":
         httpd.request_queue_size = 0

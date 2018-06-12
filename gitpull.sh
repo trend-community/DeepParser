@@ -17,7 +17,10 @@ cd ..
 
 cd ../parser
 #git checkout .
+git stash
 git pull
+git stash apply
+
 python3 -m compileall -b src
 #find . -name "*.py" -delete
 # echo -n " " >> revision.txt
