@@ -222,11 +222,13 @@ class SentenceLinkedList:
         return NewNode
 
     def root(self, KeepOrigin=False):
+
         if self.size < 1:
             logging.warning("A root with size 0!")
             return None
         length = self.size
         start = 0
+
         if not KeepOrigin:
             start = 1       #remove the first token (JS)
             if self.tail.text == "":
@@ -699,6 +701,17 @@ def Tokenize_CnEnMix(sentence):
             start += len(t)
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+    PuncSet = {"，", "：","（", "）","／","＜","＞","？","；","“","”","【","】"
+        ,"｛","｝","｜","～","！","＠","＃","＄","％","＆","＊","－","＝","＿","＋"
+        ,"。。。","。。。。","。。。。。","。。。。。。","．","《","》","。","、","•","丶","￥","@@","——","————"}
+    p = TokenList.head
+    while p:
+        if p.text.isspace():
+            if p.prev and p.prev.text in PuncSet:
+                TokenList.remove(p)
+        p = p.next
+    print (TokenList)
+
     return TokenList
 
 #

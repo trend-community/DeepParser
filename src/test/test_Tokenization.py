@@ -4,7 +4,7 @@ from Tokenization import *
 from FeatureOntology import LoadFeatureOntology
 XLocation = '../../fsa/X/'
 LoadFeatureOntology('../../fsa/Y/feature.txt')
-Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt', lookupSource=LexiconLookupSource.Exclude)
+Lexicon.LoadLexicon(XLocation + 'LexX.txt', lookupSource=LexiconLookupSource.Exclude)
 Lexicon.LoadSegmentLexicon()
 
 
@@ -234,7 +234,7 @@ class TokenizationTest(unittest.TestCase):
 
         t = "a    beautiful 巴西 brazil 在   north  america"  # 2/2
         NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
         self.assertEqual(7, NodeList.size)
         self.assertEqual(NodeList.get(2).text, "巴西")
         self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(0).features)
@@ -245,13 +245,20 @@ class TokenizationTest(unittest.TestCase):
 
         t = "a 中文 之间的    空格"  # 2/2
         NodeList = Tokenize(t)
-        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        # print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
         self.assertEqual(7, NodeList.size)
         self.assertEqual(NodeList.get(2).text, " ")
         self.assertEqual(NodeList.get(3).text, "之间")
 
         self.assertTrue(utils.FeatureID_SpaceH in NodeList.get(0).features)
         self.assertTrue(utils.FeatureID_SpaceQ in NodeList.get(1).features)
+
+        t = "有什么）  不同吗"  # 2/2
+        NodeList = Tokenize(t)
+        # import ProcessSentence
+        # ProcessSentence.PrepareJSandJM(NodeList)
+        print(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+        self.assertEqual(6, NodeList.size)
 
     def test4G(self):
         t = "4G网络"
