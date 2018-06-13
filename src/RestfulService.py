@@ -40,7 +40,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 try:
                     queries = dict(qc.split("=") for qc in link.query.split("&"))
                     if "Key" not in queries or queries["Key"] not in KeyWhiteList:
-                        self.send_error(550, "Key Error. Please visit NLP team for authorization key")
+                        self.send_error(550, "Key Error. Please visit NLP team for an authorization key")
                     else:
                         self.LexicalAnalyze(queries)
                 except ValueError:
