@@ -120,7 +120,7 @@ class DependencyTree:
                     for _subgraph in self.subgraphs:
                         if _subgraph.startnode.ID == relation[0]:
                             relation[0] = _subgraph.headID
-                            print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.headID))
+                            #print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.headID))
                             break
                 self.graph.append([str(relation[0]), relation[1], str(subgraph.headID)])
 

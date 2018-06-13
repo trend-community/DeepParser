@@ -46,13 +46,20 @@ if __name__ == "__main__":
         print("Unit Test file " + args.inputfile + " does not exist.")
         exit(0)
 
+    key = ''
+    try:
+        key = ParserConfig.get("client", "key")
+    except :
+        logging.error("Please provide legitimate authentication key in config.ini.")
+
+
 
     #logging.info("Start processing sentences")
-    extra = "?type=" + args.type
+    extra = "?Type={}&Key={}".format(args.type, key)
     if args.schema:
-        extra += "&schema=" + args.schema
+        extra += "&Schema=" + args.schema
     if args.action:
-        extra += "&action=" + args.action
+        extra += "&Action=" + args.action
 
     #Simple version, not multi-thread
     # with open(args.inputfile, encoding="utf-8") as RuleFile:
@@ -104,6 +111,6 @@ if __name__ == "__main__":
 
     for sentence in UnitTest:
         if sentence in Result:
-            print(Result[sentence]  + '\t' + sentence)
+            print(Result[sentence]  )
         else:
             print("Failed: " + sentence )

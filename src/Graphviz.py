@@ -60,7 +60,7 @@ def GetSourceLexicon(text):
 def orgChart(json_input, Debug):
     nodelist = []
     decoded = json.loads(json_input)
-    print (decoded)
+    #print (decoded)
     CreateFlatTree(decoded, nodelist, Debug)
     dataRows = []
     for node in nodelist:

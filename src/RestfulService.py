@@ -39,7 +39,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             if link.path == '/LexicalAnalyze':
                 try:
                     queries = dict(qc.split("=") for qc in link.query.split("&"))
-                    self.LexicalAnalyze(queries)
+                    if "Key" not in queries or queries["Key"] not in KeyWhiteList:
+                        self.send_error(550, "Key Error. Please visit NLP team for authorization key")
+                    else:
+                        self.LexicalAnalyze(queries)
                 except ValueError:
                     logging.error("Input query is not correct: " + link.query)
                     self.send_error(500, "Link input error.")
@@ -86,7 +89,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             Sentence = Sentence[1:-1]
         # else:
         #     return "Quote your sentence in double quotes please"
-        logging.info("[START] " + Sentence)
+        logging.info("[START] [{}]\t{}".format(queries["Key"], Sentence) )
         starttime = current_milli_time()
 
         nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence, schema)
@@ -138,8 +141,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', output_type + " charset=utf-8")
                 self.end_headers()
                 self.wfile.write(output_text.encode("utf-8"))
-                logging.info("[COMPLETE] " + Sentence)
-                logging.info("[TIME] " + str(current_milli_time()-starttime))
+                logging.info("[COMPLETE] [{}]\t{}".format(queries["Key"], Sentence) )
+                logging.info("[TIME] {}".format(current_milli_time()-starttime))
             except Exception as e:
                 logging.error(e)
                 self.send_error(500, "Error in processing")
@@ -207,11 +210,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
 
 def init():
-    global charttemplate
+    global charttemplate, KeyWhiteList
     global MAXQUERYSENTENCELENGTH
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s][%(process)d : %(thread)d] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
@@ -222,6 +225,8 @@ def init():
         MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
     except (KeyError, NoOptionError):
         MAXQUERYSENTENCELENGTH = 100
+
+    KeyWhiteList = [x.split("#", 1)[0].strip() for x in utils.ParserConfig.get("main", "keylist").splitlines() if x]
     #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
