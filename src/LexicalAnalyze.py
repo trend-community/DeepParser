@@ -43,6 +43,8 @@ def ProcessFile(FileName):
             print(nodes.root().CleanOutput().toJSON() + '\t' + TestSentence)
         elif  args.type == 'simple':
             print(OutputStringTokens_oneliner(nodes, NoFeature=True) + '\t' + TestSentence)
+        elif args.type == "sentiment":
+            print (OutputStringTokens_onelinerSA(nodes))
         else:   #simpleEx
             print(OutputStringTokens_oneliner_ex(nodes) + '\t' + TestSentence)
 
@@ -56,7 +58,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--type", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx'])
+    parser.add_argument("--type", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx','sentiment'])
     parser.add_argument("--winningrules")
     parser.add_argument("--extra")
 

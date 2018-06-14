@@ -772,7 +772,7 @@ def ProcessTokens(Tokens):
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
-        pointerSubtreeMatch = re.search("\[(\^(.+) )", node.word, re.DOTALL)    # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(.+?) )", node.word, re.DOTALL)    # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
@@ -1926,7 +1926,7 @@ CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, veri
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    LoadGlobalMacro('../../fsa/X/', 'GlobalMacro.txt')
+    LoadGlobalMacro('../../fsa/Y/', 'GlobalMacro.txt')
     # LoadRules("../../fsa/Y/900NPy.xml")
     # LoadRules("../../fsa/Y/800VGy.txt")
     # # LoadRules("../../fsa/Y/1800VPy.xml")
