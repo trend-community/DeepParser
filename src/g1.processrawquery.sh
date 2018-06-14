@@ -46,7 +46,7 @@ do
     python3 g1.sent.py  "$f" "$outputfile" $2 $3/temp/SystemLexicon.txt $3/temp/SystemLexicon_defLex.txt
 
     newlexiconname="$3/lexicon/CleanLexicon_$filename"
-    grep -va "<" $outputfile | grep -Fxv -f $3/temp/SystemLexicon.txt > $newlexiconname &
+    grep -va "<" $outputfile | grep -Fxv -f $3/temp/SystemLexicon.txt | grep -Fxv -f $3/temp/SystemLexicon_defLex.txt> $newlexiconname &
 
     newrulename="$3/rule/CleanRule_$filename"
     echo "CleanRule_$filename ==  // $filename \n" > $newrulename
