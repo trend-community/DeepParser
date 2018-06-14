@@ -368,6 +368,35 @@ class SentenceNode(object):
                 output += ":" + featureString + ";"
         return output.strip()
 
+    def onelinerSA(self):
+        output = ""
+        TargetFeature = "Target"
+        ProFeature = "Pro"
+        ConFeature = "Con"
+        PosEmo = "PosEmo"
+        NegEmo = "NegEmo"
+
+        featureString = self.GetFeatures()
+        if TargetFeature in featureString:
+            output += self.text + "/" + TargetFeature + " "
+        elif ProFeature in featureString:
+            output += self.text + "/" + ProFeature + " "
+        elif ConFeature in featureString:
+            output += self.text + "/" + ConFeature + " "
+        elif PosEmo in featureString:
+            output += self.text + "/" + PosEmo + " "
+        elif NegEmo in featureString:
+            output += self.text + "/" + NegEmo + " "
+        else:
+            if self.sons:
+                for son in self.sons:
+                    output += son.onelinerSA() + " "
+            else:
+                output += self.text
+
+        return output.strip()
+
+
 
     def oneliner_merge(self, layer_counter):
         """
@@ -710,7 +739,7 @@ def Tokenize_CnEnMix(sentence):
             if p.prev and p.prev.text in PuncSet:
                 TokenList.remove(p)
         p = p.next
-    print (TokenList)
+    # print (TokenList)
 
     return TokenList
 

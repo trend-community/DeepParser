@@ -306,6 +306,17 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
     return output
 
 
+
+def OutputStringTokens_onelinerSA(strTokenList):
+    output = ""
+    node = strTokenList.head
+    while node:
+        if output:
+            output += " "
+        output += node.onelinerSA()
+        node = node.next
+    return output
+
 def OutputStringTokens_oneliner_merge(strTokenList):
     output = ""
     node = strTokenList.head
