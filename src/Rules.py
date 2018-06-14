@@ -772,7 +772,7 @@ def ProcessTokens(Tokens):
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
-        pointerSubtreeMatch = re.search("\[(\^(.+) )", node.word, re.DOTALL)    # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(.+?) )", node.word, re.DOTALL)    # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
