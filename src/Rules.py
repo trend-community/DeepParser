@@ -133,7 +133,10 @@ class RuleToken(object):
         for _ in range(self.StartChunk):
             output += "<"
         output += self.pointer
-        t = "[" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
+        if self.SubtreePointer:
+            t = "[^" + self.SubtreePointer + "=" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
+        else:
+            t = "[" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
         if self.action:
             t = t.replace("]", ":" + self.action + "]")
         output += t
