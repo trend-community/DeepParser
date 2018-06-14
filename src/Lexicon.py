@@ -366,10 +366,11 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             # convert Chinese colon to English colon
             if "ChinesePunctuate" in lexiconLocation and "：" in code:
                 code = code.replace("：", ":")
-            if "::" in code :
-                code = code.replace("::",":")
             if  ":::" in code:
                 code = code.replace(":::", ":")
+            if "::" in code :
+                code = code.replace("::",":")
+
             blocks = [x.strip() for x in re.split(":", code) if x]
             if not blocks:
                 continue
