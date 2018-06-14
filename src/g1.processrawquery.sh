@@ -39,6 +39,7 @@ cat $4/AllLexicon.txt | awk -F: '{print $1}' > $3/temp/SystemLexicon.txt
 cat $4/defLexX.txt | awk -F: '{print $1}' > $3/temp/SystemLexicon_defLex.txt
 cat $4/defPlus.txt | awk -F: '{print $1}' >> $3/temp/SystemLexicon_defLex.txt
 for f in $3/temp/gram*
+do
   echo "processing $f ..."
     filename=$(basename "$f")
     outputfile="$3/temp/Mixed_$filename"

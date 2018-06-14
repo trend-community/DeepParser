@@ -47,7 +47,8 @@ def RemoveKnownLex(newfile):
                     worddict[w] = 1 + worddict.get(w, 0)
 
     for w in sorted(worddict, key=worddict.get, reverse=True):
-        print("{}\t{}".format(w, worddict[w]))
+        if worddict[w] > 3:
+            print("{}\t{}".format(w, worddict[w]))
 
 
 def _help():
