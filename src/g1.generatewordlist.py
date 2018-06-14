@@ -3,7 +3,6 @@
 # command line
 #==============================================================
 import argparse
-import pickle
 import viterbi1
 
 parser = argparse.ArgumentParser()
@@ -16,7 +15,7 @@ viterbi1.LoadDictFromPickle(args.dict)
 #==============================================================
 # unigram tokenization
 #==============================================================
-import codecs, re
+import codecs
 
 for i in range(1, 15):
     fout = codecs.open(args.output+"/gram_" + str(i) + "_list.txt", 'wb', encoding='utf-8')
