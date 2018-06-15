@@ -37,15 +37,18 @@ def LoadLexicon(dictpath):
 def RemoveKnownLex(newfile):
     worddict = {}
     with open(newfile) as f:
-        for line in f:
-            for lex in _LexiconSet:
-                if lex in line:
-                    line = line.replace(lex, " ")
-            wordlist = line.split()
-            for w in wordlist:
-                if len(w) >= 2 and not IsAscii(w):  #ignore one character word.
-                    worddict[w] = 1 + worddict.get(w, 0)
-
+        content = f.read()
+    logging.info("File read.")
+    content = content.replace("（", "(").replace("）", ")")
+    for lex in _LexiconSet:
+        if lex in content:
+            content = content.replace(lex, " ")
+    logging.info("Lexicon replaced")
+    wordlist = content.split()
+    for w in wordlist:
+        if len(w) >= 2 and not IsAscii(w):  #ignore one character word.
+            worddict[w] = 1 + worddict.get(w, 0)
+    logging.info("Word Dict constructed.")
     for w in sorted(worddict, key=worddict.get, reverse=True):
         if worddict[w] > 3:
             print("{}\t{}".format(w, worddict[w]))
