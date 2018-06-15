@@ -138,7 +138,7 @@ class RuleToken(object):
         else:
             t = "[" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
         if self.action:
-            t = t.replace("]", ":" + self.action + "]")
+            t = t.replace("]", ":action:" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])

@@ -375,24 +375,34 @@ class SentenceNode(object):
         ConFeature = "Con"
         PosEmo = "PosEmo"
         NegEmo = "NegEmo"
+        Key = "Kee"
+        Value = "Value"
 
         featureString = self.GetFeatures()
+        if self.sons:
+            for son in self.sons:
+                output += son.onelinerSA() + " "
+
+
+        if not self.sons:
+            output += self.text
+
         if TargetFeature in featureString:
-            output += self.text + "/" + TargetFeature + " "
+            output +=  "/" + TargetFeature + " "
         elif ProFeature in featureString:
-            output += self.text + "/" + ProFeature + " "
+            output += "/" + ProFeature + " "
         elif ConFeature in featureString:
-            output += self.text + "/" + ConFeature + " "
+            output +=  "/" + ConFeature + " "
         elif PosEmo in featureString:
-            output += self.text + "/" + PosEmo + " "
+            output +=  "/" + PosEmo + " "
         elif NegEmo in featureString:
-            output += self.text + "/" + NegEmo + " "
-        else:
-            if self.sons:
-                for son in self.sons:
-                    output += son.onelinerSA() + " "
-            else:
-                output += self.text
+            output +=  "/" + NegEmo + " "
+        elif Key in featureString:
+            output +=  "/" + Key + " "
+        elif Value in featureString:
+            output +=  "/" + Value + " "
+
+
 
         return output.strip()
 
