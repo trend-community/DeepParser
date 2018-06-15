@@ -39,13 +39,14 @@ cat $4/AllLexicon.txt | awk -F: '{print $1}' > $3/temp/SystemLexicon.txt
 cat $4/defLexX.txt | awk -F: '{print $1}' > $3/temp/SystemLexicon_defLex.txt
 cat $4/defPlus.txt | awk -F: '{print $1}' >> $3/temp/SystemLexicon_defLex.txt
 for f in $3/temp/gram*
+do
   echo "processing $f ..."
     filename=$(basename "$f")
     outputfile="$3/temp/Mixed_$filename"
     python3 g1.sent.py  "$f" "$outputfile" $2 $3/temp/SystemLexicon.txt $3/temp/SystemLexicon_defLex.txt
 
     newlexiconname="$3/lexicon/CleanLexicon_$filename"
-    grep -va "<" $outputfile | grep -Fxv -f $3/temp/SystemLexicon.txt > $newlexiconname &
+    grep -va "<" $outputfile | grep -Fxv -f $3/temp/SystemLexicon.txt | grep -Fxv -f $3/temp/SystemLexicon_defLex.txt> $newlexiconname &
 
     newrulename="$3/rule/CleanRule_$filename"
     echo "CleanRule_$filename ==  // $filename \n" > $newrulename
@@ -62,18 +63,19 @@ grep -Fxv -f ../../fsa/extra/Qlexcommon.txt ../../fsa/extra/QbyLexBlacklist.txt 
 
 
 #Create oQcQ file.
-rm $3/temp/RulesoQcQ.txt
+rm $3/temp/LexX-oQcQ.all.txt
 for f in $3/rule/CleanRule*
 do
-    sed 's/\/\/.*//' $f  >> $3/temp/RulesoQcQ.txt		#remove comment
+    sed 's/\/\/.*//' $f  >> $3/temp/LexX-oQcQ.all.txt		#remove comment
 done
 
-perl -pi -e 's/\:.*?\]/]/g'     $3/temp/RulesoQcQ.txt
-perl -pi -e 's/[<>\/\?]//g'     $3/temp/RulesoQcQ.txt
-perl -pi -e 's/\^\.?[A-Za-z]*//g'   $3/temp/RulesoQcQ.txt
-perl -pi -e   "s/[\[\]\']//g"   $3/temp/RulesoQcQ.txt
-perl -pi -e  's/ /\//g'         $3/temp/RulesoQcQ.txt
+perl -pi -e 's/\:.*?\]/]/g'     $3/temp/LexX-oQcQ.all.txt
+perl -pi -e 's/[<>\/\?]//g'     $3/temp/LexX-oQcQ.all.txt
+perl -pi -e 's/\^\.?[A-Za-z]*//g'   $3/temp/LexX-oQcQ.all.txt
+perl -pi -e   "s/[\[\]\']//g"   $3/temp/LexX-oQcQ.all.txt
+perl -pi -e  's/ /\//g'         $3/temp/LexX-oQcQ.all.txt
 #remove openning and trailing slash
-perl -pi -e  's/^\/+//g'        $3/temp/RulesoQcQ.txt
-perl -pi -e   's/\/+$//'        $3/temp/RulesoQcQ.txt
-
+perl -pi -e  's/^\/+//g'        $3/temp/LexX-oQcQ.all.txt
+perl -pi -e   's/\/+$//'        $3/temp/LexX-oQcQ.all.txt
+grep -E  ".{10,}" $3/temp/LexX-oQcQ.all.txt > $3/temp/LexX-oQcQ.10.txt
+grep -v -E  ".{10,}" $3/temp/LexX-oQcQ.all.txt > $3/temp/LexX-oQcQ.txt
