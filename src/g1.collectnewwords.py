@@ -29,7 +29,7 @@ def LoadLexicon(dictpath):
             blocks = [x.strip() for x in re.split(":", line.split("//", 1)[0]) if x]
             if not blocks:
                 continue
-            if len(blocks[0]) >= 2:
+            if len(blocks[0]) >= 2:     #ignore one character word.
                 _LexiconSet.add(blocks[0])
     print("After loading from lexicon, size={}".format( len(_LexiconSet)))
 
@@ -38,12 +38,12 @@ def RemoveKnownLex(newfile):
     worddict = {}
     with open(newfile) as f:
         for line in f:
-            for l in _LexiconSet:
-                if l in line:
-                    line = line.replace(l, " ")
+            for lex in _LexiconSet:
+                if lex in line:
+                    line = line.replace(lex, " ")
             wordlist = line.split()
             for w in wordlist:
-                if len(w) >= 2 and not IsAscii(w): #ignore one character word.
+                if len(w) >= 2 and not IsAscii(w):  #ignore one character word.
                     worddict[w] = 1 + worddict.get(w, 0)
 
     for w in sorted(worddict, key=worddict.get, reverse=True):
