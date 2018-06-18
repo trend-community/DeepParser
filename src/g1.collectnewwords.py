@@ -78,7 +78,7 @@ def RemoveKnownLex(newfile):
 
     logging.info("Word Dict constructed. Found {} new words".format(len(worddict)))
     for w in sorted(worddict, key=worddict.get, reverse=True):
-        if worddict[w] > 0:
+        if worddict[w] > 3:
             print("{}\t{}".format(w, worddict[w]))
 
     logging.info("Done!")
