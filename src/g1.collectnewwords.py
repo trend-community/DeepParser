@@ -42,6 +42,10 @@ def RemoveKnownLex(newfile):
     logging.info("File read.")
     content = content.replace("（", " ").replace("）", " ").replace("【", " ").replace("】", " ")
     content = re.sub(r"[ -z]", " ", content)
+    while "   " in content:
+        content = re.sub("   ", " ", content)
+    content = re.sub("  ", " ", content)
+    logging.info("English Alphabet removed.")
     for lex in _LexiconSet:
         if lex in content:
             content = content.replace(lex, " ")
