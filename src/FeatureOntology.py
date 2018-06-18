@@ -21,7 +21,7 @@ BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC'
             ['NP'],
             ['PoP', 'PP'],
             ['VP'],
-            ['Pred'],
+            #['Pred'],  06/18/2018 suspend 'Pred' for now, may return back later
             ['CL']   ]
 BarTagIDs = []
 BarTagIDSet = set()
