@@ -379,6 +379,7 @@ class SentenceNode(object):
         Value = "Value"
 
         featureString = self.GetFeatures()
+        featureSet = featureString.split(",")
         if self.sons:
             output += "<"
             for son in self.sons:
@@ -389,19 +390,19 @@ class SentenceNode(object):
         if not self.sons:
             output = self.text
 
-        if TargetFeature in featureString:
+        if TargetFeature in featureSet:
             output +=  "/" + TargetFeature + " "
-        elif ProFeature in featureString:
+        elif ProFeature in featureSet:
             output += "/" + ProFeature + " "
-        elif ConFeature in featureString:
+        elif ConFeature in featureSet:
             output +=  "/" + ConFeature + " "
-        elif PosEmo in featureString:
+        elif PosEmo in featureSet:
             output +=  "/" + PosEmo + " "
-        elif NegEmo in featureString:
+        elif NegEmo in featureSet:
             output +=  "/" + NegEmo + " "
-        elif Key in featureString:
+        elif Key in featureSet:
             output +=  "/" + Key + " "
-        elif Value in featureString:
+        elif Value in featureSet:
             output +=  "/" + Value + " "
 
 
