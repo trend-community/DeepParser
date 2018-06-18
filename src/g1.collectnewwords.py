@@ -36,23 +36,26 @@ def LoadLexicon(dictpath):
 
 def RemoveKnownLex(newfile):
     worddict = {}
+    logging.info("Start reading file{}".format(newfile))
     with open(newfile) as f:
         content = f.read()
     logging.info("File read.")
-    content = content.replace("（", "(").replace("）", ")")
+    content = content.replace("（", " ").replace("）", " ").replace("【", " ").replace("】", " ")
+    content = re.sub(r"[ -z]", " ", content)
     for lex in _LexiconSet:
         if lex in content:
             content = content.replace(lex, " ")
-    logging.info("Lexicon replaced")
+    logging.info("Lexicon replaced.")
     wordlist = content.split()
     for w in wordlist:
         if len(w) >= 2 and not IsAscii(w):  #ignore one character word.
             worddict[w] = 1 + worddict.get(w, 0)
-    logging.info("Word Dict constructed.")
+    logging.info("Word Dict constructed. Found {} words".format(len(worddict)))
     for w in sorted(worddict, key=worddict.get, reverse=True):
         if worddict[w] > 3:
             print("{}\t{}".format(w, worddict[w]))
 
+    logging.info("Done!")
 
 def _help():
     print("python3 g1.collectnewrods.py [newword file] [lex file 1] [lex file 2] ...")
