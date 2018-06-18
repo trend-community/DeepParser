@@ -49,9 +49,8 @@ def RemoveKnownLex(newfile):
     content = re.sub("  ", " ", content)
     logging.info("English Alphabet removed.")
 
-    for lex in _LexiconSet:
-        if lex in content:
-            content = content.replace(lex, " ")
+    for lex in sorted(_LexiconSet, key=len, reverse=True):
+        content = content.replace(lex, " ")
     logging.info("Lexicon replaced.")
 
     wordlist = content.split()
@@ -66,7 +65,7 @@ def RemoveKnownLex(newfile):
                 for x in w.replace(partw, " ").split():
                     if len(x) > 1:
                         worddict[x] += worddict[w]
-                worddict[w] = -1    #being replaced by partial words
+                del worddict[w]    #being replaced by partial words
 
     #repeat to do the new partial words. assume one repeat is enough.
     for w in sorted(worddict):
@@ -79,7 +78,7 @@ def RemoveKnownLex(newfile):
 
     logging.info("Word Dict constructed. Found {} new words".format(len(worddict)))
     for w in sorted(worddict, key=worddict.get, reverse=True):
-        if worddict[w] > 3:
+        if worddict[w] > 0:
             print("{}\t{}".format(w, worddict[w]))
 
     logging.info("Done!")
