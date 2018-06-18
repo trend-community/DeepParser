@@ -2,7 +2,7 @@
 #    some of the graph can be cyclic.
 # so it is required to have "root".
 
-import jsonpickle, copy
+import jsonpickle, copy, logging
 import utils    #for the Feature_...
 #from utils import *
 import Lexicon
@@ -27,15 +27,16 @@ class SubGraph: #only used in initial transform.
 class DependencyTree:
     def __init__(self):
         self.nodes = {}
-        self.roots = []
+        self._roots = []    #only used when constructing.
         #self.graph = {}     #son ->edge->parent
-        self.subgraphs = []     #this is only used when constructing from nodelist.
+        self._subgraphs = []     #this is only used when constructing from nodelist.
         self.graph = []
+        self.root = -1
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         root = nodelist.head
-        if root.text == '':
-            root = root.next
+        if root.text == '' and utils.FeatureID_JS in root.features:
+            root = root.next        #ignore the first empty (virtual) JS node
         _subgraphs = []
         # Collect all the leaf nodes into self.nodes.
         while root != None:
@@ -65,7 +66,7 @@ class DependencyTree:
                         node = nodestack.pop()
             if not (root.text == '' and utils.FeatureID_JM in root.features):
                 _subgraphs.append(SubGraph(root))
-                self.roots.append(root.ID)
+                self._roots.append(root.ID)
             root = root.next
 
         #filling up the subgraphs.
@@ -94,7 +95,7 @@ class DependencyTree:
                             subnode.features.update(subgraph.startnode.features)
                             Lexicon.ApplyWordLengthFeature(subnode)
                         else:
-                            if utils.FeatureID_JM not in subnode.features:
+                            if not(subnode.text == '' and utils.FeatureID_JM  in subnode.features):
                                 subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
                         subnode = subnode.next
                         if subnode == None and nodestack:
@@ -102,46 +103,54 @@ class DependencyTree:
             else:
                 subgraph.headID = subgraph.startnode.ID
 
-            self.subgraphs.append(subgraph)     # add to the permanent subgraphs
+            self._subgraphs.append(subgraph)     # add to the permanent subgraphs
 
         # now set the roots, from the top node to the head.
-        for i in range(len(self.roots)):
-            if self.roots[i] not in self.nodes:
-                for _subgraph in self.subgraphs:
-                    if _subgraph.startnode.ID == self.roots[i]:
-                        self.roots[i] = _subgraph.headID
+        for i in range(len(self._roots)):
+            if self._roots[i] not in self.nodes:
+                for _subgraph in self._subgraphs:
+                    if _subgraph.startnode.ID == self._roots[i]:
+                        self._roots[i] = _subgraph.headID
 
         # now process the non-leaf, non-H points.
         # copy information to self.graph
-        for subgraph in self.subgraphs:
+        for subgraph in self._subgraphs:
             for relation in subgraph.leaves:
                 if relation[0] not in self.nodes:
-                    for _subgraph in self.subgraphs:
+                    for _subgraph in self._subgraphs:
                         if _subgraph.startnode.ID == relation[0]:
                             relation[0] = _subgraph.headID
                             #print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.headID))
                             break
                 self.graph.append([str(relation[0]), relation[1], str(subgraph.headID)])
 
-        order = sorted(self.roots, key=lambda nodeid: self.nodes[nodeid].StartOffset)
+        self._MarkNext()
+        self.root = self._roots[0]
+
+    #for multiple roots, mark "next" to make all nodes in one graph.
+    def _MarkNext(self):
+        if len(self._roots) == 1:
+            return
+
+        order = sorted(self._roots, key=lambda nodeid: self.nodes[nodeid].StartOffset)
         for i in range(1, len(order)):
             self.graph.append([order[i], "next", order[i-1]])
 
-        self.roots = []
+        self._roots = [order[0]]
 
     def __str__(self):
         output = "Nodes:\n"
         for node in self.nodes:
             output += "\t" + str(node) + ":" + self.nodes[node].text + "\n"
-        output += "Roots:\n"
-        for root in self.roots:
+        output += "_roots:\n"
+        for root in self._roots:
             output += "\t" + str(root) + ":" + self.nodes[root].text + "\n"
-        output += "subgraphs:\n"
-        for subgraph in self.subgraphs:
+        output += "_subgraphs:\n"
+        for subgraph in self._subgraphs:
             output += "\t" + str(subgraph) + "\n"
 
-        output += "digraph output:\n"
-        output += self.digraph()
+        output += "digraph output:\n{}".format(self.digraph())
+        output += "\nRoot: {}".format(self.root)
         return output
 
     def onlyOneRelation(self, startnode):
@@ -155,7 +164,6 @@ class DependencyTree:
         return False
 
     def getDanzi(self, node):
-
         for edge in self.graph:
             if str(edge[2]) == str(node):
                 if  len(self.nodes[node].text) == 1 and len(self.nodes[int(edge[0])].text) == 1 and self.onlyOneRelation(edge[2]):
@@ -169,9 +177,7 @@ class DependencyTree:
                             return parent
         return None
 
-
     def digraph(self):
-
         output = "{"
         for node in self.nodes:
             danzi = self.getDanzi(node)
@@ -188,6 +194,111 @@ class DependencyTree:
         output += "}"
         return output
 
+    def FindPointerNode(self, openID, pointers):
+        if len(pointers) <=1:
+            logging.error("Should have more than 1 pointers!")
+            return None
+        nodeID = str(openID)
+        logging.warning("pointers:{}".format(pointers))
+        for relation in pointers[1:]:
+            Found = False
+            for edge in self.graph:
+                logging.warning("Evaluation edge{} with relation {}".format(edge, relation))
+                if edge[2] == nodeID and edge[1] == relation:
+                    nodeID = edge[0]
+                    Found = True
+                    break
+
+            if Found == False:
+                return None     #Can't find the pointers.
+        logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
+        return int(nodeID)
+
+    def ApplyDagActions(self, nodeID, actinstring):
+        #self.FailedRuleTokens.clear()
+        Actions = actinstring.split()
+        #logging.debug("Word:" + self.text)
+
+        if "NEW" in Actions:
+            self.features = set()
+
+        HasBartagAction = False
+        for Action in Actions:
+            if Action == "NEW":
+                continue  # already process before.
+
+            if Action[-1] == "-":
+                if Action[0] == "^":    #Remove UpperRelationship
+                    if "." in Action:
+                        if self.UpperRelationship == Action.split(".", 1)[1][-1]:
+                            # TODO:  actually break the token. not just delattr
+                            delattr(self, "UpperRelationship")
+                            logging.warning(" TODO:  actually break the token. not just delattr Remove Relationship:" + Action)
+                    else:
+                        logging.warning("This Action is not right:" + Action)
+                    continue
+
+                FeatureID = FeatureOntology.GetFeatureID(Action.strip("-"))
+                if FeatureID in self.features:
+                    self.features.remove(FeatureID)
+                continue
+
+            if Action[-1] == "+":
+                if Action[-2] == "+":
+                    if Action[-3] == "+":    #"+++"
+                        logging.error("There should be no +++ operation in DAG.")
+                        self.ApplyFeature(utils.FeatureID_0)
+                        self.sons=[]        #remove the sons of this
+                    else:                   #"X++":
+                        #this should be in a chunk, only apply to the new node
+                        HasBartagAction = True
+                        FeatureID = FeatureOntology.GetFeatureID(Action.strip("++"))
+                        self.ApplyFeature(FeatureID)
+                else:                       #"X+"
+                    for bar0id in FeatureOntology.BarTagIDs[0]:
+                        if bar0id in self.features:
+                            self.features.remove(bar0id)
+
+                    for bar0id in [utils.FeatureID_AC, utils.FeatureID_NC, utils.FeatureID_VC]:
+                        if bar0id in self.features:
+                            self.features.remove(bar0id)
+
+                    FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
+                    self.ApplyFeature(FeatureID)
+                continue
+
+            if Action[0] == "^":
+                if "." in Action:
+                    self.UpperRelationship = Action.split(".")[-1]
+                    RelationActionID = FeatureOntology.GetFeatureID(self.UpperRelationship)
+                    if RelationActionID != -1:
+                        self.ApplyFeature(RelationActionID)
+                    else:
+                        logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
+
+                else:
+                    logging.error("The Action is wrong: It does not have dot to link to proper pointer")
+                    logging.error("  actinstring:" + actinstring)
+                    self.UpperRelationship = Action[1:]
+                continue
+
+            if Action[0] == '\'':
+                #Make the norm of the token to this key
+                self.norm = Action[1:-1]
+                continue
+            if Action[0] == '/':
+                #Make the atom of the token to this key
+                self.atom = Action[1:-1]
+                continue
+            ActionID = FeatureOntology.GetFeatureID(Action)
+            if ActionID != -1:
+                self.ApplyFeature(ActionID)
+            else:
+                logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
+
+        if HasBartagAction:     #only process bartags if there is new bar tag++
+            FeatureOntology.ProcessBarTags(self.features)
+
 
 if __name__ == "__main__":
     import FeatureOntology
@@ -196,14 +307,16 @@ if __name__ == "__main__":
     # import ProcessSentence
     # ProcessSentence.LoadCommon()
     #
-    # Sentence = "为啥是他，而不是她？"
+    # Sentence = "为什么是他不是她？"
     #
     # nodelist, _ = ProcessSentence.LexicalAnalyze(Sentence)
     #
     # nodelist_str = jsonpickle.dumps(nodelist)
     # print(nodelist_str)
 
-    Sentence = "为啥是他，而不是她？"
+    Sentence = "为什么是他不是她？"
+    nodelist_str = """{"py/object": "Tokenization.SentenceLinkedList", "get_cache": {"0": {"py/object": "Tokenization.SentenceNode", "EndOffset": 0, "Head0Text": "", "ID": 8, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [104, 105, 22]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 9, "Head0Text": "是", "ID": 15, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "为什么是他不是她？", "features": {"py/set": [2304, 2432, 1162, 2444, 272, 22, 23, 2331, 548, 2340, 550, 293, 552, 294, 554, 556, 37, 430, 175, 295, 2105, 193, 1986, 453, 1607, 1366, 102, 2279, 103, 105, 250, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 9, "Head0Text": "", "ID": 9, "StartOffset": 9, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [192, 2432, 103, 23, 102, 22]}, "next": null, "norm": "", "prev": {"py/id": 2}, "sons": [], "text": ""}, "norm": "为什么是他不是她?", "prev": {"py/id": 1}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "是", "ID": 14, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "H", "atom": "为什么是他不是她", "features": {"py/set": [2304, 2432, 1986, 453, 1607, 1162, 2444, 272, 1366, 90, 2331, 548, 2340, 550, 293, 552, 294, 554, 555, 2279, 105, 430, 250, 1064, 175, 2105, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 9, "Head0Text": "", "ID": 7, "StartOffset": 8, "TempPointer": "", "UpperRelationship": "X", "atom": "？", "features": {"py/set": [192, 193, 1, 292, 102, 103, 1162, 107, 22, 23, 542]}, "next": null, "norm": "?", "prev": {"py/id": 6}, "sons": [], "text": "？"}, "norm": "为什么是他不是她", "prev": {"py/id": 1}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 3, "Head0Text": "", "ID": 1, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "R", "atom": "为什么", "features": {"py/set": [193, 546, 1, 194, 198, 1607, 200, 2409, 1162, 105, 107, 12, 430, 175, 13, 1785, 2393, 1979, 220, 2398]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "是", "ID": 13, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是他不是她", "features": {"py/set": [2304, 2432, 1162, 2444, 272, 273, 2331, 548, 549, 2340, 293, 294, 430, 2105, 1986, 453, 1607, 203, 1877, 1366, 90, 2279, 1023]}, "next": null, "norm": "是他不是她", "prev": {"py/id": 10}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "是", "ID": 12, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是他", "features": {"py/set": [2304, 2432, 1986, 453, 1607, 1162, 2444, 272, 273, 1366, 90, 2331, 545, 2340, 293, 294, 2279, 2347, 430, 2291, 2105, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "是", "ID": 11, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "CN", "atom": "不是她", "features": {"py/set": [2304, 2432, 1986, 2435, 453, 1607, 1162, 2444, 1550, 272, 273, 1366, 2331, 2105, 546, 2340, 293, 294, 2279, 40, 2347, 430, 2291, 250, 1023]}, "next": null, "norm": "不是她", "prev": {"py/id": 13}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 7, "Head0Text": "是", "ID": 10, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "H", "atom": "不是", "features": {"py/set": [2304, 545, 2432, 293, 453, 1607, 2279, 249, 1162, 294, 90, 2444, 1550, 430, 1366, 2105, 250, 2331, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "", "ID": 6, "StartOffset": 7, "TempPointer": "", "UpperRelationship": "CN", "atom": "她", "features": {"py/set": [2432, 1, 2435, 1732, 2310, 1607, 1162, 144, 145, 1052, 542, 1697, 293, 294, 295, 1704, 40, 1582, 1519, 176, 430, 1528, 380]}, "next": null, "norm": "她", "prev": {"py/id": 16}, "sons": [], "text": "她"}, "norm": "不是", "prev": {"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "", "ID": 3, "StartOffset": 4, "TempPointer": "", "UpperRelationship": "O", "atom": "他", "features": {"py/set": [2432, 1, 1732, 2310, 1607, 1162, 144, 145, 18, 157, 542, 1697, 164, 293, 294, 295, 1704, 107, 1582, 1519, 176, 430, 1528, 380]}, "next": null, "norm": "他", "prev": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 2, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是", "features": {"py/set": [2304, 2432, 1, 453, 2310, 1607, 293, 2279, 1098, 1162, 236, 430, 1366, 2105, 90, 2331, 542, 1023]}, "next": {"py/id": 19}, "norm": "是", "prev": {"py/id": 10}, "sons": [], "text": "是"}, "sons": [], "text": "他"}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 6, "Head0Text": "", "ID": 4, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "R", "atom": "不", "features": {"py/set": [2432, 1, 194, 198, 1607, 200, 1162, 12, 13, 527, 542, 293, 107, 430]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 7, "Head0Text": "", "ID": 5, "StartOffset": 6, "TempPointer": "", "UpperRelationship": "H", "atom": "是", "features": {"py/set": [2304, 2432, 1, 2310, 1162, 1550, 2331, 542, 293, 430, 2105, 453, 1607, 1098, 203, 1877, 1366, 90, 2279, 236, 1023]}, "next": null, "norm": "是", "prev": {"py/id": 24}, "sons": [], "text": "是"}, "norm": "不", "prev": {"py/id": 19}, "sons": [], "text": "不"}, {"py/id": 25}], "text": "不是"}, {"py/id": 17}], "text": "不是她"}, "norm": "是他", "prev": {"py/id": 10}, "sons": [{"py/id": 20}, {"py/id": 19}], "text": "是他"}, {"py/id": 14}], "text": "是他不是她"}, "norm": "为什么", "prev": {"py/id": 1}, "sons": [], "text": "为什么"}, {"py/id": 11}], "text": "为什么是他不是她"}, {"py/id": 7}], "text": "为什么是他不是她？"}, "norm": "", "prev": null, "sons": [], "text": ""}, "1": {"py/id": 2}, "2": {"py/id": 3}}, "head": {"py/id": 1}, "isPureAscii": false, "norms": [{"py/tuple": ["", ""]}, {"py/tuple": ["为什么是他不是她?", "是"]}, {"py/tuple": ["", ""]}], "size": 3, "tail": {"py/id": 3}}"""
+    # Sentence = "为啥是他，而不是她？"
     nodelist_str = """{"py/object": "Tokenization.SentenceLinkedList", "get_cache": {"0": {"py/object": "Tokenization.SentenceNode", "EndOffset": 0, "Head0Text": "", "ID": 10, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [104, 105, 22]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "是", "ID": 15, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "为什么是他", "features": {"py/set": [2304, 2432, 1162, 2444, 272, 2331, 548, 549, 2340, 293, 294, 1064, 430, 175, 2105, 1986, 453, 1607, 1366, 2279, 105, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 6, "Head0Text": "", "ID": 4, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "", "atom": "，", "features": {"py/set": [192, 2432, 1, 39, 38, 22, 1162, 542]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 10, "Head0Text": "是", "ID": 16, "StartOffset": 6, "TempPointer": "", "UpperRelationship": "", "atom": "而不是她", "features": {"py/set": [2304, 2432, 1162, 2444, 1550, 272, 2331, 547, 2340, 293, 294, 1064, 430, 175, 2105, 1986, 453, 1607, 1366, 2279, 250, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 11, "Head0Text": "", "ID": 9, "StartOffset": 10, "TempPointer": "", "UpperRelationship": "", "atom": "？", "features": {"py/set": [192, 193, 1, 102, 103, 1162, 22, 23, 542]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 11, "Head0Text": "", "ID": 11, "StartOffset": 11, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [192, 2432, 103, 23, 102, 22]}, "next": null, "norm": "", "prev": {"py/id": 5}, "sons": [], "text": ""}, "norm": "?", "prev": {"py/id": 4}, "sons": [], "text": "？"}, "norm": "而不是她", "prev": {"py/id": 3}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 7, "Head0Text": "", "ID": 5, "StartOffset": 6, "TempPointer": "", "UpperRelationship": "Z", "atom": "而", "features": {"py/set": [2432, 1, 2310, 1607, 71, 1162, 12, 22, 542, 293, 297, 107, 430]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 10, "Head0Text": "是", "ID": 14, "StartOffset": 7, "TempPointer": "", "UpperRelationship": "H", "atom": "不是她", "features": {"py/set": [2304, 2432, 1162, 2444, 1550, 272, 273, 2331, 546, 2340, 293, 294, 430, 2105, 1986, 453, 1607, 1366, 90, 2279, 250, 1023]}, "next": null, "norm": "不是她", "prev": {"py/id": 10}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 9, "Head0Text": "是", "ID": 12, "StartOffset": 7, "TempPointer": "", "UpperRelationship": "H", "atom": "不是", "features": {"py/set": [2304, 2432, 1986, 453, 1607, 1162, 2444, 1550, 272, 1366, 90, 2331, 2105, 545, 2340, 293, 294, 2279, 2347, 430, 2291, 249, 250, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 10, "Head0Text": "", "ID": 8, "StartOffset": 9, "TempPointer": "", "UpperRelationship": "O", "atom": "她", "features": {"py/set": [2432, 1, 1732, 2310, 1607, 1162, 144, 145, 18, 1052, 157, 542, 1697, 164, 293, 294, 295, 1704, 107, 1582, 1519, 176, 430, 1528, 380]}, "next": null, "norm": "她", "prev": {"py/id": 13}, "sons": [], "text": "她"}, "norm": "不是", "prev": {"py/id": 10}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "", "ID": 6, "StartOffset": 7, "TempPointer": "", "UpperRelationship": "R", "atom": "不", "features": {"py/set": [2432, 1, 194, 198, 1607, 200, 1162, 12, 13, 527, 542, 293, 107, 430]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 9, "Head0Text": "", "ID": 7, "StartOffset": 8, "TempPointer": "", "UpperRelationship": "H", "atom": "是", "features": {"py/set": [2304, 2432, 1, 2310, 1162, 1550, 2331, 542, 293, 430, 2105, 453, 1607, 1098, 203, 1877, 1366, 90, 2279, 236, 1023]}, "next": null, "norm": "是", "prev": {"py/id": 17}, "sons": [], "text": "是"}, "norm": "不", "prev": {"py/id": 10}, "sons": [], "text": "不"}, {"py/id": 18}], "text": "不是"}, {"py/id": 14}], "text": "不是她"}, "norm": "而", "prev": {"py/id": 3}, "sons": [], "text": "而"}, {"py/id": 11}], "text": "而不是她"}, "norm": ",", "prev": {"py/id": 2}, "sons": [], "text": "，"}, "norm": "为什么是他", "prev": {"py/id": 1}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 3, "Head0Text": "", "ID": 1, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "R", "atom": "为什么", "features": {"py/set": [193, 546, 1, 194, 198, 1607, 200, 2409, 1162, 105, 107, 12, 430, 175, 13, 1785, 2393, 1979, 220, 2398]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "是", "ID": 13, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是他", "features": {"py/set": [2304, 2432, 1986, 453, 1607, 1162, 2444, 272, 273, 1877, 1366, 90, 2331, 545, 2340, 293, 294, 2279, 430, 2105, 1023]}, "next": null, "norm": "是他", "prev": {"py/id": 24}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 2, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是", "features": {"py/set": [2304, 2432, 1, 1986, 453, 2310, 1607, 1098, 1162, 272, 1366, 90, 2331, 542, 2340, 293, 2279, 2347, 236, 430, 2291, 2105, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "", "ID": 3, "StartOffset": 4, "TempPointer": "", "UpperRelationship": "O", "atom": "他", "features": {"py/set": [2432, 1, 1732, 2310, 1607, 1162, 144, 145, 18, 157, 542, 1697, 164, 293, 294, 295, 1704, 107, 1582, 1519, 176, 430, 1528, 380]}, "next": null, "norm": "他", "prev": {"py/id": 27}, "sons": [], "text": "他"}, "norm": "是", "prev": {"py/id": 24}, "sons": [], "text": "是"}, {"py/id": 28}], "text": "是他"}, "norm": "为什么", "prev": {"py/id": 1}, "sons": [], "text": "为什么"}, {"py/id": 25}], "text": "为什么是他"}, "norm": "", "prev": null, "sons": [], "text": ""}, "1": {"py/id": 2}, "2": {"py/id": 3}, "3": {"py/id": 4}, "4": {"py/id": 5}, "5": {"py/id": 6}}, "head": {"py/id": 1}, "isPureAscii": false, "norms": [{"py/tuple": ["", ""]}, {"py/tuple": ["为什么是他", "是"]}, {"py/tuple": [",", ""]}, {"py/tuple": ["而不是她", "是"]}, {"py/tuple": ["?", ""]}, {"py/tuple": ["", ""]}], "size": 6, "tail": {"py/id": 6}}"""
     #Sentence = "为什么是他不是她"
     #nodelist_str="""{"py/object": "Tokenization.SentenceLinkedList", "get_cache": {"0": {"py/object": "Tokenization.SentenceNode", "EndOffset": 0, "Head0Text": "", "ID": 7, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [104, 105, 22]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "是", "ID": 13, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "为什么是他不是她", "features": {"py/set": [2304, 2432, 1986, 453, 1607, 1162, 2444, 272, 1366, 23, 2331, 548, 2340, 550, 293, 552, 294, 554, 555, 2279, 105, 430, 103, 250, 1064, 175, 2105, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "", "ID": 8, "StartOffset": 8, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [192, 2432, 103, 23, 102, 22]}, "next": null, "norm": "", "prev": {"py/id": 2}, "sons": [], "text": ""}, "norm": "为什么是他不是她", "prev": {"py/id": 1}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 3, "Head0Text": "", "ID": 1, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "R", "atom": "为什么", "features": {"py/set": [193, 546, 1, 194, 198, 1607, 200, 2409, 1162, 105, 107, 12, 430, 175, 13, 1785, 2393, 1979, 220, 2398]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "是", "ID": 12, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是他不是她", "features": {"py/set": [2304, 2432, 1162, 2444, 272, 273, 23, 2331, 548, 549, 2340, 293, 294, 430, 2105, 1986, 453, 1607, 203, 1877, 1366, 90, 2279, 103, 1023]}, "next": null, "norm": "是他不是她", "prev": {"py/id": 6}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "是", "ID": 11, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是他", "features": {"py/set": [2304, 2432, 1986, 453, 1607, 1162, 2444, 272, 273, 1366, 90, 2331, 545, 2340, 293, 294, 2279, 2347, 430, 2291, 2105, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "是", "ID": 10, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "CN", "atom": "不是她", "features": {"py/set": [2304, 2432, 2435, 1162, 2444, 1550, 272, 273, 23, 2331, 546, 2340, 293, 294, 40, 2347, 430, 2105, 1986, 453, 1607, 1366, 2279, 103, 2291, 250, 1023]}, "next": null, "norm": "不是她", "prev": {"py/id": 9}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 7, "Head0Text": "是", "ID": 9, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "H", "atom": "不是", "features": {"py/set": [2304, 545, 2432, 293, 453, 1607, 2279, 249, 1162, 294, 90, 2444, 1550, 430, 1366, 2105, 250, 2331, 1023]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 8, "Head0Text": "", "ID": 6, "StartOffset": 7, "TempPointer": "", "UpperRelationship": "CN", "atom": "她", "features": {"py/set": [2432, 1, 2435, 2310, 1162, 144, 145, 23, 1052, 542, 1697, 293, 294, 295, 1704, 40, 1582, 430, 176, 1732, 1607, 103, 1519, 1528, 380]}, "next": null, "norm": "她", "prev": {"py/id": 12}, "sons": [], "text": "她"}, "norm": "不是", "prev": {"py/object": "Tokenization.SentenceNode", "EndOffset": 5, "Head0Text": "", "ID": 3, "StartOffset": 4, "TempPointer": "", "UpperRelationship": "O", "atom": "他", "features": {"py/set": [2432, 1, 1732, 2310, 1607, 1162, 144, 145, 18, 157, 542, 1697, 164, 293, 294, 295, 1704, 107, 1582, 1519, 176, 430, 1528, 380]}, "next": null, "norm": "他", "prev": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 2, "StartOffset": 3, "TempPointer": "", "UpperRelationship": "H", "atom": "是", "features": {"py/set": [2304, 2432, 1, 453, 2310, 1607, 293, 2279, 1098, 1162, 236, 430, 1366, 2105, 90, 2331, 542, 1023]}, "next": {"py/id": 15}, "norm": "是", "prev": {"py/id": 6}, "sons": [], "text": "是"}, "sons": [], "text": "他"}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 6, "Head0Text": "", "ID": 4, "StartOffset": 5, "TempPointer": "", "UpperRelationship": "R", "atom": "不", "features": {"py/set": [2432, 1, 194, 198, 1607, 200, 1162, 12, 13, 527, 542, 293, 107, 430]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 7, "Head0Text": "", "ID": 5, "StartOffset": 6, "TempPointer": "", "UpperRelationship": "H", "atom": "是", "features": {"py/set": [2304, 2432, 1, 2310, 1162, 1550, 2331, 542, 293, 430, 2105, 453, 1607, 1098, 203, 1877, 1366, 90, 2279, 236, 1023]}, "next": null, "norm": "是", "prev": {"py/id": 20}, "sons": [], "text": "是"}, "norm": "不", "prev": {"py/id": 15}, "sons": [], "text": "不"}, {"py/id": 21}], "text": "不是"}, {"py/id": 13}], "text": "不是她"}, "norm": "是他", "prev": {"py/id": 6}, "sons": [{"py/id": 16}, {"py/id": 15}], "text": "是他"}, {"py/id": 10}], "text": "是他不是她"}, "norm": "为什么", "prev": {"py/id": 1}, "sons": [], "text": "为什么"}, {"py/id": 7}], "text": "为什么是他不是她"}, "norm": "", "prev": null, "sons": [], "text": ""}, "1": {"py/id": 2}, "2": {"py/id": 3}}, "head": {"py/id": 1}, "isPureAscii": false, "norms": [{"py/tuple": ["", ""]}, {"py/tuple": ["为什么是他不是她", "是"]}, {"py/tuple": ["", ""]}], "size": 3, "tail": {"py/id": 3}}"""

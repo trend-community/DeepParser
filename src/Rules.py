@@ -758,6 +758,29 @@ def ProcessTokens(Tokens):
                 repeatMax = int(repeatMatch.group(2))
             node.repeat = [0, repeatMax]
 
+        ActionPosition = node.word.find(":")
+        if ActionPosition > 0:
+            if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
+                node.action = node.word[ActionPosition+1:].rstrip("]")
+                node.word = node.word[:ActionPosition] + "]"
+
+            if "(" not in node.word and ":" in node.word:
+                orblocks = re.split("\|\[", node.word)
+                if len(orblocks) > 1:
+                    node.word = "(" + ")|([".join(orblocks) + ")"  # will be tokenize later.
+                else:
+                    orblocks = re.split("\]\|", node.word)
+                    if len(orblocks) > 1:
+                        node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
+                    else:  # no "()" sign, and no "|" sign
+                        # using (.*):, not (.+): , because the word can be blank (means matching everything)
+                        actionMatch = re.match("\[(.*):(.+)\]$", node.word, re.DOTALL)
+                        if actionMatch:
+                            node.word = "[" + actionMatch.group(1) + "]"
+                            node.action = actionMatch.group(2)
+
+        #Note: unification would be quoted, such as <['^V-' ] [不] ^V[V|V0|v]>
+        # so it won't be pointer or subtree pointer.
         pointerMatch = re.match("(\^\w*)\[(.*)\]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
@@ -780,26 +803,10 @@ def ProcessTokens(Tokens):
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
-        ActionPosition = node.word.find(":")
-        if ActionPosition > 0:
-            if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
-                node.action = node.word[ActionPosition+1:].rstrip("]")
-                node.word = node.word[:ActionPosition] + "]"
-
-        if "(" not in node.word and ":" in node.word:
-            orblocks = re.split("\|\[", node.word)
-            if len(orblocks) > 1:
-                node.word = "(" + ")|([".join(orblocks) + ")"  # will be tokenize later.
-            else:
-                orblocks = re.split("\]\|", node.word)
-                if len(orblocks) > 1:
-                    node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
-                else:  # no "()" sign, and no "|" sign
-                    # using (.*):, not (.+): , because the word can be blank (means matching everything)
-                    actionMatch = re.match("\[(.*):(.+)\]$", node.word, re.DOTALL)
-                    if actionMatch:
-                        node.word = "[" + actionMatch.group(1) + "]"
-                        node.action = actionMatch.group(2)
+        pointerSubtreeMatch = re.search("\[(\^(\S+))\]", node.word, re.DOTALL)    # Subtree Pattern
+        if pointerSubtreeMatch:
+            node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
+            node.SubtreePointer = pointerSubtreeMatch.group(2)
 
         orQuoteMatch = re.search("(['\"/])(\S*\|\S*?)\\1", node.word, re.DOTALL)
         if orQuoteMatch:
@@ -812,7 +819,7 @@ def ProcessTokens(Tokens):
                 expandAnd = ExpandNotOrTo(match)
                 node.word = node.word.replace(match, expandAnd)
 
-        if node.word and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
+        if node.word and len(node.word)>1 and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
 
         node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=").replace("\>", ">").replace("\<", "<")

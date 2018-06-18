@@ -546,6 +546,7 @@ class SentenceNode(object):
 
         #self.signature = pickle.dumps({"w": self.text, "f": self.features})
 
+
     def GetFeatures(self):
         featureList = []
         for feature in self.features:

@@ -3,7 +3,8 @@ import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
 #from threading import Thread
-from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
+from LogicOperation import LogicMatch, FindPointerNode, LogicMatch_notpointer
+import DependencyTree
 from utils import *
 import utils
 counterMatch = 0
@@ -145,6 +146,25 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     return 0
 
 
+# Apply the features, and other actions.
+def ApplyWinningDagRule(Dag, rule, OpenNode):
+    #MarkTempPointer(strtokens, rule, StartPosition)
+
+    for i in range(rule.TokenLength):
+
+        if rule.Tokens[i].action:
+            if rule.Tokens[i].SubtreePointer:
+                tree = rule.Tokens[i].SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
+                logging.info("tree:{}".format(tree))
+                nodeID = Dag.FindPointerNode(OpenNode.ID, tree)
+                token = Dag.nodes[nodeID]
+            else:
+                token = OpenNode
+
+            token.ApplyActions(rule.Tokens[i].action)
+
+    return 0
+
 #list1 is combination of norm and Head0Text.
 # either of them equals to the item in list2, that means match.
 #from functools import lru_cache
@@ -278,9 +298,73 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
         strtoken = strtoken.next
     return WinningRules
 
+def DAGMatch(Dag, OpenNode, Rule):
+    if len(Rule.Tokens) < 1:
+        logging.error("DAGMatch: This rune has no tokens! \n{}".format(Rule))
+    opennode_result = LogicMatch_notpointer(OpenNode, Rule.Tokens[0])
+    if not opennode_result:
+        return False
+
+    for token in Rule.Tokens[1:]:
+        logging.info("token:{}".format(token))
+        tree = token.SubtreePointer.split(".")  #Note: here Pointer (subtreepointer) does not have "^"
+        logging.info("tree:{}".format(tree))
+        nodeID = Dag.FindPointerNode(OpenNode.ID, tree)
+        if nodeID == None:
+            logging.warning("No such pointer.")
+            return False
+        logging.info("found node. check the rest features")
+        result = LogicMatch_notpointer(Dag.nodes[nodeID], token)
+        if result == False:
+            logging.warning("does not mtach:{}, {}".format(Dag.nodes[nodeID], token))
+            return False
+
+    logging.warning("Match this rule! {} == {}".format(Dag, Rule))
+    return True
+
+
+def MatchAndApplyDagRuleFile(Dag, RuleFileName):
+    WinningRules = {}
+
+    for nodeid in Dag.nodes:
+        node = Dag.nodes[nodeid]
+
+        WinningRule = None
+        rulegroup = Rules.RuleGroupDict[RuleFileName]
+
+        for rule in rulegroup.RuleList:
+            logging.info("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
+            if DAGMatch(Dag, node, rule):
+                WinningRule = rule
+                break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
+
+        if WinningRule:
+            logging.info("DAG: Winning rule! {}".format(WinningRule))
+            try:
+                if WinningRule.ID not in WinningRules:
+                    WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + node.text
+                else:
+                    WinningRules[WinningRule.ID] += ' <li class="indent">' + node.text
+                ApplyWinningDagRule(Dag, WinningRule, node)
+            except RuntimeError as e:
+                if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
+                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
+                    rulegroup.RuleList.remove(WinningRule)
+                else:
+                    logging.error("Unknown Rule Applying Error:" + str(e))
+
+            except IndexError as e:
+                logging.error("Failed to apply this rule:")
+                logging.error(str(WinningRule))
+                logging.error(str(e))
+
+    return WinningRules
+
 
 def DynamicPipeline(NodeList, schema):
     WinningRules = {}
+    Dag = DependencyTree.DependencyTree()
+
 
     for action in PipeLine:
         if action == "segmentation":
@@ -316,6 +400,14 @@ def DynamicPipeline(NodeList, schema):
 
         if action == "Lookup IE":
             Lexicon.ApplyCompositeKG(NodeList)
+
+        if action == "TRANSFORM DAG":
+            Dag.transform(NodeList)
+            logging.info("Dag:{}".format(Dag))
+
+        if action.startswith("DAGFSA"):
+            Rulefile = action[6:].strip()
+            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
     return  WinningRules
 
@@ -528,6 +620,9 @@ def LoadCommon():
             Rulefile = action[3:].strip()
             Rules.LoadRules(XLocation, Rulefile)
 
+        if action.startswith("DAGFSA"):
+            Rulefile = action[6:].strip()
+            Rules.LoadRules(XLocation, Rulefile)
 
         if action.startswith("Lookup Spelling:"):
             Spellfile = action[action.index(":")+1:].strip().split(",")
@@ -615,21 +710,25 @@ if __name__ == "__main__":
 
 
 
-    m_nodes, winningrules = LexicalAnalyze(target)
-    if not m_nodes:
-        logging.warning("The result is None!")
-        exit(1)
+    # m_nodes, winningrules = LexicalAnalyze(target)
+    # if not m_nodes:
+    #     logging.warning("The result is None!")
+    #     exit(1)
+    #
+    # logging.info("\tDone! counterMatch=%s" % counterMatch)
+    #
+    # print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
+    # print(OutputStringTokens_oneliner(m_nodes))
+    #
+    #
+    # print("Winning rules:\n" + OutputWinningRules())
+    #
+    # print(FeatureOntology.OutputMissingFeatureSet())
+    #
+    # print(m_nodes.root().CleanOutput().toJSON())
+    # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
+    # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    logging.info("\tDone! counterMatch=%s" % counterMatch)
+    LexicalAnalyze("张三被伤着了。")
 
-    print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
-    print(OutputStringTokens_oneliner(m_nodes))
-
-
-    print("Winning rules:\n" + OutputWinningRules())
-
-    print(FeatureOntology.OutputMissingFeatureSet())
-
-    print(m_nodes.root().CleanOutput().toJSON())
-    print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
-    print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+    #LexicalAnalyze("张三做好事所有人都觉得是沽名钓誉")

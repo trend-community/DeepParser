@@ -212,6 +212,51 @@ def FindSubtree(root, pointers):
     return None
 
 
+def LogicMatch_notpointer(StrToken, RuleToken):
+    # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
+    if RuleToken.AndFeatures:
+        for f in RuleToken.AndFeatures:
+            if f not in StrToken.features:
+                return False
+
+    if RuleToken.AndText:
+
+        if StrToken.Head0Text and not RuleToken.FullString:
+            word = StrToken.Head0Text
+        else:
+            if RuleToken.AndTextMatchtype == "text":
+                word = StrToken.text
+            elif RuleToken.AndTextMatchtype == "norm":
+                word = StrToken.norm
+            else:
+                word = StrToken.atom
+        if not LogicMatchText(RuleToken.AndText, word):
+            return False
+
+    for OrFeatureGroup in RuleToken.OrFeatureGroups:
+        CommonOrFeatures = OrFeatureGroup.intersection(StrToken.features)
+        if len(CommonOrFeatures) == 0:
+            return False  # we need at least one common features.
+
+    for f in RuleToken.NotFeatures:
+        if f in StrToken.features:
+            return False
+
+    if RuleToken.NotTexts:
+        if RuleToken.FullString and StrToken.Head0Text:
+            word = StrToken.Head0Text
+        else:
+            if RuleToken.NotTextMatchtype == "text":
+                word = StrToken.text
+            elif RuleToken.NotTextMatchtype == "norm":
+                word = StrToken.norm
+            else:
+                word = StrToken.atom
+        for NotText in RuleToken.NotTexts:
+            if LogicMatchText(NotText, word):
+                return False
+    return True
+
 
 def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     if not RuleToken.word:  # for the comparison of "[]", can match anything
@@ -237,6 +282,10 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         logging.error("In LogicMatch(): Can't find strToken!")
         return False
 
+    if RuleToken.AndText and "^" in RuleToken.AndText:
+            #This is a pointer!
+            return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
+
     # if RuleToken.word in strToken.FailedRuleTokens:
     #     return False
 
@@ -252,113 +301,9 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         # if len(CommonAndFeatutures) < len(RuleToken.AndFeatures):
         #     return False
 
-    if RuleToken.AndText:
-        #ruletext, matchtype = CheckPrefix(RuleToken.AndText)
-        if "^" in RuleToken.AndText:
-            #This is a pointer! do not add into LogicalMatch_Cache[signature].
-            return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
+    return LogicMatch_notpointer(strToken, RuleToken)
 
-        if  strToken.Head0Text and not RuleToken.FullString:
-            word = strToken.Head0Text
-        else:
-            if RuleToken.AndTextMatchtype == "text":
-                word = strToken.text
-            elif RuleToken.AndTextMatchtype == "norm":
-                word = strToken.norm
-            else:
-                word = strToken.atom
-        if not LogicMatchText(RuleToken.AndText, word):
-            #strToken.FailedRuleTokens.add(RuleToken.word)
-            # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
-            return False
 
-    for OrFeatureGroup in RuleToken.OrFeatureGroups:
-        CommonOrFeatures = OrFeatureGroup.intersection(strToken.features)
-        if len(CommonOrFeatures) == 0:
-#            strToken.FailedRuleTokens.add(RuleToken.word)
-#             Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
-            return False    #we need at least one common features.
-
-    for f in RuleToken.NotFeatures:
-        if f in strToken.features:
-            # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
-#                strToken.FailedRuleTokens.add(RuleToken.word)
-            return False
-    # CommonNotFeatures = RuleToken.NotFeatures.intersection(strToken.features)
-    # if len(CommonNotFeatures) > 0:
-    #     return False    #can't have any of NotFeatures
-
-    if RuleToken.NotTexts:
-        #ruletext, matchtype = CheckPrefix(RuleToken.NotText)
-        if RuleToken.FullString and strToken.Head0Text:
-            word = strToken.Head0Text
-        else:
-            if RuleToken.NotTextMatchtype == "text":
-                word = strToken.text
-            elif RuleToken.NotTextMatchtype == "norm":
-                word = strToken.norm
-            else:
-                word = strToken.atom
-        for NotText in RuleToken.NotTexts:
-            if LogicMatchText(NotText, word):
-                # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
-    #            strToken.FailedRuleTokens.add(RuleToken.word)
-                return False
-    #Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = True
-    return True
-
-#
-# def LogicMatch_old(StrTokenList, StrPosition, rule, RuleTokens, RulePosition):
-#     if not rule:  # for the comparison of "[]", can match anything
-#         return True
-#
-#     if RuleTokens[RulePosition].SubtreePointer:
-#         SubtreePointer = RuleTokens[RulePosition].SubtreePointer
-#         #logging.debug("Start looking for Subtree: " + SubtreePointer)
-#         strToken = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
-#         if not strToken:
-#             #logging.debug("there is no such pointer.")
-#             return False
-#     else:
-#         strToken = StrTokenList.get(StrPosition)
-#
-#     if not strToken:
-#         logging.error("In LogicMatch(): Can't find strToken!")
-#         return False
-#
-#     AndBlocks = rule.split()
-#     for AndBlock in AndBlocks:
-#         Not = False
-#         if AndBlock[0] == "!":
-#             Not = True
-#             AndBlock = AndBlock[1:]
-#         ruleblock, matchtype = CheckPrefix(AndBlock)
-#         if matchtype == "unknown":
-#             if Not == LogicMatchFeatures(ruleblock, strToken.features):
-#                 return False
-#         elif matchtype in ["text", "norm", "atom"]:
-#             if "^" in ruleblock:
-#                 #This is a pointer!
-#                 if Not == PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=ruleblock, matchtype=matchtype):
-#                     return False
-#
-#             if  "FULLSTRING" not in rule  and strToken.Head0Text:
-#                 word = strToken.Head0Text
-#             else:
-#                 if matchtype == "text":
-#                     word = strToken.text
-#                 elif matchtype == "norm":
-#                     word = strToken.norm
-#                 else:
-#                     word = strToken.atom
-#
-#             if Not == LogicMatchText(ruleblock, word):
-#                 return False
-#         else:
-#             logging.warning("Suspicous type:" + str(matchtype))
-#             return False
-#     return True
-#
 
 @lru_cache(1000000)
 def LogicMatchText(ruletext, stringtext):
@@ -384,32 +329,6 @@ def LogicMatchText(ruletext, stringtext):
 
     return False
 
-#
-# # If the rule has not quotes, but it is not a feature,
-# #   then it is treated as stem.
-# # this should have been taken care of by compilation.
-# def LogicMatchFeatures(rule, features):
-#     if "|" in rule:
-#         OrBlocks = rule.split("|")
-#         for OrBlock in OrBlocks:
-#             featureID = FeatureOntology.GetFeatureID(OrBlock)
-#             if featureID in features:
-#                 return True
-#     else:
-#         featureID = FeatureOntology.GetFeatureID(rule)
-#         if featureID == -1:
-#             logging.warning("Found a feature of rule that is not a feature in feature.txt")
-#             logging.warning("rule text:" + rule)
-#             logging.warning("This should not happen. Please rewirte the rule for compilation.")
-#             return False
-#             #return LogicMatch(StrTokenList, StrPosition, rule, RuleTokens, RulePosition, "norm", strToken=strToken)
-#         elif featureID == utils.FeatureID_FULLSTRING:
-#             return True     #Ignore "FULLSTRING" in feature comparison.
-#         else:
-#             return featureID in features
-#
-#     return False
-#
 
 @lru_cache(100000)
 def SeparateOrBlocks(OrString):
