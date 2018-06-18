@@ -380,12 +380,14 @@ class SentenceNode(object):
 
         featureString = self.GetFeatures()
         if self.sons:
+            output += "<"
             for son in self.sons:
                 output += son.onelinerSA() + " "
+            output = output.strip() + ">"
 
 
         if not self.sons:
-            output += self.text
+            output = self.text
 
         if TargetFeature in featureString:
             output +=  "/" + TargetFeature + " "
