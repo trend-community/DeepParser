@@ -56,7 +56,7 @@ def RemoveKnownLex(newfile):
 
     wordlist = content.split()
     for w in wordlist:
-        if len(w) >= 2 and not IsAscii(w):  #ignore one character word.
+        if len(w) > 1 and not IsAscii(w):  #ignore one character word.
             worddict[w] += 1
     logging.info("Word Dict constructed. Found {} raw words".format(len(worddict)))
 
@@ -79,7 +79,7 @@ def RemoveKnownLex(newfile):
 
     logging.info("Word Dict constructed. Found {} new words".format(len(worddict)))
     for w in sorted(worddict, key=worddict.get, reverse=True):
-        if worddict[w] > 0:
+        if worddict[w] > 3:
             print("{}\t{}".format(w, worddict[w]))
 
     logging.info("Done!")
