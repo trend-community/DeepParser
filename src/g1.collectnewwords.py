@@ -6,6 +6,7 @@
 #==============================================================
 import sys, logging, re
 from functools import lru_cache
+from collections import defaultdict
 
 _LexiconSet = set()
 
@@ -35,28 +36,50 @@ def LoadLexicon(dictpath):
 
 
 def RemoveKnownLex(newfile):
-    worddict = {}
+
+    worddict = defaultdict(int)
     logging.info("Start reading file{}".format(newfile))
     with open(newfile) as f:
         content = f.read()
     logging.info("File read.")
-    content = content.replace("（", " ").replace("）", " ").replace("【", " ").replace("】", " ")
+    content = re.sub("[！，；。（）【】“”]", " ", content)
     content = re.sub(r"[ -z]", " ", content)
     while "   " in content:
         content = re.sub("   ", " ", content)
     content = re.sub("  ", " ", content)
     logging.info("English Alphabet removed.")
+
     for lex in _LexiconSet:
         if lex in content:
             content = content.replace(lex, " ")
     logging.info("Lexicon replaced.")
+
     wordlist = content.split()
     for w in wordlist:
         if len(w) >= 2 and not IsAscii(w):  #ignore one character word.
-            worddict[w] = 1 + worddict.get(w, 0)
-    logging.info("Word Dict constructed. Found {} words".format(len(worddict)))
+            worddict[w] += 1
+    logging.info("Word Dict constructed. Found {} raw words".format(len(worddict)))
+
+    for w in sorted(worddict):
+        for partw in [ x for x in worddict if len(x)<len(w)]:
+            if partw in w:
+                for x in w.replace(partw, " ").split():
+                    if len(x) > 1:
+                        worddict[x] += worddict[w]
+                worddict[w] = -1    #being replaced by partial words
+
+    #repeat to do the new partial words. assume one repeat is enough.
+    for w in sorted(worddict):
+        for partw in [ x for x in worddict if len(x)<len(w)]:
+            if partw in w:
+                for x in w.replace(partw, " ").split():
+                    if len(x) > 1:
+                        worddict[x] += worddict[w]
+                worddict[w] = -1    #being replaced by partial words
+
+    logging.info("Word Dict constructed. Found {} new words".format(len(worddict)))
     for w in sorted(worddict, key=worddict.get, reverse=True):
-        if worddict[w] > 3:
+        if worddict[w] > 0:
             print("{}\t{}".format(w, worddict[w]))
 
     logging.info("Done!")
