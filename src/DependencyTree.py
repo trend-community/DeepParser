@@ -53,7 +53,7 @@ class DependencyTree:
                     node = node.sons[0]
                 else:
                     if not (node.text == '' and utils.FeatureID_JM  in node.features):
-                        self.nodes.update({node.ID : copy.copy(node)})      # add leaf node to self.nodes.
+                        self.nodes.update({node.ID : copy.deepcopy(node)})      # add leaf node to self.nodes.
 
                     if node == root:    #if node is in root level, don't get next.
                         if nodestack:
@@ -90,7 +90,8 @@ class DependencyTree:
                             if subnode.next:
                                 nodestack.add(subnode.next)
                             subnode = subnode.sons[0]
-                    else:
+                    else:   # this is a leaf node.
+                        subnode = self.nodes[subnode.ID]  #  use the copy in self.nodes to apply feature modification
                         if utils.FeatureID_H in subnode.features:
                             subgraph.headID = subnode.ID
                             subnode.features.update(subgraph.startnode.features)

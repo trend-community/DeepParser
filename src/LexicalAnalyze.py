@@ -38,7 +38,6 @@ def ProcessFile(FileName):
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
 
-
         if args.type == 'json':
             print(nodes.root().CleanOutput().toJSON() + '\t' + TestSentence)
         elif  args.type == 'simple':
