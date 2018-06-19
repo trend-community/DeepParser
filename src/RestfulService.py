@@ -9,6 +9,8 @@ import Graphviz, DependencyTree
 #from Rules import ResetAllRules, LoadRules
 import Rules
 import utils
+import Lexicon
+from utils import *
 from datetime import datetime
 from configparser import NoOptionError
 from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
@@ -52,6 +54,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             elif link.path.startswith('/GetFeatureName/'):
                 self.GetFeatureName(int(link.path[16:]))
             elif link.path.startswith('/Reload'):
+                print (link.path[7:])
                 self.Reload(link.path[7:])
             elif link.path in ['/gchart_loader.js', '/favicon.ico']:
                 self.feed_file(link.path[1:])
@@ -164,17 +167,82 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.wfile.write("".encode("utf-8"))
 
     def Reload(self, ReloadTask):
-        XLocation = '../../fsa/X/'
-        Reply = "Lexicon/Rule/All:"
-        if ReloadTask.lower() in ("/lexicon", "/all"):
-            logging.info("Start loading lexicon...")
+        PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+        XLocation = os.path.dirname(PipeLineLocation) + "/"
+        Reply = "Lexicon/Rule/Pipeline:"
 
-            ProcessSentence.LoadCommonLexicon(XLocation)
+        if ReloadTask.lower() == "/lexicon":
+            logging.info("Start loading lexicon...")
+            # ProcessSentence.LoadCommonLexicon(XLocation)
+            for action in ProcessSentence.PipeLine:
+                if action.startswith("Lookup Spelling:"):
+                    Spellfile = action[action.index(":") + 1:].strip().split(",")
+                    for spell in Spellfile:
+                        spell = spell.strip()
+                        if spell:
+                            Lexicon.LoadExtraReference(XLocation + spell, Lexicon._LexiconCuobieziDict)
+
+                if action.startswith("Lookup Encoding:"):
+                    Encodefile = action[action.index(":") + 1:].strip().split(",")
+                    for encode in Encodefile:
+                        encode = encode.strip()
+                        if encode:
+                            Lexicon.LoadExtraReference(XLocation + encode, Lexicon._LexiconFantiDict)
+
+                if action.startswith("Lookup Main:"):
+                    Mainfile = action[action.index(":") + 1:].strip().split(",")
+                    for main in Mainfile:
+                        main = main.strip()
+                        if main:
+                            Lexicon.LoadMainLexicon(XLocation + main)
+
+                if action.startswith("Lookup SegmentSlash:"):
+                    Slashfile = action[action.index(":") + 1:].strip().split(",")
+                    for slash in Slashfile:
+                        slash = slash.strip()
+                        if slash:
+                            Lexicon.LoadSegmentSlash(XLocation + slash)
+
+                if action.startswith("Lookup Lex:"):
+                    Lexfile = action[action.index(":") + 1:].strip().split(",")
+                    for lex in Lexfile:
+                        lex = lex.strip()
+                        if lex:
+                            Lexicon.LoadLexicon(XLocation + lex)
+
+                if action.startswith("Lookup defLex:"):
+                    Compoundfile = action[action.index(":") + 1:].strip().split(",")
+                    for compound in Compoundfile:
+                        compound = compound.strip()
+                        if compound:
+                            Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.defLex)
+
+                if action.startswith("Lookup External:"):
+                    Externalfile = action[action.index(":") + 1:].strip().split(",")
+                    for external in Externalfile:
+                        external = external.strip()
+                        if external:
+                            Lexicon.LoadLexicon(XLocation + 'Q/lexicon/' + external,
+                                                lookupSource=LexiconLookupSource.External)
+
+                if action.startswith("Lookup oQcQ:"):
+                    oQoCfile = action[action.index(":") + 1:].strip().split(",")
+                    for oQoC in oQoCfile:
+                        oQoC = oQoC.strip()
+                        if oQoC:
+                            Lexicon.LoadLexicon(XLocation + oQoC, lookupSource=LexiconLookupSource.oQcQ)
+            Lexicon.LoadSegmentLexicon()
             Reply += "Reloaded lexicon at " + str(datetime.now())
-        if ReloadTask.lower() in ("/rule", "/all"):
+
+        if ReloadTask.lower() == "/rule":
             logging.info("Start loading rules...")
             Rules.ResetAllRules()
             ProcessSentence.WinningRuleDict.clear()
+
+            GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+            RuleFolder = os.path.dirname(GlobalmacroLocation)
+            RuleFileName = os.path.basename(GlobalmacroLocation)
+            Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
             # XLocation = '../../fsa/X/'
             # for action in ProcessSentence.PipeLine:
             #     if action.startswith("FSA"):
@@ -185,7 +253,17 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 if action.startswith("FSA"):
                     Rulefile = action[3:].strip()
                     Rules.LoadRules(XLocation, Rulefile)
+                if action.startswith("DAGFSA"):
+                    Rulefile = action[6:].strip()
+                    Rules.LoadRules(XLocation, Rulefile)
             Reply += "Reloaded rules at " + str(datetime.now())
+
+        if ReloadTask.lower() == "/pipeline":
+            logging.info("Start loading pipeline...")
+            Rules.ResetAllRules()
+            ProcessSentence.PipeLine = []
+            ProcessSentence.LoadCommon()
+            Reply += "Reloaded pipeline at " + str(datetime.now())
 
         self.send_response(200)
         self.send_header('Content-type', "text/html; charset=utf-8")
