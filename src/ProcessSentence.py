@@ -95,15 +95,6 @@ def RemoveTempPointer(StrList):
         x = x.next
 
 
-def MarkTempPointer_obsolete(strtokens, rule, StrStartPosition):
-    VirtualRuleToken = 0
-    for i in range(rule.TokenLength):
-        if rule.Tokens[i].SubtreePointer:
-            VirtualRuleToken += 1
-        if rule.Tokens[i].pointer:
-            strtokens.get(i + StrStartPosition - VirtualRuleToken).TempPointer = rule.Tokens[i].pointer
-
-
 # Apply the features, and other actions.
 def ApplyWinningRule(strtokens, rule, StartPosition):
 
@@ -117,7 +108,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
 
-    #MarkTempPointer(strtokens, rule, StartPosition)
     VirtualRuleToken = 0
     for i in range(rule.TokenLength):
         if rule.Tokens[i].SubtreePointer:
@@ -148,20 +138,20 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
 # Apply the features, and other actions.
 def ApplyWinningDagRule(Dag, rule, OpenNode):
-    #MarkTempPointer(strtokens, rule, StartPosition)
-
     for i in range(rule.TokenLength):
-
         if rule.Tokens[i].action:
             if rule.Tokens[i].SubtreePointer:
-                tree = rule.Tokens[i].SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
-                logging.info("tree:{}".format(tree))
-                nodeID = Dag.FindPointerNode(OpenNode.ID, tree)
-                token = Dag.nodes[nodeID]
-            else:
-                token = OpenNode
 
-            token.ApplyActions(rule.Tokens[i].action)
+                nodeID = Dag.FindPointerNode(OpenNode.ID, rule.Tokens[i].SubtreePointer)
+                node = Dag.nodes[nodeID]
+            else:
+                node = OpenNode
+            logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
+            Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action)
+
+    for nodeid in Dag.nodes:
+        #logging.info("node: {}".format(nodeid))
+        Dag.nodes[nodeid].TempPointer = ''  # remove TempPointer after applying action.
 
     return 0
 
@@ -306,20 +296,18 @@ def DAGMatch(Dag, OpenNode, Rule):
         return False
 
     for token in Rule.Tokens[1:]:
-        logging.info("token:{}".format(token))
-        tree = token.SubtreePointer.split(".")  #Note: here Pointer (subtreepointer) does not have "^"
-        logging.info("tree:{}".format(tree))
-        nodeID = Dag.FindPointerNode(OpenNode.ID, tree)
+        nodeID = Dag.FindPointerNode(OpenNode.ID, token.SubtreePointer)
         if nodeID == None:
-            logging.warning("No such pointer.")
+            #logging.warning("No such pointer.")
             return False
-        logging.info("found node. check the rest features")
+        #logging.info("found node. check the rest features")
         result = LogicMatch_notpointer(Dag.nodes[nodeID], token)
         if result == False:
-            logging.warning("does not mtach:{}, {}".format(Dag.nodes[nodeID], token))
+            #logging.warning("does not mtach:{}, {}".format(Dag.nodes[nodeID], token))
             return False
+        Dag.nodes[nodeID].TempPointer = token.pointer
 
-    logging.warning("Match this rule! {} == {}".format(Dag, Rule))
+    #logging.l("Match this rule! {} == {}".format(Dag, Rule))
     return True
 
 
@@ -333,11 +321,14 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         rulegroup = Rules.RuleGroupDict[RuleFileName]
 
         for rule in rulegroup.RuleList:
-            logging.info("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
+            #logging.debug("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
             if DAGMatch(Dag, node, rule):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
-
+            else:
+                for nodeid in Dag.nodes:
+                    #logging.info("node: {}".format(node))
+                    Dag.nodes[nodeid].TempPointer = ''   #remove TempPointer from failed rules.
         if WinningRule:
             logging.info("DAG: Winning rule! {}".format(WinningRule))
             try:
@@ -409,7 +400,7 @@ def DynamicPipeline(NodeList, schema):
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
-    return  WinningRules
+    return  NodeList, Dag, WinningRules
 
 
 def PrepareJSandJM(nodes):
@@ -479,11 +470,11 @@ def LexicalAnalyzeTask( SubSentence, schema):
     PrepareJSandJM(NodeList)
     #Lexicon.LexiconoQoCLookup(NodeList)
 
-    WinningRules = DynamicPipeline(NodeList, schema)
+    NodeList, Dag, WinningRules = DynamicPipeline(NodeList, schema)
         # t = Thread(target=Cache.WriteSentenceDB, args=(SubSentence, NodeList))
         # t.start()
 
-    return NodeList, WinningRules
+    return NodeList, Dag, WinningRules
 
 
 """After testing, the _multithread version is not faster than normal one.
@@ -536,21 +527,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
         if Sentence in Cache.SentenceCache:
             return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
 
-        ResultNodeList = None
-        ResultWinningRules = {}
-        for SubSentence in SeparateSentence(Sentence):
-
-            NodeList, WinningRules = LexicalAnalyzeTask(SubSentence, schema)
-            if ResultNodeList:
-                if not ResultNodeList.tail.text:
-                    ResultNodeList.remove(ResultNodeList.tail)
-                if not NodeList.head.text:
-                    NodeList.remove(NodeList.head)
-                ResultNodeList.appendnodelist(NodeList)
-            else:
-                ResultNodeList = NodeList
-            if WinningRules:
-                ResultWinningRules.update(WinningRules)
+        ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
         if schema == "full" and utils.runtype != "debug":
             if len(Cache.SentenceCache) < utils.maxcachesize:
@@ -568,7 +545,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.error(traceback.format_exc())
         return None, None
 
-    return ResultNodeList, ResultWinningRules
+    return ResultNodeList, Dag, ResultWinningRules
 
 
 def LoadPipeline(PipelineLocation):
@@ -729,6 +706,8 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    LexicalAnalyze("张三被伤着了。")
+    nodelist, dag, winningrules = LexicalAnalyze("张三做好事所有人都觉得是沽名钓誉")
+    print("dag: {}".format(dag))
+    print("winning rules: {}".format(winningrules))
 
     #LexicalAnalyze("张三做好事所有人都觉得是沽名钓誉")

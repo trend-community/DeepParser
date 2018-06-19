@@ -5,7 +5,7 @@ try:
 except: #windows? ignore it.
     pass
 import ProcessSentence, FeatureOntology
-import Graphviz
+import Graphviz, DependencyTree
 #from Rules import ResetAllRules, LoadRules
 import Rules
 import utils
@@ -92,7 +92,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         logging.info("[START] [{}]\t{}".format(queries["Key"], Sentence) )
         starttime = current_milli_time()
 
-        nodes, winningrules = ProcessSentence.LexicalAnalyze(Sentence, schema)
+        nodes, dag, winningrules = ProcessSentence.LexicalAnalyze(Sentence, schema)
         # return  str(nodes)
         # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
         Debug = "Debug" in queries
@@ -119,7 +119,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 orgdata = Graphviz.orgChart(output_json, Debug=Debug)
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
-                orgdata = Graphviz.digraph(nodes)
+                # if pipeline has "TRANSFORM DAG", then dag is not null.
+                if len(dag.nodes)>0:
+                    orgdata = dag.digraph()
+                else:
+                    #x = DependencyTree.DependencyTree()
+                    dag.transform(nodes)
+                    orgdata = dag.digraph()
                 chart = chart.replace("[[[DIGDATA]]]", str(orgdata))
 
                 if Debug:
