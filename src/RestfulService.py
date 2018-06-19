@@ -102,7 +102,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         if nodes:
             if  Type  == "simple":
                 output_type = "text/plain;"
-                output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
+                if len(dag.nodes) > 0:
+                    output_text = dag.digraph(Type)
+                else:
+                    output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
             elif  Type  == "simpleEx":
                 output_type = "text/plain;"
                 output_text = utils.OutputStringTokens_oneliner_ex(nodes)

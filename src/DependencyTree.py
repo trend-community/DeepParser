@@ -179,21 +179,27 @@ class DependencyTree:
                             return parent
         return None
 
-    def digraph(self):
-        output = "{"
-        for node in self.nodes:
-            danzi = self.getDanzi(node)
-            if danzi:
-                output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, danzi, self.nodes[node].GetFeatures())
-            else:
-                output += "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, self.nodes[node].text,
-                                                                       self.nodes[node].GetFeatures())
+    def digraph(self, type='graph'):
+        if type == 'simple':
+            output = ""
+            for edge in sorted(self.graph):
+                output += "{}{}->{}{} [{}]; ".format(edge[2], self.nodes[str(edge[2])].text,
+                                edge[0], self.nodes[str(edge[0])].text, edge[1])
+        else:
+            output = "{"
+            for node in sorted(self.nodes):
+                danzi = self.getDanzi(node)
+                if danzi:
+                    output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, danzi, self.nodes[node].GetFeatures())
+                else:
+                    output += "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, self.nodes[node].text,
+                                                                           self.nodes[node].GetFeatures())
 
-        output += "//edges:\n"
-        for edge in self.graph:
-                output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
+            output += "//edges:\n"
+            for edge in sorted(self.graph):
+                    output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
-        output += "}"
+            output += "}"
         return output
 
     def FindPointerNode(self, openID, SubtreePointer):
