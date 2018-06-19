@@ -65,7 +65,8 @@ def RemoveKnownLex(newfile):
                 for x in w.replace(partw, " ").split():
                     if len(x) > 1:
                         worddict[x] += worddict[w]
-                del worddict[w]    #being replaced by partial words
+                if w in worddict:
+                    del worddict[w]    #being replaced by partial words
 
     #repeat to do the new partial words. assume one repeat is enough.
     for w in sorted(worddict):
