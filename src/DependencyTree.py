@@ -124,7 +124,7 @@ class DependencyTree:
                             relation[0] = _subgraph.headID
                             #print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.headID))
                             break
-                self.graph.append([str(relation[0]), relation[1], str(subgraph.headID)])
+                self.graph.append([relation[0], relation[1], subgraph.headID])
 
         self._MarkNext()
         self.root = self._roots[0]
@@ -165,38 +165,46 @@ class DependencyTree:
             return True
         return False
 
-    def getDanzi(self, node):
+    def getDanzi(self, nodeid):
         for edge in self.graph:
-            if str(edge[2]) == str(node):
-                if  len(self.nodes[node].text) == 1 and len(self.nodes[int(edge[0])].text) == 1 and self.onlyOneRelation(edge[2]):
-                    if self.nodes[int(edge[0])].StartOffset < self.nodes[node].StartOffset:
-                        parent =  self.nodes[int(edge[0])].text + self.nodes[node].text
+            if edge[2] == nodeid:
+                if  len(self.nodes[nodeid].text) == 1 and len(self.nodes[edge[0]].text) == 1 and self.onlyOneRelation(edge[2]):
+                    if self.nodes[edge[0]].StartOffset < self.nodes[nodeid].StartOffset:
+                        parent =  self.nodes[edge[0]].text + self.nodes[nodeid].text
                     else:
-                        parent =  self.nodes[node].text + self.nodes[int(edge[0])].text
+                        parent =  self.nodes[nodeid].text + self.nodes[edge[0]].text
 
                     for node in DanziDict.keys():
                         if node.text == parent:
                             return parent
         return None
 
-    def digraph(self, type='graph'):
-        if type == 'simple':
+    def digraph(self, Type='graph'):
+        if Type == 'simple' or Type == 'simpleEx' :
             output = ""
-            for edge in sorted(self.graph):
-                output += "{}{}->{}{} [{}]; ".format(edge[2], self.nodes[str(edge[2])].text,
-                                edge[0], self.nodes[str(edge[0])].text, edge[1])
+            for edge in sorted(self.graph, key= lambda e: e[2]):
+                output += """{}"{}"->{}"{}" [{}]; """.format(edge[2], self.nodes[edge[2]].text,
+                                edge[0], self.nodes[edge[0]].text, edge[1])
+        elif Type == 'simple2':
+            output = ""
+            for nodeid in sorted(self.nodes):
+                output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
+            output += "{"
+            for edge in sorted(self.graph, key= lambda e: e[2]):
+                output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
+            output += "}"
         else:
             output = "{"
-            for node in sorted(self.nodes):
-                danzi = self.getDanzi(node)
+            for nodeid in sorted(self.nodes):
+                danzi = self.getDanzi(nodeid)
                 if danzi:
-                    output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, danzi, self.nodes[node].GetFeatures())
+                    output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(nodeid, danzi, self.nodes[nodeid].GetFeatures())
                 else:
-                    output += "{} [label=\"{}\" tooltip=\"{}\"];\n".format(node, self.nodes[node].text,
-                                                                           self.nodes[node].GetFeatures())
+                    output += "{} [label=\"{}\" tooltip=\"{}\"];\n".format(nodeid, self.nodes[nodeid].text,
+                                                                           self.nodes[nodeid].GetFeatures())
 
             output += "//edges:\n"
-            for edge in sorted(self.graph):
+            for edge in sorted(self.graph, key= lambda e: e[2]):
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
@@ -212,7 +220,7 @@ class DependencyTree:
         #     return openID
 
         if pointers[0] == '':
-            nodeID = str(openID)
+            nodeID = openID
         else:
             #logging.info("Finding pointer node {} from TempPointer".format(pointers[0]))
             for nodeid in self.nodes:
@@ -234,10 +242,8 @@ class DependencyTree:
                     #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
                     return None     #Can't find the pointers.
         #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
-        if nodeID:
-            return int(nodeID)
-        else:
-            return None
+        return nodeID
+
 
     def ApplyDagActions(self, OpenNode, node, actinstring):
         #self.FailedRuleTokens.clear()
@@ -246,7 +252,7 @@ class DependencyTree:
 
         if "^.---" in Actions:
             #logging.info("DAG Action: Removing all edges to this node {}. before:{}".format(node.ID, self.graph))
-            self.graph = [edge for edge in self.graph if edge[0] != str(node.ID)]
+            self.graph = [edge for edge in self.graph if edge[0] != node.ID]
             Actions.pop(Actions.index("^.---"))
 
         HasBartagAction = False
@@ -258,13 +264,13 @@ class DependencyTree:
                 #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
-                    self.graph.pop(self.graph.index([str(node.ID), relation, str(parentnodeid)]))
+                    self.graph.pop(self.graph.index([node.ID, relation, parentnodeid]))
 
                 else:
                     relation = Action[Action.rfind('.')+1:]
-                    newedge = [str(node.ID), relation, str(parentnodeid)]
+                    newedge = [node.ID, relation, parentnodeid]
                     logging.debug("DAG Action:Adding new edge: {}".format(newedge))
-                    self.graph.append([str(node.ID), relation, str(parentnodeid)])
+                    self.graph.append([node.ID, relation, parentnodeid])
                     RelationActionID = FeatureOntology.GetFeatureID(relation)
                     if RelationActionID != -1:
                         node.ApplyFeature(RelationActionID)
@@ -350,5 +356,6 @@ if __name__ == "__main__":
     x = DependencyTree()
     x.transform(newnodelist)
     print(x)
-
-    print(x.FindPointerNode(x.root, "^.O"))
+    print(x.digraph('graph'))
+    print(x.digraph('simple'))
+    print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O")))
