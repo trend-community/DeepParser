@@ -251,7 +251,7 @@ class DependencyTree:
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer)
                 #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
-                    relation = Action[Action.rfind('.'):-1]
+                    relation = Action[Action.rfind('.')+1:-1]
                     self.graph.pop(self.graph.index([str(node.ID), relation, str(parentnodeid)]))
 
                 else:
