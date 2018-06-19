@@ -706,7 +706,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("张三做好事所有人都觉得是沽名钓誉")
+    nodelist, dag, winningrules = LexicalAnalyze("这台遥控器没电了的电视机还能看吗？")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
