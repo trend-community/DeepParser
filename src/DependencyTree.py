@@ -183,8 +183,14 @@ class DependencyTree:
         if Type == 'simple' or Type == 'simpleEx' :
             output = ""
             for edge in sorted(self.graph, key= lambda e: e[2]):
-                output += """{}"{}"->{}"{}" [{}]; """.format(edge[2], self.nodes[edge[2]].text,
-                                edge[0], self.nodes[edge[0]].text, edge[1])
+                output += """{}{{{}{}{}->{}{}{}}}; """.format(edge[1], self.nodes[edge[2]].text,
+                                "/" if utils.IsAscii(self.nodes[edge[2]].text) else "", edge[2],
+                                self.nodes[edge[0]].text,
+                                "/" if utils.IsAscii(self.nodes[edge[0]].text) else "", edge[0])
+            output += "\t//"
+            for nodeid in sorted(self.nodes):
+                output += """{}{}{} """.format(self.nodes[nodeid].text,
+                            "/" if utils.IsAscii(self.nodes[nodeid].text) else "", nodeid)
         elif Type == 'simple2':
             output = ""
             for nodeid in sorted(self.nodes):

@@ -33,7 +33,7 @@ def ProcessFile(FileName):
         if DebugMode:
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        nodes, _, _ = ProcessSentence.LexicalAnalyze(TestSentence)
+        nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence)
         if not nodes:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
@@ -42,6 +42,8 @@ def ProcessFile(FileName):
             print(nodes.root().CleanOutput().toJSON() + '\t' + TestSentence)
         elif  args.type == 'simple':
             print(OutputStringTokens_oneliner(nodes, NoFeature=True) + '\t' + TestSentence)
+            if len(dag.nodes) > 0:
+                print(dag.digraph(args.type))
         elif args.type == "sentiment":
             print (OutputStringTokens_onelinerSA(nodes))
         else:   #simpleEx
