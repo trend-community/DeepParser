@@ -42,8 +42,8 @@ def RemoveKnownLex(newfile):
     with open(newfile) as f:
         content = f.read()
     logging.info("File read.")
-    content = re.sub("[！，；。（）【】“”]", " ", content)
-    content = re.sub(r"[ -z]", " ", content)
+    content = re.sub("[！，；：。（）【】“”]", " ", content)
+    content = re.sub(r"[ -~]", " ", content)
     while "   " in content:
         content = re.sub("   ", " ", content)
     content = re.sub("  ", " ", content)

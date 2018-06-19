@@ -274,6 +274,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
     def GetFeatureID(self, word):
         self.send_response(200)
         self.send_header('Content-type', "Application/json; charset=utf-8")
+        self.send_header('Cache-Control', 'public, max-age=31536000')
         self.end_headers()
         self.wfile.write(jsonpickle.encode(FeatureOntology.GetFeatureID(word)).encode("utf-8"))
 
@@ -281,6 +282,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
     def GetFeatureName(self, FeatureID):
         self.send_response(200)
         self.send_header('Content-type', "Application/json; charset=utf-8")
+        self.send_header('Cache-Control', 'public, max-age=31536000')
         self.end_headers()
         self.wfile.write(jsonpickle.encode(FeatureOntology.GetFeatureName(int(FeatureID))).encode("utf-8"))
 
@@ -288,7 +290,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
     def feed_file(self, filepath):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), filepath)) as f:
             self.send_response(200)
-            self.send_header('Content-type', "text/html; charset=utf-8")
+            self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.send_header('Cache-Control', 'public, max-age=31536000')
             self.end_headers()
             self.wfile.write(f.read().encode("utf-8"))
 
