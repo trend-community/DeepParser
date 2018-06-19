@@ -33,7 +33,7 @@ def ProcessFile(FileName):
         if DebugMode:
             print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
 
-        nodes, _ = ProcessSentence.LexicalAnalyze(TestSentence)
+        nodes, _, _ = ProcessSentence.LexicalAnalyze(TestSentence)
         if not nodes:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
