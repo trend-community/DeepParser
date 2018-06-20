@@ -37,32 +37,37 @@ def ProcessFile(FileName):
         if not nodes:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
-
+        if len(dag.nodes) == 0:
+            dag.transform(nodes)
         if args.type == 'json':
-            print(nodes.root().CleanOutput().toJSON() + '\t' + TestSentence)
+            output = nodes.root().CleanOutput().toJSON()
         elif  args.type == 'simple':
-            print(OutputStringTokens_oneliner(nodes, NoFeature=True) + '\t' + TestSentence)
-            if len(dag.nodes) > 0:
-                print(dag.digraph(args.type))
+            output = OutputStringTokens_oneliner(nodes, NoFeature=True)
         elif args.type == "sentiment":
-            print (OutputStringTokens_onelinerSA(nodes))
+            output = OutputStringTokens_onelinerSA(nodes)
+        elif args.type == 'graph':
+            output = dag.digraph(args.type)
+        elif args.type == 'simplegraph':
+            output = dag.digraph(args.type)
         else:   #simpleEx
-            print(OutputStringTokens_oneliner_ex(nodes) + '\t' + TestSentence)
+            output = OutputStringTokens_oneliner_ex(nodes)
 
+        if args.keeporigin:
+            output += '\t' + TestSentence
+        print(output)
     if args.winningrules:
         print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
-    if args.extra:
-        print(FeatureOntology.OutputMissingFeatureSet())
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--type", help="json/simple/simpleEx", choices=['json', 'simple', 'simpleEx','sentiment'])
+    parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph",
+                        choices=['json', 'simple', 'simpleEx', 'sentiment', 'graph', 'simplegraph'],
+                        default='simplegraph')
     parser.add_argument("--winningrules")
-    parser.add_argument("--extra")
-
+    parser.add_argument("--keeporigin")
     args = parser.parse_args()
 
     DebugMode = False

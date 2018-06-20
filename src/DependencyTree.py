@@ -3,6 +3,7 @@
 # so it is required to have "root".
 
 import jsonpickle, copy, logging
+import operator
 import utils    #for the Feature_...
 #from utils import *
 import Lexicon
@@ -180,19 +181,15 @@ class DependencyTree:
         return None
 
     def digraph(self, Type='graph'):
-        if Type == 'simple' or Type == 'simpleEx' :
-            output = ""
-            for edge in sorted(self.graph, key= lambda e: e[2]):
-                output += """{}{{{}{}{}->{}{}{}}}; """.format(edge[1], self.nodes[edge[2]].text,
-                                "/" if utils.IsAscii(self.nodes[edge[2]].text) else "", edge[2],
-                                self.nodes[edge[0]].text,
-                                "/" if utils.IsAscii(self.nodes[edge[0]].text) else "", edge[0])
-            output += "\t//"
-            for nodeid in sorted(self.nodes):
-                output += """{}{}{} """.format(self.nodes[nodeid].text,
-                            "/" if utils.IsAscii(self.nodes[nodeid].text) else "", nodeid)
+
+        logging.info("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
+        output = ""
+        if Type == 'simplegraph' :
+            for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
+                output += """{}{{{}->{}}}; """.format(edge[1],
+                                self.nodes[edge[2]].text,
+                                self.nodes[edge[0]].text   )
         elif Type == 'simple2':
-            output = ""
             for nodeid in sorted(self.nodes):
                 output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
             output += "{"
@@ -210,10 +207,11 @@ class DependencyTree:
                                                                            self.nodes[nodeid].GetFeatures())
 
             output += "//edges:\n"
-            for edge in sorted(self.graph, key= lambda e: e[2]):
+            for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
+        logging.info("output = {}".format(output))
         return output
 
     def FindPointerNode(self, openID, SubtreePointer):
@@ -224,7 +222,7 @@ class DependencyTree:
         # if len(pointers) <=1:
         #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
         #     return openID
-
+        nodeID = None
         if pointers[0] == '':
             nodeID = openID
         else:
@@ -234,7 +232,11 @@ class DependencyTree:
                 if self.nodes[nodeid].TempPointer == "^"+pointers[0]:
                     nodeID = nodeid
                     break
+
         if len(pointers) > 1:
+            if not nodeID:
+                logging.error("Can't find the root pointer from {}!".format(SubtreePointer))
+                return None
             for relation in pointers[1:]:
                 Found = False
                 for edge in self.graph:
@@ -244,7 +246,7 @@ class DependencyTree:
                         Found = True
                         break
 
-                if Found == False:
+                if not Found:
                     #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
                     return None     #Can't find the pointers.
         #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))

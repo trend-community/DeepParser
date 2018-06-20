@@ -100,6 +100,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         # return nodes.root().CleanOutput().toJSON() + json.dumps(winningrules)
         Debug = "Debug" in queries
         if nodes:
+            # if pipeline has "TRANSFORM DAG", then dag.nodes is not empty.
+            if len(dag.nodes) == 0:
+                dag.transform(nodes)
+
             if  Type  == "simple":
                 output_type = "text/plain;"
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
@@ -117,6 +121,12 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             elif Type == "json2":
                 output_type = "text/html;"
                 output_text = nodes.root().CleanOutput_FeatureLeave().toJSON()
+            elif Type == 'graph':
+                output_type = "text/plain;"
+                output_text = dag.digraph(Type)
+            elif Type == 'simplegraph':
+                output_type = "text/plain;"
+                output_text = dag.digraph(Type)
             elif Type == "parsetree":
                 output_type = "text/html;"
                 if action == "headdown":
@@ -127,13 +137,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 orgdata = Graphviz.orgChart(output_json, Debug=Debug)
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
-                # if pipeline has "TRANSFORM DAG", then dag is not null.
-                if len(dag.nodes)>0:
-                    orgdata = dag.digraph()
-                else:
-                    #x = DependencyTree.DependencyTree()
-                    dag.transform(nodes)
-                    orgdata = dag.digraph()
+
+                orgdata = dag.digraph()
                 chart = chart.replace("[[[DIGDATA]]]", str(orgdata))
 
                 if Debug:
