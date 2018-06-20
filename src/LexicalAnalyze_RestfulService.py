@@ -25,8 +25,10 @@ if __name__ == "__main__":
     parser.add_argument("--debug")
     parser.add_argument("--schema", help="full[default]/segonly/shallowcomplete")
     parser.add_argument("--action", help="none[default]/headdown")
-    parser.add_argument("--type", help="json[default]/simple/simpleEx", choices=['json', 'simple', 'simpleEx'],
-                        default='json')
+    parser.add_argument("--type", help="json/simple/simpleEx/graph/simplegraph[default]",
+                        choices=['json', 'simple', 'simpleEx', 'sentiment', 'graph', 'simplegraph'],
+                        default='simplegraph')
+    parser.add_argument("--keeporigin")
     args = parser.parse_args()
 
     DebugMode = False
@@ -111,6 +113,9 @@ if __name__ == "__main__":
 
     for sentence in UnitTest:
         if sentence in Result:
-            print(Result[sentence]  )
+            if args.keeporigin:
+                print(Result[sentence] + '\t' + sentence)
+            else:
+                print(Result[sentence]  )
         else:
             print("Failed: " + sentence )
