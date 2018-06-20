@@ -10,6 +10,7 @@ from collections import defaultdict
 
 _LexiconSet = set()
 
+_Top50="[男女的一了是我不在人们有来他这上着个地到大里说就去子得也和那要下看天时过出小么起你都把好还多没为又]"
 
 @lru_cache(50000)
 def IsAscii(Sentence):
@@ -23,17 +24,12 @@ def IsAscii(Sentence):
         return True
 
 
-def LoadLexicon(dictpath):
-    print("Before loading from lexicon {}, size={}".format(dictpath, len(_LexiconSet)))
-    with open(dictpath) as lexicondict:
-        for line in lexicondict:
-            blocks = [x.strip() for x in re.split(":", line.split("//", 1)[0]) if x]
-            if not blocks:
-                continue
-            if len(blocks[0]) >= 2:     #ignore one character word.
-                _LexiconSet.add(blocks[0])
-    print("After loading from lexicon, size={}".format( len(_LexiconSet)))
-
+def CleanDict(d):
+    #return
+    for k, v in list(d.items()):
+        if v <= 0:
+            del d[k]
+    logging.info("size:{}".format(len(d)))
 
 def RemoveKnownLex(newfile):
 
@@ -42,40 +38,47 @@ def RemoveKnownLex(newfile):
     with open(newfile) as f:
         content = f.read()
     logging.info("File read.")
-    content = re.sub("[！，；：。（）【】“”]", " ", content)
-    content = re.sub(r"[ -~]", " ", content)
-    while "   " in content:
-        content = re.sub("   ", " ", content)
-    content = re.sub("  ", " ", content)
-    logging.info("English Alphabet removed.")
+    content = re.sub("<[^A-z] [^A-z]>", "_", content)
+    content = re.sub("[！，；：。()·（）【】“”\n]", "_", content)
+    content = re.sub("  ", "_", content)    #space in original sentence.
+    content = re.sub("[<>]", " ", content)
+    content = re.sub(r"[^ _][^ _]+", "_", content)
 
-    for lex in sorted(_LexiconSet, key=len, reverse=True):
-        content = content.replace(lex, " ")
-    logging.info("Lexicon replaced.")
+    content = re.sub(_Top50, "_", content)
 
-    wordlist = content.split()
+    content = re.sub(" ", "", content)
+    logging.info("Known lexicon removed.")
+
+    wordlist = content.split("_")
     for w in wordlist:
         if len(w) > 1 and not IsAscii(w):  #ignore one character word.
             worddict[w] += 1
+
+    CleanDict(worddict)
     logging.info("Word Dict constructed. Found {} raw words".format(len(worddict)))
 
     for w in sorted(worddict):
-        for partw in [ x for x in worddict if len(x)<len(w)]:
+        for partw in sorted([ x for x in worddict if len(x)<len(w)], key=len, reverse=True):
             if partw in w:
                 for x in w.replace(partw, " ").split():
                     if len(x) > 1:
                         worddict[x] += worddict[w]
+                worddict[partw] += worddict[w]
                 worddict[w] = -1  # being replaced by partial words
 
+    CleanDict(worddict)
+    logging.info("Finished first round. start second round.")
     #repeat to do the new partial words. assume one repeat is enough.
-    for w in sorted(worddict):
-        for partw in [ x for x in worddict if len(x)<len(w)]:
+    for w in sorted(worddict) :
+        for partw in sorted([ x for x in worddict if len(x)<len(w)], key=len, reverse=True):
             if partw in w:
                 for x in w.replace(partw, " ").split():
                     if len(x) > 1:
                         worddict[x] += worddict[w]
+                worddict[partw] += worddict[w]
                 worddict[w] = -1    #being replaced by partial words
 
+    CleanDict(worddict)
     logging.info("Word Dict constructed. Found {} new words".format(len(worddict)))
     for w in sorted(worddict, key=worddict.get, reverse=True):
         if worddict[w] > 3:
@@ -83,17 +86,15 @@ def RemoveKnownLex(newfile):
 
     logging.info("Done!")
 
+
 def _help():
-    print("python3 g1.collectnewrods.py [newword file] [lex file 1] [lex file 2] ...")
+    print("python3 g1.collectnewrods.py [LexicalAnalyze --type simple result file]")
 
 
 if __name__ == "__main__":
     logging.basicConfig( level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 1:
         _help()
         exit(1)
-
-    for i in range(2, len(sys.argv)):
-        LoadLexicon(sys.argv[i])
 
     RemoveKnownLex(sys.argv[1])
