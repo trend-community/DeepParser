@@ -391,12 +391,15 @@ def DynamicPipeline(NodeList, schema):
 
         if action == "Lookup IE":
             Lexicon.ApplyCompositeKG(NodeList)
-
-        if action == "TRANSFORM DAG":
-            Dag.transform(NodeList)
-            logging.info("Dag:{}".format(Dag))
+        #
+        # if action == "TRANSFORM DAG":
+        #     Dag.transform(NodeList)
+        #     logging.info("Dag:{}".format(Dag))
 
         if action.startswith("DAGFSA"):
+            if len(Dag.nodes) == 0:
+                Dag.transform(NodeList)
+                logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 

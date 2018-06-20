@@ -32,7 +32,7 @@ class DependencyTree:
         self._roots = []    #only used when constructing.
         #self.graph = {}     #son ->edge->parent
         self._subgraphs = []     #this is only used when constructing from nodelist.
-        self.graph = []
+        self.graph = set()
         self.root = -1
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
@@ -125,7 +125,7 @@ class DependencyTree:
                             relation[0] = _subgraph.headID
                             #print("The previous ID" + str(relation[0]) + " is replaced by head ID" + str(_subgraph.headID))
                             break
-                self.graph.append([relation[0], relation[1], subgraph.headID])
+                self.graph.add((relation[0], relation[1], subgraph.headID))
 
         self._MarkNext()
         self.root = self._roots[0]
@@ -137,7 +137,7 @@ class DependencyTree:
 
         order = sorted(self._roots, key=lambda nodeid: self.nodes[nodeid].StartOffset)
         for i in range(1, len(order)):
-            self.graph.append([order[i], "next", order[i-1]])
+            self.graph.add((order[i], "next", order[i-1]))
 
         self._roots = [order[0]]
 
@@ -180,6 +180,7 @@ class DependencyTree:
                             return parent
         return None
 
+    #the output is in DOT language, compatible with Graphviz, Viz.js, d3-graphviz.
     def digraph(self, Type='graph'):
 
         logging.info("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
@@ -217,6 +218,8 @@ class DependencyTree:
     def FindPointerNode(self, openID, SubtreePointer):
         if SubtreePointer[0] == '^':
             SubtreePointer = SubtreePointer[1:]
+
+        #for pointer in SubtreePointer.split("|"):
         pointers = SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
         #logging.debug("tree:{}".format(pointers))
         # if len(pointers) <=1:
@@ -246,11 +249,10 @@ class DependencyTree:
                         Found = True
                         break
 
-                if not Found:
-                    #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
-                    return None     #Can't find the pointers.
-        #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
-        return nodeID
+                if  Found:
+                    return nodeID
+        else:
+            return nodeID
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring):
@@ -260,7 +262,7 @@ class DependencyTree:
 
         if "^.---" in Actions:
             #logging.info("DAG Action: Removing all edges to this node {}. before:{}".format(node.ID, self.graph))
-            self.graph = [edge for edge in self.graph if edge[0] != node.ID]
+            self.graph = set([edge for edge in self.graph if edge[0] != node.ID])
             Actions.pop(Actions.index("^.---"))
 
         HasBartagAction = False
@@ -278,7 +280,7 @@ class DependencyTree:
                     relation = Action[Action.rfind('.')+1:]
                     newedge = [node.ID, relation, parentnodeid]
                     logging.debug("DAG Action:Adding new edge: {}".format(newedge))
-                    self.graph.append([node.ID, relation, parentnodeid])
+                    self.graph.add((node.ID, relation, parentnodeid))
                     RelationActionID = FeatureOntology.GetFeatureID(relation)
                     if RelationActionID != -1:
                         node.ApplyFeature(RelationActionID)
