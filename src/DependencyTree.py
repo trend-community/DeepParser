@@ -219,41 +219,46 @@ class DependencyTree:
         if SubtreePointer[0] == '^':
             SubtreePointer = SubtreePointer[1:]
 
-        #for pointer in SubtreePointer.split("|"):
-        pointers = SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
-        #logging.debug("tree:{}".format(pointers))
-        # if len(pointers) <=1:
-        #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
-        #     return openID
-        nodeID = None
-        if pointers[0] == '':
-            nodeID = openID
-        else:
-            #logging.info("Finding pointer node {} from TempPointer".format(pointers[0]))
-            for nodeid in self.nodes:
-                #logging.info("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointers[0]))
-                if self.nodes[nodeid].TempPointer == "^"+pointers[0]:
-                    nodeID = nodeid
-                    break
-
-        if len(pointers) > 1:
-            if not nodeID:
-                logging.error("Can't find the root pointer from {}!".format(SubtreePointer))
-                return None
-            for relation in pointers[1:]:
-                Found = False
-                for edge in self.graph:
-                    #logging.debug("Evaluating edge{} with relation {}".format(edge, relation))
-                    if edge[2] == nodeID and edge[1] == relation:
-                        nodeID = edge[0]
-                        Found = True
+        for SubtreePointer_part in SubtreePointer.split("|"):
+            pointers = SubtreePointer_part.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
+            #logging.debug("tree:{}".format(pointers))
+            # if len(pointers) <=1:
+            #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
+            #     return openID
+            nodeID = None
+            if pointers[0] == '':
+                nodeID = openID
+            else:
+                #logging.info("Finding pointer node {} from TempPointer".format(pointers[0]))
+                for nodeid in self.nodes:
+                    logging.info("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointers[0]))
+                    if self.nodes[nodeid].TempPointer == "^"+pointers[0]:
+                        nodeID = nodeid
                         break
+            if nodeID:
+                if len(pointers) == 1:  # there is not sub pointer.
+                    return nodeID
+                else:
+                    for relation in pointers[1:]:
+                        Found = False
+                        for edge in self.graph:
+                            logging.debug("Evaluating edge{} with relation {}".format(edge, relation))
+                            if edge[2] == nodeID and edge[1] == relation:
+                                nodeID = edge[0]
+                                Found = True
+                                break
 
-                if not Found:
-                    #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
-                    return None     #Can't find the pointers.
-        #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
-        return nodeID
+                        if not Found:
+                            nodeID = None   #Failed to find (in this or condition), reset
+                            break
+                            #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
+                            #return None     #Can't find the pointers.
+
+                    #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
+                    if nodeID:
+                        return nodeID
+
+        return None
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring):
