@@ -143,7 +143,11 @@ def ApplyWinningDagRule(Dag, rule, OpenNode):
             if rule.Tokens[i].SubtreePointer:
 
                 nodeID = Dag.FindPointerNode(OpenNode.ID, rule.Tokens[i].SubtreePointer)
-                node = Dag.nodes[nodeID]
+                if nodeID:
+                    node = Dag.nodes[nodeID]
+                else:
+                    logging.error("Failed to find SubtreePointer {} when applying rule.".format(rule.Tokens[i].SubtreePointer))
+                    return -1
             else:
                 node = OpenNode
             logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
