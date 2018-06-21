@@ -275,12 +275,13 @@ class DependencyTree:
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
                     self.graph.remove((node.ID, relation, parentnodeid))
-
                 else:
                     relation = Action[Action.rfind('.')+1:]
                     newedge = [node.ID, relation, parentnodeid]
                     logging.debug("DAG Action:Adding new edge: {}".format(newedge))
+
                     self.graph.add((node.ID, relation, parentnodeid))
+
                     RelationActionID = FeatureOntology.GetFeatureID(relation)
                     if RelationActionID != -1:
                         node.ApplyFeature(RelationActionID)
