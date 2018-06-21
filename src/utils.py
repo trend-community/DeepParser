@@ -307,14 +307,40 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
 
 
 
-def OutputStringTokens_onelinerSA(strTokenList):
+def OutputStringTokens_onelinerSA(dag):
+    # print("Dag:{}".format(dag))
     output = ""
-    node = strTokenList.head
-    while node:
-        if output:
-            output += " "
-        output += node.onelinerSA()
-        node = node.next
+    TargetFeature = "Target"
+    ProFeature = "Pro"
+    ConFeature = "Con"
+    PosEmo = "PosEmo"
+    NegEmo = "NegEmo"
+    Key = "Kee"
+    Value = "Value"
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x:x.StartOffset)
+    for node in nodelist:
+        output += node.text + "/"
+        featureString = node.GetFeatures()
+        featureSet = featureString.split(",")
+        # print (featureSet)
+        if TargetFeature in featureSet:
+            output +=  TargetFeature + " "
+        if ProFeature in featureSet:
+            output +=  ProFeature + " "
+        if ConFeature in featureSet:
+            output += ConFeature + " "
+        if PosEmo in featureSet:
+            output +=  PosEmo + " "
+        if NegEmo in featureSet:
+            output +=  NegEmo + " "
+        if Key in featureSet:
+            output +=  Key + " "
+        if Value in featureSet:
+            output +=  Value + " "
+        if output.endswith("/"):
+            output = output[:-1]
     return output
 
 def OutputStringTokens_oneliner_merge(strTokenList):

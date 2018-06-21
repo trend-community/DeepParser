@@ -368,47 +368,6 @@ class SentenceNode(object):
                 output += ":" + featureString + ";"
         return output.strip()
 
-    def onelinerSA(self):
-        output = ""
-        TargetFeature = "Target"
-        ProFeature = "Pro"
-        ConFeature = "Con"
-        PosEmo = "PosEmo"
-        NegEmo = "NegEmo"
-        Key = "Kee"
-        Value = "Value"
-
-        featureString = self.GetFeatures()
-        featureSet = featureString.split(",")
-        if self.sons:
-            output += "<"
-            for son in self.sons:
-                output += son.onelinerSA() + " "
-            output = output.strip() + ">"
-
-
-        if not self.sons:
-            output = self.text
-
-        if TargetFeature in featureSet:
-            output +=  "/" + TargetFeature + " "
-        elif ProFeature in featureSet:
-            output += "/" + ProFeature + " "
-        elif ConFeature in featureSet:
-            output +=  "/" + ConFeature + " "
-        elif PosEmo in featureSet:
-            output +=  "/" + PosEmo + " "
-        elif NegEmo in featureSet:
-            output +=  "/" + NegEmo + " "
-        elif Key in featureSet:
-            output +=  "/" + Key + " "
-        elif Value in featureSet:
-            output +=  "/" + Value + " "
-
-
-
-        return output.strip()
-
 
 
     def oneliner_merge(self, layer_counter):
