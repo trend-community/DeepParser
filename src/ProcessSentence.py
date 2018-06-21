@@ -398,7 +398,11 @@ def DynamicPipeline(NodeList, schema):
 
         if action.startswith("DAGFSA"):
             if len(Dag.nodes) == 0:
-                Dag.transform(NodeList)
+                try:
+                    Dag.transform(NodeList)
+                except Exception as e:
+                    logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
+                    return NodeList, Dag, WinningRules
                 logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))

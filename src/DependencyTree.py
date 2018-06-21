@@ -274,7 +274,7 @@ class DependencyTree:
                 #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
-                    self.graph.pop((node.ID, relation, parentnodeid))
+                    self.graph.remove((node.ID, relation, parentnodeid))
 
                 else:
                     relation = Action[Action.rfind('.')+1:]
@@ -340,7 +340,7 @@ if __name__ == "__main__":
     import ProcessSentence
     ProcessSentence.LoadCommon()
 
-    Sentence = "赠送的是啥?"
+    Sentence = "保罗法狄（BAOLUOFADI）字母条纹圆领短袖T恤"
 
     nodelist, _, _ = ProcessSentence.LexicalAnalyze(Sentence)
 
