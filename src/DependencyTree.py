@@ -219,6 +219,13 @@ class DependencyTree:
         #find the write relation to add, if already have a child relation for the same nodes.
         self.graph.add((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
 
+        #Set the parent to have the relation.
+        hasFeatureID = FeatureOntology.GetFeatureID("has" + relation)
+        if hasFeatureID >= 0:
+            self.nodes[node2id].ApplyFeature(hasFeatureID)
+        else:
+            logging.error("There is no has{} feature in the feature.txt!".format(relation))
+
     def _RemoveEdge(self, node1id, relation, node2id):
         self.graph.remove((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
 

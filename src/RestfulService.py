@@ -53,6 +53,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.GetFeatureID(link.path[14:])
             elif link.path.startswith('/GetFeatureName/'):
                 self.GetFeatureName(int(link.path[16:]))
+            elif link.path.startswith('/FeatureOntology'):
+                self.ShowFeatureOntology()
             elif link.path.startswith('/Reload'):
                 print (link.path[7:])
                 self.Reload(link.path[7:])
@@ -280,6 +282,22 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(Reply.encode("utf-8"))
 
+
+    def ShowFeatureOntology(self):
+        output_type = "text/html;"
+        output_text = charttemplate.replace("[[[DIGDATA]]]",
+                                FeatureOntology.OutputFeatureOntologyGraph())
+
+        try:
+            self.send_response(200)
+            self.send_header('Content-type', output_type + " charset=utf-8")
+            self.end_headers()
+            self.wfile.write(output_text.encode("utf-8"))
+        except Exception as e:
+            logging.error(e)
+            self.send_error(500, "Error in processing")
+            # self.ReturnBlank()
+        
 
     def GetFeatureID(self, word):
         self.send_response(200)

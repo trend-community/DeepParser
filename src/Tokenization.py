@@ -160,6 +160,7 @@ class SentenceLinkedList:
         NewText = ""
         NewNorm = ""
         NewAtom = ""
+        hasUpperRelations = []
         for i in range(count):
             if i == 0:
                 spaces = ""
@@ -169,7 +170,8 @@ class SentenceLinkedList:
             NewText += spaces + p.text
             NewNorm += spaces + p.norm
             NewAtom += spaces + p.atom
-
+            if p.UpperRelationship and p.UpperRelationship != 'H':
+                hasUpperRelations.append(FeatureOntology.GetFeatureID("has"+p.UpperRelationship))
             sons.append(p)
             p = p.next
 
@@ -180,6 +182,8 @@ class SentenceLinkedList:
         NewNode.StartOffset = startnode.StartOffset
         NewNode.EndOffset = endnode.EndOffset
         Lexicon.ApplyWordLengthFeature(NewNode)
+        for haverelation in hasUpperRelations:
+            NewNode.ApplyFeature(haverelation)
         return NewNode, startnode, endnode
 
     def combine(self, start, count, headindex=0):
@@ -478,6 +482,12 @@ class SentenceNode(object):
                         self.ApplyFeature(RelationActionID)
                     else:
                         logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
+                    # apply this "has" to the parent (new) node (chunk)
+                    # RelationActionID = FeatureOntology.GetFeatureID("has" + self.UpperRelationship)
+                    # if RelationActionID != -1:
+                    #     self.ApplyFeature(RelationActionID)
+                    # else:
+                    #     logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
 
                 else:
                     logging.error("The Action is wrong: It does not have dot to link to proper pointer")

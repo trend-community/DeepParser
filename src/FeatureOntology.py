@@ -180,6 +180,18 @@ def OutputFeatureOntologyFile(FolderLocation):
     with open(FileLocation, "w", encoding="utf-8") as writer:
         writer.write(OutputFeatureOntology())
 
+def OutputFeatureOntologyGraph(size = 500):
+    #output = "//***Ontology***" + "\n"
+    output = "{\n"
+    counter = 0
+    for OpenWord in sorted(_FeatureOntologyDict.keys()):
+        if _FeatureOntologyDict[OpenWord].ancestors:
+            counter += 1;
+            if counter > size:
+                break
+            output += _FeatureOntologyDict[OpenWord].openWord + "->" + "->".join([GetFeatureName(fid) for fid in _FeatureOntologyDict[OpenWord].ancestors]) + ";\n"
+    output += "}\n"
+    return output
 
 def LoadFeatureOntology(featureOncologyLocation):
     if featureOncologyLocation.startswith("."):
@@ -240,7 +252,7 @@ def GetFeatureID(feature):
     if ChinesePattern.search(feature):
         return -1   # Chinese is not a feature.
 
-    logging.warning("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
+    logging.warning("GetFeatureID: Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
 
@@ -260,7 +272,7 @@ def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
     else:
-        logging.warning("Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureList)=" + str(len(_FeatureList)))
+        logging.warning("GetFeatureName: Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureList)=" + str(len(_FeatureList)))
         # raise(Exception("error"))
         return ""
 
@@ -305,8 +317,10 @@ if __name__ == "__main__":
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
         print(OutputFeatureOntology())
         OutputFeatureOntologyFile('../temp')
+        print(OutputFeatureOntologyGraph())
 
     else:
         print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology > outputfile.txt")
         exit(0)
+
 
