@@ -249,10 +249,11 @@ class DependencyTree:
                         Found = True
                         break
 
-                if  Found:
-                    return nodeID
-        else:
-            return nodeID
+                if not Found:
+                    #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
+                    return None     #Can't find the pointers.
+        #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
+        return nodeID
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring):
