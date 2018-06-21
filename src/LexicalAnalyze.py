@@ -46,8 +46,8 @@ def ProcessFile(FileName):
         elif args.type == "sentiment":
             if len(dag.nodes) == 0:
                 dag.transform(nodes)
-            print (OutputStringTokens_onelinerSA(dag))
-            output = OutputStringTokens_onelinerSA(nodes)
+            # print (OutputStringTokens_onelinerSA(dag))
+            output = OutputStringTokens_onelinerSA(dag)
         elif args.type == 'graph':
             output = dag.digraph(args.type)
         elif args.type == 'simplegraph':
