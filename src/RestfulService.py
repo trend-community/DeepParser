@@ -234,7 +234,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                     for external in Externalfile:
                         external = external.strip()
                         if external:
-                            Lexicon.LoadLexicon(XLocation + 'Q/lexicon/' + external,
+                            Lexicon.LoadLexicon(XLocation + external,
                                                 lookupSource=LexiconLookupSource.External)
 
                 if action.startswith("Lookup oQcQ:"):
