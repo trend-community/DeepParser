@@ -180,16 +180,33 @@ def OutputFeatureOntologyFile(FolderLocation):
     with open(FileLocation, "w", encoding="utf-8") as writer:
         writer.write(OutputFeatureOntology())
 
-def OutputFeatureOntologyGraph(size = 500):
+def OutputFeatureOntologyGraph():
     #output = "//***Ontology***" + "\n"
+    graph = set()
+    PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+    XLocation = os.path.dirname(PipeLineLocation)
+    with open(XLocation + '/../Y/feature.txt', encoding="utf-8") as dictionary:
+        for line in dictionary:
+            code, comment = SeparateComment(line)
+            if "," not in code:
+                continue    #no edge. ignore
+
+            OpenWord, ancestors = code.split(",", 1)
+            OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  #remove the alias.
+
+            for path in ancestors.split(";"):
+                prev = OpenWordID
+                for node in path.split(","):
+                    if node.strip():
+                        graph.add((prev, GetFeatureID(node.strip())))
+                        prev = GetFeatureID(node.strip())
+
     output = "{\n"
-    counter = 0
-    for OpenWord in sorted(_FeatureOntologyDict.keys()):
-        if _FeatureOntologyDict[OpenWord].ancestors:
-            counter += 1;
-            if counter > size:
-                break
-            output += _FeatureOntologyDict[OpenWord].openWord + "->" + "->".join([GetFeatureName(fid) for fid in _FeatureOntologyDict[OpenWord].ancestors]) + ";\n"
+    for edge in graph:
+            try:
+                output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
+            except TypeError as e:
+                logging.error("TypeError")
     output += "}\n"
     return output
 
