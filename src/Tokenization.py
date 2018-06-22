@@ -911,7 +911,7 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
                 segments = segmentslashed + segments
         elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1.2:
             # from main2007.txt, not trustworthy
-            subsegments = _Tokenize_Lexicon_maxweight(segment, True)
+            subsegments = _Tokenize_Lexicon_minseg(segment, True)
             segments = subsegments + segments
         else:
             segments = [sentence[i - bestPhraseLen[i]:i]] + segments
