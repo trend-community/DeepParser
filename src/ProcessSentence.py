@@ -659,7 +659,7 @@ def LoadCommon():
             for external in Externalfile:
                 external = external.strip()
                 if external:
-                    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/' + external,lookupSource=LexiconLookupSource.External)
+                    Lexicon.LoadLexicon(XLocation + external,lookupSource=LexiconLookupSource.External)
 
         if action.startswith("Lookup oQcQ:"):
             oQoCfile = action[action.index(":")+1:].strip().split(",")
