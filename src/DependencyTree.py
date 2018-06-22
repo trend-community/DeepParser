@@ -230,60 +230,62 @@ class DependencyTree:
     def _RemoveEdge(self, node1id, relation, node2id):
         self.graph.remove((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
 
+    #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
+    #it is not longer process here.
     def FindPointerNode(self, openID, SubtreePointer):
+        logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
         if SubtreePointer[0] == '^':
             SubtreePointer = SubtreePointer[1:]
 
-        for SubtreePointer_part in SubtreePointer.split("|"):
-            pointers = SubtreePointer_part.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
-            #logging.debug("tree:{}".format(pointers))
-            # if len(pointers) <=1:
-            #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
-            #     return openID
-            nodeID = None
-            if pointers[0] == '':
-                nodeID = openID
-            else:
-                #logging.info("Finding pointer node {} from TempPointer".format(pointers[0]))
-                for nodeid in sorted(self.nodes):
-                    logging.debug("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointers[0]))
-                    if self.nodes[nodeid].TempPointer == "^"+pointers[0]:
-                        nodeID = nodeid
-                        break
-            if nodeID:
-                if len(pointers) == 1:  # there is not sub pointer.
-                    return nodeID
-                else:
-                    for relation in pointers[1:]:
-                        relationid = FeatureOntology.GetFeatureID(relation)
-                        Found = False
-                        for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
-                            logging.debug("Evaluating edge{} with relation {}".format(edge, relation))
-                            if edge[2] == nodeID:
-                                if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
-                                    nodeID = edge[0]
-                                    Found = True
-                                    logging.debug("   Found!")
-                                    break
-                                else:
-                                    edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
-                                    if edgerelationnode and relationid in edgerelationnode.ancestors:
-                                        nodeID = edge[0]
-                                        Found = True
-                                        logging.debug("   Found ontology ancesstor relation!")
-                                        break
-
-                        if not Found:
-                            nodeID = None   #Failed to find (in this or condition), reset
+        if "." in SubtreePointer:
+            pointer, relations = SubtreePointer.split(".", 1)
+        else:
+            pointer, relations = [SubtreePointer, ""]
+        #pointers = SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
+        #logging.debug("tree:{}".format(pointers))
+        # if len(pointers) <=1:
+        #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
+        #     return openID
+        nodeID = None
+        if pointer == '':
+            nodeID = openID
+        else:
+            #logging.info("Finding pointer node {} from TempPointer".format(pointers[0]))
+            for nodeid in sorted(self.nodes):
+                logging.debug("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
+                if self.nodes[nodeid].TempPointer == "^"+pointer:
+                    nodeID = nodeid
+                    break
+        if nodeID and relations:
+            for relation in relations.split("."):
+                relationid = FeatureOntology.GetFeatureID(relation)
+                Found = False
+                for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
+                    logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
+                    if edge[2] == nodeID:
+                        if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
+                            nodeID = edge[0]
+                            Found = True
+                            logging.debug("   Found!")
                             break
-                            #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
-                            #return None     #Can't find the pointers.
+                        else:
+                            edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
+                            if edgerelationnode and relationid in edgerelationnode.ancestors:
+                                nodeID = edge[0]
+                                Found = True
+                                logging.debug("   Found ontology ancesstor relation!")
+                                break
 
-                    #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
-                    if nodeID:
-                        return nodeID
+                if not Found:
+                    return None
+                    #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
+                    #return None     #Can't find the pointers.
 
-        return None
+                #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
+        if nodeID:
+            return nodeID
+        else:
+            return None
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring):
@@ -300,9 +302,9 @@ class DependencyTree:
 
         for Action in Actions:
             if Action[0] == '^':
-                ParentPointer = Action[:Action.rfind('.')]
+                ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer)
-                #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
+                logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
                     self._RemoveEdge(node.ID, relation, parentnodeid)

@@ -140,16 +140,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 def ApplyWinningDagRule(Dag, rule, OpenNode):
     for i in range(rule.TokenLength):
         if rule.Tokens[i].action:
-            if rule.Tokens[i].SubtreePointer:
-
-                nodeID = Dag.FindPointerNode(OpenNode.ID, rule.Tokens[i].SubtreePointer)
-                if nodeID:
-                    node = Dag.nodes[nodeID]
-                else:
-                    logging.error("Failed to find SubtreePointer {} when applying rule.".format(rule.Tokens[i].SubtreePointer))
-                    return -1
-            else:
-                node = OpenNode
+            nodeID = rule.Tokens[i].MatchedNodeID
+            node = Dag.nodes[nodeID]
             logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
             Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action)
 
@@ -298,6 +290,7 @@ def DAGMatch(Dag, OpenNode, Rule):
     opennode_result = LogicMatch_notpointer(OpenNode, Rule.Tokens[0])
     if not opennode_result:
         return False
+    Rule.Tokens[0].MatchedNodeID = OpenNode.ID
 
     for token in Rule.Tokens[1:]:
         nodeID = Dag.FindPointerNode(OpenNode.ID, token.SubtreePointer)
@@ -309,6 +302,7 @@ def DAGMatch(Dag, OpenNode, Rule):
         if result == False:
             #logging.warning("does not mtach:{}, {}".format(Dag.nodes[nodeID], token))
             return False
+        token.MatchedNodeID = nodeID
         Dag.nodes[nodeID].TempPointer = token.pointer
 
     #logging.l("Match this rule! {} == {}".format(Dag, Rule))

@@ -1293,9 +1293,9 @@ def _ExpandRuleWildCard_List(OneList):
                     newrule.RuleName = rule.RuleName + "_" + str(repeat_num)
                     newrule.RuleContent = rule.RuleContent
                     for tokenindex_pre in range(tokenindex):
-                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                        newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_pre]))
                     for tokenindex_this in range(repeat_num):
-                        new_node = copy.copy(rule.Tokens[tokenindex])
+                        new_node = copy.deepcopy(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
                         if tokenindex_this != 0 and rule.Tokens[tokenindex].StartChunk != 0:
                             new_node.StartChunk = 0 # in the copies, only the first one can be StartChunk
@@ -1320,7 +1320,7 @@ def _ExpandRuleWildCard_List(OneList):
                             NextIsPointer = True
                             NextPointer = origin_node.pointer
                     for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
-                        new_node = copy.copy(rule.Tokens[tokenindex_post])
+                        new_node = copy.deepcopy(rule.Tokens[tokenindex_post])
                         if tokenindex_post == tokenindex + 1:
                             if NextIsStart:
                                 new_node.StartChunk = origin_node.StartChunk
@@ -1431,11 +1431,11 @@ def _ExpandParenthesis(OneList):
                 newrule.RuleName = rule.RuleName + "_p" + str(tokenindex)
                 newrule.RuleContent = rule.RuleContent
                 for tokenindex_pre in range(tokenindex):
-                    newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                    newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_pre]))
                 for subtoken in subTokenlist:
                     newrule.Tokens.append(subtoken)
                 for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
-                    newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                    newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_post]))
                 newrule.SetStrTokenLength()
                 OneList.append(newrule)
                 Expand = True
@@ -1536,7 +1536,7 @@ def _ExpandOrBlock(OneList):
             newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
-                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_pre]))
 
             # Analyze the new word, might be a list of tokens.
             try:
@@ -1558,7 +1558,7 @@ def _ExpandOrBlock(OneList):
                 newrule.Tokens.append(subtoken)
 
             for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
-                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_post]))
             newrule.SetStrTokenLength()
             OneList.append(newrule)
 
@@ -1570,7 +1570,7 @@ def _ExpandOrBlock(OneList):
             newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
             for tokenindex_pre in range(tokenindex):
-                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_pre]))
 
             # Analyze the new word, might be a list of tokens.
             try:
@@ -1592,7 +1592,7 @@ def _ExpandOrBlock(OneList):
                 newrule.Tokens.append(subtoken)
 
             for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
-                newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_post]))
             newrule.SetStrTokenLength()
             OneList.append(newrule)
 
@@ -1692,18 +1692,46 @@ def _ExpandOrToken(OneList):
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
                     newrule.RuleContent = rule.RuleContent
                     for tokenindex_pre in range(tokenindex):
-                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_pre]))
+                        newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_pre]))
 
                     #current token
-                    node = copy.copy(token)
+                    node = copy.deepcopy(token)
                     node.word = leftBlock + " " + orpiece + " " + rightBlock
                     newrule.Tokens.append(node)
 
                     # right of the token:
                     for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
-                        newrule.Tokens.append(copy.copy(rule.Tokens[tokenindex_post]))
+                        newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_post]))
                     newrule.SetStrTokenLength()
-                    newrule.Chunks = copy.copy(rule.Chunks)
+                    newrule.Chunks = copy.deepcopy(rule.Chunks)
+                    OneList.append(newrule)
+
+                Expand = True
+                # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+                break   # don't work on the next | in this rule. wait for the next round.
+
+            if token.SubtreePointer.find("|") > 0 :
+                for subtreepointer in token.SubtreePointer.split("|"):
+                    # left of the token:
+                    newrule = Rule()
+                    newrule.FileName = rule.FileName
+                    newrule.Origin = rule.Origin
+                    newrule.comment = rule.comment
+                    newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
+                    newrule.RuleContent = rule.RuleContent
+                    for tokenindex_pre in range(tokenindex):
+                        newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_pre]))
+
+                    #current token
+                    node = copy.deepcopy(token)
+                    node.SubtreePointer = subtreepointer
+                    newrule.Tokens.append(node)
+
+                    # right of the token:
+                    for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
+                        newrule.Tokens.append(copy.deepcopy(rule.Tokens[tokenindex_post]))
+                    newrule.SetStrTokenLength()
+                    newrule.Chunks = copy.deepcopy(rule.Chunks)
                     OneList.append(newrule)
 
                 Expand = True
