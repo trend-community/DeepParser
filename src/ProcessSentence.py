@@ -270,7 +270,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
         if WinningRule:
-            logging.debug("Found winning rule at counter: " + str(counter))
+            logging.debug("Found winning rule at counter: {}. The winning rule is: {}".format(counter, WinningRule) )
             try:
                 if WinningRule.ID not in WinningRules:
                     WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)

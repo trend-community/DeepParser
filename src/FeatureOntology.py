@@ -167,6 +167,10 @@ def OutputFeatureOntology():
     for OpenWord in sorted(_FeatureOntologyDict.keys()):
         if _FeatureOntologyDict[OpenWord].ancestors:
             output += str(_FeatureOntologyDict[OpenWord]) + "\n"
+    output += "//***Ontology* * single nodes**" + "\n"
+    for OpenWord in sorted(_FeatureOntologyDict.keys()):
+        if not _FeatureOntologyDict[OpenWord].ancestors:
+            output += str(_FeatureOntologyDict[OpenWord]) + "\n"
     output += "//***Alias***" + "\n"
     for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
         output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"
@@ -201,13 +205,26 @@ def OutputFeatureOntologyGraph():
                         graph.add((prev, GetFeatureID(node.strip())))
                         prev = GetFeatureID(node.strip())
 
+    from collections import defaultdict
+    outbound = defaultdict(int)
+    inbound = defaultdict(int)
+    nodeset = set()
     output = "{\n"
     for edge in graph:
-            try:
-                output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
-            except TypeError as e:
-                logging.error("TypeError")
+        output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
+
+        outbound[edge[0]] += 1
+        inbound[edge[1]] += 1
+        nodeset.add(edge[0])
+        nodeset.add(edge[1])
+
     output += "}\n"
+
+    print("There are {} nodes.".format(len(nodeset)))
+    for outboundid in sorted(outbound, key=outbound.get, reverse=True):
+        print("{} outbound: {}".format(GetFeatureName(outboundid), outbound[outboundid]))
+    for inboundid in sorted(inbound, key=inbound.get, reverse=True):
+        print("{} inbound: {}".format(GetFeatureName(inboundid), inbound[inboundid]))
     return output
 
 def LoadFeatureOntology(featureOncologyLocation):
@@ -332,7 +349,7 @@ if __name__ == "__main__":
         #LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         #_CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        print(OutputFeatureOntology())
+        #print(OutputFeatureOntology())
         OutputFeatureOntologyFile('../temp')
         print(OutputFeatureOntologyGraph())
 
