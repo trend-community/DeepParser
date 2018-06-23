@@ -304,7 +304,7 @@ class DependencyTree:
             if Action[0] == '^':
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer)
-                logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
+                #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
                     self._RemoveEdge(node.ID, relation, parentnodeid)
