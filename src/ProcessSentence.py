@@ -114,13 +114,12 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             VirtualRuleToken += 1
 
         if rule.Tokens[i].action:
-            if rule.Tokens[i].SubtreePointer:
-                SubtreePointer = rule.Tokens[i].SubtreePointer
-                #logging.debug("Start looking for Subtree: " + SubtreePointer)
-                token = FindPointerNode(strtokens, i + StartPosition - VirtualRuleToken, rule.Tokens, i, Pointer=SubtreePointer)
-            else:
-                token = strtokens.get(i + StartPosition - VirtualRuleToken)
-
+            try:
+                token = strtokens.searchID(rule.Tokens[i].MatchedNodeID)
+            except :
+                logging.error("Trying to find str token of the rule token {}".format(rule.Tokens[i]))
+                logging.error("The strtokens is: {}".format(jsonpickle.dumps(strtokens)))
+                raise
             token.ApplyActions(rule.Tokens[i].action)
 
     if rule.Chunks:
@@ -545,7 +544,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
-        logging.error("Overall Error in LexicalAnalyze:")
+        logging.error("Overall Error in LexicalAnalyze({}) :".format(Sentence))
         logging.error(e)
         logging.error(traceback.format_exc())
         return None, None
@@ -683,7 +682,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "声音扩展-*外接音箱"
+    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
@@ -711,7 +710,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("这台遥控器没电了的电视机还能看吗？")
+    nodelist, dag, winningrules = LexicalAnalyze("多干点吧。")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 

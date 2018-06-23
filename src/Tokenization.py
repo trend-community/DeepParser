@@ -88,6 +88,25 @@ class SentenceLinkedList:
         self.size -= 1
         self._setnorms()
 
+    def searchID(self, ID):
+        p = self.head
+        nodestack = set()
+        while p:
+            if p.ID == ID:
+                return p
+
+            if p.sons:
+                if p.next:
+                    nodestack.add(p.next)
+                p = p.sons[0]
+            else:
+                p = p.next
+                if p == None and nodestack:
+                    p = nodestack.pop()
+        logging.error("Failed to find {} in the nodelist.searchID!".format(ID))
+        raise("Failed searchID.")
+        return None
+
     def get(self, index):
         if index in self.get_cache:
             return self.get_cache[index]

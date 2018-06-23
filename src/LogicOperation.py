@@ -260,6 +260,7 @@ def LogicMatch_notpointer(StrToken, RuleToken):
 
 def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     if not RuleToken.word:  # for the comparison of "[]", can match anything
+        RuleToken.MatchedNodeID = StrTokenList.get(StrPosition).ID
         return True
 
     if RuleTokens[RulePosition].SubtreePointer:
@@ -282,8 +283,10 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         logging.error("In LogicMatch(): Can't find strToken!")
         return False
 
+    RuleToken.MatchedNodeID = strToken.ID
+
     if RuleToken.AndText and "^" in RuleToken.AndText:
-            #This is a pointer!
+            #This is a pointer! unification comparison.
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
 
     # if RuleToken.word in strToken.FailedRuleTokens:
@@ -300,6 +303,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         # CommonAndFeatutures = RuleToken.AndFeatures.intersection(strToken.features)
         # if len(CommonAndFeatutures) < len(RuleToken.AndFeatures):
         #     return False
+
 
     return LogicMatch_notpointer(strToken, RuleToken)
 
