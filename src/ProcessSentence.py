@@ -130,11 +130,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     continue
                 newnode = strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
                 newnode.ApplyActions(chunk.Action)
-                if chunk.StringChunkLength == 1:
-                    if utils.FeatureID_H in newnode.features and newnode.UpperRelationship == "H":
-                        newnode.features.remove(utils.FeatureID_H)
-                        newnode.UpperRelationship = ""
-                        logging.debug("Removing H in this node: {}".format(strtokens.get(StartPosition + chunk.StartOffset)))
 
     RemoveTempPointer(strtokens)
     return 0
@@ -315,6 +310,7 @@ def DAGMatch(Dag, OpenNode, Rule):
 
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
+    logging.debug("Start checking {}".format(RuleFileName))
 
     for nodeid in Dag.nodes:
         node = Dag.nodes[nodeid]
@@ -323,14 +319,14 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         rulegroup = Rules.RuleGroupDict[RuleFileName]
 
         for rule in rulegroup.RuleList:
-            #logging.debug("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
+            logging.debug("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
             if DAGMatch(Dag, node, rule):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
             else:
-                for nodeid in Dag.nodes:
-                    #logging.info("node: {}".format(node))
-                    Dag.nodes[nodeid].TempPointer = ''   #remove TempPointer from failed rules.
+                for node_id in Dag.nodes:
+                    logging.info("node: {}".format(node))
+                    Dag.nodes[node_id].TempPointer = ''   #remove TempPointer from failed rules.
         if WinningRule:
             logging.info("DAG: Winning rule! {}".format(WinningRule))
             try:
