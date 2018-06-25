@@ -228,7 +228,11 @@ class DependencyTree:
             logging.error("There is no has{} feature in the feature.txt!".format(relation))
 
     def _RemoveEdge(self, node1id, relation, node2id):
-        self.graph.remove((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
+        relationid = FeatureOntology.GetFeatureID(relation)
+
+        for edge in [ x for x in self.graph if x[0] == node1id and x[2] == node2id]:
+            if relationid == edge[3] or relationid in FeatureOntology.SearchFeatureOntology(edge[3]).ancestors:
+                self.graph.remove(edge)
 
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
