@@ -128,8 +128,13 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             for chunk in rule.Chunks:   # the chunks are presorted to process right chucks first.
                 if chunk.ChunkLevel != ChunkLevel:
                     continue
-                strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
-                strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
+                newnode = strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
+                newnode.ApplyActions(chunk.Action)
+                if chunk.StringChunkLength == 1:
+                    if utils.FeatureID_H in newnode.features and newnode.UpperRelationship == "H":
+                        newnode.features.remove(utils.FeatureID_H)
+                        newnode.UpperRelationship = ""
+                        logging.debug("Removing H in this node: {}".format(strtokens.get(StartPosition + chunk.StartOffset)))
 
     RemoveTempPointer(strtokens)
     return 0

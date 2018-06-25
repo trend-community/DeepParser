@@ -595,6 +595,15 @@ class Rule:
         # sort backward for applying
         self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
 
+        # add default relation ship.
+        for chunk in self.Chunks:
+            for i in range(chunk.StartOffset, chunk.StartOffset + chunk.Length):
+                if "^" not in self.Tokens[i].action:
+                    if "+++" in chunk.Action:
+                        self.Tokens[i].action += " ^.x"
+                    else:
+                        self.Tokens[i].action += " ^.X"
+
 
     def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset = 0):
 

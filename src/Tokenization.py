@@ -207,7 +207,7 @@ class SentenceLinkedList:
 
     def combine(self, start, count, headindex=0):
         if count == 1:
-            return  #we don't actually want to just wrap one word as one chunk
+            return self.get(start+headindex) #we don't actually want to just wrap one word as one chunk
         NewNode, startnode, endnode = self.newnode(start, count)
 
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
