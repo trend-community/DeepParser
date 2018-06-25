@@ -359,10 +359,10 @@ def GenerateLexPlus():
                     copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
                     newNode.features = copyFeatures
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     if len(newWord) >= 5:
                         _LexiconDictPlus.update({newWord: newNode})
                     else:
@@ -381,10 +381,10 @@ def GenerateLexPlus():
                             copyFeatures.remove(cpbID)
                         copyFeatures.add(canPBID)
                         newNode = LexiconNode(newWord)
-                        newNode.norm = first + second
+                        newNode.atom = first + second
                         newNode.text= newWord
                         newNode.features = copyFeatures
-                        newNode.atom = newWord
+                        newNode.norm = newWord
                         _LexiconDictDefPlus.update({newWord: newNode})
                     else:
                         logging.debug("duplicate2 :" + newWord)
@@ -397,10 +397,10 @@ def GenerateLexPlus():
                     copyFeatures.add(canPBID)
                     copyFeatures.add(orQID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
                     newNode.features = copyFeatures
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate3 :" + newWord)
@@ -413,9 +413,9 @@ def GenerateLexPlus():
                     copyFeatures.add(canPBID)
                     copyFeatures.add(orQID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     newNode.features = copyFeatures
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
@@ -430,10 +430,10 @@ def GenerateLexPlus():
                     copyFeatures.add(orQID)
                     copyFeatures.add(perfectID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
                     newNode.features = copyFeatures
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate5 :" + newWord)
@@ -447,9 +447,9 @@ def GenerateLexPlus():
                     copyFeatures.add(orQID)
                     copyFeatures.add(perfectID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     newNode.features = copyFeatures
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
@@ -462,10 +462,10 @@ def GenerateLexPlus():
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(cannotPBID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
                     newNode.features = copyFeatures
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     if len(newWord) >= 5:
                         _LexiconDictPlus.update({newWord: newNode})
                     else:
@@ -483,10 +483,10 @@ def GenerateLexPlus():
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(cannotPBID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
                     newNode.features = copyFeatures
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate7 :" + newWord)
@@ -501,10 +501,10 @@ def GenerateLexPlus():
                         copyFeatures.remove(cpbID)
                     copyFeatures.add(cannotPBID)
                     newNode = LexiconNode(newWord)
-                    newNode.norm = first + second
+                    newNode.atom = first + second
                     newNode.text = newWord
                     newNode.features = copyFeatures
-                    newNode.atom = newWord
+                    newNode.norm = newWord
                     _LexiconDictPlus.update({newWord: newNode})
                 else:
                     logging.debug("duplicate7 :" + newWord)
@@ -521,10 +521,10 @@ def GenerateLexPlus():
                             copyFeatures.remove(cpbID)
                         copyFeatures.add(cannotPBID)
                         newNode = LexiconNode(newWord)
-                        newNode.norm = first + second
+                        newNode.atom = first + second
                         newNode.text = newWord
                         newNode.features = copyFeatures
-                        newNode.atom = newNode.text
+                        newNode.norm = newNode.text
                         _LexiconDictDefPlus.update({newWord: newNode})
                     else:
                         logging.debug("duplicate8 :" + newWord)
@@ -538,10 +538,10 @@ def GenerateLexPlus():
                     newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
-                        newNode.norm = first + second
+                        newNode.atom = first + second
                         newNode.text = newWord
                         newNode.features = copyFeatures
-                        newNode.atom = newWord
+                        newNode.norm = newWord
                         if len(newWord) >= 5:
                             _LexiconDictPlus.update({newWord: newNode})
                         else:
@@ -556,10 +556,10 @@ def GenerateLexPlus():
                         newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
                             newWord not in _LexiconDictDefXOrig.keys()):
                             newNode = LexiconNode(newWord)
-                            newNode.norm = first + second
+                            newNode.atom = first + second
                             newNode.text = newWord
                             newNode.features = copyFeatures
-                            newNode.atom = newNode.text
+                            newNode.norm = newNode.text
                             _LexiconDictDefPlus.update({newWord: newNode})
                         else:
                             logging.debug("duplicate10 :" + newWord)
