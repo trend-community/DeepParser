@@ -544,7 +544,7 @@ class Rule:
                 if "^^." not in c1.Action and "++" not in c1.Action:
                     c.HeadConfidence = 0
                     if not self.RuleName.startswith("CleanRule"):
-                        logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
+                        logging.warning("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
                         logging.debug(str(self))
                         logging.debug(jsonpickle.dumps(c))
                 c1.Action += " H ^.H "  # add Head for the head token.
