@@ -598,6 +598,8 @@ class Rule:
         # add default relation ship.
         for chunk in self.Chunks:
             for i in range(chunk.StartOffset, chunk.StartOffset + chunk.Length):
+                if self.Tokens[i].SubtreePointer:   #ignore the token that already has relation.
+                    continue
                 if "^" not in self.Tokens[i].action:
                     if "+++" in chunk.Action:
                         self.Tokens[i].action += " ^.x"
