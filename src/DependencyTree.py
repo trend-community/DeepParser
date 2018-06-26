@@ -36,7 +36,8 @@ class DependencyTree:
         self.root = -1
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
-        logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
@@ -183,8 +184,8 @@ class DependencyTree:
 
     #the output is in DOT language, compatible with Graphviz, Viz.js, d3-graphviz.
     def digraph(self, Type='graph'):
-
-        logging.info("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
+        if logging.root.isEnabledFor(logging.INFO):
+            logging.info("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
         output = ""
         if Type == 'simplegraph' :
             for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
@@ -213,7 +214,8 @@ class DependencyTree:
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
-        logging.debug("output = {}".format(output))
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("output = {}".format(output))
         return output
 
     def _AddEdge(self, node1id, relation, node2id):
@@ -237,7 +239,8 @@ class DependencyTree:
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
     def FindPointerNode(self, openID, SubtreePointer):
-        logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
         if SubtreePointer[0] == '^':
             SubtreePointer = SubtreePointer[1:]
 
@@ -273,14 +276,16 @@ class DependencyTree:
                             if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
                                 nodeID = edge[0]
                                 Found = True
-                                logging.debug("   Found!")
+                                if logging.root.isEnabledFor(logging.DEBUG):
+                                    logging.debug("   Found!")
                                 break
                             else:
                                 edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
                                 if edgerelationnode and relationid in edgerelationnode.ancestors:
                                     nodeID = edge[0]
                                     Found = True
-                                    logging.debug("   Found ontology ancesstor relation!")
+                                    if logging.root.isEnabledFor(logging.DEBUG):
+                                        logging.debug("   Found ontology ancesstor relation!")
                                     break
 
                     if not Found:
@@ -319,7 +324,8 @@ class DependencyTree:
                 else:
                     relation = Action[Action.rfind('.')+1:]
                     newedge = [node.ID, relation, parentnodeid]
-                    logging.debug("DAG Action:Adding new edge: {}".format(newedge))
+                    if logging.root.isEnabledFor(logging.DEBUG):
+                        logging.debug("DAG Action:Adding new edge: {}".format(newedge))
 
                     self._AddEdge(node.ID, relation, parentnodeid)
 

@@ -141,7 +141,8 @@ def ApplyWinningDagRule(Dag, rule, OpenNode):
         if rule.Tokens[i].action:
             nodeID = rule.Tokens[i].MatchedNodeID
             node = Dag.nodes[nodeID]
-            logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
+            if logging.root.isEnabledFor(logging.INFO):
+                logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
             Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action)
 
     for nodeid in Dag.nodes:
@@ -261,7 +262,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
         if WinningRule:
-            logging.debug("Found winning rule at counter: {}. The winning rule is: {}".format(counter, WinningRule) )
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("Found winning rule at counter: {}. The winning rule is: {}".format(counter, WinningRule) )
             try:
                 if WinningRule.ID not in WinningRules:
                     WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
@@ -310,7 +312,8 @@ def DAGMatch(Dag, OpenNode, Rule):
 
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
-    logging.debug("Start checking {}".format(RuleFileName))
+    if logging.root.isEnabledFor(logging.DEBUG):
+        logging.debug("Start checking {}".format(RuleFileName))
 
     for nodeid in Dag.nodes:
         node = Dag.nodes[nodeid]
@@ -319,16 +322,19 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         rulegroup = Rules.RuleGroupDict[RuleFileName]
 
         for rule in rulegroup.RuleList:
-            logging.debug("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
             if DAGMatch(Dag, node, rule):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
             else:
                 for node_id in Dag.nodes:
-                    logging.info("node: {}".format(node))
+                    if logging.root.isEnabledFor(logging.INFO):
+                        logging.info("node: {}".format(node))
                     Dag.nodes[node_id].TempPointer = ''   #remove TempPointer from failed rules.
         if WinningRule:
-            logging.info("DAG: Winning rule! {}".format(WinningRule))
+            if logging.root.isEnabledFor(logging.INFO):
+                logging.info("DAG: Winning rule! {}".format(WinningRule))
             try:
                 if WinningRule.ID not in WinningRules:
                     WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + node.text
@@ -401,7 +407,8 @@ def DynamicPipeline(NodeList, schema):
                 except Exception as e:
                     logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
                     return NodeList, Dag, WinningRules
-                logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
+                if logging.root.isEnabledFor(logging.INFO):
+                    logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
@@ -486,7 +493,8 @@ def LexicalAnalyzeTask( SubSentence, schema):
 abandened. """
 def LexicalAnalyze_multithread(Sentence, schema = "full"):
     try:
-        logging.debug("-Start LexicalAnalyze: tokenize")
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
 
@@ -585,8 +593,10 @@ def LoadCommon():
 
     LoadPipeline(PipeLineLocation)
 
-    logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
-    logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
+    if logging.root.isEnabledFor(logging.DEBUG):
+        logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
+    if logging.root.isEnabledFor(logging.DEBUG):
+        logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
     RuleFolder = os.path.dirname(GlobalmacroLocation)
     RuleFileName = os.path.basename(GlobalmacroLocation)

@@ -293,6 +293,7 @@ def GetFeatureID(feature):
 
 def GetFeatureName(featureID):
     if len(_FeatureList) == 0:
+        logging.warning("GettingFeatureName using URL")
         GetFeatureNameURL = ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureName/"
         try:
             ret = requests.get(GetFeatureNameURL + str(featureID))
