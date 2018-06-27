@@ -35,6 +35,7 @@ class DependencyTree:
         self.graph = set()
         self.root = -1
 
+
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
@@ -132,6 +133,10 @@ class DependencyTree:
         self._MarkNext()
         self.root = self._roots[0]
 
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("End of transform:\n {}".format(self))
+
+
     #for multiple roots, mark "next" to make all nodes in one graph.
     def _MarkNext(self):
         if len(self._roots) == 1:
@@ -142,6 +147,7 @@ class DependencyTree:
             self._AddEdge(order[i], "next", order[i-1])
 
         self._roots = [order[0]]
+
 
     def __str__(self):
         output = "Nodes:\n"
@@ -168,6 +174,7 @@ class DependencyTree:
             return True
         return False
 
+
     def getDanzi(self, nodeid):
         for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
             if edge[2] == nodeid:
@@ -181,6 +188,7 @@ class DependencyTree:
                         if node.text == parent:
                             return parent
         return None
+
 
     #the output is in DOT language, compatible with Graphviz, Viz.js, d3-graphviz.
     def digraph(self, Type='graph'):
@@ -218,6 +226,7 @@ class DependencyTree:
             logging.debug("output = {}".format(output))
         return output
 
+
     def _AddEdge(self, node1id, relation, node2id):
         #find the write relation to add, if already have a child relation for the same nodes.
         self.graph.add((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
@@ -229,12 +238,29 @@ class DependencyTree:
         else:
             logging.error("There is no has{} feature in the feature.txt!".format(relation))
 
+
     def _RemoveEdge(self, node1id, relation, node2id):
         relationid = FeatureOntology.GetFeatureID(relation)
 
         for edge in [ x for x in self.graph if x[0] == node1id and x[2] == node2id]:
             if relationid == edge[3] or relationid in FeatureOntology.SearchFeatureOntology(edge[3]).ancestors:
                 self.graph.remove(edge)
+
+
+    def _CheckEdge(self, node1id, relation, node2id):
+        relationid = FeatureOntology.GetFeatureID(relation)
+        for edge in sorted([e for e in self.graph if e[0] == node1id and e[2] == node2id],
+                            key = operator.itemgetter(2, 1, 0)):
+            if relationid == edge[3]:
+                return True
+            else:
+                edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
+                if edgerelationnode and relationid in edgerelationnode.ancestors:
+                    if logging.root.isEnabledFor(logging.DEBUG):
+                        logging.debug("   Found ontology ancesstor relation!")
+                    return True
+        return False
+
 
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
@@ -265,12 +291,14 @@ class DependencyTree:
             if pointer == '':
                 nodeID = openID
             else:
-                #logging.info("Finding pointer node {} from TempPointer".format(pointers[0]))
+                logging.info("Finding pointer node {} from TempPointer".format(pointer))
                 for nodeid in sorted(self.nodes):
-                    #logging.debug("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
+                    logging.debug("DAG.FindPointerNode: evaluating temppointer {} in {} with pointer {}".format(self.nodes[nodeid].TempPointer, self.nodes[nodeid].text, pointer))
                     if self.nodes[nodeid].TempPointer == "^"+pointer:
+                        logging.debug("Matched nodeid {}".format(nodeid))
                         nodeID = nodeid
                         break
+                #logging.warning("after looping over the nodes, nodeID={}".format(nodeID))
             if nodeID and relations:
                 for relation in relations.split("."):
                     relationid = FeatureOntology.GetFeatureID(relation)
@@ -318,7 +346,7 @@ class DependencyTree:
 
 
     def TokenMatch(self, Rule, nodeID, ruletoken, OpenNodeID):
-        #logging.debug("DAG.TokenMatch: comparint ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
+        #logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
         import LogicOperation
         logicmatch = LogicOperation.LogicMatch_notpointer(self.nodes[nodeID], ruletoken)
         if not logicmatch:
@@ -346,57 +374,49 @@ class DependencyTree:
             # if len(pointers) <=1:
             #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
             #     return openID
-            nodeID = None
+            start_nodeID = None
             if pointer == '':
-                nodeID = OpenNodeID
+                start_nodeID = OpenNodeID
             else:
-                logging.info("Looking for pointer node {} from TempPointer".format(pointer[0]))
+                logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
                 for nodeid in sorted(self.nodes):
-                    logging.debug("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
+                    logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
                     if self.nodes[nodeid].TempPointer == "^"+pointer:
-                        nodeID = nodeid
+                        start_nodeID = nodeid
                         break
+            if not start_nodeID:
+                Satisfied = False
+            elif not relations:
+                Satisfied = True
 
-            if nodeID and relations:
-                for relation in relations.split("."):
-                    relationid = FeatureOntology.GetFeatureID(relation)
-                    Found = False
-                    for edge in sorted(self.graph, key=operator.itemgetter(2, 1, 0)):
-                        #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
-                        if edge[2] == nodeID:
-                            if relationid == edge[3]:
-                                nodeID = edge[0]
-                                Found = True
-                                if logging.root.isEnabledFor(logging.DEBUG):
-                                    logging.debug("   Found!")
+            elif start_nodeID and relations:
+                relationlist = relations.split(".")
+                if len(relationlist) == 1:
+                    Satisfied = self._CheckEdge( nodeID, relationlist[0], start_nodeID)
+                elif len(relationlist) == 2:
+                    for second_nodeID in self.nodes:
+                        Satisfied = self._CheckEdge( nodeID, relationlist[0], second_nodeID) and \
+                                        self._CheckEdge(second_nodeID, relationlist[0], start_nodeID)
+                        if Satisfied:
+                            break
+                elif len(relationlist) == 3:
+                    for second_nodeID in self.nodes:
+                        for third_nodeID in self.nodes:
+                            Satisfied = self._CheckEdge(nodeID, relationlist[0], third_nodeID) and \
+                                            self._CheckEdge(third_nodeID, relationlist[0], second_nodeID) and \
+                                            self._CheckEdge(second_nodeID, relationlist[0], start_nodeID)
+                            if Satisfied:
                                 break
-                            else:
-                                edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
-                                if edgerelationnode and relationid in edgerelationnode.ancestors:
-                                    nodeID = edge[0]
-                                    Found = True
-                                    if logging.root.isEnabledFor(logging.DEBUG):
-                                        logging.debug("   Found ontology ancesstor relation!")
-                                    break
-                    #logging.debug("After evaluating all graph for {}, Found is {}".format(relation, Found))
-                    if not Found and not Negation:
-                        if logging.root.isEnabledFor(logging.DEBUG):
-                            logging.debug(
-                                "Dag.TokenMatch(): False because can't find the pointer and Negation is False")
-                        return False
-                        # logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
-                        # return None     #Can't find the pointers.
+                        if Satisfied:
+                            break
+                else:
+                    logging.error("DAG.TokenMatch(): Not yet implemented for multiple dots: {}".format(ruletoken.SubtreePointer))
 
-                    # logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
-
-            if (not Negation and nodeID) or ( Negation and not nodeID) :
+            if ( Negation and Satisfied) or ( not Negation and not Satisfied) :
                 if logging.root.isEnabledFor(logging.DEBUG):
-                    logging.debug("Dag.TokenMatch(): True because Negation is {} and nodeID is {}".format(Negation, nodeID))
-                return True
-            else:
-                if logging.root.isEnabledFor(logging.DEBUG):
-                    logging.debug("Dag.TokenMatch(): False because Negation is {} and nodeID is {}".format(Negation, nodeID))
+                    logging.debug("Dag.TokenMatch(): False because Negation is {} and nodeID is {}".format(Negation, start_nodeID))
                 return False
+        return True
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring):

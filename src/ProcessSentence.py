@@ -334,11 +334,15 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
             Dag.nodes[nodeID].visited = True
             ruletoken.MatchedNodeID = nodeID
             Dag.nodes[nodeID].TempPointer = ruletoken.pointer
+            if ruletoken.pointer:
+                logging.debug("DAGMatch: setting this node {} to TempPointer: {}".format(nodeID, ruletoken.pointer))
             successnode = DAGMatch(Dag, Rule, level+1, OpenNodeID)
             if successnode:
                 return successnode
             else:
                 Dag.nodes[nodeID].visited = False
+                ruletoken.MatchedNodeID = None
+                Dag.nodes[nodeID].TempPointer = ''
     return None
     #return DAGMatch(Dag, Rule, level-1, OpenNodeID)
 
