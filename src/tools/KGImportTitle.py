@@ -3,8 +3,8 @@ import argparse, logging
 from neo4jrestclient.client import GraphDatabase
 
 
-#db = GraphDatabase("http://10.182.8.14", username="neo4j", password="work")
-db = GraphDatabase("http://10.153.152.253:7474", username="neo4j", password="work")
+db = GraphDatabase("http://10.182.78.1", username="neo4j", password="work")
+#db = GraphDatabase("http://10.153.152.253:7474", username="neo4j", password="work")
 
   #difficult to add parameter.
   #  https://github.com/versae/neo4j-rest-client/issues/133
