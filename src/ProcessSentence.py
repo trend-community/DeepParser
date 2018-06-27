@@ -313,30 +313,34 @@ def DAGMatch_old(Dag, OpenNode, Rule):
 
 
 def DAGMatch(Dag, Rule, level, OpenNodeID = None):
+    #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
     if level >= len(Rule.Tokens):
-        Dag.ClearVisited()
+        #Dag.ClearVisited()
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.TokenMatch(): Matched all tokens.")
         return Dag.nodes[OpenNodeID]
     if level < 0:
-        Dag.ClearVisited()
+        #Dag.ClearVisited()
         return None
 
     ruletoken = Rule.Tokens[level]
     for nodeID in Dag.nodes:
         if Dag.nodes[nodeID].applied or Dag.nodes[nodeID].visited:
             continue
-        if OpenNodeID == None and level == 0:     #when the OpneNode is None, level should be 0
+        if level == 0:     #when the OpneNode is None, level should be 0
             OpenNodeID = nodeID
 
         if Dag.TokenMatch(Rule, nodeID, ruletoken, OpenNodeID):
             Dag.nodes[nodeID].visited = True
             ruletoken.MatchedNodeID = nodeID
             Dag.nodes[nodeID].TempPointer = ruletoken.pointer
-            return DAGMatch(Dag, Rule, level+1, OpenNodeID)
-        Dag.nodes[nodeID].visited = False
-
-    return DAGMatch(Dag, Rule, level-1, OpenNodeID)
+            successnode = DAGMatch(Dag, Rule, level+1, OpenNodeID)
+            if successnode:
+                return successnode
+            else:
+                Dag.nodes[nodeID].visited = False
+    return None
+    #return DAGMatch(Dag, Rule, level-1, OpenNodeID)
 
 
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
@@ -377,6 +381,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
             rule_sequence -= 1      #allow the same rule to match other nodes too.
 #            break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
         else:
+            Dag.ClearVisited()
             for node_id in Dag.nodes:
                 # if logging.root.isEnabledFor(logging.INFO):
                 #     logging.info("node: {}".format(node))

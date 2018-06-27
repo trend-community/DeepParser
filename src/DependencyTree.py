@@ -318,6 +318,7 @@ class DependencyTree:
 
 
     def TokenMatch(self, Rule, nodeID, ruletoken, OpenNodeID):
+        #logging.debug("DAG.TokenMatch: comparint ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
         import LogicOperation
         logicmatch = LogicOperation.LogicMatch_notpointer(self.nodes[nodeID], ruletoken)
         if not logicmatch:
@@ -356,38 +357,37 @@ class DependencyTree:
                         nodeID = nodeid
                         break
 
-                if nodeID and relations:
-                    for relation in relations.split("."):
-                        relationid = FeatureOntology.GetFeatureID(relation)
-                        Found = False
-                        for edge in sorted(self.graph, key=operator.itemgetter(2, 1, 0)):
-                            # logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
-                            if edge[2] == nodeID:
-                                if relationid == edge[
-                                    3]:  # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
+            if nodeID and relations:
+                for relation in relations.split("."):
+                    relationid = FeatureOntology.GetFeatureID(relation)
+                    Found = False
+                    for edge in sorted(self.graph, key=operator.itemgetter(2, 1, 0)):
+                        #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
+                        if edge[2] == nodeID:
+                            if relationid == edge[3]:
+                                nodeID = edge[0]
+                                Found = True
+                                if logging.root.isEnabledFor(logging.DEBUG):
+                                    logging.debug("   Found!")
+                                break
+                            else:
+                                edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
+                                if edgerelationnode and relationid in edgerelationnode.ancestors:
                                     nodeID = edge[0]
                                     Found = True
                                     if logging.root.isEnabledFor(logging.DEBUG):
-                                        logging.debug("   Found!")
+                                        logging.debug("   Found ontology ancesstor relation!")
                                     break
-                                else:
-                                    edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
-                                    if edgerelationnode and relationid in edgerelationnode.ancestors:
-                                        nodeID = edge[0]
-                                        Found = True
-                                        if logging.root.isEnabledFor(logging.DEBUG):
-                                            logging.debug("   Found ontology ancesstor relation!")
-                                        break
+                    #logging.debug("After evaluating all graph for {}, Found is {}".format(relation, Found))
+                    if not Found and not Negation:
+                        if logging.root.isEnabledFor(logging.DEBUG):
+                            logging.debug(
+                                "Dag.TokenMatch(): False because can't find the pointer and Negation is False")
+                        return False
+                        # logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
+                        # return None     #Can't find the pointers.
 
-                        if not Found and not Negation:
-                            if logging.root.isEnabledFor(logging.DEBUG):
-                                logging.debug(
-                                    "Dag.TokenMatch(): False because can't find the pointer and Negation is False")
-                            return False
-                            # logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
-                            # return None     #Can't find the pointers.
-
-                        # logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
+                    # logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
 
             if (not Negation and nodeID) or ( Negation and not nodeID) :
                 if logging.root.isEnabledFor(logging.DEBUG):
