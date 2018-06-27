@@ -245,12 +245,17 @@ class DependencyTree:
             SubtreePointer = SubtreePointer[1:]
 
         nodeID = None
-        for AndConditions in SubtreePointer.split("+"):
+        for AndCondition in SubtreePointer.split("+"):
+            Negation = False
+            if len(AndCondition) > 1 and AndCondition[0] == "!":
+                logging.warning("FindPointerNode: Negation! {}".format(SubtreePointer))
+                Negation = True
+                AndCondition = AndCondition[1:]
 
-            if "." in SubtreePointer:
-                pointer, relations = AndConditions.split(".", 1)
+            if "." in AndCondition:
+                pointer, relations = AndCondition.split(".", 1)
             else:
-                pointer, relations = [AndConditions, ""]
+                pointer, relations = [AndCondition, ""]
             #pointers = SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
             #logging.debug("tree:{}".format(pointers))
             # if len(pointers) <=1:
@@ -289,7 +294,8 @@ class DependencyTree:
                                     break
 
                     if not Found:
-                        return None
+                        if not Negation:
+                            return None
                         #logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
                         #return None     #Can't find the pointers.
 
@@ -299,6 +305,98 @@ class DependencyTree:
             return nodeID
         else:
             return None
+
+
+    def ClearVisited(self):
+        for nodeid in self.nodes:
+            self.nodes[nodeid].visited = False
+
+
+    def ClearApplied(self):
+        for nodeid in self.nodes:
+            self.nodes[nodeid].applied = False
+
+
+    def TokenMatch(self, Rule, nodeID, ruletoken, OpenNodeID):
+        import LogicOperation
+        logicmatch = LogicOperation.LogicMatch_notpointer(self.nodes[nodeID], ruletoken)
+        if not logicmatch:
+            return False
+        #might need open node for pointer
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
+        if not ruletoken.SubtreePointer:
+            return True
+
+        for AndCondition in ruletoken.SubtreePointer.split("+"):
+            Negation = False
+            #logging.warning("AndCondition:{}".format(AndCondition))
+            if AndCondition[0] == "!":
+                logging.warning("FindPointerNode: Negation! {}".format(Rule.SubtreePointer))
+                Negation = True
+                AndCondition = AndCondition[1:]
+
+            if "." in AndCondition:
+                pointer, relations = AndCondition.split(".", 1)
+            else:
+                pointer, relations = [AndCondition, ""]
+            #pointers = SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
+            #logging.debug("tree:{}".format(pointers))
+            # if len(pointers) <=1:
+            #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
+            #     return openID
+            nodeID = None
+            if pointer == '':
+                nodeID = OpenNodeID
+            else:
+                logging.info("Looking for pointer node {} from TempPointer".format(pointer[0]))
+                for nodeid in sorted(self.nodes):
+                    logging.debug("DAG.FindPointerNode: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
+                    if self.nodes[nodeid].TempPointer == "^"+pointer:
+                        nodeID = nodeid
+                        break
+
+                if nodeID and relations:
+                    for relation in relations.split("."):
+                        relationid = FeatureOntology.GetFeatureID(relation)
+                        Found = False
+                        for edge in sorted(self.graph, key=operator.itemgetter(2, 1, 0)):
+                            # logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
+                            if edge[2] == nodeID:
+                                if relationid == edge[
+                                    3]:  # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
+                                    nodeID = edge[0]
+                                    Found = True
+                                    if logging.root.isEnabledFor(logging.DEBUG):
+                                        logging.debug("   Found!")
+                                    break
+                                else:
+                                    edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
+                                    if edgerelationnode and relationid in edgerelationnode.ancestors:
+                                        nodeID = edge[0]
+                                        Found = True
+                                        if logging.root.isEnabledFor(logging.DEBUG):
+                                            logging.debug("   Found ontology ancesstor relation!")
+                                        break
+
+                        if not Found and not Negation:
+                            if logging.root.isEnabledFor(logging.DEBUG):
+                                logging.debug(
+                                    "Dag.TokenMatch(): False because can't find the pointer and Negation is False")
+                            return False
+                            # logging.warning("Failed to find pointer {} in graph {}".format(SubtreePointer, self))
+                            # return None     #Can't find the pointers.
+
+                        # logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
+
+            if (not Negation and nodeID) or ( Negation and not nodeID) :
+                if logging.root.isEnabledFor(logging.DEBUG):
+                    logging.debug("Dag.TokenMatch(): True because Negation is {} and nodeID is {}".format(Negation, nodeID))
+                return True
+            else:
+                if logging.root.isEnabledFor(logging.DEBUG):
+                    logging.debug("Dag.TokenMatch(): False because Negation is {} and nodeID is {}".format(Negation, nodeID))
+                return False
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring):
