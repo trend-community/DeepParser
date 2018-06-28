@@ -438,7 +438,7 @@ class DependencyTree:
 
         HasBartagAction = False
 
-        for Action in Actions:
+        for Action in sorted(Actions, key=lambda d:(d[-1])):
             if Action[0] == '^':
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer)
