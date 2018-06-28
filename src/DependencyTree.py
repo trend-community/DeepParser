@@ -402,15 +402,15 @@ class DependencyTree:
                     Satisfied = self._CheckEdge( nodeID, relationlist[0], start_nodeID)
                 elif len(relationlist) == 2:
                     for second_nodeID in self.nodes:
-                        Satisfied = self._CheckEdge( nodeID, relationlist[0], second_nodeID) and \
+                        Satisfied = self._CheckEdge( nodeID, relationlist[1], second_nodeID) and \
                                         self._CheckEdge(second_nodeID, relationlist[0], start_nodeID)
                         if Satisfied:
                             break
                 elif len(relationlist) == 3:
                     for second_nodeID in self.nodes:
                         for third_nodeID in self.nodes:
-                            Satisfied = self._CheckEdge(nodeID, relationlist[0], third_nodeID) and \
-                                            self._CheckEdge(third_nodeID, relationlist[0], second_nodeID) and \
+                            Satisfied = self._CheckEdge(nodeID, relationlist[2], third_nodeID) and \
+                                            self._CheckEdge(third_nodeID, relationlist[1], second_nodeID) and \
                                             self._CheckEdge(second_nodeID, relationlist[0], start_nodeID)
                             if Satisfied:
                                 break
