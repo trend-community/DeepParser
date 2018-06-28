@@ -345,7 +345,7 @@ class DependencyTree:
             self.nodes[nodeid].applied = False
 
 
-    def TokenMatch(self, Rule, nodeID, ruletoken, OpenNodeID):
+    def TokenMatch(self, nodeID, ruletoken, OpenNodeID):
         #logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
         import LogicOperation
         logicmatch = LogicOperation.LogicMatch_notpointer(self.nodes[nodeID], ruletoken)
@@ -361,7 +361,7 @@ class DependencyTree:
             Negation = False
             #logging.warning("AndCondition:{}".format(AndCondition))
             if AndCondition[0] == "!":
-                logging.warning("FindPointerNode: Negation! {}".format(Rule.SubtreePointer))
+                logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
@@ -369,11 +369,6 @@ class DependencyTree:
                 pointer, relations = AndCondition.split(".", 1)
             else:
                 pointer, relations = [AndCondition, ""]
-            #pointers = SubtreePointer.split(".")  # Note: here Pointer (subtreepointer) does not have "^"
-            #logging.debug("tree:{}".format(pointers))
-            # if len(pointers) <=1:
-            #     #logging.error("Should have more than 1 pointers! Can't find {} in graph {}".format(SubtreePointer, self.graph))
-            #     return openID
             start_nodeID = None
             if pointer == '':
                 start_nodeID = OpenNodeID

@@ -330,7 +330,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
         if level == 0:     #when the OpneNode is None, level should be 0
             OpenNodeID = nodeID
 
-        if Dag.TokenMatch(Rule, nodeID, ruletoken, OpenNodeID):
+        if Dag.TokenMatch(nodeID, ruletoken, OpenNodeID):
             Dag.nodes[nodeID].visited = True
             ruletoken.MatchedNodeID = nodeID
             Dag.nodes[nodeID].TempPointer = ruletoken.pointer

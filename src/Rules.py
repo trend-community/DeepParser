@@ -544,9 +544,10 @@ class Rule:
                 if "^^." not in c1.Action and "++" not in c1.Action:
                     c.HeadConfidence = 0
                     if not self.RuleName.startswith("CleanRule"):
-                        logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
-                        logging.debug(str(self))
-                        logging.debug(jsonpickle.dumps(c))
+                        if logging.root.isEnabledFor(logging.DEBUG):
+                            logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
+                            logging.debug(str(self))
+                            logging.debug(jsonpickle.dumps(c))
                 c1.Action += " H ^.H "  # add Head for the head token.
 
             c.StringChunkLength = c.Length - VirtualTokenNum
@@ -873,10 +874,12 @@ def ProcessTokens(Tokens):
 
 def ExpandQuotedOrs(text, sign):
     if "(" in text:
-        logging.debug("Not a task in this function for expanding " + text)
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Not a task in this function for expanding " + text)
         return text
     if sign in text[1:-1]:
-        logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding")
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding")
         return text
 
     return text.replace("|", sign+"|"+sign)
@@ -1414,7 +1417,8 @@ def _RemoveExcessiveParenthesis(token):
         else:
             after = ""
 
-        logging.debug("Removing excessive parenthesis in: " + token.word)
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Removing excessive parenthesis in: " + token.word)
         token.word = before + token.word[StartParenthesesPosition+1:EndParenthesesPosition] + after
         #logging.info("\t\t as: " + token.word)
         return True
