@@ -350,11 +350,6 @@ class DependencyTree:
             self.nodes[nodeid].visited = False
 
 
-    def ClearApplied(self):
-        for nodeid in self.nodes:
-            self.nodes[nodeid].applied = False
-
-
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID):
         #logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
         import LogicOperation

@@ -325,7 +325,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
 
     ruletoken = Rule.Tokens[level]
     for nodeID in Dag.nodes:
-        if Dag.nodes[nodeID].applied or Dag.nodes[nodeID].visited:
+        if  Dag.nodes[nodeID].visited:
             continue
         if level == 0:     #when the OpneNode is None, level should be 0
             OpenNodeID = nodeID
@@ -353,8 +353,12 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     rulegroup = Rules.RuleGroupDict[RuleFileName]
 
     rule_sequence = 0
-    while rule_sequence < len(rulegroup.RuleList):
-
+    counter = 0
+    RuleLength = len(rulegroup.RuleList)
+    while rule_sequence < RuleLength:
+        counter += 1
+        if counter > 10 * RuleLength:
+            break
         rule = rulegroup.RuleList[rule_sequence]
 
         if logging.root.isEnabledFor(logging.DEBUG):
@@ -381,19 +385,19 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
                 logging.error(str(rule))
                 logging.error(str(e))
             #search the rest of rules using other nodes
-            node.applied = True
+            #node.applied = True    #apply to apply to the same node
             rule_sequence -= 1      #allow the same rule to match other nodes too.
 #            break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
-        else:
-            Dag.ClearVisited()
-            for node_id in Dag.nodes:
-                # if logging.root.isEnabledFor(logging.INFO):
-                #     logging.info("node: {}".format(node))
-                Dag.nodes[node_id].TempPointer = ''   #remove TempPointer from failed rules.
+
+        Dag.ClearVisited()
+        for node_id in Dag.nodes:
+            # if logging.root.isEnabledFor(logging.INFO):
+            #     logging.info("node: {}".format(node))
+            Dag.nodes[node_id].TempPointer = ''   #remove TempPointer from failed rules.
 
         rule_sequence += 1
 
-    Dag.ClearApplied()
+    logging.info("Tried {} times in this file {}".format(counter, RuleFileName))
     return WinningRules
 
 def MatchAndApplyDagRuleFile_old(Dag, RuleFileName):

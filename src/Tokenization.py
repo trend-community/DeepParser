@@ -287,7 +287,6 @@ class SentenceNode(object):
         #self.FailedRuleTokens = set()
         #self.signature = None
         self.visited = False
-        self.applied = False
 
     #     #From webservice, only word/StartOffset/features are set,
     #     #    and the features are "list", need to change to "set"
