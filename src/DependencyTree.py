@@ -247,7 +247,13 @@ class DependencyTree:
                 self.graph.remove(edge)
 
 
-    def _CheckEdge(self, node1id, relation, node2id, Reverse):
+    def _CheckEdge(self, node1id, relation, node2id):
+        Reverse = False
+        if relation[0] == "~":
+            logging.warning("_CheckEdge: Reverse! {}".format(relation))
+            Reverse = True
+            relation = relation[1:]
+
         relationid = FeatureOntology.GetFeatureID(relation)
         if Reverse:
             edgecandidates = [e for e in self.graph if e[0] == node2id and e[2] == node1id]
@@ -363,17 +369,13 @@ class DependencyTree:
 
         for AndCondition in ruletoken.SubtreePointer.split("+"):
             Negation = False
-            Reverse = False
+
             #logging.warning("AndCondition:{}".format(AndCondition))
             if AndCondition[0] == "!":
                 logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
-            if AndCondition[0] == "~":
-                logging.warning("FindPointerNode: Reverse! {}".format(ruletoken.SubtreePointer))
-                Reverse = True
-                AndCondition = AndCondition[1:]
 
             if "." in AndCondition:
                 pointer, relations = AndCondition.split(".", 1)
@@ -397,19 +399,19 @@ class DependencyTree:
             elif start_nodeID and relations:
                 relationlist = relations.split(".")
                 if len(relationlist) == 1:
-                    Satisfied = self._CheckEdge( nodeID, relationlist[0], start_nodeID, Reverse)
+                    Satisfied = self._CheckEdge( nodeID, relationlist[0], start_nodeID)
                 elif len(relationlist) == 2:
                     for second_nodeID in self.nodes:
-                        Satisfied = self._CheckEdge( nodeID, relationlist[0], second_nodeID, Reverse) and \
-                                        self._CheckEdge(second_nodeID, relationlist[0], start_nodeID, Reverse)
+                        Satisfied = self._CheckEdge( nodeID, relationlist[0], second_nodeID) and \
+                                        self._CheckEdge(second_nodeID, relationlist[0], start_nodeID)
                         if Satisfied:
                             break
                 elif len(relationlist) == 3:
                     for second_nodeID in self.nodes:
                         for third_nodeID in self.nodes:
-                            Satisfied = self._CheckEdge(nodeID, relationlist[0], third_nodeID, Reverse) and \
-                                            self._CheckEdge(third_nodeID, relationlist[0], second_nodeID, Reverse) and \
-                                            self._CheckEdge(second_nodeID, relationlist[0], start_nodeID, Reverse)
+                            Satisfied = self._CheckEdge(nodeID, relationlist[0], third_nodeID) and \
+                                            self._CheckEdge(third_nodeID, relationlist[0], second_nodeID) and \
+                                            self._CheckEdge(second_nodeID, relationlist[0], start_nodeID)
                             if Satisfied:
                                 break
                         if Satisfied:
