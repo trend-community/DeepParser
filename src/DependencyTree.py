@@ -371,19 +371,19 @@ class DependencyTree:
                 Negation = True
                 AndCondition = AndCondition[1:]
 
-
             if "." in AndCondition:
                 pointer, relations = AndCondition.split(".", 1)
             else:
                 pointer, relations = [AndCondition, ""]
+            pointer = "^" + pointer
             start_nodeID = None
-            if pointer == '':
+            if pointer == '^':
                 start_nodeID = OpenNodeID
             else:
-                logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
+                #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
                 for nodeid in sorted(self.nodes):
-                    logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
-                    if self.nodes[nodeid].TempPointer == "^"+pointer:
+                    #logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
+                    if self.nodes[nodeid].TempPointer == pointer:
                         start_nodeID = nodeid
                         break
             if not start_nodeID:

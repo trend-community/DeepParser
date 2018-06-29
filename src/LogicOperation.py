@@ -1,7 +1,5 @@
 
 from utils import *
-import pickle
-import Cache
 
 #not, and, or
 #compare type: word/norm/stem/feature
@@ -44,6 +42,7 @@ def CheckPrefix(word):
 
 #Usage:  [] <[A] [B] [^2.S=x]>  //usage ^2 to point to the 2nd token of the rule.
 def GetNumberPointer(Pointer):
+    logging.info("GetNumberPointer")
     PointerContent = Pointer[1:]
     if len(PointerContent) == 0:
         Pos = 0
@@ -170,42 +169,50 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
         raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
-#Note: here Pointer (subtreepointer) does not have "^"
-def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer):
+#Note: here SubtreePointer does not have "^"
+def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, SubtreePointer):
     StrPointerRootToken = None
 
-    tree = Pointer.split(".")
+    #tree = Pointer.split(".")
+    if "." in SubtreePointer:
+        pointer, relations = SubtreePointer.split(".", 1)
+    else:
+        pointer, relations = [SubtreePointer, ""]
 
-    rootPointer = "^" + tree[0]
+    pointer = "^" + pointer
+
+    #rootPointer = "^" + tree[0]
     x = StrTokenList.head
     while x:
-        if x.TempPointer == rootPointer:
+        if x.TempPointer == pointer:
             StrPointerRootToken = x
             break
         x = x.next
     if not StrPointerRootToken:
-        logging.error("FindPointerNode Can't find specified pointer " + Pointer + " in rule:")
+        logging.error("FindPointerNode Can't find specified pointer " + pointer + " in rule:")
         logging.error(" ".join([str(r) for r in RuleTokens]))
+        logging.info("At this point, StrTokenList={}".format(jsonpickle.dumps(StrTokenList)))
+        #return None
         raise RuntimeError("Can't find specified pointer in rule!")
 
-    if len(tree)>1:
-        return FindSubtree(StrPointerRootToken, tree[1:])
+    if relations:
+        return _FindSubtree(StrPointerRootToken, relations.split("."))
     else:
         return StrPointerRootToken
 
 
-def FindSubtree(root, pointers):
+def _FindSubtree(root, pointers):
     for son in root.sons:
         if son.UpperRelationship == pointers[0]:
             if len(pointers) > 1:
-                return FindSubtree(son, pointers[1:])
+                return _FindSubtree(son, pointers[1:])
             else:
                 return son
 
-    #if come to here, then no relation is found. need to get the head to continue
+    #if come to here, then no relation is found. need to get the head node and continue the search
     for son in root.sons:
-        if son.UpperRelationship == "H" or son.UpperRelationship == "":   #this is head
-            return FindSubtree(son, pointers)
+        if son.UpperRelationship == "H" :   #this is head
+            return _FindSubtree(son, pointers)
 
     #if come to here, then no relation and no head is found.
     #logging.debug("This string has no relation of:" + str(pointers))
@@ -266,7 +273,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     if RuleTokens[RulePosition].SubtreePointer:
         SubtreePointer = RuleTokens[RulePosition].SubtreePointer
         #logging.debug("Start looking for Subtree: " + SubtreePointer)
-        strToken = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=SubtreePointer)
+        strToken = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, SubtreePointer=SubtreePointer)
         if not strToken:
             #logging.debug("there is no such pointer.")
             return False

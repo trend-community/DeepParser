@@ -815,6 +815,7 @@ def ProcessTokens(Tokens):
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
 
+
         pointerMatch = re.match("\^(.+)$", node.word, re.DOTALL)
         if pointerMatch:
             logging.error("Unknown situation. Pointer not in right place:")
@@ -837,6 +838,9 @@ def ProcessTokens(Tokens):
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
+        if node.SubtreePointer:     #remove all the "^" sign inside the SubtreePointer
+            node.SubtreePointer = node.SubtreePointer.replace("^", "")
+
         orQuoteMatch = re.search("(['\"/])(\S*\|\S*?)\\1", node.word, re.DOTALL)
         if orQuoteMatch:
             expandedQuotes = ExpandQuotedOrs(orQuoteMatch.group(2), orQuoteMatch.group(1))
@@ -853,6 +857,7 @@ def ProcessTokens(Tokens):
 
         node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=").replace("\>", ">").replace("\<", "<")
         node.action = node.action.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
+
 
 # Avoid [(AS:action)|sjfa]
 # Good character in action:
@@ -1336,7 +1341,7 @@ def _ExpandRuleWildCard_List(OneList):
 
                     NextIsStart = False
                     NextIsRestart = False
-                    NextIsPointer = False
+                    #NextIsPointer = False
                     origin_node = None
                     if repeat_num == 0:  # this token is removed. some features need to copy to others
                         origin_node = rule.Tokens[tokenindex]
@@ -1347,9 +1352,9 @@ def _ExpandRuleWildCard_List(OneList):
                             lastToken.EndChunk = origin_node.EndChunk
                         if origin_node.RestartPoint:
                             NextIsRestart = True
-                        if origin_node.pointer:
-                            NextIsPointer = True
-                            NextPointer = origin_node.pointer
+                        # if origin_node.pointer:   #20180628: don't remember the requirement of this part. comment out.
+                        #     NextIsPointer = True
+                        #     NextPointer = origin_node.pointer
                     for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                         new_node = copy.deepcopy(rule.Tokens[tokenindex_post])
                         if tokenindex_post == tokenindex + 1:
@@ -1357,8 +1362,9 @@ def _ExpandRuleWildCard_List(OneList):
                                 new_node.StartChunk = origin_node.StartChunk
                             if NextIsRestart:
                                 new_node.RestartPoint = True
-                            if NextIsPointer and NextPointer:
-                                new_node.pointer = NextPointer
+                            # if NextIsPointer and NextPointer:
+                            #     new_node.pointer = NextPointer
+                            #     logging.error("Some operation of the NextIsPointer:{}".format(rule))
                         newrule.Tokens.append(new_node)
 
                     newrule.SetStrTokenLength()

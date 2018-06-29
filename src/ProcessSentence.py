@@ -67,14 +67,16 @@ def HeadMatch(strTokenList, StartPosition, rule):
                 return False  #  this rule does not fit for this string
             if rule.Tokens[i].SubtreePointer:
                 StartPosition -= 1  # do not skip to next strToken, if this token is for Subtree.
-            if rule.Tokens[i].pointer:
-                HaveTempPointer = True
-                strTokenList.get(i + StartPosition).TempPointer = rule.Tokens[i].pointer
+            else:
+                if rule.Tokens[i].pointer:
+                    HaveTempPointer = True
+                    strTokenList.get(i + StartPosition).TempPointer = rule.Tokens[i].pointer
+                    #logging.debug("   Set TempPointer: node {} -> {}".format(strTokenList.get(i + StartPosition).text, rule.Tokens[i].pointer))
         except RuntimeError as e:
-            logging.error("Error in HeadMatch rule:" + str(rule.Tokens))
+            logging.error("Error in HeadMatch rule:" + str(rule))
             logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text)
             logging.error(e)
-            # raise
+            raise
         except Exception as e:
             logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
@@ -83,7 +85,6 @@ def HeadMatch(strTokenList, StartPosition, rule):
             logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
-    #RemoveTempPointer(strTokenList)
     return True
 
 
@@ -277,11 +278,13 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     rulegroup.RuleList.remove(WinningRule)
                 else:
                     logging.error("Unknown Rule Applying Error:" + str(e))
+                    raise
 
             except IndexError as e:
                 logging.error("Failed to apply this rule:")
                 logging.error(str(WinningRule))
                 logging.error(str(e))
+                raise
         i += 1
         strtoken = strtoken.next
     return WinningRules
@@ -646,7 +649,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.error("Overall Error in LexicalAnalyze({}) :".format(Sentence))
         logging.error(e)
         logging.error(traceback.format_exc())
-        return None, None
+        return None, None, None
 
     return ResultNodeList, Dag, ResultWinningRules
 
