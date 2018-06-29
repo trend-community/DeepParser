@@ -100,6 +100,10 @@ def SplitFeatures(FeatureString):
         NormPart = normMatch.group(2)
         FeatureString = normMatch.group(1) + normMatch.group(3)
 
+    # Added by Xiaochen, for English lexicon, ";" exists to distinguish features from stem or original word
+    if ";" in FeatureString:
+        FeatureString = FeatureString.replace(";"," ")
+
     features = FeatureString.split()
     if StemPart:
         features += [StemPart]
