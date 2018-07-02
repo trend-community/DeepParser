@@ -300,9 +300,9 @@ def getOutput(node):
     origFeaturesCopy = CopyFeatureLeaves(node.origFeatures)
     stemFeaturesCopy = CopyFeatureLeaves(node.stemFeatures)
 
-    for feature in origFeaturesCopy:
-        if feature in stemFeaturesCopy:
-            stemFeaturesCopy.remove(feature)
+    for feature in stemFeaturesCopy:
+        if feature in origFeaturesCopy:
+            origFeaturesCopy.remove(feature)
 
     # diffSetCopy = CopyFeatureLeaves(diffSet)
     #
