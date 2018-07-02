@@ -103,8 +103,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         Debug = "Debug" in queries
         if nodes:
             # if pipeline has "TRANSFORM DAG", then dag.nodes is not empty.
-            if len(dag.nodes) == 0:
-                dag.transform(nodes)
+            # if len(dag.nodes) == 0:
+            #     dag.transform(nodes)
 
             if  Type  == "simple":
                 output_type = "text/plain;"
