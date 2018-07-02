@@ -36,6 +36,8 @@ class LexiconNode(object):
         self.atom = word
         self.features = set()
         self.missingfeature = ""
+        self.origFeatures = set()
+        self.stemFeatures = set()
         # self.forLookup = False
 
     def __str__(self):
