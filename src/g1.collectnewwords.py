@@ -4,7 +4,7 @@
 # python3 g1.collectnewwords.py ../data/product_title1.txt ../../fsa/X/AllLexicon.txt ../../fsa/X/AllLexicon_Extra.txt
 
 #==============================================================
-import sys, logging, re
+import sys, logging, re, argparse
 from functools import lru_cache
 from collections import defaultdict
 
@@ -30,6 +30,7 @@ def CleanDict(d):
         if v <= 0:
             del d[k]
     logging.info("size:{}".format(len(d)))
+
 
 def RemoveKnownLex(newfile):
 
@@ -96,5 +97,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 1:
         _help()
         exit(1)
-
-    RemoveKnownLex(sys.argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("input", help="title parsed file (simple format)")
+    args = parser.parse_args()
+    RemoveKnownLex(args.input)
