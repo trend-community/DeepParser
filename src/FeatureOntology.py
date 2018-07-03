@@ -26,6 +26,14 @@ BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC'
 BarTagIDs = []
 BarTagIDSet = set()
 MergeTokenList = ['+++', 'nnn', 'mn', 'N', 'NE', 'DE']
+SentimentTags = ['repent', 'sent', 'fear', 'nC', 'cherish', 'apologize', 'mental', 'EMOc', 'EMO', 'emo', 'nEMOc', 'pEMOc', 'nEMO', 'pEMO', 'tuihuan', 'ntV', 'nt', 'bonus', 'pro', 'pt',
+                    'pC', 'mianxi', 'mianyou', 'manjian', 'aspir', 'wish', 'solve', 'need', 'pWeather', 'nWeather', 'pt0', 'nt0', 'ntN0', 'ptN0',  'damage', 'conV', 'con', 'adversary',
+                 'victim', 'con2', 'beBad', 'beGood', 'negAct', 'posAct', 'ntA', 'ptA', 'ntN', 'ptN', 'ptV', 'proV', 'conA', 'proA', 'conN', 'proN', 'curse', 'nEmo', 'emo', 'illBehave',
+                'shameless', 'satisfied', 'sigh', 'weep', 'condole', 'mishap', 'guarantee', 'agree', 'disagree', 'pAttitude', 'emotion', 'laugh', 'joy', 'thank', 'welcome', 'entertain',
+                'wellTreat', 'excited', 'nAttitude', 'calm', 'worry', 'unsatisfied', 'uneasy', 'sad', 'embarrassed', 'disappointed', 'ppEmo', 'nnEmo', 'interested', 'hello', 'salute', 'praise',
+                'commemorate', 'congr', 'endorse', 'appreciate', 'accept', 'reward', 'illTreat', 'mock', 'protest', 'oppose', 'reject', 'refuse', 'betray', 'pEmo', 'blame', 'angry', 'suffer',
+                'full', 'vWell', 'lucky', 'succeed', 'prosper', 'surpass', 'win', 'famous', 'good', 'bad', 'happy', 'annoy', 'hate', 'love', 'frighten', 'mkWorried', 'irritate', 'offend', 'tease',
+                'please', 'soothe', 'enLive', 'surprise', 'shy']
 
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
