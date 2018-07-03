@@ -144,7 +144,7 @@ def ApplyWinningDagRule(Dag, rule, OpenNode):
             node = Dag.nodes[nodeID]
             if logging.root.isEnabledFor(logging.INFO):
                 logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
-            Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action)
+            Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action, rule)
 
     for nodeid in Dag.nodes:
         #logging.info("node: {}".format(nodeid))
@@ -333,7 +333,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
         if level == 0:     #when the OpneNode is None, level should be 0
             OpenNodeID = nodeID
 
-        if Dag.TokenMatch(nodeID, ruletoken, OpenNodeID):
+        if Dag.TokenMatch(nodeID, ruletoken, OpenNodeID, Rule):
             Dag.nodes[nodeID].visited = True
             ruletoken.MatchedNodeID = nodeID
             Dag.nodes[nodeID].TempPointer = ruletoken.pointer
@@ -631,7 +631,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
         if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
+            return Cache.SentenceCache[Sentence], None, None  # assume ResultWinningRules is none.
 
         ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
@@ -814,7 +814,11 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("多干点吧。")
+    nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
+    print("dag: {}".format(dag))
+    print("winning rules: {}".format(winningrules))
+
+    nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 

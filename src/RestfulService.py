@@ -40,15 +40,18 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         try:
             if link.path == '/LexicalAnalyze':
                 try:
-                    queries = dict(qc.split("=") for qc in link.query.split("&"))
-                    if "Key" not in queries or queries["Key"] not in KeyWhiteList:
-                        self.send_error(550, "Key Error. Please visit NLP team for an authorization key")
-                    else:
-                        self.LexicalAnalyze(queries)
-                except ValueError:
+                    q = link.query.split("&")
+                    queries = dict(qc.split("=") for qc in q)
+                except ValueError as e:
                     logging.error("Input query is not correct: " + link.query)
                     self.send_error(500, "Link input error.")
                     return
+
+                if "Key" not in queries or queries["Key"] not in KeyWhiteList:
+                    self.send_error(550, "Key Error. Please visit NLP team for an authorization key")
+                else:
+                    self.LexicalAnalyze(queries)
+
             elif link.path.startswith('/GetFeatureID/'):
                 self.GetFeatureID(link.path[14:])
             elif link.path.startswith('/GetFeatureName/'):
@@ -103,8 +106,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         Debug = "Debug" in queries
         if nodes:
             # if pipeline has "TRANSFORM DAG", then dag.nodes is not empty.
-            if len(dag.nodes) == 0:
-                dag.transform(nodes)
+            # if len(dag.nodes) == 0:
+            #     dag.transform(nodes)
 
             if  Type  == "simple":
                 output_type = "text/plain;"
@@ -139,9 +142,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 orgdata = Graphviz.orgChart(output_json, Debug=Debug)
                 chart = charttemplate.replace("[[[DATA]]]", str(orgdata))
 
-
-                orgdata = dag.digraph()
-                chart = chart.replace("[[[DIGDATA]]]", str(orgdata))
+                if dag:
+                    orgdata = dag.digraph()
+                    chart = chart.replace("[[[DIGDATA]]]", str(orgdata))
 
                 if Debug:
                     winningrulestring = ""
@@ -336,13 +339,13 @@ def init():
         charttemplate = templatefile.read()
 
     ProcessSentence.LoadCommon()
+    #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
     try:
         MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
     except (KeyError, NoOptionError):
         MAXQUERYSENTENCELENGTH = 100
 
     KeyWhiteList = [x.split("#", 1)[0].strip() for x in utils.ParserConfig.get("main", "keylist").splitlines() if x]
-    #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
 
 
 class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
