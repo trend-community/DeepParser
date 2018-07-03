@@ -367,7 +367,7 @@ class DependencyTree:
             return False
         #might need open node for pointer
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
+            #logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
             logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
         if not ruletoken.SubtreePointer:
             return True
