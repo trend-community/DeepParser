@@ -115,6 +115,8 @@ def InitGlobalFeatureID():
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
         for IDList in FeatureOntology.BarTagIDs:
             FeatureOntology.BarTagIDSet.update(set(IDList))
+        FeatureOntology.SentimentTagIDSet = [FeatureOntology.GetFeatureID(t) for t in FeatureOntology.SentimentTags]
+        FeatureOntology.SentimentTagIDSet = set(FeatureOntology.SentimentTagIDSet)
 
 # return -1 if failed. Should throw error?
 @lru_cache(1000000)

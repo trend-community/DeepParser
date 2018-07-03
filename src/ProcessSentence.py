@@ -814,12 +814,12 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
+    nodelist, dag, winningrules = LexicalAnalyze("虽然经济实惠，但味道好苦啊")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
-    nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
-    print("dag: {}".format(dag))
-    print("winning rules: {}".format(winningrules))
+    # nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
+    # print("dag: {}".format(dag))
+    # print("winning rules: {}".format(winningrules))
 
     #LexicalAnalyze("张三做好事所有人都觉得是沽名钓誉")

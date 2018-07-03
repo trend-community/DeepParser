@@ -535,6 +535,10 @@ class DependencyTree:
             else:
                 logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
 
+
+            if Action == "NEUTRAL":
+                 FeatureOntology.ProcessSentimentTags(node.features)
+
         if HasBartagAction:     #only process bartags if there is new bar tag++
             FeatureOntology.ProcessBarTags(node.features)
 
