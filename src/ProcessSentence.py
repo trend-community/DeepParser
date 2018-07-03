@@ -631,7 +631,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
         if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
+            return Cache.SentenceCache[Sentence], None, None  # assume ResultWinningRules is none.
 
         ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
