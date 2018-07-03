@@ -370,7 +370,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             code = code.replace("\:", utils.IMPOSSIBLESTRING)
 
             # convert Chinese colon to English colon
-            if "ChinesePunctuate" in lexiconLocation and "：" in code:
+            if "ChinesePunctuate" not in lexiconLocation and "：" in code:
                 code = code.replace("：", ":")
             if  ":::" in code:
                 code = code.replace(":::", ":")
