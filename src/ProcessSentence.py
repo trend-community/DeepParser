@@ -364,8 +364,8 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
             break
         rule = rulegroup.RuleList[rule_sequence]
 
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("DAG: Start checking rule {}".format( rule))
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("DAG: Start checking rule {}".format( rule))
         node = DAGMatch(Dag,  rule, 0)
         if node:
             if logging.root.isEnabledFor(logging.INFO):
@@ -400,7 +400,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
 
         rule_sequence += 1
 
-    logging.info("Tried {} times in this file {}".format(counter, RuleFileName))
+    #logging.info("Tried {} times in this file {}".format(counter, RuleFileName))
     return WinningRules
 
 def MatchAndApplyDagRuleFile_old(Dag, RuleFileName):

@@ -188,8 +188,11 @@ def LoadSegmentSlash(lexiconLocation):
     global _LexiconSegmentDict
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
-            word, _ = SeparateComment(line)
+            #word, _ = SeparateComment(line)
+            word = line.strip()
             if word:
+                if "/" not in word:
+                    logging.info("LoadSegmentSlash: This word {} does not have slash! Location: {}".format(word, lexiconLocation))
                 combinedword = word.replace("/", "")
                 _LexiconSegmentSlashDict[combinedword] = word
                 if combinedword not in _LexiconSegmentDict:
@@ -200,7 +203,6 @@ def LoadSegmentSlash(lexiconLocation):
 def LoadSegmentLexicon():
     global _LexiconSegmentDict
 
-    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
     # lexiconLocation = XLocation + 'main2017.txt'
     # with open(lexiconLocation, encoding='utf-8') as dictionary:
     #     for line in dictionary:
@@ -216,6 +218,7 @@ def LoadSegmentLexicon():
                     and word not in _LexiconLookupSet[LexiconLookupSource.External]:
                 _LexiconSegmentDict[word] = 1.2
     else:
+        XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
         lexiconLocation = XLocation + 'AllLexicon.txt'
         with open(lexiconLocation, encoding='utf-8') as dictionary:
             for line in dictionary:

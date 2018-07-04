@@ -672,6 +672,8 @@ def Tokenize_CnEnMix(sentence):
     spacetoken = None
     attribute_prev = None
     for t in segmentedlist:
+        if not t:
+            continue
         isspace = t[0].isspace()
         if isspace: #
             attribute_prev = None
