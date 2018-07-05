@@ -386,14 +386,14 @@ class DependencyTree:
         elif ">" in SubtreePointer:     #on the left side of the other pointer
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if self.nodes[nodeID].Index > self.nodes[ReferenceNodeID].Index :
+            if self.nodes[nodeID].Index < self.nodes[ReferenceNodeID].Index :
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
             logging.info("Start looking for Reference pointer {} from OpenNode {}".format(ReferenceNodePointer, OpenNodeID))
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
             logging.info("ReferenceNodeID={}, current nodeid = {}".format(ReferenceNodeID, nodeID))
-            if self.nodes[nodeID].Index < self.nodes[ReferenceNodeID].Index :
+            if self.nodes[nodeID].Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
         for AndCondition in SubtreePointer.split("+"):
@@ -401,7 +401,7 @@ class DependencyTree:
 
             #logging.warning("AndCondition:{}".format(AndCondition))
             if AndCondition[0] == "!":
-                logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
+                #logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
