@@ -4,7 +4,7 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import  sys, requests
+import  sys, requests, operator
 from utils import *
 
 
@@ -194,45 +194,46 @@ def OutputFeatureOntologyFile(FolderLocation):
 
 def OutputFeatureOntologyGraph():
     #output = "//***Ontology***" + "\n"
-    graph = set()
-    PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
-    XLocation = os.path.dirname(PipeLineLocation)
-    with open(XLocation + '/../Y/feature.txt', encoding="utf-8") as dictionary:
-        for line in dictionary:
-            code, comment = SeparateComment(line)
-            if "," not in code:
-                continue    #no edge. ignore
+    if not hasattr(OutputFeatureOntologyGraph, "graph"):
+        from collections import defaultdict
+        OutputFeatureOntologyGraph.outbound = defaultdict(int)
+        OutputFeatureOntologyGraph.inbound = defaultdict(int)
+        OutputFeatureOntologyGraph.nodeset = set()
 
-            OpenWord, ancestors = code.split(",", 1)
-            OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  #remove the alias.
+        OutputFeatureOntologyGraph.graph = set()
+        PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+        XLocation = os.path.dirname(PipeLineLocation)
+        with open(XLocation + '/../Y/feature.txt', encoding="utf-8") as dictionary:
+            for line in dictionary:
+                code, comment = SeparateComment(line)
+                if "," not in code:
+                    continue    #no edge. ignore
 
-            for path in ancestors.split(";"):
-                prev = OpenWordID
-                for node in path.split(","):
-                    if node.strip():
-                        graph.add((prev, GetFeatureID(node.strip())))
-                        prev = GetFeatureID(node.strip())
+                OpenWord, ancestors = code.split(",", 1)
+                OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  #remove the alias.
 
-    from collections import defaultdict
-    outbound = defaultdict(int)
-    inbound = defaultdict(int)
-    nodeset = set()
+                for path in ancestors.split(";"):
+                    prev = OpenWordID
+                    for node in path.split(","):
+                        if node.strip():
+                            parentid = GetFeatureID(node.strip())
+                            if (prev, parentid) not in OutputFeatureOntologyGraph.graph:
+                                OutputFeatureOntologyGraph.graph.add((prev, parentid))
+                                OutputFeatureOntologyGraph.outbound[prev] += 1
+                                OutputFeatureOntologyGraph.inbound[parentid] += 1
+                                OutputFeatureOntologyGraph.nodeset.add(prev)
+                                OutputFeatureOntologyGraph.nodeset.add(parentid)
+
+                            prev = GetFeatureID(node.strip())
+
     output = "{\n"
-    for edge in graph:
-        output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
-
-        outbound[edge[0]] += 1
-        inbound[edge[1]] += 1
-        nodeset.add(edge[0])
-        nodeset.add(edge[1])
-
+    for node in OutputFeatureOntologyGraph.nodeset:
+        output += "{} [ tooltip=\"Inbound:{} Outbound:{}\"];\n".format(GetFeatureName(node), OutputFeatureOntologyGraph.inbound[node], OutputFeatureOntologyGraph.outbound[node])
+    for edge in sorted(OutputFeatureOntologyGraph.graph, key=operator.itemgetter(0, 1)):
+        #output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
+        output += "\t{}->{} ;\n".format(GetFeatureName(edge[0]), GetFeatureName(edge[1]))
     output += "}\n"
 
-    print("There are {} nodes.".format(len(nodeset)))
-    for outboundid in sorted(outbound, key=outbound.get, reverse=True):
-        print("{} outbound: {}".format(GetFeatureName(outboundid), outbound[outboundid]))
-    for inboundid in sorted(inbound, key=inbound.get, reverse=True):
-        print("{} inbound: {}".format(GetFeatureName(inboundid), inbound[inboundid]))
     return output
 
 def LoadFeatureOntology(featureOncologyLocation):
