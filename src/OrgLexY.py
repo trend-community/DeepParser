@@ -16,6 +16,10 @@ _allLexdict = {}
 
 _compoundYdict = {}
 _compoundYCommentdict = {}
+_compoundY3colonsdict = {}
+_compoundY3colonsCommentdict = {}
+_compoundYformsdict = {}
+_compoundYformsCommentdict = {}
 _lexicon2dict = {}
 _lexicon2Commentdict = {}
 
@@ -37,14 +41,18 @@ lexicon1Location = YDirLocation + "/../../fsa/Y/LEXICON_1.txt"
 tmpLexicon1 = tmpDirPath + 'Lexicon1Copy.txt'
 compoundYLocation = YDirLocation + '/../../fsa/Y/compoundY.txt'
 tmpCompound = tmpDirPath + 'compoundYCopy.txt'
+compoundY3colonsLocation = YDirLocation + '/../../fsa/Y/compoundY_3colons.txt'
+tmpCompoundY3colons = tmpDirPath + 'compoundY3colonsCopy.txt'
+compoundYformsLocation = YDirLocation + '/../../fsa/Y/compoundY_forms.txt'
+tmpCompoundYforms = tmpDirPath + 'compoundYformsCopy.txt'
 lexicon2Location = YDirLocation + '/../../fsa/Y/LEXICON_2.txt'
 tmpLexicon2 = tmpDirPath + 'Lexicon2Copy.txt'
 
 paraFeatureNotCopy = YDirLocation + "/../../fsa/Y/FeatureNotCopy.txt"
 
-_lexLocationList = [lexYLocation, lexY3colonsLocation,lexYformsLocation, lexicon1Location, compoundYLocation, lexicon2Location]
-_lexDictList = [_lexYdict,_lexY3colonsdict,_lexYformsdict,  _lexicon1dict, _compoundYdict, _lexicon2dict]
-_lexCommentList = [_lexYCommentdict, _lexY3colonsCommentdict, _lexYformsCommentdict, _lexicon1Commentdict, _compoundYCommentdict, _lexicon2Commentdict]
+_lexLocationList = [lexYLocation, lexY3colonsLocation,lexYformsLocation, lexicon1Location, compoundYLocation, compoundY3colonsLocation,compoundYformsLocation,lexicon2Location]
+_lexDictList = [_lexYdict,_lexY3colonsdict,_lexYformsdict,  _lexicon1dict, _compoundYdict, _compoundY3colonsdict, _compoundYformsdict, _lexicon2dict]
+_lexCommentList = [_lexYCommentdict, _lexY3colonsCommentdict, _lexYformsCommentdict, _lexicon1Commentdict, _compoundYCommentdict, _compoundY3colonsCommentdict, _compoundYformsCommentdict,  _lexicon2Commentdict]
 
 
 def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
@@ -271,9 +279,9 @@ def printNewLex(newloc, _lexDict,_CommentDict):
             # output += _lexDict.get(word).entry() + "\n"
             output += getOutput(_lexDict.get(word)) + "\n"
             oldWord = word
-        if newloc == lexY3colonsLocation:
+        if newloc == lexY3colonsLocation or newloc == compoundY3colonsLocation:
             output = output.replace(":",":::")
-        elif newloc == lexYformsLocation:
+        elif newloc == lexYformsLocation or newloc == compoundYformsLocation:
             output = output.replace(":", "::")
         file.write(output+"\n")
 
@@ -388,13 +396,28 @@ if __name__ == "__main__":
 
     # compare the corresponding lexicons of same level
     compareLex(_lexYdict,_lexicon1dict)
+    compareLex(_lexY3colonsdict, _lexicon1dict)
+    compareLex(_lexYformsdict, _lexicon1dict)
+    compareLex(_lexY3colonsdict,_lexYdict)
+    compareLex(_lexY3colonsdict, _lexYformsdict)
+    compareLex(_lexYdict, _lexYformsdict)
+
+
+
     compareLex(_compoundYdict, _lexicon2dict)
+    compareLex(_compoundY3colonsdict, _lexicon2dict)
+    compareLex(_compoundYformsdict, _lexicon2dict)
+    compareLex(_compoundY3colonsdict,_compoundYdict)
+    compareLex(_compoundY3colonsdict, _compoundYformsdict)
+    compareLex(_compoundYdict, _compoundYformsdict)
 
     printNewLex(lexYLocation,_lexYdict,_lexYCommentdict)
     printNewLex(lexY3colonsLocation, _lexY3colonsdict, _lexY3colonsCommentdict)
     printNewLex(lexYformsLocation, _lexYformsdict, _lexYformsCommentdict)
     printNewLex(lexicon1Location,_lexicon1dict,_lexicon1Commentdict)
     printNewLex(compoundYLocation, _compoundYdict,_compoundYCommentdict)
+    printNewLex(compoundY3colonsLocation, _compoundY3colonsdict, _compoundY3colonsCommentdict)
+    printNewLex(compoundYformsLocation, _compoundYformsdict, _compoundYformsCommentdict)
     printNewLex(lexicon2Location, _lexicon2dict,_lexicon2Commentdict)
 
 
