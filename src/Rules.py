@@ -610,13 +610,9 @@ class Rule:
             if chunk.StringChunkLength == 1:    #remove single node chunk. remove "H" in this single node.
                 headtoken = self.Tokens[chunk.StartOffset + chunk.HeadOffset]
                 headaction = headtoken.action.split()
-                if "H" in headaction:
+                while "H" in headaction:
                     headaction.pop(headaction.index("H"))
-                if "H" in headaction:
-                    headaction.pop(headaction.index("H"))
-                if "^.H" in headaction:
-                    headaction.pop(headaction.index("^.H"))
-                if "^.H" in headaction:
+                while "^.H" in headaction:
                     headaction.pop(headaction.index("^.H"))
                 headaction += chunk.Action.split()
 

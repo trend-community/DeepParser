@@ -279,13 +279,13 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 else:
                     logging.error("Unknown Rule Applying Error when applying{}:\n {}".format(WinningRule.RuleName, e))
                     logging.info("strtokenlist={}".format(strtokenlist))
-                    raise
+                    #raise  #ignore this rule, do the next.
 
             except IndexError as e:
                 logging.error("Failed to apply this rule:")
                 logging.error(str(WinningRule))
                 logging.error(str(e))
-                raise
+                #raise
         i += 1
         strtoken = strtoken.next
     return WinningRules

@@ -227,7 +227,6 @@ def LogicMatch_notpointer(StrToken, RuleToken):
                 return False
 
     if RuleToken.AndText:
-
         if StrToken.Head0Text and not RuleToken.FullString:
             word = StrToken.Head0Text
         else:
@@ -296,24 +295,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
             #This is a pointer! unification comparison.
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
 
-    # if RuleToken.word in strToken.FailedRuleTokens:
-    #     return False
-
-    #AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
-    if RuleToken.AndFeatures:
-        for f in RuleToken.AndFeatures:
-            if f not in strToken.features:
-                #strToken.FailedRuleTokens.add(RuleToken.word)
-                # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
-                return False
-
-        # CommonAndFeatutures = RuleToken.AndFeatures.intersection(strToken.features)
-        # if len(CommonAndFeatutures) < len(RuleToken.AndFeatures):
-        #     return False
-
-
     return LogicMatch_notpointer(strToken, RuleToken)
-
 
 
 @lru_cache(1000000)

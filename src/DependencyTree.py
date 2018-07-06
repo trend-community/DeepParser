@@ -412,8 +412,8 @@ class DependencyTree:
                 start_nodeID = OpenNodeID
             else:
                 if pointer.isdigit():
-                    pointer_num = int(pointer)-1
-                    nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    pointer_num = int(pointer)
+                    start_nodeID = rule.Tokens[pointer_num].MatchedNodeID
                 else:
                     pointer = "^" + pointer
                     #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
