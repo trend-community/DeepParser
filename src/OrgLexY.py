@@ -229,7 +229,7 @@ def GetStemFeatures(word):
     for d in _lexDictList:
         if word in d.keys():
             node = d.get(word)
-            features = node.features
+            features = node.stemFeatures
             copyFeatures = features.copy()
 
             for ID in features:
@@ -252,6 +252,7 @@ def enrichFeature(_lexDict):
         if atom != word:
             atomfeatures = GetStemFeatures(atom)
             if atomfeatures:
+                node.stemFeatures = set()
                 node.stemFeatures.update(atomfeatures)
                 temp = feature.union(atomfeatures)
                 node.features = temp
@@ -259,6 +260,7 @@ def enrichFeature(_lexDict):
         elif norm != word:
             normfeatures = GetStemFeatures(norm)
             if normfeatures:
+                node.stemFeatures = set()
                 node.stemFeatures.update(normfeatures)
                 temp = feature.union(normfeatures)
                 node.features = temp
