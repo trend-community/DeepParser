@@ -234,6 +234,7 @@ def OutputFeatureOntologyGraph():
         output += "\t{}->{} ;\n".format(GetFeatureName(edge[0]), GetFeatureName(edge[1]))
     output += "}\n"
 
+    logging.info("In Feature ontology, There are {} edges, for {} nodes.".format(len(OutputFeatureOntologyGraph.graph), len(OutputFeatureOntologyGraph.nodeset)))
     return output
 
 def LoadFeatureOntology(featureOncologyLocation):

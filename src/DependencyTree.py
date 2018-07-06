@@ -390,9 +390,7 @@ class DependencyTree:
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
-            logging.info("Start looking for Reference pointer {} from OpenNode {}".format(ReferenceNodePointer, OpenNodeID))
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            logging.info("ReferenceNodeID={}, current nodeid = {}".format(ReferenceNodeID, nodeID))
             if self.nodes[nodeID].Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
@@ -586,4 +584,4 @@ if __name__ == "__main__":
     print(x)
     print(x.digraph('graph'))
     print(x.digraph('simple'))
-    print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O")))
+    print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O", None)))

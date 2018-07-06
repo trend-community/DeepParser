@@ -277,7 +277,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
                     rulegroup.RuleList.remove(WinningRule)
                 else:
-                    logging.error("Unknown Rule Applying Error:" + str(e))
+                    logging.error("Unknown Rule Applying Error when applying{}:\n {}".format(WinningRule.RuleName, e))
+                    logging.info("strtokenlist={}".format(strtokenlist))
                     raise
 
             except IndexError as e:

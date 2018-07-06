@@ -663,6 +663,11 @@ class Rule:
 
         if c.HeadConfidence > 0:
             self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  #add Head for the head token.
+            for i in range(HeadOffset, c.HeadOffset):
+                token = self.Tokens[i]
+                if token.SubtreePointer:
+                    c.HeadOffset -= 1       #this number will be used to specify which node's property to copy to the chunk node.
+
         return VirtualTokenNum
 
 
