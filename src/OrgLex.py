@@ -142,13 +142,13 @@ def SplitFeaturesWithSemicolon(FeatureString, node):
         for feature in stemFeaturesSet:
             node.stemFeatures.add(GetFeatureID(feature))
 
-        FeatureString = FeatureString.replace(";", " ")
-
     else:
         origFeatures = FeatureString.split()
         for feature in origFeatures:
             node.origFeatures.add(GetFeatureID(feature))
 
+    if ";" in FeatureString:
+        FeatureString = FeatureString.replace(";", " ")
 
     features = FeatureString.split()
     if StemPart:
