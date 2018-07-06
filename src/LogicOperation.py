@@ -67,6 +67,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
 
         RulePointerPos = GetNumberPointer(Pointer)
         if RulePointerPos <= 0:
+            logging.info("LocateStrTokenOfPointer: Searching along the rule tokens to find pointer {}".format(Pointer))
             RulePointerPos = RulePosition
             #logging.debug("Testing pointer" + Pointer)
             while RulePointerPos >= 0:
@@ -146,7 +147,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
                                    )
     elif matchtype == "norm":
         return strToken.norm and StrPointerToken.norm \
-               and( (PointerType == 0 and StrPointerToken.norm == StrTokenList.get(StrPosition).norm)
+               and( (PointerType == 0 and StrPointerToken.norm == strToken.norm)
                 or (PointerType == 1 and StrPointerToken.norm.endswith(  strToken.norm))
                 or (PointerType == 2 and StrPointerToken.norm.startswith(strToken.norm))
                 or (PointerType == 3 and StrPointerToken.norm.endswith(  strToken.norm[-1]))
@@ -156,7 +157,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
                                    )
     elif matchtype == "atom":
         return strToken.atom and StrPointerToken.atom \
-               and( (PointerType == 0 and StrPointerToken.atom == StrTokenList.get(StrPosition).atom)
+               and( (PointerType == 0 and StrPointerToken.atom == strToken.atom)
                 or (PointerType == 1 and StrPointerToken.atom.endswith(  strToken.atom))
                 or (PointerType == 2 and StrPointerToken.atom.startswith(strToken.atom))
                 or (PointerType == 3 and StrPointerToken.atom.endswith(  strToken.atom[-1]))
@@ -227,18 +228,20 @@ def LogicMatch_notpointer(StrToken, RuleToken):
                 return False
 
     if RuleToken.AndText:
-
-        if StrToken.Head0Text and not RuleToken.FullString:
-            word = StrToken.Head0Text
+        if "^" in RuleToken.AndText:
+            pass    #being processed in PointerMatch
         else:
-            if RuleToken.AndTextMatchtype == "text":
-                word = StrToken.text
-            elif RuleToken.AndTextMatchtype == "norm":
-                word = StrToken.norm
+            if StrToken.Head0Text and not RuleToken.FullString:
+                word = StrToken.Head0Text
             else:
-                word = StrToken.atom
-        if not LogicMatchText(RuleToken.AndText, word):
-            return False
+                if RuleToken.AndTextMatchtype == "text":
+                    word = StrToken.text
+                elif RuleToken.AndTextMatchtype == "norm":
+                    word = StrToken.norm
+                else:
+                    word = StrToken.atom
+            if not LogicMatchText(RuleToken.AndText, word):
+                return False
 
     for OrFeatureGroup in RuleToken.OrFeatureGroups:
         CommonOrFeatures = OrFeatureGroup.intersection(StrToken.features)
@@ -296,24 +299,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
             #This is a pointer! unification comparison.
             return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
 
-    # if RuleToken.word in strToken.FailedRuleTokens:
-    #     return False
-
-    #AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
-    if RuleToken.AndFeatures:
-        for f in RuleToken.AndFeatures:
-            if f not in strToken.features:
-                #strToken.FailedRuleTokens.add(RuleToken.word)
-                # Cache.LogicalMatchCache[(strToken.signature, RuleToken.word)] = False
-                return False
-
-        # CommonAndFeatutures = RuleToken.AndFeatures.intersection(strToken.features)
-        # if len(CommonAndFeatutures) < len(RuleToken.AndFeatures):
-        #     return False
-
-
     return LogicMatch_notpointer(strToken, RuleToken)
-
 
 
 @lru_cache(1000000)

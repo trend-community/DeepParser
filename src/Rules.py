@@ -610,13 +610,9 @@ class Rule:
             if chunk.StringChunkLength == 1:    #remove single node chunk. remove "H" in this single node.
                 headtoken = self.Tokens[chunk.StartOffset + chunk.HeadOffset]
                 headaction = headtoken.action.split()
-                if "H" in headaction:
+                while "H" in headaction:
                     headaction.pop(headaction.index("H"))
-                if "H" in headaction:
-                    headaction.pop(headaction.index("H"))
-                if "^.H" in headaction:
-                    headaction.pop(headaction.index("^.H"))
-                if "^.H" in headaction:
+                while "^.H" in headaction:
                     headaction.pop(headaction.index("^.H"))
                 headaction += chunk.Action.split()
 
@@ -663,6 +659,11 @@ class Rule:
 
         if c.HeadConfidence > 0:
             self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  #add Head for the head token.
+            for i in range(HeadOffset, c.HeadOffset):
+                token = self.Tokens[i]
+                if token.SubtreePointer:
+                    c.HeadOffset -= 1       #this number will be used to specify which node's property to copy to the chunk node.
+
         return VirtualTokenNum
 
 

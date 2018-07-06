@@ -2,7 +2,7 @@
 #    some of the graph can be cyclic.
 # so it is required to have "root".
 
-import jsonpickle, copy, logging
+import jsonpickle, copy, logging, re
 import operator
 import utils    #for the Feature_...
 #from utils import *
@@ -254,7 +254,7 @@ class DependencyTree:
     def _CheckEdge(self, node1id, relation, node2id):
         Reverse = False
         if relation[0] == "~":
-            logging.warning("_CheckEdge: Reverse! {}".format(relation))
+            logging.debug("_CheckEdge: Reverse! {}".format(relation))
             Reverse = True
             relation = relation[1:]
 
@@ -360,8 +360,86 @@ class DependencyTree:
             self.nodes[nodeid].visited = False
 
 
+    # Unification: <['^V-' ] [不] ^V[V|V0|v]> // Test: 学不学习； 侃不侃大山
+    # In rule, start from RulePosition, seach for pointer:
+    #   Start from left side, if not found, seach right side.
+    # After that is found, use the offset to locate the token in StrTokens
+    #  compare the pointertoken to the current token (both in StrTokens),
+    #   return the compare result.
+    # Update: ^N : 香味   0
+    #           ^-N: PointerIsSuffix  味  1   ^N-: PointerIsPrefix  香     2
+    #           -^-N: '-味'          臭味  3   ^N--:  '香-'          香气   4
+    #           ^-N-: '味-'          味道  5   -^N-:  '-香'          夜来香  6
+
+    def PointerMatch(self, openID, rule, nodeID, Pointer, matchtype='norm'):
+        if re.match("-\^(.+)-", Pointer):
+            P = "^" + Pointer[2:-1]
+            PointerType = 6
+        elif re.match("\^-(.+)-", Pointer):
+            P = "^" + Pointer[2:-1]
+            PointerType = 5
+        elif re.match("\^(.+)--", Pointer):
+            P = "^" + Pointer[1:-2]
+            PointerType = 4
+        elif re.match("-\^-(.+)", Pointer):
+            P = "^" + Pointer[3:]
+            PointerType = 3
+        elif re.match("\^(.+)-", Pointer):
+            P = "^" + Pointer[1:-1]
+            PointerType = 2
+        elif re.match("\^-(.+)", Pointer):
+            P = "^" + Pointer[2:]
+            PointerType = 1
+        else:
+            P = "^" + Pointer[1:]  # should be ^N
+            PointerType = 0
+
+        StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule)]
+        strToken = self.nodes[nodeID]
+
+        if matchtype == "text":
+            return strToken.text and StrPointerToken.text \
+                   and ((PointerType == 0 and StrPointerToken.text == strToken.text)
+                        or (PointerType == 1 and StrPointerToken.text.endswith(strToken.text))
+                        or (PointerType == 2 and StrPointerToken.text.startswith(strToken.text))
+                        or (PointerType == 3 and StrPointerToken.text.endswith(strToken.text[-1]))
+                        or (PointerType == 4 and StrPointerToken.text.startswith(strToken.text[0]))
+                        or (PointerType == 5 and StrPointerToken.text.endswith(strToken.text[0]))
+                        or (PointerType == 6 and StrPointerToken.text.startswith(strToken.text[-1]))
+                        )
+        elif matchtype == "norm":
+            return strToken.norm and StrPointerToken.norm \
+                   and ((PointerType == 0 and StrPointerToken.norm == strToken.norm)
+                        or (PointerType == 1 and StrPointerToken.norm.endswith(strToken.norm))
+                        or (PointerType == 2 and StrPointerToken.norm.startswith(strToken.norm))
+                        or (PointerType == 3 and StrPointerToken.norm.endswith(strToken.norm[-1]))
+                        or (PointerType == 4 and StrPointerToken.norm.startswith(strToken.norm[0]))
+                        or (PointerType == 5 and StrPointerToken.norm.endswith(strToken.norm[0]))
+                        or (PointerType == 6 and StrPointerToken.norm.startswith(strToken.norm[-1]))
+                        )
+        elif matchtype == "atom":
+            return strToken.atom and StrPointerToken.atom \
+                   and ((PointerType == 0 and StrPointerToken.atom == strToken.atom)
+                        or (PointerType == 1 and StrPointerToken.atom.endswith(strToken.atom))
+                        or (PointerType == 2 and StrPointerToken.atom.startswith(strToken.atom))
+                        or (PointerType == 3 and StrPointerToken.atom.endswith(strToken.atom[-1]))
+                        or (PointerType == 4 and StrPointerToken.atom.startswith(strToken.atom[0]))
+                        or (PointerType == 5 and StrPointerToken.atom.endswith(strToken.atom[0]))
+                        or (PointerType == 6 and StrPointerToken.atom.startswith(strToken.atom[-1]))
+                        )
+        else:
+            raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
+
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         import LogicOperation
+        node = self.nodes[nodeID]
+        if ruletoken.AndText and "^" in ruletoken.AndText:
+            # This is a pointer! unification comparison.
+            if not self.PointerMatch(OpenNodeID, rule, nodeID, Pointer=ruletoken.AndText,
+                                matchtype=ruletoken.AndTextMatchtype):
+                return False
+
         logicmatch = LogicOperation.LogicMatch_notpointer(self.nodes[nodeID], ruletoken)
         if not logicmatch:
             return False
@@ -386,14 +464,12 @@ class DependencyTree:
         elif ">" in SubtreePointer:     #on the left side of the other pointer
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if self.nodes[nodeID].Index > self.nodes[ReferenceNodeID].Index :
+            if self.nodes[nodeID].Index < self.nodes[ReferenceNodeID].Index :
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
-            logging.info("Start looking for Reference pointer {} from OpenNode {}".format(ReferenceNodePointer, OpenNodeID))
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            logging.info("ReferenceNodeID={}, current nodeid = {}".format(ReferenceNodeID, nodeID))
-            if self.nodes[nodeID].Index < self.nodes[ReferenceNodeID].Index :
+            if self.nodes[nodeID].Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
         for AndCondition in SubtreePointer.split("+"):
@@ -401,7 +477,7 @@ class DependencyTree:
 
             #logging.warning("AndCondition:{}".format(AndCondition))
             if AndCondition[0] == "!":
-                logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
+                #logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
@@ -414,8 +490,8 @@ class DependencyTree:
                 start_nodeID = OpenNodeID
             else:
                 if pointer.isdigit():
-                    pointer_num = int(pointer)-1
-                    nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    pointer_num = int(pointer)
+                    start_nodeID = rule.Tokens[pointer_num].MatchedNodeID
                 else:
                     pointer = "^" + pointer
                     #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
@@ -586,4 +662,4 @@ if __name__ == "__main__":
     print(x)
     print(x.digraph('graph'))
     print(x.digraph('simple'))
-    print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O")))
+    print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O", None)))
