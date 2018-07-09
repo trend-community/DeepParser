@@ -160,13 +160,15 @@ def SplitFeaturesWithSemicolon(FeatureString, node):
         for feature in stemFeaturesSet:
             node.stemFeatures.add(GetFeatureID(feature))
 
-        FeatureString = FeatureString.replace(";", " ")
+
 
     else:
         origFeatures = FeatureString.split()
         for feature in origFeatures:
             node.origFeatures.add(GetFeatureID(feature))
 
+    if ";" in FeatureString:
+        FeatureString = FeatureString.replace(";", " ")
 
     features = FeatureString.split()
     if StemPart:
@@ -229,7 +231,7 @@ def GetStemFeatures(word):
     for d in _lexDictList:
         if word in d.keys():
             node = d.get(word)
-            features = node.features
+            features = node.stemFeatures
             copyFeatures = features.copy()
 
             for ID in features:
@@ -252,6 +254,7 @@ def enrichFeature(_lexDict):
         if atom != word:
             atomfeatures = GetStemFeatures(atom)
             if atomfeatures:
+                node.stemFeatures = set()
                 node.stemFeatures.update(atomfeatures)
                 temp = feature.union(atomfeatures)
                 node.features = temp
@@ -259,6 +262,7 @@ def enrichFeature(_lexDict):
         elif norm != word:
             normfeatures = GetStemFeatures(norm)
             if normfeatures:
+                node.stemFeatures = set()
                 node.stemFeatures.update(normfeatures)
                 temp = feature.union(normfeatures)
                 node.features = temp

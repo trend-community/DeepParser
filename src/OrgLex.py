@@ -71,7 +71,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                     node.comment = comment
             # else:
             #     logging.debug("This word is repeated in lexicon: %s" % blocks[0])
-            features = SplitFeatures(blocks[1]) # blocks[1].split()
+            features, node = SplitFeaturesWithSemicolon(blocks[1], node)
             for feature in features:
                 if re.match('^\'.*\'$', feature):
                     node.norm = feature.strip('\'')
@@ -114,6 +114,48 @@ def FeatureNotCopy():
             line = line.strip()
             line = GetFeatureID(line)
             _FeatureNotCopy.add(line)
+
+def SplitFeaturesWithSemicolon(FeatureString, node):
+    StemPart = None
+    stemMatch = re.match("(.*)(\'.+\')(.*)", FeatureString)
+    # if re.search('\'.*\'$', FeatureString):
+    if stemMatch and stemMatch.lastindex == 3:
+        StemPart = stemMatch.group(2)
+        FeatureString = stemMatch.group(1) + stemMatch.group(3)
+
+    NormPart = None
+    normMatch = re.match("(.*)(/.+/)(.*)", FeatureString)
+    # if re.search('\'.*\'$', FeatureString):
+    if normMatch and normMatch.lastindex == 3:
+        NormPart = normMatch.group(2)
+        FeatureString = normMatch.group(1) + normMatch.group(3)
+
+    # Added by Xiaochen, for English lexicon, ";" exists to distinguish features from stem or original word
+    if ";" in FeatureString:
+        origFeatures = FeatureString[0:FeatureString.index(";")]
+        origFeaturesSet = set(origFeatures.split())
+        for feature in origFeaturesSet:
+            node.origFeatures.add(GetFeatureID(feature))
+
+        stemFeatures = FeatureString[FeatureString.index(";")+1:]
+        stemFeaturesSet = set(stemFeatures.split())
+        for feature in stemFeaturesSet:
+            node.stemFeatures.add(GetFeatureID(feature))
+
+    else:
+        origFeatures = FeatureString.split()
+        for feature in origFeatures:
+            node.origFeatures.add(GetFeatureID(feature))
+
+    if ";" in FeatureString:
+        FeatureString = FeatureString.replace(";", " ")
+
+    features = FeatureString.split()
+    if StemPart:
+        features += [StemPart]
+    if NormPart:
+        features += [NormPart]
+    return features,node
 
 
 def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
@@ -187,6 +229,8 @@ def EnrichFeature( _LexiconDict):
             # else:
                 # logging.debug("no stem or norm is labeled to enrich features" + word)
             if stemFeatures:
+                node.stemFeatures = set()
+                node.stemFeatures.update(stemFeatures)
                 res = features.union(stemFeatures)
                 node.features = res
                 _LexiconDict.update({word:node})
@@ -198,7 +242,7 @@ def GetStemFeatures(word):
     for d in dictList:
         if word in d.keys():
             node = d.get(word)
-            features = node.features
+            features = node.stemFeatures
             copyFeatures = features.copy()
 
             for ID in features:
