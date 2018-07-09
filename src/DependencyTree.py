@@ -8,6 +8,7 @@ import utils    #for the Feature_...
 #from utils import *
 import Lexicon
 import FeatureOntology
+import LogicOperation
 
 DanziDict = dict()
 
@@ -435,19 +436,16 @@ class DependencyTree:
         else:
             raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
-    TokenMatch_notpointer_Cache = {}
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
-        import LogicOperation
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.
             if not self.PointerMatch(OpenNodeID, rule, nodeID, Pointer=ruletoken.AndText,
                                 matchtype=ruletoken.AndTextMatchtype):
                 return False
         node = self.nodes[nodeID]
-        if (nodeID, ruletoken.ID) not in self.TokenMatch_notpointer_Cache:
-            self.TokenMatch_notpointer_Cache[(nodeID, ruletoken.ID)] = LogicOperation.LogicMatch_notpointer(node, ruletoken)
 
-        logicmatch = self.TokenMatch_notpointer_Cache[(nodeID, ruletoken.ID)]
+        logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken)
         if not logicmatch:
             return False
         #might need open node for pointer
@@ -543,8 +541,6 @@ class DependencyTree:
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
-        self.TokenMatch_notpointer_Cache = {}  #reset all TokenMatch_notpointer_Cache.
-
         Actions = actinstring.split()
         #logging.debug("Word:" + self.text)
 

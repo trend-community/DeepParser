@@ -3,7 +3,7 @@ import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
 #from threading import Thread
-from LogicOperation import LogicMatch,  LogicMatch_notpointer
+from LogicOperation import LogicMatch, Clear_LogicMatch_notpointer_Cache
 import DependencyTree
 from utils import *
 import utils
@@ -98,6 +98,7 @@ def RemoveTempPointer(StrList):
 
 # Apply the features, and other actions.
 def ApplyWinningRule(strtokens, rule, StartPosition):
+    Clear_LogicMatch_notpointer_Cache()
 
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
@@ -139,6 +140,8 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
 # Apply the features, and other actions.
 def ApplyWinningDagRule(Dag, rule, OpenNode):
+    Clear_LogicMatch_notpointer_Cache()
+
     for i in range(rule.TokenLength):
         if rule.Tokens[i].action:
             nodeID = rule.Tokens[i].MatchedNodeID

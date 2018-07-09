@@ -220,8 +220,13 @@ def _FindSubtree(root, pointers):
     return None
 
 
+LogicMatch_notpointer_Cache = {}
 def LogicMatch_notpointer(StrToken, RuleToken):
     # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
+    if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
+        return LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)]
+
+    LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = False
     if RuleToken.AndFeatures:
         for f in RuleToken.AndFeatures:
             if f not in StrToken.features:
@@ -265,7 +270,14 @@ def LogicMatch_notpointer(StrToken, RuleToken):
         for NotText in RuleToken.NotTexts:
             if LogicMatchText(NotText, word):
                 return False
+
+    LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = True
     return True
+
+
+#Being called after each rule applying (assume the StrToken is modified)
+def Clear_LogicMatch_notpointer_Cache():
+    LogicMatch_notpointer_Cache.clear()
 
 
 def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
