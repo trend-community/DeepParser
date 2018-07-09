@@ -278,9 +278,13 @@ class DependencyTree:
 
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
+    FindPointerNode_Cache = {}
     def FindPointerNode(self, openID, SubtreePointer, rule):
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
+        if (openID, SubtreePointer, rule.ID) in self.FindPointerNode_Cache:
+            #logging.debug("FindPointerNode_Cache: hit!")
+            return self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)]
 
         if len(SubtreePointer) >= 1 and SubtreePointer[0] == '^':
             SubtreePointer = SubtreePointer[1:]
@@ -350,6 +354,7 @@ class DependencyTree:
                     #logging.info("Found this node {} for these pointers:{}".format(nodeID, pointers))
 
         if nodeID:
+            self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)] = nodeID
             return nodeID
         else:
             return None
@@ -430,22 +435,24 @@ class DependencyTree:
         else:
             raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
-
+    TokenMatch_notpointer_Cache = {}
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         import LogicOperation
-        node = self.nodes[nodeID]
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.
             if not self.PointerMatch(OpenNodeID, rule, nodeID, Pointer=ruletoken.AndText,
                                 matchtype=ruletoken.AndTextMatchtype):
                 return False
+        node = self.nodes[nodeID]
+        if (nodeID, ruletoken.ID) not in self.TokenMatch_notpointer_Cache:
+            self.TokenMatch_notpointer_Cache[(nodeID, ruletoken.ID)] = LogicOperation.LogicMatch_notpointer(node, ruletoken)
 
-        logicmatch = LogicOperation.LogicMatch_notpointer(self.nodes[nodeID], ruletoken)
+        logicmatch = self.TokenMatch_notpointer_Cache[(nodeID, ruletoken.ID)]
         if not logicmatch:
             return False
         #might need open node for pointer
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, self.nodes[nodeID]))
+            logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, node))
             logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
         if not ruletoken.SubtreePointer:
             return True
@@ -454,22 +461,22 @@ class DependencyTree:
         if ">>" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if self.nodes[nodeID].Index != self.nodes[ReferenceNodeID].Index + 1 :
+            if node.Index != self.nodes[ReferenceNodeID].Index + 1 :
                 return False
         elif "<<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<<", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if self.nodes[nodeID].Index != self.nodes[ReferenceNodeID].Index - 1 :
+            if node.Index != self.nodes[ReferenceNodeID].Index - 1 :
                 return False
         elif ">" in SubtreePointer:     #on the left side of the other pointer
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if self.nodes[nodeID].Index < self.nodes[ReferenceNodeID].Index :
+            if node.Index < self.nodes[ReferenceNodeID].Index :
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if self.nodes[nodeID].Index > self.nodes[ReferenceNodeID].Index :
+            if node.Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
         for AndCondition in SubtreePointer.split("+"):
@@ -496,7 +503,7 @@ class DependencyTree:
                     pointer = "^" + pointer
                     #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
                     for nodeid in sorted(self.nodes):
-                        #logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(self.nodes[nodeid].TempPointer, pointer))
+                        #logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(node.TempPointer, pointer))
                         if self.nodes[nodeid].TempPointer == pointer:
                             start_nodeID = nodeid
                             break
@@ -536,7 +543,8 @@ class DependencyTree:
 
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
-        #self.FailedRuleTokens.clear()
+        self.TokenMatch_notpointer_Cache = {}  #reset all TokenMatch_notpointer_Cache.
+
         Actions = actinstring.split()
         #logging.debug("Word:" + self.text)
 
@@ -662,4 +670,4 @@ if __name__ == "__main__":
     print(x)
     print(x.digraph('graph'))
     print(x.digraph('simple'))
-    print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O", None)))
+    #print("^.O is: {}".format(x.FindPointerNode(x.root, "^.O", None)))

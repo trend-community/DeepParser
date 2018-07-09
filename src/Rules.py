@@ -386,15 +386,15 @@ class Rule:
             logging.warning(rulebody)
 
         # TODO: leave these 3 for future usage.
-        Chunk2_3_1 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk2_3_1 = re.match("(.*) <(.*)<(.+)>(.*) <(.+)>(.*) <(.+)>(.*)>(.*)", rulebody)
         # Chunk2_3_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)<(.+)>(.*)", rulebody)
         # Chunk2_3_3 = re.match("(.*)<(.+)>(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
 
-        Chunk2_2 = re.match("(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)", rulebody)
-        Chunk2_1 = re.match("(.*)<(.*)<(.+)>(.*)>(.*)", rulebody)
-        Chunk1_3 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
-        Chunk1_2 = re.match("(.*)<(.+)>(.*)<(.+)>(.*)", rulebody)
-        Chunk1_1 = re.match("(.*)<(.+)>(.*)", rulebody)
+        Chunk2_2 = re.match("(.*) <(.*)<(.+)>(.*) <(.+)>(.*)>(.*)", rulebody)
+        Chunk2_1 = re.match("(.*) <(.*)<(.+)>(.*)>(.*)", rulebody)
+        Chunk1_3 = re.match("(.*) <(.+)>(.*) <(.+)>(.*) <(.+)>(.*)", rulebody)
+        Chunk1_2 = re.match("(.*) <(.+)>(.*) <(.+)>(.*)", rulebody)
+        Chunk1_1 = re.match("(.*) <(.+)>(.*)", rulebody)
 
         if Chunk2_3_1:      #"(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_3_1.group(1).count('[')

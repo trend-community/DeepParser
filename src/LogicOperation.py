@@ -297,7 +297,9 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
 
     if RuleToken.AndText and "^" in RuleToken.AndText:
             #This is a pointer! unification comparison.
-            return PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype)
+            if not PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition,
+                                Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype):
+                return False
 
     return LogicMatch_notpointer(strToken, RuleToken)
 
