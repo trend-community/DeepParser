@@ -596,17 +596,18 @@ class Rule:
         # sort backward for applying
         self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
 
-        # add default relation ship.
-        for chunk in self.Chunks:
-            for i in range(chunk.StartOffset, chunk.StartOffset + chunk.Length):
-                if self.Tokens[i].SubtreePointer:   #ignore the token that already has relation.
-                    continue
-                if "^" not in self.Tokens[i].action:
-                    if "+++" in chunk.Action:
-                        self.Tokens[i].action += " ^.x"
-                    else:
-                        self.Tokens[i].action += " ^.X"
+        # # add default relation ship.
+        # leave this to runtime, node.ApplyDefaultUpperRelationship()
+        # for token in self.Tokens:
+        #     if token.SubtreePointer:  # ignore the token that already has relation.
+        #         continue
+        #     if token.word != "[]" and "^" not in token.action:
+        #         # if "+++" in chunk.Action:         #Can't identify whether it is in +++ or not
+        #         #     self.Tokens[i].action += " ^.x"
+        #         # else:
+        #             token.action += " ^.X"
 
+        for chunk in self.Chunks:
             if chunk.StringChunkLength == 1:    #remove single node chunk. remove "H" in this single node.
                 headtoken = self.Tokens[chunk.StartOffset + chunk.HeadOffset]
                 headaction = headtoken.action.split()

@@ -433,12 +433,22 @@ class SentenceNode(object):
         return False
 
 
+    def ApplyDefaultUpperRelationship(self):
+        for son in self.sons:
+            if not son.UpperRelationship:
+                if utils.FeatureID_0 in self.features:
+                    son.UpperRelationship = "x"
+                else:
+                    son.UpperRelationship = "X"
+
+
     def ApplyFeature(self, featureID):
         self.features.add(featureID)
         FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
         if FeatureNode and FeatureNode.ancestors:
             self.features.update(FeatureNode.ancestors)
         #self.signature=pickle.dumps({"w":self.text, "f": self.features})
+
 
     def ApplyActions(self, actinstring):
         #self.FailedRuleTokens.clear()

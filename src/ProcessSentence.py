@@ -131,6 +131,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
                     continue
                 newnode = strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
                 newnode.ApplyActions(chunk.Action)
+                newnode.ApplyDefaultUpperRelationship()
 
     RemoveTempPointer(strtokens)
     return 0
@@ -291,31 +292,6 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     return WinningRules
 
 
-def DAGMatch_old(Dag, OpenNode, Rule):
-    if len(Rule.Tokens) < 1:
-        logging.error("DAGMatch: This rune has no tokens! \n{}".format(Rule))
-    opennode_result = LogicMatch_notpointer(OpenNode, Rule.Tokens[0])
-    if not opennode_result:
-        return False
-    Rule.Tokens[0].MatchedNodeID = OpenNode.ID
-
-    for token in Rule.Tokens[1:]:
-        nodeID = Dag.FindPointerNode(OpenNode.ID, token.SubtreePointer)
-        if nodeID == None:
-            #logging.warning("No such pointer.")
-            return False
-        #logging.info("found node. check the rest features")
-        result = LogicMatch_notpointer(Dag.nodes[nodeID], token)
-        if result == False:
-            #logging.warning("does not mtach:{}, {}".format(Dag.nodes[nodeID], token))
-            return False
-        token.MatchedNodeID = nodeID
-        Dag.nodes[nodeID].TempPointer = token.pointer
-
-    #logging.l("Match this rule! {} == {}".format(Dag, Rule))
-    return True
-
-
 def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
     if level >= len(Rule.Tokens):
@@ -402,51 +378,6 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         rule_sequence += 1
 
     logging.info("Tried {} times in this file {}".format(counter, RuleFileName))
-    return WinningRules
-
-def MatchAndApplyDagRuleFile_old(Dag, RuleFileName):
-    WinningRules = {}
-    if logging.root.isEnabledFor(logging.DEBUG):
-        logging.debug("Start checking {}".format(RuleFileName))
-
-    for nodeid in Dag.nodes:
-        node = Dag.nodes[nodeid]
-
-        WinningRule = None
-        rulegroup = Rules.RuleGroupDict[RuleFileName]
-
-        for rule in rulegroup.RuleList:
-            if logging.root.isEnabledFor(logging.DEBUG):
-                logging.debug("DAG: For node {}, Start checking rule {}".format(nodeid, rule))
-            if DAGMatch(Dag, node, rule):
-                WinningRule = rule
-                break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
-            else:
-                for node_id in Dag.nodes:
-                    # if logging.root.isEnabledFor(logging.INFO):
-                    #     logging.info("node: {}".format(node))
-                    Dag.nodes[node_id].TempPointer = ''   #remove TempPointer from failed rules.
-        if WinningRule:
-            if logging.root.isEnabledFor(logging.INFO):
-                logging.info("DAG: Winning rule! {}".format(WinningRule))
-            try:
-                if WinningRule.ID not in WinningRules:
-                    WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + node.text
-                else:
-                    WinningRules[WinningRule.ID] += ' <li class="indent">' + node.text
-                ApplyWinningDagRule(Dag, WinningRule, node)
-            except RuntimeError as e:
-                if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
-                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
-                    rulegroup.RuleList.remove(WinningRule)
-                else:
-                    logging.error("Unknown Rule Applying Error:" + str(e))
-
-            except IndexError as e:
-                logging.error("Failed to apply this rule:")
-                logging.error(str(WinningRule))
-                logging.error(str(e))
-
     return WinningRules
 
 
