@@ -299,9 +299,19 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
     if level >= len(Rule.Tokens):
         #Dag.ClearVisited()
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("Dag.TokenMatch(): Matched all tokens.")
-        return Dag.nodes[OpenNodeID]
+        RouteSignature = GetRouteSignature(Rule)
+        #logging.info("RouteSignature:{}".format(RouteSignature))
+        if not hasattr(DAGMatch, "DagSuccessRoutes"):
+            DAGMatch.DagSuccessRoutes = set()       #initialize.
+
+        if RouteSignature not in DAGMatch.DagSuccessRoutes:
+            #logging.info()
+            DAGMatch.DagSuccessRoutes.add(RouteSignature)
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("Dag.TokenMatch(): Matched all tokens.")
+            return Dag.nodes[OpenNodeID]
+        else:
+            return None     #this route is already matched and applied.
     if level < 0:
         #Dag.ClearVisited()
         return None
@@ -342,8 +352,6 @@ def GetRouteSignature(rule):
 
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
-    DagSuccessRoutes = set()
-
     rulegroup = Rules.RuleGroupDict[RuleFileName]
 
     rule_sequence = 0
@@ -362,15 +370,13 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
             if logging.root.isEnabledFor(logging.INFO):
                 logging.info("DAG: Winning rule! {}".format(rule))
             try:
-                RouteSignature = GetRouteSignature(rule)
 
-                if RouteSignature not in DagSuccessRoutes:
-                    DagSuccessRoutes.add(RouteSignature)
                     if rule.ID not in WinningRules:
                         WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
                     else:
                         WinningRules[rule.ID] += ' <li class="indent">' + node.text
                     ApplyWinningDagRule(Dag, rule, node)
+                    rule_sequence -= 1  # allow the same rule to match other nodes too.
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
@@ -384,7 +390,6 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
                 logging.error(str(e))
             #search the rest of rules using other nodes
             #node.applied = True    #apply to apply to the same node
-            rule_sequence -= 1      #allow the same rule to match other nodes too.
 #            break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
 
         Dag.ClearVisited()
