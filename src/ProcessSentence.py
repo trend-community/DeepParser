@@ -330,8 +330,19 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #return DAGMatch(Dag, Rule, level-1, OpenNodeID)
 
 
+def GetRouteSignature(rule):
+    RouteSignature = ()
+    RouteSignature += (rule.ID,)
+    for i in range(rule.TokenLength):
+        nodeID = rule.Tokens[i].MatchedNodeID
+        if nodeID is None:
+            logging.warning("There should be no Null in MatchedNodeID!")
+        RouteSignature += (nodeID,)
+    return RouteSignature
+
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
+    DagSuccessRoutes = set()
 
     rulegroup = Rules.RuleGroupDict[RuleFileName]
 
@@ -351,11 +362,15 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
             if logging.root.isEnabledFor(logging.INFO):
                 logging.info("DAG: Winning rule! {}".format(rule))
             try:
-                if rule.ID not in WinningRules:
-                    WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
-                else:
-                    WinningRules[rule.ID] += ' <li class="indent">' + node.text
-                ApplyWinningDagRule(Dag, rule, node)
+                RouteSignature = GetRouteSignature(rule)
+
+                if RouteSignature not in DagSuccessRoutes:
+                    DagSuccessRoutes.add(RouteSignature)
+                    if rule.ID not in WinningRules:
+                        WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
+                    else:
+                        WinningRules[rule.ID] += ' <li class="indent">' + node.text
+                    ApplyWinningDagRule(Dag, rule, node)
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
@@ -710,6 +725,7 @@ def LoadCommon():
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
 
+    #Rules._PreProcess_RuleIDNormalize()
     logging.debug("Done of LoadCommon!")
 
         #print(Lexicon.OutputLexicon(False))

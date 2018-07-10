@@ -189,6 +189,7 @@ class Rule:
     def __lt__(self, other):
         return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
 
+
     def SetRule(self, ruleString, MacroDict=None, ID=1):
         self.Origin = ruleString.strip()
         code, comment = SeparateComment(ruleString)
@@ -1116,7 +1117,9 @@ def LoadRules(RuleFolder, RuleFileName):
         logging.info("Rules from file:" + str(RuleNum_BeforeExpand) + " \t After expanded:" + str(RuleNum_AfterExpand))
 
     #BuildIdenticalNetwork(rulegroup)
+
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
     logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
 
@@ -1848,6 +1851,23 @@ def _PreProcess_CompileHash(rulegroup):
         #
         #     #rulegroup.NormHash["".join(rule.norms)] = rule
         #     #rulegroup.RuleList.remove(rule)
+
+
+def _PreProcess_RuleIDNormalize():
+    logging.info("Start _PreProcess_RuleIDNormalize")
+    for rulegroup in  RuleGroupDict.values():
+        for rule in rulegroup.RuleList:
+            for token in rule.Tokens:
+                if token.SubtreePointer:
+                    continue
+                for rg2 in RuleGroupDict.values():
+                    for r2 in rg2.RuleList:
+                        if id(r2) <= id(rule):
+                            continue
+                        for t2 in r2.Tokens:
+                            if token.SubtreePointer is None and t2 == token:
+                                t2.ID = token.ID
+    logging.info("Done with _PreProcess_RuleIDNormalize")
 
 
 def _CheckFeature_returnword(word):
