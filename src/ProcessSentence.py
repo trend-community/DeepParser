@@ -758,6 +758,8 @@ def LoadCommon():
         if action.startswith("Stemming:"):
             Stemfile = action[action.index(":")+1:].strip().split(",")
             inf = Stemfile[0].strip()
+            Rulefile = [inf]
+            Rules.LoadRules(XLocation, Rulefile)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
                 if stem:
