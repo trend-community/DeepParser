@@ -9,6 +9,8 @@ from FeatureOntology import *
 import ProcessSentence, Tokenization
 
 _LexiconDict = {}
+_StemDict = {}
+_InfYFile = None
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -356,6 +358,7 @@ def LoadCompositeKG(lexiconLocation):
     # for key in CompositeKGSetADict:
     #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
 
+
 def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet, _StemDict
     global _CommentDict
@@ -413,6 +416,14 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                         node.comment = comment
 
 
+            stem_node = SearchStem(word)
+            if lookupSource == LexiconLookupSource.stemming and not stem_node:
+                newStemNode = True
+                node = LexiconNode(word)
+                if comment:
+                    node.comment = comment
+
+
             # node = None
             if not node:
                 newNode = True
@@ -453,6 +464,9 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             if newStemNode:
                 _StemDict.update({node.text: node})
             if newNode:
+            if newNode or newStemNode:
+                if lookupSource == LexiconLookupSource.stemming:
+                    _StemDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.oQcQ:
                     _LexiconDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.Exclude:
@@ -521,6 +535,11 @@ def SearchLexicon(word, SearchType='flexible'):
     # if word_es in _LexiconDict.keys():
     #     return _LexiconDict[word_es]
 
+    return None
+
+def SearchStem(word):
+    if word in _StemDict:
+        return _StemDict[word]
     return None
 
 def SearchStem(word):
@@ -803,6 +822,7 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
     return node
 
 # (O.O)
+<<<<<<< HEAD
 def LoadSuffix(inf_location, inf_name):
     global _SuffixList, _InfFile
     suffix_set = set()
