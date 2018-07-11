@@ -8,6 +8,8 @@ import utils
 from FeatureOntology import *
 
 _LexiconDict = {}
+_StemDict = {}
+_InfYFile = None
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -347,7 +349,7 @@ def LoadCompositeKG(lexiconLocation):
     # for key in CompositeKGSetADict:
     #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
 
-
+#(O.O)
 def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet
     global _CommentDict
@@ -384,7 +386,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":").lower()
             # Ditionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "")
-            if  "Punctuate" not in lexiconLocation:
+            if "Punctuate" not in lexiconLocation:
                 word = word.replace("/", "")
                 word = word.replace("~", "")
 
@@ -394,6 +396,17 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             ### So let's apply it to them when generating (offline)
 
             node = SearchLexicon(word, 'origin')
+
+            # for stemming feature
+            newStemNode = False
+            stem_node = SearchStem(word)
+            if lookupSource == LexiconLookupSource.stemming and not stem_node:
+                newStemNode = True
+                node = LexiconNode(word)
+                if comment:
+                    node.comment = comment
+
+
             # node = None
             if not node:
                 newNode = True
@@ -431,7 +444,9 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                                 if ancestors:
                                     node.features.update(ancestors)
 
-            if newNode:
+            if newNode or newStemNode:
+                if lookupSource == LexiconLookupSource.stemming:
+                    _StemDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.oQcQ:
                     _LexiconDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.Exclude:
@@ -499,6 +514,11 @@ def SearchLexicon(word, SearchType='flexible'):
     if word_es in _LexiconDict.keys():
         return _LexiconDict[word_es]
 
+    return None
+
+def SearchStem(word):
+    if word in _StemDict:
+        return _StemDict[word]
     return None
 
 
@@ -701,6 +721,35 @@ def ApplyLexicon(node, lex=None):
     ApplyWordLengthFeature(node)
     node.ApplyFeature(utils.FeatureID_0)
     return node
+
+# (O.O)
+'''
+    Somewhere, do this:
+    stemmed_word = apply_rule(word)
+    if stemmed_word in one_of_the_stem_files:
+        add features of stem to word (probaby in this function somehow)
+    else:
+        mark it as OOV?? (according to infY.txt)
+
+    Ask:
+    - how do I even access the word
+    - how do I apply the rule to the word
+    - if one rule applies will it still attempt to apply other rules
+    - do I create a new entry or... will the added features be attached to the temporary word?
+    - am I supposed to do anything else past adding features to the word?
+    - how do I mark it as OOV
+
+    call rule on the word, elaborates -> elaborate
+
+    "Stemming:" -> LoadLexicon(stemming feature) ->
+
+    Call LoadRule on InfY.txt
+
+    Don't use LoadStem, use LoadLexicon.
+    Just focus on finishing all the Loading features, we'll do the actual Lookup things later (e.g. cutting off
+                                suffixes and searching up the cut word in the StemDict)
+
+'''
 
 
 # Lookup will be used right after segmentation.
