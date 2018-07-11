@@ -679,6 +679,16 @@ def LoadCommon():
                 if lex:
                     Lexicon.LoadLexicon(XLocation + lex)
 
+        #(O.O)
+        if action.startswith("Stemming:"):
+            Stemfile = action[action.index(":")+1:].strip().split(",")
+            inf = Stemfile[0].strip()
+            for stem in Stemfile[1:]:
+                stem = stem.strip()
+                if stem:
+                    Lexicon.LoadLexicon(XLocation + stem, lookupSource=LexiconLookupSource.stemming)
+
+
         if action.startswith("Lookup defLex:"):
             Compoundfile = action[action.index(":")+1:].strip().split(",")
             for compound in Compoundfile:
