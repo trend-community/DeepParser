@@ -759,6 +759,8 @@ def LoadCommon():
             inf = Stemfile[0].strip()
             Rules.LoadRules(XLocation, inf)
             Lexicon.LoadSuffix(XLocation + inf, inf)
+            Rulefile = [inf]
+            Rules.LoadRules(XLocation, Rulefile)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
                 if stem:

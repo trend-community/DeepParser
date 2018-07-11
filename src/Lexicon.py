@@ -10,7 +10,6 @@ import ProcessSentence, Tokenization
 
 _LexiconDict = {}
 _StemDict = {}
-_InfYFile = None
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -463,7 +462,6 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
 
             if newStemNode:
                 _StemDict.update({node.text: node})
-            if newNode:
             if newNode or newStemNode:
                 if lookupSource == LexiconLookupSource.stemming:
                     _StemDict.update({node.text: node})
@@ -821,8 +819,7 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
     node.ApplyFeature(utils.FeatureID_0)
     return node
 
-# (O.O)
-<<<<<<< HEAD
+
 def LoadSuffix(inf_location, inf_name):
     global _SuffixList, _InfFile
     suffix_set = set()
