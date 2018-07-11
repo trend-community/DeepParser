@@ -9,7 +9,6 @@ from FeatureOntology import *
 
 _LexiconDict = {}
 _StemDict = {}
-_InfYFile = None
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -351,7 +350,7 @@ def LoadCompositeKG(lexiconLocation):
 
 #(O.O)
 def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
-    global _LexiconDict, _LexiconLookupSet
+    global _LexiconDict, _LexiconLookupSet, _StemDict
     global _CommentDict
     if lexiconLocation.startswith("."):
         lexiconLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), lexiconLocation)
@@ -444,9 +443,9 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                                 if ancestors:
                                     node.features.update(ancestors)
 
-            if newNode or newStemNode:
-                if lookupSource == LexiconLookupSource.stemming:
-                    _StemDict.update({node.text: node})
+            if newStemNode:
+                _StemDict.update({node.text: node})
+            if newNode:
                 if lookupSource != LexiconLookupSource.oQcQ:
                     _LexiconDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.Exclude:
