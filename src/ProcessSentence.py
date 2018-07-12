@@ -497,7 +497,7 @@ def SeparateSentence(Sentence):
     #logging.info(str(SubSentences))
     return SubSentences
 
-
+#(O.O)
 def LexicalAnalyzeTask( SubSentence, schema):
 
     NodeList = Tokenization.Tokenize(SubSentence)
@@ -683,8 +683,7 @@ def LoadCommon():
         if action.startswith("Stemming:"):
             Stemfile = action[action.index(":")+1:].strip().split(",")
             inf = Stemfile[0].strip()
-            Rulefile = [inf]
-            Rules.LoadRules(XLocation, Rulefile)
+            Rules.LoadRules(XLocation, inf)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
                 if stem:
