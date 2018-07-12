@@ -714,6 +714,7 @@ def ApplyLexicon(node, lex=None):
             lex = SearchStem(stem_word)
             if lex:
                 # do the apply rules thing to the word here
+                # applyrule(word)
                 pass
 
     if lex is None:
