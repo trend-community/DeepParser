@@ -516,7 +516,7 @@ def SearchLexicon(word, SearchType='flexible'):
     if word in _LexiconDict.keys():
         return _LexiconDict[word]
 
-    # (O.O) commenting this out as stemming should do its job
+
     # word_ed = re.sub("ed$", '', word)
     # if word_ed in _LexiconDict.keys():
     #     return _LexiconDict[word_ed]
@@ -788,6 +788,26 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
                     else: # starting for longer suffixes, if matching failed it would fail everything
                         break
 
+    #attempt stemming if lexicon fails
+    word = node.text
+    if lex is None and len(word) >= 5:
+        stem_word = ""
+        if word[-1:] == "s":
+            stem_word = word[:-1]
+        elif word[-2:] == "ed":
+            stem_word = word[:-2]
+        elif word[-3:] == "ing":
+            stem_word = word[:-3]
+        elif word[-2:] == "ly":
+            stem_word = word[:-2]
+        elif word[-5:] == "-wise":
+            stem_word = word[:-5]
+        if stem_word != "":
+            lex = SearchStem(stem_word)
+            if lex:
+                # do the apply rules thing to the word here
+                pass
+
     if lex is None:
         if IsCD(node.text):
             node.ApplyFeature(utils.FeatureID_CD)
@@ -820,11 +840,13 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
     return node
 
 
+
 def LoadSuffix(inf_location, inf_name):
     global _SuffixList, _InfFile
     suffix_set = set()
     _InfFile = inf_name
     inf = open(inf_location, 'r')
+
 
     f = inf.readlines()
     try:
@@ -853,6 +875,7 @@ def LoadSuffix(inf_location, inf_name):
             _SuffixList.append(suffix)
     finally:
         inf.close()
+
 
 
 # Lookup will be used right after segmentation.

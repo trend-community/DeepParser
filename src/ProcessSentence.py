@@ -533,6 +533,7 @@ def SeparateSentence(Sentence):
     #logging.info(str(SubSentences))
     return SubSentences
 
+
 def LexicalAnalyzeTask( SubSentence, schema):
 
     NodeList = Tokenization.Tokenize(SubSentence)
