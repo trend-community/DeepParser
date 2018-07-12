@@ -1,5 +1,5 @@
 #!/bin/python
-# read in the lookup dictionary. It is mainly used for segmenation (combining multiple tokens into one word/token)
+# read in the lookup dictionary. It is mainly used for segmentation (combining multiple tokens into one word/token)
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import string
@@ -14,7 +14,8 @@ _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
 _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
-_LexiconSegmentDict = {}  # from main2017. used for segmentation onln. there is no feature.
+_LexiconSegmentDict = {}  # from main2017. used for segmentation only. there is no feature.
+_StemSegmentDict = {}
 _LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
 _LexiconFantiDict = {}
@@ -397,13 +398,14 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             node = SearchLexicon(word, 'origin')
 
             # for stemming feature
-            newStemNode = False
-            stem_node = SearchStem(word)
-            if lookupSource == LexiconLookupSource.stemming and not stem_node:
-                newStemNode = True
-                node = LexiconNode(word)
-                if comment:
-                    node.comment = comment
+            if lookupSource == LexiconLookupSource.stemming:
+                newStemNode = False
+                node = SearchStem(word)
+                if not node:
+                    newStemNode = True
+                    node = LexiconNode(word)
+                    if comment:
+                        node.comment = comment
 
 
             # node = None
@@ -497,21 +499,22 @@ def SearchLexicon(word, SearchType='flexible'):
     if word in _LexiconDict.keys():
         return _LexiconDict[word]
 
-    word_ed = re.sub("ed$", '', word)
-    if word_ed in _LexiconDict.keys():
-        return _LexiconDict[word_ed]
-    word_d = re.sub("d$", '', word)
-    if word_d in _LexiconDict.keys():
-        return _LexiconDict[word_d]
-    word_ing = re.sub("ing$", '', word)
-    if word_ing in _LexiconDict.keys():
-        return _LexiconDict[word_ing]
-    word_s = re.sub("s$", '', word)
-    if word_s in _LexiconDict.keys():
-        return _LexiconDict[word_s]
-    word_es = re.sub("es$", '', word)
-    if word_es in _LexiconDict.keys():
-        return _LexiconDict[word_es]
+    # (O.O) temporarily commenting this out as stemming should do its job
+    # word_ed = re.sub("ed$", '', word)
+    # if word_ed in _LexiconDict.keys():
+    #     return _LexiconDict[word_ed]
+    # word_d = re.sub("d$", '', word)
+    # if word_d in _LexiconDict.keys():
+    #     return _LexiconDict[word_d]
+    # word_ing = re.sub("ing$", '', word)
+    # if word_ing in _LexiconDict.keys():
+    #     return _LexiconDict[word_ing]
+    # word_s = re.sub("s$", '', word)
+    # if word_s in _LexiconDict.keys():
+    #     return _LexiconDict[word_s]
+    # word_es = re.sub("es$", '', word)
+    # if word_es in _LexiconDict.keys():
+    #     return _LexiconDict[word_es]
 
     return None
 
@@ -691,6 +694,28 @@ def ApplyLexicon(node, lex=None):
     # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
     #                         #  because the node.word is not as reliable as stem.
     #     node.lexicon = SearchLexicon(node.word)
+
+
+    #attempt stemming if lexicon fails
+    word = node.text
+    if lex is None and len(word) >= 5:
+        stem_word = ""
+        if word[-1:] == "s":
+            stem_word = word[:-1]
+        elif word[-2:] == "ed":
+            stem_word = word[:-2]
+        elif word[-3:] == "ing":
+            stem_word = word[:-3]
+        elif word[-2:] == "ly":
+            stem_word = word[:-2]
+        elif word[-5:] == "-wise":
+            stem_word = word[:-5]
+        if stem_word != "":
+            lex = SearchStem(stem_word)
+            if lex:
+                # do the apply rules thing to the word here
+                pass
+
     if lex is None:
         if IsCD(node.text):
             node.ApplyFeature(utils.FeatureID_CD)
@@ -723,21 +748,6 @@ def ApplyLexicon(node, lex=None):
 
 # (O.O)
 '''
-    Somewhere, do this:
-    stemmed_word = apply_rule(word)
-    if stemmed_word in one_of_the_stem_files:
-        add features of stem to word (probaby in this function somehow)
-    else:
-        mark it as OOV?? (according to infY.txt)
-
-    Ask:
-    - how do I even access the word
-    - how do I apply the rule to the word
-    - if one rule applies will it still attempt to apply other rules
-    - do I create a new entry or... will the added features be attached to the temporary word?
-    - am I supposed to do anything else past adding features to the word?
-    - how do I mark it as OOV
-
     call rule on the word, elaborates -> elaborate
 
     "Stemming:" -> LoadLexicon(stemming feature) ->
@@ -747,7 +757,15 @@ def ApplyLexicon(node, lex=None):
     Don't use LoadStem, use LoadLexicon.
     Just focus on finishing all the Loading features, we'll do the actual Lookup things later (e.g. cutting off
                                 suffixes and searching up the cut word in the StemDict)
-
+    
+    maybe create another rule dict just for infY rules
+    
+    matchandapplyrule  in ProcessSentence
+        LexicalAnalyzeTask (is the whole process of parsing)
+        
+    lexiconsegmentation is what's used for tokens
+    
+    Figure out how to apply ruledict to the words
 '''
 
 
