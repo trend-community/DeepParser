@@ -17,8 +17,11 @@ _LexiconDictI4 = {}
 
 _CommentDictLexX = {}
 _LexiconDictLexX = {}
+_CommentDictLexXc2c3 = {}
+_LexiconDictLexXc2c3 = {}
 
 _LexiconDictLexXOrig = {}
+_LexiconDictLexXc2c3Orig = {}
 _LexiconDictDefXOrig = {}
 
 _CommentDictDefX = {}
@@ -32,9 +35,10 @@ _LexiconDictDefPlus = {}
 _LexiconDictDefPlusX = {}
 _LexiconDictLexPlusX = {}
 
+
 _MissingStem = set()
 _FeatureNotCopy = set()
-dictList = [_LexiconDictZidian, _LexiconDictLexX, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
+dictList = [_LexiconDictZidian, _LexiconDictLexX, _LexiconDictLexXc2c3, _LexiconDictL, _LexiconDictDefX, _LexiconDictB, _LexiconDictI, _LexiconDictI4, _LexiconDictP]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -197,7 +201,7 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
             if _LexiconDict1 == _LexiconDictDefX:
                 # logging.debug("def " + word)
                 _LexiconDictDefPlusX.update({word:node1})
-            elif _LexiconDict1 == _LexiconDictLexX:
+            elif _LexiconDict1 == _LexiconDictLexX or _LexiconDict1  == _LexiconDictLexXc2c3:
                 # logging.debug("lexx " + word)
                 _LexiconDictLexPlusX.update({word:node1})
 
@@ -362,7 +366,10 @@ def FeaturesMorethanFour():
                 featureID = GetFeatureID("NNP")
                 featuresCopy.remove(featureID)
                 node.features = featuresCopy
-                _LexiconDictLexX.update({word:node})
+                if word in _LexiconDictLexX.keys():
+                    _LexiconDictLexX.update({word:node})
+                else:
+                    _LexiconDictLexXc2c3.update({word: node})
                 removeWord.add(word)
 
     for word in removeWord:
@@ -398,7 +405,7 @@ def GenerateLexPlus():
 
                 # canPB feature
                 newWord = first + "得" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     copyFeatures.remove(cpbID)
                     copyFeatures.add(canPBID)
@@ -434,7 +441,7 @@ def GenerateLexPlus():
                         logging.debug("duplicate2 :" + newWord)
 
                 newWord = first + "不" + first + "得" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys())and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
@@ -450,7 +457,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate3 :" + newWord)
 
                 newWord = first + "不" + first + "的" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys())and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
@@ -466,7 +473,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate4 :" + newWord)
 
                 newWord = first + "没" + first + "得" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys())and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
@@ -483,7 +490,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate5 :" + newWord)
 
                 newWord = first + "没" + first + "的" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys())and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
@@ -500,7 +507,7 @@ def GenerateLexPlus():
                     logging.debug("duplicate6 :" + newWord)
 
                 newWord = first + "不" + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys())and (newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
                         copyFeatures.remove(cpbID)
@@ -520,7 +527,7 @@ def GenerateLexPlus():
                 newWord = first + "也" + first + "不" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
                     newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
-                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (
                     newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
@@ -538,7 +545,7 @@ def GenerateLexPlus():
                 newWord = first + "都" + first + "不" + second
                 if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
                             newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
-                            newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                            newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (
                             newWord not in _LexiconDictDefXOrig.keys()):
                     copyFeatures = set(featuresID.copy())
                     if cpbID in copyFeatures:
@@ -558,7 +565,7 @@ def GenerateLexPlus():
                     newWord = word[0] + "不" + word[1] + "来"
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
                     (newWord not in _LexiconDictL.keys())) and (newWord not in _LexiconDictI.keys()) and (
-                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                    (newWord not in _LexiconDictI4.keys())) and (newWord not in _LexiconDictLexXOrig.keys())  and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         copyFeatures = set(featuresID.copy())
                         if cpbID in copyFeatures:
@@ -579,7 +586,7 @@ def GenerateLexPlus():
                     newWord = first + "的" + second
                     if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
                     newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
-                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                    newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (
                         newWord not in _LexiconDictDefXOrig.keys()):
                         newNode = LexiconNode(newWord)
                         newNode.atom = first + second
@@ -597,7 +604,7 @@ def GenerateLexPlus():
                         newWord = word[0] + "的" + word[1] + "来"
                         if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (
                         newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (
-                        newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (
+                        newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (
                             newWord not in _LexiconDictDefXOrig.keys()):
                             newNode = LexiconNode(newWord)
                             newNode.atom = first + second
@@ -613,7 +620,7 @@ def GenerateLexPlus():
                 first = word[0]
                 second = word[1]
                 newWord = first + first + second + second
-                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
                     newNode = LexiconNode(newWord)
                     copyFeatures.remove(abID)
                     copyFeatures.add(aabbID)
@@ -628,7 +635,7 @@ def GenerateLexPlus():
                 commonpart = set(startwithFirstDict.keys()).intersection(set(startwithSecondDict.keys()))
                 for char in commonpart:
                     newWord = word + char
-                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
+                    if (newWord not in _LexiconDictB.keys()) and (newWord not in _LexiconDictP.keys()) and (newWord not in _LexiconDictL.keys()) and (newWord not in _LexiconDictI.keys()) and (newWord not in _LexiconDictI4.keys()) and (newWord not in _LexiconDictLexXOrig.keys()) and (newWord not in _LexiconDictLexXc2c3Orig.keys()) and (newWord not in _LexiconDictDefXOrig.keys()):
 
                         newNode = LexiconNode(newWord)
                         newNode.text = newWord
@@ -802,6 +809,9 @@ if __name__ == "__main__":
     paraLex = dir_path + '/../../fsa/X/LexX.txt'
     paraLexTemp = dir_path + '/../../temp/X/LexX_copy.txt'
 
+    paraLexc2c3 = dir_path + '/../../fsa/X/LexXc2c3.txt'
+    paraLexc2c3Temp = dir_path + '/../../temp/X/LexXc2c3_copy.txt'
+
     paraDef = dir_path + '/../../fsa/X/defLexX.txt'
     paraDefTemp = dir_path + '/../../temp/X/defLexX_copy.txt'
 
@@ -812,6 +822,7 @@ if __name__ == "__main__":
     copyfile(paraI, paraITemp)
     copyfile(paraI4, paraI4Temp)
     copyfile(paraLex, paraLexTemp)
+    copyfile(paraLexc2c3, paraLexc2c3Temp)
     copyfile(paraDef, paraDefTemp)
 
 
@@ -825,6 +836,7 @@ if __name__ == "__main__":
     OrganizeLex(paraI, _CommentDictI, _LexiconDictI)
     OrganizeLex(paraI4, _CommentDictI4, _LexiconDictI4)
     OrganizeLex(paraLex, _CommentDictLexX, _LexiconDictLexX)
+    OrganizeLex(paraLexc2c3, _CommentDictLexXc2c3, _LexiconDictLexXc2c3)
     OrganizeLex(paraDef, _CommentDictDefX, _LexiconDictDefX)
 
     _LexiconDictZidian = EnrichFeature(_LexiconDictZidian)
@@ -834,6 +846,7 @@ if __name__ == "__main__":
     _LexiconDictI4 = EnrichFeature(_LexiconDictI4)
     _LexiconDictL = EnrichFeature(_LexiconDictL)
     _LexiconDictLexX = EnrichFeature(_LexiconDictLexX)
+    _LexiconDictLexXc2c3 = EnrichFeature(_LexiconDictLexXc2c3)
     _LexiconDictDefX = EnrichFeature(_LexiconDictDefX)
 
 
@@ -864,7 +877,15 @@ if __name__ == "__main__":
     compareLex(_LexiconDictLexX, _LexiconDictI, lexXandOther=True)
     compareLex(_LexiconDictLexX, _LexiconDictI4, lexXandOther=True)
 
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictB, lexXandOther=True)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictP, lexXandOther=True)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictL, lexXandOther=True)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictI, lexXandOther=True)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictI4, lexXandOther=True)
+
+    compareLex(_LexiconDictZidian, _LexiconDictLexXc2c3, lexXandOther=True)
     compareLex(_LexiconDictZidian, _LexiconDictLexX, lexXandOther=True)
+    compareLex(_LexiconDictLexX, _LexiconDictLexXc2c3, lexXandOther=True)
 
 
     compareLex(_LexiconDictDefX, _LexiconDictB, lexXandOther=True)
@@ -873,11 +894,14 @@ if __name__ == "__main__":
     compareLex(_LexiconDictDefX, _LexiconDictI, lexXandOther=True)
     compareLex(_LexiconDictDefX, _LexiconDictI4, lexXandOther=True)
     compareLex(_LexiconDictDefX, _LexiconDictLexX, lexXandOther=True)
+    compareLex(_LexiconDictDefX, _LexiconDictLexXc2c3, lexXandOther=True)
 
     compareLex(_LexiconDictZidian, _LexiconDictDefX, lexXandOther=True)
 
+
     _LexiconDictDefXOrig = _LexiconDictDefX.copy()
     _LexiconDictLexXOrig = _LexiconDictLexX.copy()
+    _LexiconDictLexXc2c3Orig = _LexiconDictLexXc2c3.copy()
 
     AddDefandLexX()
 
@@ -896,6 +920,7 @@ if __name__ == "__main__":
     printNewLex(_CommentDictI4, _LexiconDictI4, paraI4)
 
     printNewLex(_CommentDictLexX, _LexiconDictLexX, paraLex)
+    printNewLex(_CommentDictLexXc2c3, _LexiconDictLexXc2c3, paraLexc2c3)
     printNewLex(_CommentDictDefX, _LexiconDictDefX, paraDef)
 
 
