@@ -843,6 +843,7 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
             # node.features.add(utils.FeatureID_OOV)
 
 
+
     # if stemming:
     #     if new_features == "s":
     #         node.features.update(["Xs","VBZ"])
@@ -854,6 +855,19 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
     #         node.features.update(["ly"])
     #     elif new_features == "wise":
     #         node.features.update(["RB+","sRB"])
+
+    if stemming:
+        if new_features == "s":
+            node.features.update([GetFeatureID("Xs"),GetFeatureID("VBZ")])
+        elif new_features == "ed":
+            node.features.update([GetFeatureID("Ved")])
+        elif new_features == "ing":
+            node.features.update([GetFeatureID("Ving")])
+        elif new_features == "ly":
+            node.features.update([GetFeatureID("ly")])
+        elif new_features == "wise":
+            node.features.update([GetFeatureID("RB+"),GetFeatureID("sRB")])
+
 
     ApplyWordLengthFeature(node)
     node.ApplyFeature(utils.FeatureID_0)
