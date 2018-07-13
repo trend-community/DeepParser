@@ -210,7 +210,7 @@ class DependencyTree:
                 output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
             output += "{"
             for edge in sorted(self.graph, key= lambda e: e[2]):
-                output += """{}->{} [{}]; """.format(edge[1], edge[2], edge[0])
+                output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
             output += "}"
         else:
             output = "{"
@@ -223,7 +223,7 @@ class DependencyTree:
                                                                            self.nodes[nodeid].GetFeatures())
 
             output += "//edges:\n"
-            for edge in sorted(self.graph, key= operator.itemgetter(1, 2, 0)):
+            for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
