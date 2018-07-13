@@ -34,6 +34,7 @@ _LexiconDictDefPlus = {}
 
 _LexiconDictDefPlusX = {}
 _LexiconDictLexPlusX = {}
+_LexiconDictLexc2c3PlusX = {}
 
 
 _MissingStem = set()
@@ -164,6 +165,7 @@ def SplitFeaturesWithSemicolon(FeatureString, node):
 
 def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
 
+
     removeWord = set()
     for word in _LexiconDict1.keys():
 
@@ -201,9 +203,11 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
             if _LexiconDict1 == _LexiconDictDefX:
                 # logging.debug("def " + word)
                 _LexiconDictDefPlusX.update({word:node1})
-            elif _LexiconDict1 == _LexiconDictLexX or _LexiconDict1  == _LexiconDictLexXc2c3:
+            elif _LexiconDict1 == _LexiconDictLexX:
                 # logging.debug("lexx " + word)
                 _LexiconDictLexPlusX.update({word:node1})
+            elif _LexiconDict1 == _LexiconDictLexXc2c3:
+                _LexiconDictLexc2c3PlusX.update({word:node1})
 
             removeWord.add(word)
 
@@ -286,6 +290,10 @@ def AddDefandLexX():
     for word in _LexiconDictLexPlusX.keys():
         _LexiconDictLexX.update({word:_LexiconDictLexPlusX.get(word)})
     logging.debug(len(_LexiconDictLexX))
+
+    for word in _LexiconDictLexc2c3PlusX.keys():
+        _LexiconDictLexXc2c3.update({word:_LexiconDictLexc2c3PlusX.get(word)})
+    logging.debug(len(_LexiconDictLexXc2c3))
 
 
 def printNewLex(_CommentDictTemp, _LexiconDictTemp, newloc):
@@ -888,13 +896,13 @@ if __name__ == "__main__":
     compareLex(_LexiconDictLexX, _LexiconDictLexXc2c3, lexXandOther=True)
 
 
-    compareLex(_LexiconDictDefX, _LexiconDictB, lexXandOther=True)
-    compareLex(_LexiconDictDefX, _LexiconDictP, lexXandOther=True)
-    compareLex(_LexiconDictDefX, _LexiconDictL, lexXandOther=True)
-    compareLex(_LexiconDictDefX, _LexiconDictI, lexXandOther=True)
-    compareLex(_LexiconDictDefX, _LexiconDictI4, lexXandOther=True)
-    compareLex(_LexiconDictDefX, _LexiconDictLexX, lexXandOther=True)
-    compareLex(_LexiconDictDefX, _LexiconDictLexXc2c3, lexXandOther=True)
+    compareLex(_LexiconDictB,_LexiconDictDefX)
+    compareLex( _LexiconDictP,_LexiconDictDefX)
+    compareLex( _LexiconDictL,_LexiconDictDefX)
+    compareLex(_LexiconDictI,_LexiconDictDefX)
+    compareLex( _LexiconDictI4,_LexiconDictDefX)
+    compareLex( _LexiconDictLexX,_LexiconDictDefX)
+    compareLex( _LexiconDictLexXc2c3,_LexiconDictDefX)
 
     compareLex(_LexiconDictZidian, _LexiconDictDefX, lexXandOther=True)
 
