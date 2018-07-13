@@ -14,6 +14,10 @@ _lexicon1Commentdict = {}
 
 _allLexdict = {}
 
+_stemYdict = {}
+_stemYCommentdict = {}
+
+
 _compoundYdict = {}
 _compoundYCommentdict = {}
 _compoundY3colonsdict = {}
@@ -39,6 +43,8 @@ lexYformsLocation = YDirLocation + '/../../fsa/Y/lexY_forms.txt'
 tmpLexYforms = tmpDirPath + 'lexY_formsCopy.txt'
 lexicon1Location = YDirLocation + "/../../fsa/Y/LEXICON_1.txt"
 tmpLexicon1 = tmpDirPath + 'Lexicon1Copy.txt'
+stemYLocation = YDirLocation + "/../../fsa/Y/stemY.txt"
+tmpstemY = tmpDirPath + 'stemYCopy.txt'
 compoundYLocation = YDirLocation + '/../../fsa/Y/compoundY.txt'
 tmpCompound = tmpDirPath + 'compoundYCopy.txt'
 compoundY3colonsLocation = YDirLocation + '/../../fsa/Y/compoundY_3colons.txt'
@@ -50,9 +56,9 @@ tmpLexicon2 = tmpDirPath + 'Lexicon2Copy.txt'
 
 paraFeatureNotCopy = YDirLocation + "/../../fsa/Y/FeatureNotCopy.txt"
 
-_lexLocationList = [lexYLocation, lexY3colonsLocation,lexYformsLocation, lexicon1Location, compoundYLocation, compoundY3colonsLocation,compoundYformsLocation,lexicon2Location]
-_lexDictList = [_lexYdict,_lexY3colonsdict,_lexYformsdict,  _lexicon1dict, _compoundYdict, _compoundY3colonsdict, _compoundYformsdict, _lexicon2dict]
-_lexCommentList = [_lexYCommentdict, _lexY3colonsCommentdict, _lexYformsCommentdict, _lexicon1Commentdict, _compoundYCommentdict, _compoundY3colonsCommentdict, _compoundYformsCommentdict,  _lexicon2Commentdict]
+_lexLocationList = [lexYLocation, lexY3colonsLocation,lexYformsLocation, lexicon1Location, stemYLocation, compoundYLocation, compoundY3colonsLocation,compoundYformsLocation,lexicon2Location]
+_lexDictList = [_lexYdict,_lexY3colonsdict,_lexYformsdict,  _lexicon1dict, _stemYdict, _compoundYdict, _compoundY3colonsdict, _compoundYformsdict, _lexicon2dict]
+_lexCommentList = [_lexYCommentdict, _lexY3colonsCommentdict, _lexYformsCommentdict, _lexicon1Commentdict, _stemYCommentdict, _compoundYCommentdict, _compoundY3colonsCommentdict, _compoundYformsCommentdict,  _lexicon2Commentdict]
 
 
 def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
@@ -385,6 +391,7 @@ if __name__ == "__main__":
     copyfile(lexY3colonsLocation, tmpLexY3colons)
     copyfile(lexYformsLocation, tmpLexYforms)
     copyfile(lexicon1Location, tmpLexicon1)
+    copyfile(stemYLocation, tmpstemY)
     copyfile(compoundYLocation, tmpCompound)
     copyfile(lexicon2Location, tmpLexicon2)
     LoadFeatureOntology(YDirLocation + '/../../fsa/Y/feature.txt')
@@ -419,6 +426,7 @@ if __name__ == "__main__":
     printNewLex(lexY3colonsLocation, _lexY3colonsdict, _lexY3colonsCommentdict)
     printNewLex(lexYformsLocation, _lexYformsdict, _lexYformsCommentdict)
     printNewLex(lexicon1Location,_lexicon1dict,_lexicon1Commentdict)
+    printNewLex(stemYLocation, _stemYdict, _stemYCommentdict)
     printNewLex(compoundYLocation, _compoundYdict,_compoundYCommentdict)
     printNewLex(compoundY3colonsLocation, _compoundY3colonsdict, _compoundY3colonsCommentdict)
     printNewLex(compoundYformsLocation, _compoundYformsdict, _compoundYformsCommentdict)
