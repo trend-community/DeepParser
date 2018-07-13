@@ -221,9 +221,12 @@ def _FindSubtree(root, pointers):
 
 
 LogicMatch_notpointer_Cache = {}
+hitcount = 0
 def LogicMatch_notpointer(StrToken, RuleToken):
+    global hitcount
     # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
     if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
+        hitcount += 1
         return LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)]
 
     LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = False
@@ -281,7 +284,7 @@ def Clear_LogicMatch_notpointer_Cache():
 
 
 def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
-    if not RuleToken.word:  # for the comparison of "[]", can match anything
+    if not RuleToken.word and not RuleTokens[RulePosition].SubtreePointer:  # for the comparison of "[]", can match anything
         RuleToken.MatchedNodeID = StrTokenList.get(StrPosition).ID
         return True
 
@@ -305,14 +308,13 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         logging.error("In LogicMatch(): Can't find strToken!")
         return False
 
-    RuleToken.MatchedNodeID = strToken.ID
-
     if RuleToken.AndText and "^" in RuleToken.AndText:
             #This is a pointer! unification comparison.
             if not PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition,
                                 Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype):
                 return False
 
+    RuleToken.MatchedNodeID = strToken.ID
     return LogicMatch_notpointer(strToken, RuleToken)
 
 
