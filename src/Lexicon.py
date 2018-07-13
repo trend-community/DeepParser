@@ -682,24 +682,31 @@ def ApplyLexicon(node, lex=None):
 
     #attempt stemming if lexicon fails
     word = node.text
+    stemming = False
     if lex is None and len(word) >= 5:
         stem_word = ""
+        # new_features temporarily replaces infY.txt
+        new_features = ""
         if word[-1:] == "s":
             stem_word = word[:-1]
+            new_features = "s"
         elif word[-2:] == "ed":
             stem_word = word[:-2]
+            new_features = "ed"
         elif word[-3:] == "ing":
             stem_word = word[:-3]
+            new_features = "ing"
         elif word[-2:] == "ly":
             stem_word = word[:-2]
+            new_features = "ly"
         elif word[-5:] == "-wise":
             stem_word = word[:-5]
+            new_features = "wise"
         if stem_word != "":
             lex = SearchStem(stem_word)
             if lex:
-                # do the apply rules thing to the word here
-                # applyrule(word)
-                pass
+                stemming = True
+
 
     if lex is None:
         if IsCD(node.text):
@@ -726,6 +733,19 @@ def ApplyLexicon(node, lex=None):
                 len(node.features - OOVFeatureSet) == 0:
             node.ApplyFeature(utils.FeatureID_OOV)
             # node.features.add(utils.FeatureID_OOV)
+
+    # (O.O) temporary until I get infY.txt to work
+    if stemming:
+        if new_features == "s":
+            node.features.update(["Xs","VBZ"])
+        elif new_features == "ed":
+            node.features.update(["Ved"])
+        elif new_features == "ing":
+            node.features.update(["Ving"])
+        elif new_features == "ly":
+            node.features.update(["ly"])
+        elif new_features == "wise":
+            node.features.update(["RB+","sRB"])
 
     ApplyWordLengthFeature(node)
     node.ApplyFeature(utils.FeatureID_0)
