@@ -398,8 +398,8 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             node = SearchLexicon(word, 'origin')
 
             # for stemming feature
+            newStemNode = False
             if lookupSource == LexiconLookupSource.stemming:
-                newStemNode = False
                 node = SearchStem(word)
                 if not node:
                     newStemNode = True
@@ -737,15 +737,16 @@ def ApplyLexicon(node, lex=None):
     # (O.O) temporary until I get infY.txt to work
     if stemming:
         if new_features == "s":
-            node.features.update(["Xs","VBZ"])
+            node.features.update([GetFeatureID("Xs"),GetFeatureID("VBZ")])
         elif new_features == "ed":
-            node.features.update(["Ved"])
+            node.features.update([GetFeatureID("Ved")])
         elif new_features == "ing":
-            node.features.update(["Ving"])
+            node.features.update([GetFeatureID("Ving")])
         elif new_features == "ly":
-            node.features.update(["ly"])
+            node.features.update([GetFeatureID("ly")])
         elif new_features == "wise":
-            node.features.update(["RB+","sRB"])
+            node.features.update([GetFeatureID("RB+"),GetFeatureID("sRB")])
+
 
     ApplyWordLengthFeature(node)
     node.ApplyFeature(utils.FeatureID_0)
