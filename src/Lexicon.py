@@ -9,6 +9,7 @@ from FeatureOntology import *
 
 _LexiconDict = {}
 _StemDict = {}
+_SuffixList = []
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -706,8 +707,8 @@ def ApplyLexicon(node, lex=None):
         if word[-1:] == "s":
             stem_word = word[:-1]
             new_features = "s"
-        elif word[-2:] == "ed":
-            stem_word = word[:-2]
+        elif word[-2:] == "ed":     # "-d"    "-ed"
+            stem_word = word[:-2]   #studied
             new_features = "ed"
         elif word[-3:] == "ing":
             stem_word = word[:-3]
@@ -722,6 +723,14 @@ def ApplyLexicon(node, lex=None):
             lex = SearchStem(stem_word)
             if lex:
                 stemming = True
+
+    '''
+    Make a script to get stem list (get rid of \)
+    Search up _SuffixList for suffixes
+    Add a special character between word and suffix, add that to all suffixes. (optional)
+    Chunk of 3, check if that chunk is in StemDict, then keep increasing until a rule matches
+    Check if the feature list is DIFFERENT, if it is, then the node is done
+    '''
 
 
     if lex is None:
@@ -749,19 +758,6 @@ def ApplyLexicon(node, lex=None):
                 len(node.features - OOVFeatureSet) == 0:
             node.ApplyFeature(utils.FeatureID_OOV)
             # node.features.add(utils.FeatureID_OOV)
-
-    # (O.O) temporary until I get infY.txt to work
-    if stemming:
-        if new_features == "s":
-            node.features.update([GetFeatureID("Xs"),GetFeatureID("VBZ")])
-        elif new_features == "ed":
-            node.features.update([GetFeatureID("Ved")])
-        elif new_features == "ing":
-            node.features.update([GetFeatureID("Ving")])
-        elif new_features == "ly":
-            node.features.update([GetFeatureID("ly")])
-        elif new_features == "wise":
-            node.features.update([GetFeatureID("RB+"),GetFeatureID("sRB")])
 
 
     ApplyWordLengthFeature(node)
