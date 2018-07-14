@@ -10,6 +10,7 @@ import ProcessSentence, Tokenization
 
 _LexiconDict = {}
 _StemDict = {}
+_SuffixList = []
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -798,8 +799,8 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
         if word[-1:] == "s":
             stem_word = word[:-1]
             new_features = "s"
-        elif word[-2:] == "ed":
-            stem_word = word[:-2]
+        elif word[-2:] == "ed":     # "-d"    "-ed"
+            stem_word = word[:-2]   #studied
             new_features = "ed"
         elif word[-3:] == "ing":
             stem_word = word[:-3]
@@ -844,18 +845,6 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
 
 
 
-    # if stemming:
-    #     if new_features == "s":
-    #         node.features.update(["Xs","VBZ"])
-    #     elif new_features == "ed":
-    #         node.features.update(["Ved"])
-    #     elif new_features == "ing":
-    #         node.features.update(["Ving"])
-    #     elif new_features == "ly":
-    #         node.features.update(["ly"])
-    #     elif new_features == "wise":
-    #         node.features.update(["RB+","sRB"])
-
     if stemming:
         if new_features == "s":
             node.features.update([GetFeatureID("Xs"),GetFeatureID("VBZ")])
@@ -867,6 +856,7 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
             node.features.update([GetFeatureID("ly")])
         elif new_features == "wise":
             node.features.update([GetFeatureID("RB+"),GetFeatureID("sRB")])
+
 
 
     ApplyWordLengthFeature(node)
