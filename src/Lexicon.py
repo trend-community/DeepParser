@@ -707,6 +707,10 @@ def ApplyWordLengthFeature(node):
 def ApplyLexicon(node, lex=None, stemming_version="stem"):
     global _SuffixList
 
+
+def ApplyLexicon(node, lex=None):
+    global _SuffixList
+
     if not C1ID:
         InitLengthSet()
 
@@ -791,31 +795,22 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
 
     #attempt stemming if lexicon fails
     word = node.text
-    stemming = False
-    if lex is None and len(word) >= 5:
-        stem_word = ""
-        # new_features temporarily replaces infY.txt
-        new_features = ""
-        if word[-1:] == "s":
-            stem_word = word[:-1]
-            new_features = "s"
-        elif word[-2:] == "ed":     # "-d"    "-ed"
-            stem_word = word[:-2]   #studied
-            new_features = "ed"
-        elif word[-3:] == "ing":
-            stem_word = word[:-3]
-            new_features = "ing"
-        elif word[-2:] == "ly":
-            stem_word = word[:-2]
-            new_features = "ly"
-        elif word[-5:] == "-wise":
-            stem_word = word[:-5]
-            new_features = "wise"
-        if stem_word != "":
-            lex = SearchStem(stem_word)
-            if lex:
-                stemming = True
+    if lex is None and len(word) >= 4:
+        for stem_length in range(3, len(word)):
+            stem_word = word[:stem_length]
 
+            lex = SearchStem(stem_word)
+
+            suffix = word[stem_length:]
+
+            if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
+                lex.text = node.text
+                break
+                original_feature = len(lex.features) # make note of how many features there were
+                # run the rule over lex
+                new_feature = len(lex.features)
+                if original_feature != new_feature: # the rules were applied, thus quit
+                    break
 
     if lex is None:
         if IsCD(node.text):
@@ -865,12 +860,10 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
 
 
 
-def LoadSuffix(inf_location, inf_name):
-    global _SuffixList, _InfFile
+def LoadSuffix(inf_location):
+    global _SuffixList
     suffix_set = set()
-    _InfFile = inf_name
     inf = open(inf_location, 'r')
-
 
     f = inf.readlines()
     try:

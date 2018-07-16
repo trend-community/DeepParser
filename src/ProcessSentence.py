@@ -759,11 +759,15 @@ def LoadCommon():
             Stemfile = action[action.index(":")+1:].strip().split(",")
             inf = Stemfile[0].strip()
             Rules.LoadRules(XLocation, inf)
+<<<<<<< HEAD
             Lexicon.LoadSuffix(XLocation + inf, inf)
             Rulefile = [inf]
             Rules.LoadRules(XLocation, Rulefile)
             #inf = Stemfile[0].strip()
             #Rules.LoadRules(XLocation, inf)
+=======
+            Lexicon.LoadSuffix(XLocation + inf)
+>>>>>>> finished general stemming, still need to implement infY.txt utilization
             for stem in Stemfile[1:]:
                 stem = stem.strip()
                 if stem:
