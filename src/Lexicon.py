@@ -668,6 +668,8 @@ def ApplyWordLengthFeature(node):
 
 
 def ApplyLexicon(node, lex=None):
+    global _SuffixList
+
     if not C1ID:
         InitLengthSet()
 
@@ -683,39 +685,22 @@ def ApplyLexicon(node, lex=None):
 
     #attempt stemming if lexicon fails
     word = node.text
-    stemming = False
-    if lex is None and len(word) >= 5:
-        stem_word = ""
-        # new_features temporarily replaces infY.txt
-        new_features = ""
-        if word[-1:] == "s":
-            stem_word = word[:-1]
-            new_features = "s"
-        elif word[-2:] == "ed":     # "-d"    "-ed"
-            stem_word = word[:-2]   #studied
-            new_features = "ed"
-        elif word[-3:] == "ing":
-            stem_word = word[:-3]
-            new_features = "ing"
-        elif word[-2:] == "ly":
-            stem_word = word[:-2]
-            new_features = "ly"
-        elif word[-5:] == "-wise":
-            stem_word = word[:-5]
-            new_features = "wise"
-        if stem_word != "":
+    if lex is None and len(word) >= 4:
+        for stem_length in range(3, len(word)):
+            stem_word = word[:stem_length]
+
             lex = SearchStem(stem_word)
-            if lex:
-                stemming = True
 
-    '''
-    Make a script to get stem list (get rid of \)
-    Search up _SuffixList for suffixes
-    Add a special character between word and suffix, add that to all suffixes. (optional)
-    Chunk of 3, check if that chunk is in StemDict, then keep increasing until a rule matches
-    Check if the feature list is DIFFERENT, if it is, then the node is done
-    '''
+            suffix = word[stem_length:]
 
+            if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
+                lex.text = node.text
+                break
+                original_feature = len(lex.features) # make note of how many features there were
+                # run the rule over lex
+                new_feature = len(lex.features)
+                if original_feature != new_feature: # the rules were applied, thus quit
+                    break
 
     if lex is None:
         if IsCD(node.text):
@@ -749,26 +734,38 @@ def ApplyLexicon(node, lex=None):
     return node
 
 # (O.O)
-'''
-    call rule on the word, elaborates -> elaborate
+def LoadSuffix(inf_location):
+    global _SuffixList
+    suffix_set = set()
+    inf = open(inf_location, 'r')
 
-    "Stemming:" -> LoadLexicon(stemming feature) ->
+    f = inf.readlines()
+    try:
+        for line in f:
+            if line.startswith("//"):
+                pass
+            else:
+                double = True  # determines whether the rule is in double quotes or single quotes
+                index = line.find('"')
+                if index == -1:
+                    double = False
+                    index = line.find("'")
+                if index == -1:
+                    pass
+                else:
+                    if double:
+                        index2 = line.find('"', index + 1)
+                    else:
+                        index2 = line.find("'", index + 1)
+                    phrase = line[index + 2: index2]  # get rid of initial -
+                    if phrase.startswith("\\"): # get rid of \ if it exists at beginning
+                        phrase = phrase[1:]
+                    suffix_set.add(phrase)
 
-    Call LoadRule on InfY.txt
-
-    Don't use LoadStem, use LoadLexicon.
-    Just focus on finishing all the Loading features, we'll do the actual Lookup things later (e.g. cutting off
-                                suffixes and searching up the cut word in the StemDict)
-    
-    maybe create another rule dict just for infY rules
-    
-    matchandapplyrule  in ProcessSentence
-        LexicalAnalyzeTask (is the whole process of parsing)
-        
-    lexiconsegmentation is what's used for tokens
-    
-    Figure out how to apply ruledict to the words
-'''
+        for suffix in suffix_set:
+            _SuffixList.append(suffix)
+    finally:
+        inf.close()
 
 
 # Lookup will be used right after segmentation.
