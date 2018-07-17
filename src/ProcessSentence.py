@@ -400,6 +400,10 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
+        # if action == "Stemming":
+        #     Rulefile = action[action.index(":")+1:].strip().split(",")[0]
+        #     WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
+
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -497,7 +501,6 @@ def SeparateSentence(Sentence):
     #logging.info(str(SubSentences))
     return SubSentences
 
-#(O.O)
 def LexicalAnalyzeTask( SubSentence, schema):
 
     NodeList = Tokenization.Tokenize(SubSentence)
@@ -616,8 +619,6 @@ def LoadCommon():
 
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
 
-    # XLocation = '../../fsa/X/'
-
 
     LoadPipeline(PipeLineLocation)
 
@@ -684,7 +685,7 @@ def LoadCommon():
             Stemfile = action[action.index(":")+1:].strip().split(",")
             inf = Stemfile[0].strip()
             Rules.LoadRules(XLocation, inf)
-            Lexicon.LoadSuffix(XLocation + inf)
+            Lexicon.LoadSuffix(XLocation + inf, inf)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
                 if stem:
@@ -733,7 +734,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
+    #target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
@@ -761,7 +762,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("虽然经济实惠，但味道好苦啊")
+    nodelist, dag, winningrules = LexicalAnalyze("They sing blenchly")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
