@@ -5,12 +5,9 @@
 import string
 import utils
 from FeatureOntology import *
-# (O.O)
-import ProcessSentence, Tokenization
+import Rules, ProcessSentence, Tokenization
 
 _LexiconDict = {}
-_StemDict = {}
-_SuffixList = []
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -536,10 +533,6 @@ def SearchLexicon(word, SearchType='flexible'):
 
     return None
 
-def SearchStem(word):
-    if word in _StemDict:
-        return _StemDict[word]
-    return None
 
 def SearchStem(word):
     if word in _StemDict:
@@ -707,10 +700,6 @@ def ApplyWordLengthFeature(node):
 def ApplyLexicon(node, lex=None, stemming_version="stem"):
     global _SuffixList
 
-
-def ApplyLexicon(node, lex=None):
-    global _SuffixList
-
     if not C1ID:
         InitLengthSet()
 
@@ -805,11 +794,40 @@ def ApplyLexicon(node, lex=None):
 
             if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
                 lex.text = node.text
-                break
-                original_feature = len(lex.features) # make note of how many features there were
-                # run the rule over lex
-                new_feature = len(lex.features)
-                if original_feature != new_feature: # the rules were applied, thus quit
+                # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
+                o_norm = node.norm
+                o_atom = node.atom
+                o_features = node.features
+
+                node.norm = lex.norm
+                node.atom = lex.atom
+                if utils.FeatureID_NEW in lex.features:
+                    node.features = set()
+                    node.features.update(lex.features)
+                    node.features.remove(utils.FeatureID_NEW)
+                else:
+                    node.features.update(lex.features)
+
+                orig_feature = len(node.features)
+
+                SingleNodeList = Tokenization.SentenceLinkedList()
+                SingleNodeList.append(node)
+                ProcessSentence.MatchAndApplyRuleFile(SingleNodeList, _InfFile)
+                node = SingleNodeList.head
+
+                # all we want is the updated features
+                lex.features = node.features
+                new_feature = len(node.features)
+
+                node.norm = o_norm
+                node.atom = o_atom
+                node.features = o_features
+
+                # if features don't change, it didn't match, thus stemming failed
+                if orig_feature != new_feature:
+                    break
+                else:
+                    lex = None
                     break
 
     if lex is None:
@@ -838,31 +856,16 @@ def ApplyLexicon(node, lex=None):
             node.ApplyFeature(utils.FeatureID_OOV)
             # node.features.add(utils.FeatureID_OOV)
 
-
-
-    if stemming:
-        if new_features == "s":
-            node.features.update([GetFeatureID("Xs"),GetFeatureID("VBZ")])
-        elif new_features == "ed":
-            node.features.update([GetFeatureID("Ved")])
-        elif new_features == "ing":
-            node.features.update([GetFeatureID("Ving")])
-        elif new_features == "ly":
-            node.features.update([GetFeatureID("ly")])
-        elif new_features == "wise":
-            node.features.update([GetFeatureID("RB+"),GetFeatureID("sRB")])
-
-
-
     ApplyWordLengthFeature(node)
     node.ApplyFeature(utils.FeatureID_0)
     return node
 
 
-
-def LoadSuffix(inf_location):
-    global _SuffixList
+# (O.O)
+def LoadSuffix(inf_location, inf_name):
+    global _SuffixList, _InfFile
     suffix_set = set()
+    _InfFile = inf_name
     inf = open(inf_location, 'r')
 
     f = inf.readlines()

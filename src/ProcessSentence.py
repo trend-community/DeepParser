@@ -434,7 +434,12 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
-        
+
+        # if action == "Stemming":
+        #     Rulefile = action[action.index(":")+1:].strip().split(",")[0]
+        #     WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
+
+
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -696,6 +701,7 @@ def LoadCommon():
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
 
 
+
     LoadPipeline(PipeLineLocation)
 
     if logging.root.isEnabledFor(logging.DEBUG):
@@ -759,15 +765,13 @@ def LoadCommon():
             Stemfile = action[action.index(":")+1:].strip().split(",")
             inf = Stemfile[0].strip()
             Rules.LoadRules(XLocation, inf)
-<<<<<<< HEAD
+
             Lexicon.LoadSuffix(XLocation + inf, inf)
             Rulefile = [inf]
             Rules.LoadRules(XLocation, Rulefile)
             #inf = Stemfile[0].strip()
             #Rules.LoadRules(XLocation, inf)
-=======
-            Lexicon.LoadSuffix(XLocation + inf)
->>>>>>> finished general stemming, still need to implement infY.txt utilization
+            Lexicon.LoadSuffix(XLocation + inf, inf)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
                 if stem:
