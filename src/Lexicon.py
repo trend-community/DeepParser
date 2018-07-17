@@ -6,7 +6,7 @@ import string
 import utils
 from FeatureOntology import *
 # (O.O)
-import Rules, ProcessSentence, Tokenization
+import ProcessSentence, Tokenization
 
 _LexiconDict = {}
 _LexiconLookupSet = dict()
@@ -717,7 +717,6 @@ def ApplyLexicon(node, lex=None):
                 # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
                 o_norm = node.norm
                 o_atom = node.atom
-                o_features = node.features
 
                 node.norm = lex.norm
                 node.atom = lex.atom
@@ -733,6 +732,7 @@ def ApplyLexicon(node, lex=None):
                 SingleNodeList = Tokenization.SentenceLinkedList()
                 SingleNodeList.append(node)
                 ProcessSentence.MatchAndApplyRuleFile(SingleNodeList, _InfFile)
+
                 node = SingleNodeList.head
 
                 # all we want is the updated features
@@ -741,7 +741,7 @@ def ApplyLexicon(node, lex=None):
 
                 node.norm = o_norm
                 node.atom = o_atom
-                node.features = o_features
+                node.features = set()
 
                 # if features don't change, it didn't match, thus stemming failed
                 if orig_feature != new_feature:
