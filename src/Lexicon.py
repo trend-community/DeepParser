@@ -3,13 +3,12 @@
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import string
-
 import utils
 from FeatureOntology import *
+# (O.O)
+import Rules, ProcessSentence, Tokenization
 
 _LexiconDict = {}
-_StemDict = {}
-_SuffixList = []
 _LexiconLookupSet = dict()
 _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
@@ -30,6 +29,11 @@ CompositeKGSetADict = {}
 _CommentDict = {}
 
 C1ID = None
+
+#(O.O)
+_StemDict = {}
+_SuffixList = []
+_InfFile = ""
 
 
 class LexiconNode(object):
@@ -350,7 +354,6 @@ def LoadCompositeKG(lexiconLocation):
     # for key in CompositeKGSetADict:
     #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
 
-#(O.O)
 def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet, _StemDict
     global _CommentDict
@@ -500,7 +503,7 @@ def SearchLexicon(word, SearchType='flexible'):
     if word in _LexiconDict.keys():
         return _LexiconDict[word]
 
-    # (O.O) temporarily commenting this out as stemming should do its job
+    # (O.O) commenting this out as stemming should do its job
     # word_ed = re.sub("ed$", '', word)
     # if word_ed in _LexiconDict.keys():
     #     return _LexiconDict[word_ed]
@@ -699,7 +702,7 @@ def ApplyLexicon(node, lex=None):
     #     node.lexicon = SearchLexicon(node.word)
 
 
-    #attempt stemming if lexicon fails
+    #attempt stemming if lexicon fails (O.O)
     word = node.text
     if lex is None and len(word) >= 4:
         for stem_length in range(3, len(word)):
@@ -711,11 +714,40 @@ def ApplyLexicon(node, lex=None):
 
             if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
                 lex.text = node.text
-                break
-                original_feature = len(lex.features) # make note of how many features there were
-                # run the rule over lex
-                new_feature = len(lex.features)
-                if original_feature != new_feature: # the rules were applied, thus quit
+                # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
+                o_norm = node.norm
+                o_atom = node.atom
+                o_features = node.features
+
+                node.norm = lex.norm
+                node.atom = lex.atom
+                if utils.FeatureID_NEW in lex.features:
+                    node.features = set()
+                    node.features.update(lex.features)
+                    node.features.remove(utils.FeatureID_NEW)
+                else:
+                    node.features.update(lex.features)
+
+                orig_feature = len(node.features)
+
+                SingleNodeList = Tokenization.SentenceLinkedList()
+                SingleNodeList.append(node)
+                ProcessSentence.MatchAndApplyRuleFile(SingleNodeList, _InfFile)
+                node = SingleNodeList.head
+
+                # all we want is the updated features
+                lex.features = node.features
+                new_feature = len(node.features)
+
+                node.norm = o_norm
+                node.atom = o_atom
+                node.features = o_features
+
+                # if features don't change, it didn't match, thus stemming failed
+                if orig_feature != new_feature:
+                    break
+                else:
+                    lex = None
                     break
 
     if lex is None:
@@ -750,9 +782,10 @@ def ApplyLexicon(node, lex=None):
     return node
 
 # (O.O)
-def LoadSuffix(inf_location):
-    global _SuffixList
+def LoadSuffix(inf_location, inf_name):
+    global _SuffixList, _InfFile
     suffix_set = set()
+    _InfFile = inf_name
     inf = open(inf_location, 'r')
 
     f = inf.readlines()
