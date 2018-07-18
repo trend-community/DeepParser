@@ -201,7 +201,7 @@ class DependencyTree:
             logging.info("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
         output = ""
         if Type == 'simplegraph' :
-            for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
+            for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
                 output += """{}{{{}->{}}}; """.format(edge[1],
                                 self.nodes[edge[2]].text,
                                 self.nodes[edge[0]].text   )
