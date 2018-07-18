@@ -789,12 +789,19 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
         for stem_length in range(3, len(word)):
             stem_word = word[:stem_length]
 
-            lex = SearchStem(stem_word)
+            lex_copy = SearchStem(stem_word)
+
+            if lex_copy:
+                lex = LexiconNode(word)
+                lex.atom = lex_copy.atom
+                lex.norm = lex_copy.norm
+                lex.features.update(lex_copy.features)
+            else:
+                lex = None
 
             suffix = word[stem_length:]
 
             if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
-                lex.text = node.text
                 # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
                 o_norm = node.norm
                 o_atom = node.atom
@@ -817,7 +824,8 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
                 node = SingleNodeList.head
 
                 # all we want is the updated features
-                lex.features = node.features
+                lex.features = set()
+                lex.features.update(node.features)
                 new_feature = len(node.features)
 
                 node.norm = o_norm
