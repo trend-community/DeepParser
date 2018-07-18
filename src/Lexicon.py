@@ -466,7 +466,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
     logging.debug("Start applying features for variants")
     for lexicon in _LexiconDict:
         node = _LexiconDict[lexicon]
-        _ApplyWordStem(node, node)
+        # _ApplyWordStem(node, node) (o.o)
 
     logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconDict)))
 
@@ -708,12 +708,19 @@ def ApplyLexicon(node, lex=None):
         for stem_length in range(3, len(word)):
             stem_word = word[:stem_length]
 
-            lex = SearchStem(stem_word)
+            lex_copy = SearchStem(stem_word)
+
+            if lex_copy:
+                lex = LexiconNode(word)
+                lex.atom = lex_copy.atom
+                lex.norm = lex_copy.norm
+                lex.features.update(lex_copy.features)
+            else:
+                lex = None
 
             suffix = word[stem_length:]
 
             if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
-                lex.text = node.text
                 # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
                 o_norm = node.norm
                 o_atom = node.atom
@@ -736,7 +743,8 @@ def ApplyLexicon(node, lex=None):
                 node = SingleNodeList.head
 
                 # all we want is the updated features
-                lex.features = node.features
+                lex.features = set()
+                lex.features.update(node.features)
                 new_feature = len(node.features)
 
                 node.norm = o_norm
@@ -770,7 +778,7 @@ def ApplyLexicon(node, lex=None):
             node.features.remove(utils.FeatureID_NEW)
         else:
             node.features.update(lex.features)
-        _ApplyWordStem(node, lex)
+        # _ApplyWordStem(node, lex) (o.o)
         if len(node.features) == 0 or \
                 len(node.features - OOVFeatureSet) == 0:
             node.ApplyFeature(utils.FeatureID_OOV)
