@@ -96,6 +96,8 @@ if __name__ == "__main__":
     # p = pstats.Stats('restats')
     # p.sort_stats('time').print_stats(60)
 
+    from LogicOperation import hitcount
+    logging.warning("LogicMatch hit count:{}".format(hitcount))
     # import os
     # import psutil
     #

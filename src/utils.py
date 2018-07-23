@@ -317,6 +317,7 @@ def OutputStringTokens_onelinerSA(dag):
     ConFeature = "Con"
     PosEmo = "PosEmo"
     NegEmo = "NegEmo"
+    NeuType = "NeuType"
     Key = "Kee"
     Value = "Value"
     nodes = dag.nodes
@@ -337,6 +338,8 @@ def OutputStringTokens_onelinerSA(dag):
             output +=  PosEmo + " "
         if NegEmo in featureSet:
             output +=  NegEmo + " "
+        if NeuType in featureSet:
+            output += "Neutral" + " "
         if Key in featureSet:
             output +=  Key + " "
         if Value in featureSet:

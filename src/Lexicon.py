@@ -661,7 +661,7 @@ def ApplyLexicon(node, lex=None):
             node.ApplyFeature(utils.FeatureID_CD)
         elif node.text in string.punctuation:
             node.ApplyFeature(utils.FeatureID_SYM)
-        elif node.text == " ":
+        elif node.norm == " ":
             node.ApplyFeature(utils.FeatureID_CM)
             # not to apply NNP/OOV to space.
         else:
