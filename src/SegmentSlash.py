@@ -45,8 +45,9 @@ with open(segmentslash, 'w',encoding='utf-8') as file:
                 if line:
                     if "//" in line:
                         line = line[0:line.index("//")]
-                    line = line.strip()
-                    file.write(line+"\n")
+                    if "/" in line:
+                        line = line.strip()
+                        file.write(line+"\n")
 
 
 
