@@ -414,14 +414,6 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                         node.comment = comment
 
 
-            stem_node = SearchStem(word)
-            if lookupSource == LexiconLookupSource.stemming and not stem_node:
-                newStemNode = True
-                node = LexiconNode(word)
-                if comment:
-                    node.comment = comment
-
-
             # node = None
             if not node:
                 newNode = True
@@ -461,9 +453,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
 
             if newStemNode:
                 _StemDict.update({node.text: node})
-            if newNode or newStemNode:
-                if lookupSource == LexiconLookupSource.stemming:
-                    _StemDict.update({node.text: node})
+            if newNode:
                 if lookupSource != LexiconLookupSource.oQcQ:
                     _LexiconDict.update({node.text: node})
                 if lookupSource != LexiconLookupSource.Exclude:
@@ -783,61 +773,6 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
                     else: # starting for longer suffixes, if matching failed it would fail everything
                         break
 
-    #attempt stemming if lexicon fails
-    word = node.text
-    if lex is None and len(word) >= 4:
-        for stem_length in range(3, len(word)):
-            stem_word = word[:stem_length]
-
-            lex_copy = SearchStem(stem_word)
-
-            if lex_copy:
-                lex = LexiconNode(word)
-                lex.atom = lex_copy.atom
-                lex.norm = lex_copy.norm
-                lex.features.update(lex_copy.features)
-            else:
-                lex = None
-
-            suffix = word[stem_length:]
-
-            if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
-                # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
-                o_norm = node.norm
-                o_atom = node.atom
-
-                node.norm = lex.norm
-                node.atom = lex.atom
-                if utils.FeatureID_NEW in lex.features:
-                    node.features = set()
-                    node.features.update(lex.features)
-                    node.features.remove(utils.FeatureID_NEW)
-                else:
-                    node.features.update(lex.features)
-
-                orig_feature = len(node.features)
-
-                SingleNodeList = Tokenization.SentenceLinkedList()
-                SingleNodeList.append(node)
-                ProcessSentence.MatchAndApplyRuleFile(SingleNodeList, _InfFile)
-
-                node = SingleNodeList.head
-
-                # all we want is the updated features
-                lex.features = set()
-                lex.features.update(node.features)
-                new_feature = len(node.features)
-
-                node.norm = o_norm
-                node.atom = o_atom
-                node.features = set()
-
-                # if features don't change, it didn't match, thus stemming failed
-                if orig_feature != new_feature:
-                    break
-                else:
-                    lex = None
-                    break
 
     if lex is None:
         if IsCD(node.text):

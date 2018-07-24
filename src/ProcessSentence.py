@@ -760,17 +760,11 @@ def LoadCommon():
                 if lex:
                     Lexicon.LoadLexicon(XLocation + lex)
 
-        #(O.O)
+        # (O.O)
         if action.startswith("Stemming:"):
-            Stemfile = action[action.index(":")+1:].strip().split(",")
+            Stemfile = action[action.index(":") + 1:].strip().split(",")
             inf = Stemfile[0].strip()
             Rules.LoadRules(XLocation, inf)
-
-            Lexicon.LoadSuffix(XLocation + inf, inf)
-            Rulefile = [inf]
-            Rules.LoadRules(XLocation, Rulefile)
-            #inf = Stemfile[0].strip()
-            #Rules.LoadRules(XLocation, inf)
             Lexicon.LoadSuffix(XLocation + inf, inf)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
