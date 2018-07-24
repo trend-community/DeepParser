@@ -703,7 +703,7 @@ def ApplyLexicon(node, lex=None):
 
 
     #attempt stemming if lexicon fails (O.O)
-    word = node.text
+    word = node.text.lower()
     if lex is None and len(word) >= 4:
         for stem_length in range(3, len(word)):
             stem_word = word[:stem_length]
@@ -718,7 +718,7 @@ def ApplyLexicon(node, lex=None):
             else:
                 lex = None
 
-            suffix = word[stem_length:]
+            suffix = word[stem_length:].lower()
 
             if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
                 # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
