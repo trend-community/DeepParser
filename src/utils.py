@@ -318,7 +318,7 @@ def OutputStringTokens_onelinerSA(dag):
     PosEmo = "PosEmo"
     NegEmo = "NegEmo"
     NeuType = "NeuType"
-    Key = "Kee"
+    Key = "Key"
     Value = "Value"
     nodes = dag.nodes
     nodelist = list(nodes.values())

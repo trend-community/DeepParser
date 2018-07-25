@@ -33,7 +33,7 @@ SentimentTags = ['repent', 'sent', 'fear', 'nC', 'cherish', 'apologize', 'mental
                 'wellTreat', 'excited', 'nAttitude', 'calm', 'worry', 'unsatisfied', 'uneasy', 'sad', 'embarrassed', 'disappointed', 'ppEmo', 'nnEmo', 'interested', 'hello', 'salute', 'praise',
                 'commemorate', 'congr', 'endorse', 'appreciate', 'accept', 'reward', 'illTreat', 'mock', 'protest', 'oppose', 'reject', 'refuse', 'betray', 'pEmo', 'blame', 'angry', 'suffer',
                 'full', 'vWell', 'lucky', 'succeed', 'prosper', 'surpass', 'win', 'famous', 'good', 'bad', 'happy', 'annoy', 'hate', 'love', 'frighten', 'mkWorried', 'irritate', 'offend', 'tease',
-                'please', 'soothe', 'enLive', 'surprise', 'shy','Pro', 'Con', 'PosEmo', 'NegEmo','PosType', 'NegType']
+                'please', 'soothe', 'enLive', 'surprise', 'shy','Pro', 'Con', 'PosEmo', 'NegEmo','PosType', 'NegType','transP','transN']
 SentimentTagIDSet = set()
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
