@@ -773,7 +773,6 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
                     else: # starting for longer suffixes, if matching failed it would fail everything
                         break
 
-
     if lex is None:
         if IsCD(node.text):
             node.ApplyFeature(utils.FeatureID_CD)
