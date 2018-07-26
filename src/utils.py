@@ -320,6 +320,7 @@ def OutputStringTokens_onelinerSA(dag):
     NeuType = "NeuType"
     Key = "Key"
     Value = "Value"
+    Feature = "Feature"
     nodes = dag.nodes
     nodelist = list(nodes.values())
     nodelist.sort(key=lambda x:x.StartOffset)
@@ -344,6 +345,8 @@ def OutputStringTokens_onelinerSA(dag):
             output +=  Key + " "
         if Value in featureSet:
             output +=  Value + " "
+        if Feature in featureSet:
+            output +=  Feature + " "
         if output.endswith("/"):
             output = output[:-1]
     return output
