@@ -601,7 +601,6 @@ def InitLengthSet():
             L1ID, L2ID, L3ID, L4ID, L4plusID
         }
 
-
 def ApplyWordLengthFeature(node):
     if not C1ID:
         InitLengthSet()
@@ -685,8 +684,8 @@ def ApplyWordLengthFeature(node):
             node.ApplyFeature(C8plusID)
     return
 
-
-def ApplyLexicon(node, lex=None):
+#stemming_version can be "stem" or "suffix", this determines which side gets the longest-rule
+def ApplyLexicon(node, lex=None, stemming_version="stem"):
     global _SuffixList
 
     if not C1ID:
@@ -705,7 +704,16 @@ def ApplyLexicon(node, lex=None):
     #attempt stemming if lexicon fails (O.O)
     word = node.text.lower()
     if lex is None and len(word) >= 4:
-        for stem_length in range(3, len(word)):
+        if stemming_version == "stem":
+            start = len(word) - 1
+            stop = 2
+            step = -1
+        else:
+            start = 3
+            stop = len(word)
+            step = 1
+
+        for stem_length in range(start, stop, step):
             stem_word = word[:stem_length]
 
             lex_copy = SearchStem(stem_word)
@@ -715,8 +723,6 @@ def ApplyLexicon(node, lex=None):
                 lex.atom = lex_copy.atom
                 lex.norm = lex_copy.norm
                 lex.features.update(lex_copy.features)
-            else:
-                lex = None
 
             suffix = word[stem_length:].lower()
 
@@ -724,9 +730,11 @@ def ApplyLexicon(node, lex=None):
                 # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
                 o_norm = node.norm
                 o_atom = node.atom
+                o_text = node.text
 
                 node.norm = lex.norm
                 node.atom = lex.atom
+                node.text = suffix
                 if utils.FeatureID_NEW in lex.features:
                     node.features = set()
                     node.features.update(lex.features)
@@ -749,6 +757,7 @@ def ApplyLexicon(node, lex=None):
 
                 node.norm = o_norm
                 node.atom = o_atom
+                node.text = o_text
                 node.features = set()
 
                 # if features don't change, it didn't match, thus stemming failed
@@ -756,7 +765,10 @@ def ApplyLexicon(node, lex=None):
                     break
                 else:
                     lex = None
-                    break
+                    if stemming_version == "stem": # failing from small suffixes could still work for longer ones
+                        continue
+                    else: # starting for longer suffixes, if matching failed it would fail everything
+                        break
 
     if lex is None:
         if IsCD(node.text):
