@@ -317,10 +317,10 @@ def OutputStringTokens_onelinerSA(dag):
     ConFeature = "Con"
     PosEmo = "PosEmo"
     NegEmo = "NegEmo"
-    NeuType = "NeuType"
+    Neutral = "Neutral"
+    Needed = "Needed"
     Key = "Key"
     Value = "Value"
-    Feature = "Feature"
     nodes = dag.nodes
     nodelist = list(nodes.values())
     nodelist.sort(key=lambda x:x.StartOffset)
@@ -339,14 +339,14 @@ def OutputStringTokens_onelinerSA(dag):
             output +=  PosEmo + " "
         if NegEmo in featureSet:
             output +=  NegEmo + " "
-        if NeuType in featureSet:
-            output += "Neutral" + " "
+        if Needed in featureSet:
+            output += Needed + " "
+        if Neutral in featureSet:
+            output += Neutral + " "
         if Key in featureSet:
             output +=  Key + " "
         if Value in featureSet:
             output +=  Value + " "
-        if Feature in featureSet:
-            output +=  Feature + " "
         if output.endswith("/"):
             output = output[:-1]
     return output
