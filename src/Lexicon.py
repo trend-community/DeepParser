@@ -14,6 +14,7 @@ _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
 _LexiconLookupSet[LexiconLookupSource.defLex] = set()
 _LexiconLookupSet[LexiconLookupSource.External] = set()
 _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
+_LexiconLookupSet[LexiconLookupSource.Compound] = set()
 _LexiconSegmentDict = {}  # from main2017. used for segmentation only. there is no feature.
 _StemSegmentDict = {}
 _LexiconSegmentSlashDict = {}  #
@@ -220,7 +221,8 @@ def LoadSegmentLexicon():
     if _LexiconDict:
         for word in _LexiconDict:
             if word not in _LexiconLookupSet[LexiconLookupSource.defLex] \
-                    and word not in _LexiconLookupSet[LexiconLookupSource.External]:
+                    and word not in _LexiconLookupSet[LexiconLookupSource.External]\
+                    and word not in _LexiconLookupSet[LexiconLookupSource.Compound]:
                 _LexiconSegmentDict[word] = 1.2
     else:
         lexiconLocation = XLocation + 'AllLexicon.txt'
@@ -388,7 +390,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                 continue
             newNode = False
             word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":").lower()
-            # Ditionary is case insensitive: make the words lowercase.
+            # Dictionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "")
             if "Punctuate" not in lexiconLocation:
                 word = word.replace("/", "")
@@ -398,7 +400,6 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             #    continue
             ### This checking is only for external dictionary.
             ### So let's apply it to them when generating (offline)
-
             node = SearchLexicon(word, 'origin')
 
             # for stemming feature
@@ -415,7 +416,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             # node = None
             if not node:
                 newNode = True
-                node = LexiconNode(word)
+                node = LexiconNode(word) 
                 if comment:
                     node.comment = comment
             if len(blocks) == 2:
@@ -861,6 +862,8 @@ def LexiconLookup(strTokens, lookupsource):
             pj = pj.next
             if not pj.text:
                 continue
+            if lookupsource == LexiconLookupSource.Compound:
+                combinedText += "_"
             combinedText += pj.text.lower()
             combinedCount += 1
             if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
@@ -872,7 +875,10 @@ def LexiconLookup(strTokens, lookupsource):
     i = strTokens.size - 1
     while i > 0:
         if bestScore[i] > 1:
-            NewNode = strTokens.combine(i - bestScore[i] + 1, bestScore[i], -1)
+            compound = False
+            if lookupsource == LexiconLookupSource.Compound:
+                compound = True
+            NewNode = strTokens.combine(i - bestScore[i] + 1, bestScore[i], -1, compound)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
             if lookupsource == LexiconLookupSource.External:
