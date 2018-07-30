@@ -163,7 +163,7 @@ class SentenceLinkedList:
     #
     #     return sig
 
-    def newnode(self, start, count):
+    def newnode(self, start, count, compound=False):
         #logging.info("new node: start=" + str(start) + " count=" + str(count))
         if not self.head:
             raise RuntimeError("This SentenceLinkedList is null! Can't combine.")
@@ -184,7 +184,10 @@ class SentenceLinkedList:
             if i == 0:
                 spaces = ""
             else:
-                spaces = " " * (p.StartOffset - EndOffset)
+                if compound:
+                    spaces = "_"
+                else:
+                    spaces = " " * (p.StartOffset - EndOffset)
             EndOffset = p.EndOffset
             NewText += spaces + p.text
             NewNorm += spaces + p.norm
@@ -205,10 +208,10 @@ class SentenceLinkedList:
             NewNode.ApplyFeature(haverelation)
         return NewNode, startnode, endnode
 
-    def combine(self, start, count, headindex=0):
+    def combine(self, start, count, headindex=0, compound=False):
         if count == 1:
             return self.get(start+headindex) #we don't actually want to just wrap one word as one chunk
-        NewNode, startnode, endnode = self.newnode(start, count)
+        NewNode, startnode, endnode = self.newnode(start, count, compound)
 
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
             HeadNode = self.get(start+headindex)
