@@ -71,6 +71,7 @@ class LexiconLookupSource(Enum):
     External = 2
     oQcQ = 3
     stemming = 4
+    Compound = 5
 
 
 def InitGlobalFeatureID():

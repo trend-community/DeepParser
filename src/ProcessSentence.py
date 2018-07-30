@@ -432,10 +432,7 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
-        # if action == "Stemming":
-        #     Rulefile = action[action.index(":")+1:].strip().split(",")[0]
-        #     WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
-
+        
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -451,7 +448,8 @@ def DynamicPipeline(NodeList, schema):
         # if action == "APPLY COMPOSITE KG":
         #     Lexicon.ApplyCompositeKG(NodeList)
 
-        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
+        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") \
+                or action.startswith("Lookup oQcQ") or action.startswith("Lookup Compound:"):
             lookupSourceName = action[6:action.index(":")].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
@@ -476,7 +474,7 @@ def DynamicPipeline(NodeList, schema):
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
-    return  NodeList, Dag, WinningRules
+    return NodeList, Dag, WinningRules
 
 
 def PrepareJSandJM(nodes):
@@ -722,6 +720,13 @@ def LoadCommon():
                 stem = stem.strip()
                 if stem:
                     Lexicon.LoadLexicon(XLocation + stem, lookupSource=LexiconLookupSource.stemming)
+
+        if action.startswith("Lookup Compound:"):
+            Compoundfile = action[action.index(":") + 1:].strip().split(",")
+            for compound in Compoundfile:
+                compound = compound.strip()
+                if compound:
+                    Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.Compound)
 
 
         if action.startswith("Lookup defLex:"):
