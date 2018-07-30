@@ -435,10 +435,6 @@ def DynamicPipeline(NodeList, schema):
             break
 
 
-        # if action == "Stemming":
-        #     Rulefile = action[action.index(":")+1:].strip().split(",")[0]
-        #     WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
-
 
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
