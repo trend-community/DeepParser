@@ -304,14 +304,16 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
         if not hasattr(DAGMatch, "DagSuccessRoutes"):
             DAGMatch.DagSuccessRoutes = set()       #initialize.
 
-        if RouteSignature not in DAGMatch.DagSuccessRoutes:
-            #logging.info()
-            DAGMatch.DagSuccessRoutes.add(RouteSignature)
-            if logging.root.isEnabledFor(logging.DEBUG):
-                logging.debug("Dag.TokenMatch(): Matched all tokens.")
-            return Dag.nodes[OpenNodeID]
-        else:
-            return None     #this route is already matched and applied.
+        for route in DAGMatch.DagSuccessRoutes:
+            if RouteSignature[0] == route[0] and \
+                RouteSignature[1].issubset(route[1]):
+                return None #a longer route is already matched and applied.
+
+        DAGMatch.DagSuccessRoutes.add(RouteSignature)
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Dag.TokenMatch(): Matched all tokens.")
+        return Dag.nodes[OpenNodeID]
+
     if level < 0:
         #Dag.ClearVisited()
         return None
@@ -341,14 +343,8 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
 
 
 def GetRouteSignature(rule):
-    RouteSignature = ()
-    RouteSignature += (rule.ID,)
-    for i in range(rule.TokenLength):
-        nodeID = rule.Tokens[i].MatchedNodeID
-        if nodeID is None:
-            logging.warning("There should be no Null in MatchedNodeID!")
-        RouteSignature += (nodeID,)
-    return RouteSignature
+    RouteSet = frozenset([token.MatchedNodeID for token in rule.Tokens if token.MatchedNodeID is not None])
+    return rule.FileName, RouteSet
 
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
