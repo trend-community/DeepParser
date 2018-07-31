@@ -108,8 +108,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             # if pipeline has "TRANSFORM DAG", then dag.nodes is not empty.
             # if len(dag.nodes) == 0:
             #     dag.transform(nodes)
+            if  Type  == "segmentation":
+                output_type = "text/plain;"
+                output_text = utils.OutputStringTokensSegment_oneliner(nodes)
 
-            if  Type  == "simple":
+            elif  Type  == "simple":
                 output_type = "text/plain;"
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
                 # if len(dag.nodes) > 0:

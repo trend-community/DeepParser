@@ -392,6 +392,21 @@ class SentenceNode(object):
                 output += ":" + featureString + ";"
         return output.strip()
 
+    def onelinerSegment(self):
+        """
+            basic oneliner function
+        """
+        output = ""
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
+            for son in self.sons:
+                output += son.onelinerSegment()
+            output = output.strip()
+        else:
+            if self.text:
+                output = self.text+"/"
+        return output.strip()
+
 
 
     def oneliner_merge(self, layer_counter):

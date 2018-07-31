@@ -308,6 +308,17 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
     return output
 
 
+def OutputStringTokensSegment_oneliner(strTokenList):
+    output = ""
+    node = strTokenList.head
+    while node:
+        # if output:
+        #     output += " "
+        output += node.onelinerSegment()
+        node = node.next
+    output = output[:-1]
+    return output
+
 
 def OutputStringTokens_onelinerSA(dag):
     # print("Dag:{}".format(dag))
