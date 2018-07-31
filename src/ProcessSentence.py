@@ -146,8 +146,8 @@ def ApplyWinningDagRule(Dag, rule, OpenNode):
         if rule.Tokens[i].action:
             nodeID = rule.Tokens[i].MatchedNodeID
             node = Dag.nodes[nodeID]
-            if logging.root.isEnabledFor(logging.INFO):
-                logging.info("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
             Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action, rule)
 
     for nodeid in Dag.nodes:

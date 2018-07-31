@@ -1420,7 +1420,7 @@ def _RemoveExcessiveParenthesis(token):
         or ":" in token.word[StartParenthesesPosition:EndParenthesesPosition]:
         return False    #not excessive, if ]: in parenthesis.
 
-    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] not in  "|!") \
+    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] != "|") \
         and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition+1] != "|"):
         if StartParenthesesPosition>0:
             before = token.word[:StartParenthesesPosition]
@@ -1651,29 +1651,6 @@ def _ExpandOrBlock(OneList):
             Modified = True
 
     return Modified
-
-
-def _ProcessOrToken_ExpandAll(word):
-    word = word.strip("[|]")
-    spaceseparated = word.split()
-    i = 0
-    for i in range(len(spaceseparated)):
-        if spaceseparated[i].find("|")>0:
-            #this is the piece we need to separate
-            break
-    if i > 0:
-        leftpieces = " ".join(spaceseparated[:i])
-    else:
-        leftpieces = ""
-
-    if i < len(spaceseparated):
-        rightpieces = " ".join(spaceseparated[i+1:])
-    else:
-        rightpieces = ""
-
-    orlist = spaceseparated[i].split("|")
-
-    return orlist, "["+leftpieces, rightpieces+"]"
 
 
 #only expand the text, not the feature.

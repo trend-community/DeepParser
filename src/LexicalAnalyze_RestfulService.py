@@ -15,6 +15,7 @@ def LexicalAnalyzeURL():
 
 def LATask(extraparameter, Sentence):
     url = LexicalAnalyzeURL() + extraparameter + "&Sentence=" +  urllib.parse.quote("\"" + Sentence + "\"")
+    logging.debug("Start: " + url)
     ret = requests.get(url)
     return ret.text
 
