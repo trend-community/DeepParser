@@ -298,15 +298,19 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
     if level >= len(Rule.Tokens):
-        #Dag.ClearVisited()
-        RouteSignature = GetRouteSignature(Rule)
+        # now the rule tokens are all matched.
+        routeSignature = GetRouteSignature(Rule)
         #logging.info("RouteSignature:{}".format(RouteSignature))
         if not hasattr(DAGMatch, "DagSuccessRoutes"):
             DAGMatch.DagSuccessRoutes = set()       #initialize.
 
         for route in DAGMatch.DagSuccessRoutes:
-            if RouteSignature[0] == route[0] and \
-                RouteSignature[1].issubset(route[1]):
+            if routeSignature.RuleFileName == route.RuleFileName and \
+                    len(routeSignature.Route) < len(route.Route) and \
+                    routeSignature.Route.issubset(route.Route):
+                return None #a longer route is already matched and applied.
+            if routeSignature.RuleID == route.RuleID and \
+                    routeSignature.Route == route.Route:
                 return None #a longer route is already matched and applied.
 
         DAGMatch.DagSuccessRoutes.add(RouteSignature)
@@ -342,9 +346,21 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #return DAGMatch(Dag, Rule, level-1, OpenNodeID)
 
 
+class RouteSignature(object):
+    RuleFileName = ""
+    RuleID = -1
+    Route = None
+
+    def __init__(self, RuleFileName, RuleID, Route):
+        self.RuleFileName = RuleFileName
+        self.RuleID = RuleID,
+        self.Route = Route
+
+
 def GetRouteSignature(rule):
     RouteSet = frozenset([token.MatchedNodeID for token in rule.Tokens if token.MatchedNodeID is not None])
-    return rule.FileName, RouteSet
+    return RouteSignature(rule.FileName, rule.ID, RouteSet)
+
 
 def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
@@ -366,7 +382,6 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
             if logging.root.isEnabledFor(logging.INFO):
                 logging.info("DAG: Winning rule! {}".format(rule))
             try:
-
                     if rule.ID not in WinningRules:
                         WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
                     else:
