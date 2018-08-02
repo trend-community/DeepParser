@@ -245,6 +245,10 @@ class DependencyTree:
 
 
     def _RemoveEdge(self, node1id, relation, node2id):
+        if relation[0] == "~":
+            self._RemoveEdge(node2id, relation[1:], node1id)
+            return
+
         relationid = FeatureOntology.GetFeatureID(relation)
 
         for edge in [ x for x in self.graph if x[0] == node1id and x[2] == node2id]:

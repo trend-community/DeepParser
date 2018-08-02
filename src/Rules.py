@@ -855,8 +855,26 @@ def ProcessTokens(Tokens):
         notOrMatch = re.findall("!(\S*\|\S*)", node.word, re.DOTALL)
         if notOrMatch:
             for match in notOrMatch:
-                expandAnd = ExpandNotOrTo(match)
+                expandAnd = ExpandNotOrToAndNot(match)
                 node.word = node.word.replace(match, expandAnd)
+
+        notOrMatch = re.findall("!\(\S*?\)\|(\S*)", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrToAndNot(match)
+                node.word = node.word.replace("|"+match, " !" + expandAnd)
+
+        notOrMatch = re.findall("!([^() ]*)\|(\(\S*?\))", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrToAndNot(match[0])
+                node.word = node.word.replace(match[0]+"|", expandAnd + " !")
+
+        notOrMatch = re.findall("!\(([^() ]*\|[^() ]*)\)", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrToAndNot(match)
+                node.word = node.word.replace("("+match+")", expandAnd)
 
         if node.word and len(node.word)>1 and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
@@ -886,7 +904,7 @@ def ProcessTokens(Tokens):
 def ExpandQuotedOrs(text, sign):
     if "(" in text:
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("Not a task in this function for expanding " + text)
+            logging.debug("Not a task in this ExpandQuotedOrs function for expanding " + text)
         return text
     if sign in text[1:-1]:
         if logging.root.isEnabledFor(logging.DEBUG):
@@ -895,9 +913,9 @@ def ExpandQuotedOrs(text, sign):
 
     return text.replace("|", sign+"|"+sign)
 
-def ExpandNotOrTo(text):
+def ExpandNotOrToAndNot(text):
     if "(" in text:
-        logging.info("Not a task in this function for expanding " + text)
+        logging.info("Not a task in this ExpandNotOrTo function for expanding " + text)
         return text
     if "!" in text:
         logging.error("there should be no ! in text:" + text)
@@ -1420,7 +1438,7 @@ def _RemoveExcessiveParenthesis(token):
         or ":" in token.word[StartParenthesesPosition:EndParenthesesPosition]:
         return False    #not excessive, if ]: in parenthesis.
 
-    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] != "|") \
+    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] not in "|!") \
         and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition+1] != "|"):
         if StartParenthesesPosition>0:
             before = token.word[:StartParenthesesPosition]
@@ -1559,6 +1577,11 @@ def _ExpandOrBlock(OneList):
         Expand = False
         for tokenindex in range(rule.TokenLength):
             token = rule.Tokens[tokenindex]
+
+            # process !(a b) = !a or !b  this kind of OrBlock
+
+
+
             orIndex = token.word.find(")|") + 1
             if orIndex <= 0:
                 orIndex = token.word.find("|(")
@@ -1568,6 +1591,14 @@ def _ExpandOrBlock(OneList):
                         continue
                     else:
                         orIndex += 1    #move the pointer from ] to |
+            # if (token.word[0] == "!" or token.word[0:2] == "[!") \
+            #         and (token.word.find(")|")>0 or token.word.find("|(")>0):
+            if re.search("![^ )]*\|\(", token.word) or re.search("!\(.*\)\|", token.word):
+                logging.warning("_ExpandOrBlock: Not Or means Not And in this word:{} in rule {}".format(token.word, rule.RuleName))
+                token.word = token.word.replace("|", " !")
+                logging.info("\t After modification, the word is: {}".format(token.word))
+                Modified = True
+                continue
 
             originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
             if originBlock is None:
@@ -1652,6 +1683,112 @@ def _ExpandOrBlock(OneList):
 
     return Modified
 
+
+# process !(a b) = !a or !b  this kind of OrBlock
+def _ExpandOrBlock_NotAnd(OneList):
+    Modified = False
+    # counter = 0
+    for rule in OneList:
+        if len(rule.RuleName) > 200:
+            logging.error("Rule Name is too long. Stop processing this rule:\n" + rule.RuleName)
+            continue
+        Expand = False
+        for tokenindex in range(rule.TokenLength):
+            token = rule.Tokens[tokenindex]
+
+
+            orIndex = token.word.find(")|") + 1
+            if orIndex <= 0:
+                orIndex = token.word.find("|(")
+                if orIndex <= 0:
+                    orIndex = token.word.find("]|[")
+                    if orIndex <= 0:
+                        continue
+                    else:
+                        orIndex += 1  # move the pointer from ] to |
+
+            originBlock, leftBlock, rightBlock = _ProcessOrBlock(token.word, orIndex)
+            if originBlock is None:
+                logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
+                continue  # failed to process. might be pair tag issue.
+
+            # left of |:
+            newrule = Rule()
+            newrule.FileName = rule.FileName
+            newrule.Origin = rule.Origin
+            newrule.comment = rule.comment
+            newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
+            newrule.RuleContent = rule.RuleContent
+            for tokenindex_pre in range(tokenindex):
+                newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
+
+            # Analyze the new word, might be a list of tokens.
+            try:
+                subTokenlist = Tokenize(token.word.replace(originBlock, leftBlock))
+            except Exception as e:
+                logging.error("Failed to _ExpandOrBlock.left.tokenize because: " + str(e))
+                logging.error("when expanding or block:" + leftBlock + " for rule name: " + rule.RuleName)
+                continue
+            if subTokenlist:
+                ProcessTokens(subTokenlist)
+                subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartChunk = token.StartChunk
+                subTokenlist[-1].EndChunk = token.EndChunk
+                if token.action:
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has action before Or expand!")
+                    subTokenlist[-1].action = token.action
+            for subtoken in subTokenlist:
+                newrule.Tokens.append(subtoken)
+
+            for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
+                newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
+            newrule.SetStrTokenLength()
+            OneList.append(newrule)
+
+            # right of |:
+            newrule = Rule()
+            newrule.FileName = rule.FileName
+            newrule.Origin = rule.Origin
+            newrule.comment = rule.comment
+            newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
+            newrule.RuleContent = rule.RuleContent
+            for tokenindex_pre in range(tokenindex):
+                newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
+
+            # Analyze the new word, might be a list of tokens.
+            try:
+                subTokenlist = Tokenize(token.word.replace(originBlock, rightBlock))
+            except Exception as e:
+                logging.error("Failed to _ExpandOrBlock.right.tokenize because: " + str(e))
+                logging.error("when expanding or block:" + rightBlock + " for rule name: " + rule.RuleName)
+                continue
+            if subTokenlist:
+                ProcessTokens(subTokenlist)
+                subTokenlist[0].pointer = token.pointer
+                subTokenlist[0].StartChunk = token.StartChunk
+                subTokenlist[-1].EndChunk = token.EndChunk
+                if token.action:
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has action before Or expand!")
+                    subTokenlist[-1].action = token.action
+            for subtoken in subTokenlist:
+                newrule.Tokens.append(subtoken)
+
+            for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
+                newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
+            newrule.SetStrTokenLength()
+            OneList.append(newrule)
+
+            Expand = True
+            # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+            break
+
+        if Expand:
+            OneList.remove(rule)
+            Modified = True
+
+    return Modified
 
 #only expand the text, not the feature.
 def _ProcessOrToken(word):
@@ -1765,10 +1902,122 @@ def _ExpandOrToken(OneList):
             OneList.remove(rule)
             Modified = True
 
+    Modified = Modified | _ExpandOrToken_NotAnd(OneList)
     if Modified:
         return _ExpandOrToken(OneList)
     else:
         return False
+
+
+def _ProcessOrToken_NotAnd(word, match):
+    word = word.strip("[|]")
+    OriginalNotAndWord = match[0]
+    NotAndString = match[1]
+    orlist = []
+    for x in NotAndString.split(" "):
+        oritem = x.strip()
+        if oritem:
+            if oritem[0] == "!":
+                orlist.append(oritem[1:])
+            else:
+                orlist.append("!" + oritem)
+
+    leftindex = word.find(OriginalNotAndWord)
+    leftpieces = word[:leftindex]
+    rightpieces = word[leftindex + len(OriginalNotAndWord):]
+
+    return orlist, "[" + leftpieces, rightpieces + "]"
+
+
+#Expand !(A B). Should be done after the _ExpandOrBlock and compilation.
+# in here, each "or" operator should be one feature or one word.
+def _ExpandOrToken_NotAnd(OneList):
+    Modified = False
+    # counter = 0
+    for rule in OneList:
+        if len(rule.RuleName) > 200:
+            logging.error("Rule Name is too long. Stop processing this rule:\n" + str(rule))
+            continue
+        Expand = False
+        for tokenindex in range(rule.TokenLength):
+            orlist = None
+            leftBlock = None
+            rightBlock = None
+            token = rule.Tokens[tokenindex]
+
+            NotAnd = re.search("!\((\S*? .*)\)", token.word)
+            if NotAnd:
+                orlist, leftBlock, rightBlock = _ProcessOrToken_NotAnd(token.word, NotAnd)
+
+            elif token.word.find("'|") > 0 or token.word.find("/|") > 0 or token.word.find("\"|") > 0 \
+                    or token.word.find("|'") > 0 or token.word.find("|/") > 0 or token.word.find("|\"") > 0:
+                #only expand the Text .
+                orlist, leftBlock, rightBlock = _ProcessOrToken(token.word)
+                if orlist is None:
+                    logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
+                    continue  # failed to process. might be pair tag issue.
+
+            if orlist:
+                for orpiece in orlist:
+                    # left of the token:
+                    newrule = Rule()
+                    newrule.FileName = rule.FileName
+                    newrule.Origin = rule.Origin
+                    newrule.comment = rule.comment
+                    newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
+                    newrule.RuleContent = rule.RuleContent
+                    for tokenindex_pre in range(tokenindex):
+                        newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
+
+                    #current token
+                    node = RuleToken(token)
+                    node.word = leftBlock + " " + orpiece + " " + rightBlock
+                    newrule.Tokens.append(node)
+
+                    # right of the token:
+                    for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
+                        newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
+                    newrule.SetStrTokenLength()
+                    newrule.Chunks = copy.deepcopy(rule.Chunks)
+                    OneList.append(newrule)
+
+                Expand = True
+                # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+                break   # don't work on the next | in this rule. wait for the next round.
+
+            if token.SubtreePointer.find("|") > 0 :
+                for subtreepointer in token.SubtreePointer.split("|"):
+                    # left of the token:
+                    newrule = Rule()
+                    newrule.FileName = rule.FileName
+                    newrule.Origin = rule.Origin
+                    newrule.comment = rule.comment
+                    newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
+                    newrule.RuleContent = rule.RuleContent
+                    for tokenindex_pre in range(tokenindex):
+                        newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
+
+                    #current token
+                    node = RuleToken(token)
+                    node.SubtreePointer = subtreepointer
+                    newrule.Tokens.append(node)
+
+                    # right of the token:
+                    for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
+                        newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
+                    newrule.SetStrTokenLength()
+                    newrule.Chunks = copy.deepcopy(rule.Chunks)
+                    OneList.append(newrule)
+
+                Expand = True
+                # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
+                break   # don't work on the next | in this rule. wait for the next round.
+
+        if Expand:
+            OneList.remove(rule)
+            Modified = True
+
+    return Modified
 
 
 # Check the rules. If it is a stem, not a feature, but omit quote
@@ -1779,9 +2028,7 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
         for token in rule.Tokens:
             #_CheckFeature(token, rule.RuleName)
             token.word = "[" +  _CheckFeature_returnword(token.word) + "]"
-
         rule.CompileChunk()
-
     _ExpandOrToken(OneList)
 
 
@@ -1890,7 +2137,7 @@ def _CheckFeature_returnword(word):
             if FeatureOntology.GetFeatureID(word) == -1:
                 # logging.warning("Will treat this word as a stem:" + word)
                 word = "'" + word + "'"
-        elif "|" in word and " " not in word and "[" not in word:
+        elif "|" in word and " " not in word and "[" not in word and  "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             try:
                 OrBlocks = LogicOperation_SeparateOrBlocks(word)
@@ -1908,7 +2155,7 @@ def _CheckFeature_returnword(word):
                 else:
                     newword += OrBlock + "|"
             word = newword.rstrip("|")
-        elif " " in word and  "[" not in word:
+        elif " " in word and  "[" not in word and  "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             AndBlocks = word.split()
             newword = ""
