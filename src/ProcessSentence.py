@@ -305,6 +305,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
             DAGMatch.DagSuccessRoutes = set()       #initialize.
 
         for route in DAGMatch.DagSuccessRoutes:
+            logging.info("\t\tChecking route: {}".format(route))
             if routeSignature.RuleFileName == route.RuleFileName and \
                     len(routeSignature.Route) < len(route.Route) and \
                     routeSignature.Route.issubset(route.Route):
@@ -313,7 +314,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
                     routeSignature.Route == route.Route:
                 return None #a longer route is already matched and applied.
 
-        DAGMatch.DagSuccessRoutes.add(RouteSignature)
+        DAGMatch.DagSuccessRoutes.add(routeSignature)
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.TokenMatch(): Matched all tokens.")
         return Dag.nodes[OpenNodeID]
@@ -353,9 +354,11 @@ class RouteSignature(object):
 
     def __init__(self, RuleFileName, RuleID, Route):
         self.RuleFileName = RuleFileName
-        self.RuleID = RuleID,
+        self.RuleID = RuleID
         self.Route = Route
 
+    def __str__(self):
+        return "RuleID:{}\tRoute:{}".format(self.RuleID, self.Route)
 
 def GetRouteSignature(rule):
     RouteSet = frozenset([token.MatchedNodeID for token in rule.Tokens if token.MatchedNodeID is not None])

@@ -4,6 +4,8 @@ from Rules import *
 from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock
 from Rules import  _CheckFeature_returnword, _ExpandRuleWildCard_List, _PreProcess_CheckFeaturesAndCompileChunk, _PreProcess_CompileHash
 import FeatureOntology
+dir_path = os.path.dirname(os.path.realpath(__file__))
+FeatureOntology.LoadFeatureSet(dir_path + '/../../../fsa/Y/feature.txt')
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -219,30 +221,17 @@ class RuleTest(unittest.TestCase):
         ResetRules(rulegroup)
         RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
-        #
-        # r = Rule()
-        # r.SetRule(           "b == [!(c1 c2 )] ")
-        # self.assertEqual(len(r.Tokens), 1)
-        # if r.RuleName:
-        #     rulegroup.RuleList.append(r)
-        #
-        # r = Rule()
-        # r.SetRule(           "c == [!(c1 !c3)] ")
-        # self.assertEqual(len(r.Tokens), 1)
-        # if r.RuleName:
-        #     rulegroup.RuleList.append(r)
-
         r = Rule()
         r.SetRule(           "d == [!c4|(c1 !c3)] ")
         self.assertEqual(len(r.Tokens), 1)
         if r.RuleName:
             rulegroup.RuleList.append(r)
 
-        # r = Rule()
-        # r.SetRule(           "e == [!(c1 !c3)|c5] ")
-        # self.assertEqual(len(r.Tokens), 1)
-        # if r.RuleName:
-        #     rulegroup.RuleList.append(r)
+        r = Rule()
+        r.SetRule(           "e == [!(c1 !c3)|c5] ")
+        self.assertEqual(len(r.Tokens), 1)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
 
         _ExpandRuleWildCard_List(rulegroup.RuleList)
         print("Start rules after _ExpandRuleWildCard_List")
@@ -259,12 +248,51 @@ class RuleTest(unittest.TestCase):
         _PreProcess_CompileHash(rulegroup)
         print("Start rules after _PreProcess_CompileHash")
         print(OutputRules(rulegroup))
-        self.assertEqual(len(rulegroup.RuleList), 3)
+        self.assertEqual(len(rulegroup.RuleList), 4)
 
+        newr = rulegroup.RuleList[0]
+        self.assertEqual(newr.Tokens[0].word, "!c4  !c1")
         newr = rulegroup.RuleList[1]
-        self.assertEqual(newr.Tokens[0].word, "!(c1 c2 )")
+        self.assertEqual(newr.Tokens[0].word, "!c4  c3")
+
         newr = rulegroup.RuleList[2]
-        self.assertEqual(newr.Tokens[0].word, "!(c1 !c3)")
+        self.assertEqual(newr.Tokens[0].word, "!c1  !c5")
+        newr = rulegroup.RuleList[3]
+        self.assertEqual(newr.Tokens[0].word, "c3  !c5")
+
+
+    def test_simpleNotAnd(self):
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        r = Rule()
+        r.SetRule(           "c == [!(c1 !c3)] ")
+        self.assertEqual(len(r.Tokens), 1)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
+
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
+        print("Start rules after _ExpandRuleWildCard_List")
+        print(OutputRules(rulegroup))
+        _ExpandParenthesis(rulegroup.RuleList)
+        print("Start rules after _ExpandParenthesis")
+        print(OutputRules(rulegroup))
+        _ExpandOrBlock(rulegroup.RuleList)
+        print("Start rules after _ExpandOrBlock")
+        print(OutputRules(rulegroup))
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        print("Start rules after _PreProcess_CheckFeaturesAndCompileChunk")
+        print(OutputRules(rulegroup))
+        _PreProcess_CompileHash(rulegroup)
+        print("Start rules after _PreProcess_CompileHash")
+        print(OutputRules(rulegroup))
+        self.assertEqual(len(rulegroup.RuleList), 2)
+
+        newr = rulegroup.RuleList[0]
+        self.assertEqual(newr.Tokens[0].word, "!c1")
+        newr = rulegroup.RuleList[1]
+        self.assertEqual(newr.Tokens[0].word, "c3")
 
 
     def test_parenthsis_complicate_little(self):
