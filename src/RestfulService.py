@@ -135,6 +135,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             elif Type == 'simplegraph':
                 output_type = "text/plain;"
                 output_text = dag.digraph(Type)
+            elif Type == 'sentiment':
+                output_type = 'text/plain;'
+                if len(dag.nodes) == 0:
+                    dag.transform(nodes)
+                output_text = utils.OutputStringTokens_onelinerSA(dag)
             elif Type == "parsetree":
                 output_type = "text/html;"
                 if action == "headdown":
