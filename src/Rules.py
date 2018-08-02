@@ -855,8 +855,26 @@ def ProcessTokens(Tokens):
         notOrMatch = re.findall("!(\S*\|\S*)", node.word, re.DOTALL)
         if notOrMatch:
             for match in notOrMatch:
-                expandAnd = ExpandNotOrTo(match)
+                expandAnd = ExpandNotOrToAndNot(match)
                 node.word = node.word.replace(match, expandAnd)
+
+        notOrMatch = re.findall("!\(\S*?\)\|(\S*)", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrToAndNot(match)
+                node.word = node.word.replace("|"+match, " !" + expandAnd)
+
+        notOrMatch = re.findall("!([^\(\) ]*)\|(\(\S*?\))", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrToAndNot(match[0])
+                node.word = node.word.replace(match[0]+"|", expandAnd + " !")
+
+        notOrMatch = re.findall("!\(([^\(\) ]*\|[^\(\) ]*)\)", node.word, re.DOTALL)
+        if notOrMatch:
+            for match in notOrMatch:
+                expandAnd = ExpandNotOrToAndNot(match)
+                node.word = node.word.replace("("+match+")", expandAnd)
 
         if node.word and len(node.word)>1 and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
             node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
@@ -886,7 +904,7 @@ def ProcessTokens(Tokens):
 def ExpandQuotedOrs(text, sign):
     if "(" in text:
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("Not a task in this function for expanding " + text)
+            logging.debug("Not a task in this ExpandQuotedOrs function for expanding " + text)
         return text
     if sign in text[1:-1]:
         if logging.root.isEnabledFor(logging.DEBUG):
@@ -895,9 +913,9 @@ def ExpandQuotedOrs(text, sign):
 
     return text.replace("|", sign+"|"+sign)
 
-def ExpandNotOrTo(text):
+def ExpandNotOrToAndNot(text):
     if "(" in text:
-        logging.info("Not a task in this function for expanding " + text)
+        logging.info("Not a task in this ExpandNotOrTo function for expanding " + text)
         return text
     if "!" in text:
         logging.error("there should be no ! in text:" + text)
@@ -1420,7 +1438,7 @@ def _RemoveExcessiveParenthesis(token):
         or ":" in token.word[StartParenthesesPosition:EndParenthesesPosition]:
         return False    #not excessive, if ]: in parenthesis.
 
-    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] != "|") \
+    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] not in "|!") \
         and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition+1] != "|"):
         if StartParenthesesPosition>0:
             before = token.word[:StartParenthesesPosition]
@@ -1559,6 +1577,7 @@ def _ExpandOrBlock(OneList):
         Expand = False
         for tokenindex in range(rule.TokenLength):
             token = rule.Tokens[tokenindex]
+
             orIndex = token.word.find(")|") + 1
             if orIndex <= 0:
                 orIndex = token.word.find("|(")
@@ -1890,7 +1909,7 @@ def _CheckFeature_returnword(word):
             if FeatureOntology.GetFeatureID(word) == -1:
                 # logging.warning("Will treat this word as a stem:" + word)
                 word = "'" + word + "'"
-        elif "|" in word and " " not in word and "[" not in word:
+        elif "|" in word and " " not in word and "[" not in word and  "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             try:
                 OrBlocks = LogicOperation_SeparateOrBlocks(word)
@@ -1908,7 +1927,7 @@ def _CheckFeature_returnword(word):
                 else:
                     newword += OrBlock + "|"
             word = newword.rstrip("|")
-        elif " " in word and  "[" not in word:
+        elif " " in word and  "[" not in word and  "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             AndBlocks = word.split()
             newword = ""
