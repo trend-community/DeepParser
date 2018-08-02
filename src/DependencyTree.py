@@ -548,12 +548,17 @@ class DependencyTree:
         Actions = actinstring.split()
         #logging.debug("Word:" + self.text)
 
-        if "^.---" in Actions:
-            #logging.info("DAG Action: Removing all edges to this node {}. before:{}".format(node.ID, self.graph))
-            self.graph = set([edge for edge in self.graph if edge[0] != node.ID])
-            Actions.pop(Actions.index("^.---"))
-
-        HasBartagAction = False
+        for Action in copy.copy(Actions):
+            if "---" in Action:
+                ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                if "~---" in Action:
+                    self.graph = set([edge for edge in self.graph if edge[0] != parentnodeid and edge[2] != node.ID])
+                    logging.debug("Dag Action {}: Removed all edge from {} to {}".format(Action, parentnodeid, node.ID))
+                else:
+                    self.graph = set([edge for edge in self.graph if edge[0] != node.ID and edge[2] != parentnodeid])
+                    logging.debug("Dag Action {}: Removed all edge from {} to {}".format(Action, parentnodeid, node.ID))
+                Actions.pop(Actions.index(Action))
 
         for Action in sorted(Actions, key=lambda d:(d[-1])):
             if Action[0] == '^':
@@ -622,9 +627,6 @@ class DependencyTree:
 
             if Action == "NEUTRAL":
                  FeatureOntology.ProcessSentimentTags(node.features)
-
-        if HasBartagAction:     #only process bartags if there is new bar tag++
-            FeatureOntology.ProcessBarTags(node.features)
 
 
 if __name__ == "__main__":

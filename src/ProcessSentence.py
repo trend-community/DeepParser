@@ -305,7 +305,6 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
             DAGMatch.DagSuccessRoutes = set()       #initialize.
 
         for route in DAGMatch.DagSuccessRoutes:
-            logging.info("\t\tChecking route: {}".format(route))
             if routeSignature.RuleFileName == route.RuleFileName and \
                     len(routeSignature.Route) < len(route.Route) and \
                     routeSignature.Route.issubset(route.Route):
