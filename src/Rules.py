@@ -636,6 +636,7 @@ class Rule:
             token = self.Tokens[StartOffset + i]
             if token.SubtreePointer:
                 VirtualTokenNum += 1
+                continue
 
             if "H" in token.action.split():
                 c.HeadConfidence = 5
