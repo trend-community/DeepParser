@@ -553,10 +553,10 @@ class DependencyTree:
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
                 if "~---" in Action:
-                    self.graph = set([edge for edge in self.graph if edge[0] != parentnodeid and edge[2] != node.ID])
+                    self.graph = set([edge for edge in self.graph if edge[0] != parentnodeid or edge[2] != node.ID])
                     logging.debug("Dag Action {}: Removed all edge from {} to {}".format(Action, parentnodeid, node.ID))
                 else:
-                    self.graph = set([edge for edge in self.graph if edge[0] != node.ID and edge[2] != parentnodeid])
+                    self.graph = set([edge for edge in self.graph if edge[0] != node.ID or edge[2] != parentnodeid])
                     logging.debug("Dag Action {}: Removed all edge from {} to {}".format(Action, parentnodeid, node.ID))
                 Actions.pop(Actions.index(Action))
 

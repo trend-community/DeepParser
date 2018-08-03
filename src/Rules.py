@@ -657,14 +657,14 @@ class Rule:
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif "^.H" in token.action or "^." not in token.action:
-                if c.HeadConfidence < 2:
+                if c.HeadConfidence < 3:
                     c.HeadConfidence =  1
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
 
         if c.HeadConfidence > 0:
             self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  #add Head for the head token.
-            for i in range(HeadOffset, c.HeadOffset):
+            for i in range(HeadOffset, c.HeadOffset+1):
                 token = self.Tokens[i]
                 if token.SubtreePointer:
                     c.HeadOffset -= 1       #this number will be used to specify which node's property to copy to the chunk node.
