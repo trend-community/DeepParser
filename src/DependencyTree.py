@@ -227,8 +227,8 @@ class DependencyTree:
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("output = {}".format(output))
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("output = {}".format(output))
         return output
 
 

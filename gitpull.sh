@@ -12,7 +12,7 @@ git fetch
 git pull
  git log --pretty=format:'%h' -n 1 > ../parser/revision.txt 
 cd X
-sh SegmentSlash.sh
+bash SegmentSlash.sh
 cd ..
 
 cd ../parser

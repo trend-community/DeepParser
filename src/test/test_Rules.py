@@ -294,6 +294,34 @@ class RuleTest(unittest.TestCase):
         newr = rulegroup.RuleList[1]
         self.assertEqual(newr.Tokens[0].word, "c3")
 
+    def test_UnificationExtension(self):
+
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        r = Rule()
+        r.SetRule("e == [nN %F(per|animal|org):^.CN] [CC] [nN %F:NG++ H]")
+        self.assertEqual(len(r.Tokens), 3)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
+
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
+        print("Start rules after _ExpandRuleWildCard_List")
+        print(OutputRules(rulegroup))
+        _ExpandParenthesis(rulegroup.RuleList)
+        print("Start rules after _ExpandParenthesis")
+        print(OutputRules(rulegroup))
+        _ExpandOrBlock(rulegroup.RuleList)
+        print("Start rules after _ExpandOrBlock")
+        print(OutputRules(rulegroup))
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        print("Start rules after _PreProcess_CheckFeaturesAndCompileChunk")
+        print(OutputRules(rulegroup))
+        _PreProcess_CompileHash(rulegroup)
+        print("Start rules after _PreProcess_CompileHash")
+        print(OutputRules(rulegroup))
+        self.assertEqual(len(rulegroup.RuleList), 3)
 
     def test_parenthsis_complicate_little(self):
         rulegroup = RuleGroup("test")

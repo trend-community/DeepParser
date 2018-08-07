@@ -377,8 +377,8 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
             break
         rule = rulegroup.RuleList[rule_sequence]
 
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("DAG: Start checking rule {}".format( rule))
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("DAG: Start checking rule {}".format( rule))
         node = DAGMatch(Dag,  rule, 0)
         if node:
             if logging.root.isEnabledFor(logging.INFO):
