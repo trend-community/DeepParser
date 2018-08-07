@@ -235,6 +235,12 @@ class DependencyTree:
     def _AddEdge(self, node1id, relation, node2id):
         #find the write relation to add, if already have a child relation for the same nodes.
         self.graph.add((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
+        # Use ontology to find the ancestors of the relation
+        relationid = FeatureOntology.GetFeatureID(relation)
+        for ancestor in FeatureOntology.SearchFeatureOntology(relationid).ancestors:
+            ancestorname = FeatureOntology.GetFeatureName(ancestor)
+            if (node1id, ancestorname, node2id,ancestor) in self.graph:
+                self.graph.remove((node1id, ancestorname, node2id,ancestor))
 
         #Set the parent to have the relation.
         hasFeatureID = FeatureOntology.GetFeatureID("has" + relation)
