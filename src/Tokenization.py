@@ -472,12 +472,15 @@ class SentenceNode(object):
 
         if "NEW" in Actions:
             self.features = set()
+        if "NEUTRAL"in Actions :
+            FeatureOntology.ProcessSentimentTags(self.features)
 
         HasBartagAction = False
         for Action in Actions:
-            if Action == "NEW":
-                continue  # already process before.
-
+            # if Action == "NEW":
+            #     continue  # already process before.
+            # if Action == "NEUTRAL":
+            #     continue  # already process before.
 
             if Action[-1] == "-":
                 if Action[0] == "^":    #Remove UpperRelationship
@@ -555,8 +558,7 @@ class SentenceNode(object):
             else:
                 logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
 
-            if Action == "NEUTRAL":
-                FeatureOntology.ProcessSentimentTags(self.features)
+
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
         if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
             FeatureOntology.ProcessBarTags(self.features)
