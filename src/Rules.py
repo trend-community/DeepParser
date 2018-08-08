@@ -1,4 +1,3 @@
-
 import copy
 from datetime import datetime
 from utils import *
@@ -14,10 +13,13 @@ import FeatureOntology
 
 RuleGroupDict = {}
 _GlobalMacroDict = {}
-#RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
+
+
+# RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
 
 class RuleGroup(object):
     idCounter = 0
+
     def __init__(self, FileName):
         Rule.idCounter += 1
         self.ID = Rule.idCounter
@@ -30,7 +32,7 @@ class RuleGroup(object):
         self.LoadedFromDB = False
         self.HashRules = {}
         self.NoHashRules = []
-        #self.NormHash = {}  # write to norm.
+        # self.NormHash = {}  # write to norm.
 
     def __lt__(self, other):
         return self.ID < other.ID
@@ -58,7 +60,8 @@ def ResetAllRules():
         del RuleGroupDict[rulefile].RuleList[:]
     RuleGroupDict.clear()
     _GlobalMacroDict.clear()
-    #RuleIdenticalNetwork = {}
+    # RuleIdenticalNetwork = {}
+
 
 # If it is one line, that it is one rule;
 # if it has several lines in {} or () block, then it is one rule;
@@ -101,15 +104,16 @@ def SeparateRules(multilineString):
 
 class RuleToken(object):
     idCounter = 0
+
     def __init__(self, orig=None):
         RuleToken.idCounter += 1
         if orig is None:
             self.StartChunk = 0
             self.EndChunk = 0
-            self.repeat = [1,1]
+            self.repeat = [1, 1]
             self.word = ''
             self.RestartPoint = False
-            self.MatchType = -1     #-1:unknown/mixed 0: feature 1:text 2:norm 3:atom
+            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom
             self.pointer = ''
             self.action = ''
             self.SubtreePointer = ''
@@ -125,8 +129,8 @@ class RuleToken(object):
             self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = RuleToken.idCounter
 
-    def __eq__(self, other):    #only compare the matching part, not the action part.
-        if self.word.strip() == other.word.strip(): # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
+    def __eq__(self, other):  # only compare the matching part, not the action part.
+        if self.word.strip() == other.word.strip():  # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
             return True
         else:
             return False
@@ -154,7 +158,7 @@ class RuleToken(object):
 class RuleChunk(object):
     def __init__(self):
         self.StartOffset = -1
-        self.Length = 0             # how many rule tokens;
+        self.Length = 0  # how many rule tokens;
         self.StringChunkLength = 0  # how many string tokens this chunk apply to
         self.HeadOffset = -1
         self.HeadConfidence = -1
@@ -164,6 +168,7 @@ class RuleChunk(object):
 
 class Rule:
     idCounter = 0
+
     def __init__(self):
         Rule.idCounter += 1
         self.ID = Rule.idCounter
@@ -179,7 +184,7 @@ class Rule:
         self.norms = []
 
     def SetStrTokenLength(self):
-        VirtualTokenNum = 0  #Those "^V=xxx" is virtual token that does not apply to real string token
+        VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
         for t in self.Tokens:
             if t.SubtreePointer:
                 VirtualTokenNum += 1
@@ -188,7 +193,6 @@ class Rule:
 
     def __lt__(self, other):
         return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
-
 
     def SetRule(self, ruleString, MacroDict=None, ID=1):
         self.Origin = ruleString.strip()
@@ -255,7 +259,7 @@ class Rule:
 
         if self.Tokens[0].StartChunk:
             UniversalToken = RuleToken()
-            UniversalToken.word = '[]'    #make it universal
+            UniversalToken.word = '[]'  # make it universal
             self.Tokens = [UniversalToken] + self.Tokens
 
         self.SetStrTokenLength()
@@ -281,7 +285,7 @@ class Rule:
             output += self.RuleName + " == {"
 
             if len(self.Tokens) == 0:
-                #logging.error("This rule does not have ruletoken:" + self.RuleContent + " " + self.comment)
+                # logging.error("This rule does not have ruletoken:" + self.RuleContent + " " + self.comment)
                 # mostly for the Macro.
                 output += self.RuleContent
         else:
@@ -310,15 +314,17 @@ class Rule:
     #    update the verifytime, and status.
     # if there is no same body, create everything.
     def DBSave(self, rulefileid):
-        cur = DBCon.cursor()
+        cur = utils.DBCon.cursor()
         strsql = "SELECT ID from ruleinfo where rulefileid=? AND body=?  limit 1"
         cur.execute(strsql, [rulefileid, self.body()])
         resultrecord = cur.fetchone()
         if resultrecord:
             self.ID = resultrecord[0]
             strsql = "UPDATE ruleinfo set status=1, verifytime=DATETIME('now') where ID=?"
-            cur.execute(strsql, [self.ID,])
+            cur.execute(strsql, [self.ID, ])
             strsql = "DELETE from rulenode_features where rulenodeid in (SELECT ID from rulenodes where ruleid=?)"
+            cur.execute(strsql, [self.ID, ])
+            strsql = "DELETE from rulenode_orfeatures where rulenodeid in (SELECT ID from rulenodes where ruleid=?)"
             cur.execute(strsql, [self.ID, ])
             strsql = "DELETE from rulenodes where ruleid=?"
             cur.execute(strsql, [self.ID, ])
@@ -328,23 +334,28 @@ class Rule:
             cur.execute(strsql, [self.ID, ])
 
         strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
-                    "norms, origin, comment, createtime, verifytime) " \
-                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+                 "norms, origin, comment, createtime, verifytime) " \
+                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
         cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
-                             '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]), self.Origin, self.comment])
+                             '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]),
+                             self.Origin, self.comment])
         self.ID = cur.lastrowid
 
         strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype) values(?, ?, ?, ?, ?, ?, ?, ?, ?)"
         strsql_node_feature = "INSERT into rulenode_features (rulenodeid, featureid, type) values(?,?,?)"
         strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
+        strsql_node_orfeature = "INSERT into rulenode_orfeatures (rulenodeid, featureid, groupid) values(?,?,?)"
         for i in range(self.TokenLength):
-            cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer, self.Tokens[i].SubtreePointer,
-                        self.Tokens[i].AndText, self.Tokens[i].AndTextMatchtype, self.Tokens[i].NotTextMatchtype])
+            cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer,
+                                      self.Tokens[i].SubtreePointer,
+                                      self.Tokens[i].AndText, self.Tokens[i].AndTextMatchtype,
+                                      self.Tokens[i].NotTextMatchtype])
             nodeid = cur.lastrowid
             for fid in self.Tokens[i].AndFeatures:
                 cur.execute(strsql_node_feature, [nodeid, fid, 1])
-            # for fid in self.Tokens[i].OrFeatures:
-            #     cur.execute(strsql_node_feature, [nodeid, fid, 2])
+            for gid in range(len(self.Tokens[i].OrFeatureGroups)):
+                for fid in self.Tokens[i].OrFeatureGroups[gid]:
+                    cur.execute(strsql_node_orfeature, [nodeid, fid, gid])
             for fid in self.Tokens[i].NotFeatures:
                 cur.execute(strsql_node_feature, [nodeid, fid, 3])
             for NotText in self.Tokens[i].NotTexts:
@@ -353,31 +364,29 @@ class Rule:
         strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Chunks)):
             cur.execute(strsql_chunk, [self.ID, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
-                                 self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
-                                 self.Chunks[i].HeadOffset, self.Chunks[i].Action
-                                 ])
+                                       self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
+                                       self.Chunks[i].HeadOffset, self.Chunks[i].Action
+                                       ])
         cur.close()
 
-
-    #For head (son) node, only apply negative action, and
+    # For head (son) node, only apply negative action, and
     #   features after "NEW".
     # update on Feb 4: Only "X++" is for new node. The rest is for Son
     @staticmethod
-    def ExtractParentSonActions( actinstring):
+    def ExtractParentSonActions(actinstring):
 
         # if "+++" in actinstring:    # if there is +++, then all are parentaction.
         #     return actinstring, ""    #May 2nd, not to apply this rule.
 
         actions = set(actinstring.split())
 
-        #SonActionString = " ".join([a for a in actions if a[-2:] != "++"   or a == '+++' ])
-        ParentActions = [a for a in actions if a[-2:] == "++" ]
-        ParentActions.extend( [a for a in actions if a[0:2] == "^^"]        )
+        # SonActionString = " ".join([a for a in actions if a[-2:] != "++"   or a == '+++' ])
+        ParentActions = [a for a in actions if a[-2:] == "++"]
+        ParentActions.extend([a for a in actions if a[0:2] == "^^"])
 
         SonActions = list(actions - set(ParentActions))
 
         return " ".join(sorted(ParentActions)), " ".join(sorted(SonActions))
-
 
     def CompileChunk(self):
         rulebody = ''
@@ -385,7 +394,7 @@ class Rule:
             rulebody += str(token)
         rulebody = rulebody.replace("\<", IMPOSSIBLESTRINGLESS).replace("\>", IMPOSSIBLESTRINGGREATER)
 
-        if rulebody.count('<') > 4 :
+        if rulebody.count('<') > 4:
             logging.warning("This rule has more than 4 chunks:")
             logging.warning(rulebody)
 
@@ -400,7 +409,7 @@ class Rule:
         Chunk1_2 = re.match("(.*) <(.+)>(.*) <(.+)>(.*)", rulebody)
         Chunk1_1 = re.match("(.*) <(.+)>(.*)", rulebody)
 
-        if Chunk2_3_1:      #"(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
+        if Chunk2_3_1:  # "(.*)<(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_3_1.group(1).count('[')
             tokencount_2 = Chunk2_3_1.group(2).count('[')
             tokencount_3 = Chunk2_3_1.group(3).count('[')
@@ -413,7 +422,8 @@ class Rule:
             self.Chunks.append(c1)
             c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4, tokencount_5)
             self.Chunks.append(c2)
-            c3 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + tokencount_6, tokencount_7)
+            c3 = self.CreateChunk(
+                tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + tokencount_6, tokencount_7)
             self.Chunks.append(c3)
 
             c = RuleChunk()
@@ -441,22 +451,22 @@ class Rule:
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
-                if   "^^." in c2.Action and "^^." in c3.Action :
+                if "^^." in c2.Action and "^^." in c3.Action:
                     c.HeadOffset = tokencount_2
                     c1.Action += " H ^.H "  # add Head for the chunk.
-                elif "^^." in c1.Action and "^^." in c3.Action :
+                elif "^^." in c1.Action and "^^." in c3.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
                     c2.Action += " H ^.H "  # add Head for the chunk.
-                elif "^^." in c1.Action and "^^." in c2.Action :
+                elif "^^." in c1.Action and "^^." in c2.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
                     c3.Action += " H ^.H "  # add Head for the chunk.
-                elif    "++" in c1.Action :
+                elif "++" in c1.Action:
                     c.HeadOffset = tokencount_2
                     c1.Action += " H ^.H "  # add Head for the chunk.
-                elif  "++" in c2.Action :
+                elif "++" in c2.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
                     c2.Action += " H ^.H "  # add Head for the chunk.
-                elif  "++" in c3.Action :
+                elif "++" in c3.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
                     c3.Action += " H ^.H "  # add Head for the chunk.
                 else:
@@ -464,23 +474,23 @@ class Rule:
                         logging.error(" There is no ++ for any tokens.  Can't determined the head!")
                         logging.warning(" Set to the last chunk")
                         logging.error(str(self))
-                    #logging.error(jsonpickle.dumps(c))
+                    # logging.error(jsonpickle.dumps(c))
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
                     c3.Action += " H ^.H "  # add Head for the chunk.
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
             self.Chunks.append(c)
-        elif Chunk2_2:      #"(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
+        elif Chunk2_2:  # "(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_2.group(1).count('[')
             tokencount_2 = Chunk2_2.group(2).count('[')
             tokencount_3 = Chunk2_2.group(3).count('[')
             tokencount_4 = Chunk2_2.group(4).count('[')
             tokencount_5 = Chunk2_2.group(5).count('[')
             tokencount_6 = Chunk2_2.group(6).count('[')
-            c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
+            c1 = self.CreateChunk(tokencount_1 + tokencount_2, tokencount_3)
             self.Chunks.append(c1)
-            c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 , tokencount_5)
+            c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4, tokencount_5)
             self.Chunks.append(c2)
 
             c = RuleChunk()
@@ -488,24 +498,30 @@ class Rule:
             c.StartOffset = tokencount_1
             c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
 
-            #check the part before first inner chuck.
-            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
+            # check the part before first inner chuck.
+            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                                     HeadOffset=0)
 
-            #check the part after first inner chuck, before second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
+            # check the part after first inner chuck, before second inner chuck.
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1)
 
-            #check the part after second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5, Length=tokencount_6, HeadOffset = tokencount_2 + 1 + tokencount_4 + 1)
+            # check the part after second inner chuck.
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
+                                                                      Length=tokencount_6,
+                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1)
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
-                if   "^^." in c2.Action: #or "++" in c1.Action:
+                if "^^." in c2.Action:  # or "++" in c1.Action:
                     c.HeadOffset = tokencount_2
                     c1.Action += " H ^.H "  # add Head for the chunk.
-                elif "^^." in c1.Action: #or "++" in c2.Action:
+                elif "^^." in c1.Action:  # or "++" in c2.Action:
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
                     c2.Action += " H ^.H "  # add Head for the chunk.
-                elif  "++" in c1.Action:
+                elif "++" in c1.Action:
                     c.HeadOffset = tokencount_2
                     c1.Action += " H ^.H "  # add Head for the chunk.
                 elif "++" in c2.Action:
@@ -516,19 +532,19 @@ class Rule:
                         logging.warning(" There is no ^^. or ++ for both tokens.  Can't determined the head!")
                         logging.warning(" Set to the second chunk")
                         logging.warning(str(self))
-                        #logging.warning(jsonpickle.dumps(c))
+                        # logging.warning(jsonpickle.dumps(c))
                     c.HeadOffset = tokencount_2 + 1 + tokencount_4
                     c2.Action += " H ^.H "  # add Head for the chunk.
 
             c.StringChunkLength = c.Length - VirtualTokenNum
 
             self.Chunks.append(c)
-        elif Chunk2_1:      #"(.*)<(.*)<(.+)>(.*)>(.*)"
+        elif Chunk2_1:  # "(.*)<(.*)<(.+)>(.*)>(.*)"
             tokencount_1 = Chunk2_1.group(1).count('[')
             tokencount_2 = Chunk2_1.group(2).count('[')
             tokencount_3 = Chunk2_1.group(3).count('[')
             tokencount_4 = Chunk2_1.group(4).count('[')
-            c1 = self.CreateChunk(tokencount_1+tokencount_2, tokencount_3)
+            c1 = self.CreateChunk(tokencount_1 + tokencount_2, tokencount_3)
             self.Chunks.append(c1)
 
             c = RuleChunk()
@@ -536,11 +552,14 @@ class Rule:
             c.StartOffset = tokencount_1
             c.Length = tokencount_2 + 1 + tokencount_4
 
-            #check the part before inner chuck.
-            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2, HeadOffset=0)
+            # check the part before inner chuck.
+            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                                     HeadOffset=0)
 
-            #check the part after inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset + tokencount_2 + tokencount_3, Length=tokencount_4, HeadOffset=tokencount_2 + 1)
+            # check the part after inner chuck.
+            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1)
 
             if c.HeadOffset == -1:
                 c.HeadConfidence = 1
@@ -549,7 +568,8 @@ class Rule:
                     c.HeadConfidence = 0
                     if not self.RuleName.startswith("CleanRule"):
                         if logging.root.isEnabledFor(logging.DEBUG):
-                            logging.debug("Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
+                            logging.debug(
+                                "Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
                             logging.debug(str(self))
                             logging.debug(jsonpickle.dumps(c))
                 c1.Action += " H ^.H "  # add Head for the head token.
@@ -557,7 +577,7 @@ class Rule:
             c.StringChunkLength = c.Length - VirtualTokenNum
             self.Chunks.append(c)
 
-        elif Chunk1_3:      #"(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)"
+        elif Chunk1_3:  # "(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)"
             tokencount_1 = Chunk1_3.group(1).count('[')
             tokencount_2 = Chunk1_3.group(2).count('[')
             c1 = self.CreateChunk(tokencount_1, tokencount_2)
@@ -565,15 +585,16 @@ class Rule:
 
             tokencount_3 = Chunk1_3.group(3).count('[')
             tokencount_4 = Chunk1_3.group(4).count('[')
-            c2 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3, tokencount_4)
+            c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3, tokencount_4)
             self.Chunks.append(c2)
 
             tokencount_5 = Chunk1_3.group(5).count('[')
             tokencount_6 = Chunk1_3.group(6).count('[')
-            c3 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3+tokencount_4+tokencount_5, tokencount_6)
+            c3 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
+                                  tokencount_6)
             self.Chunks.append(c3)
 
-        elif Chunk1_2:      #"(.*)<(.+)>(.*)<(.+)>(.*)"
+        elif Chunk1_2:  # "(.*)<(.+)>(.*)<(.+)>(.*)"
             tokencount_1 = Chunk1_2.group(1).count('[')
             tokencount_2 = Chunk1_2.group(2).count('[')
             c1 = self.CreateChunk(tokencount_1, tokencount_2)
@@ -581,10 +602,10 @@ class Rule:
 
             tokencount_3 = Chunk1_2.group(3).count('[')
             tokencount_4 = Chunk1_2.group(4).count('[')
-            c2 = self.CreateChunk(tokencount_1+tokencount_2+tokencount_3, tokencount_4)
+            c2 = self.CreateChunk(tokencount_1 + tokencount_2 + tokencount_3, tokencount_4)
             self.Chunks.append(c2)
 
-        elif Chunk1_1:      #"(.*)<(.+)>(.*)"
+        elif Chunk1_1:  # "(.*)<(.+)>(.*)"
             prefix = Chunk1_1.group(1)
             tokencount_prefix = prefix.count('[')
 
@@ -612,7 +633,7 @@ class Rule:
         #             token.action += " ^.X"
 
         for chunk in self.Chunks:
-            if chunk.StringChunkLength == 1:    #remove single node chunk. remove "H" in this single node.
+            if chunk.StringChunkLength == 1:  # remove single node chunk. remove "H" in this single node.
                 headtoken = self.Tokens[chunk.StartOffset + chunk.HeadOffset]
                 headaction = headtoken.action.split()
                 while "H" in headaction:
@@ -625,8 +646,7 @@ class Rule:
 
                 self.Chunks.pop(self.Chunks.index(chunk))
 
-
-    def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset = 0):
+    def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset=0):
 
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
         if Length == 0:
@@ -636,7 +656,7 @@ class Rule:
             token = self.Tokens[StartOffset + i]
             if token.SubtreePointer:
                 VirtualTokenNum += 1
-                continue        #VirtualToken will NOT be head.
+                continue  # VirtualToken will NOT be head.
 
             if "H" in token.action.split():
                 c.HeadConfidence = 5
@@ -647,7 +667,7 @@ class Rule:
                     c.HeadConfidence = 4
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif  "^^." in token.action or "++" in token.action:
+            elif "^^." in token.action or "++" in token.action:
                 if c.HeadConfidence < 4:
                     c.HeadConfidence = 3
                     c.HeadOffset = HeadOffset + i
@@ -659,26 +679,25 @@ class Rule:
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
             elif "^.H" in token.action or "^." not in token.action:
                 if c.HeadConfidence < 3:
-                    c.HeadConfidence =  1
+                    c.HeadConfidence = 1
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
 
         if c.HeadConfidence > 0:
-            self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  #add Head for the head token.
-            for i in range(StartOffset, StartOffset + c.HeadOffset-HeadOffset):
+            self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  # add Head for the head token.
+            for i in range(StartOffset, StartOffset + c.HeadOffset - HeadOffset):
                 token = self.Tokens[i]
                 if token.SubtreePointer:
-                    c.HeadOffset -= 1       #this number will be used to specify which node's property to copy to the chunk node.
+                    c.HeadOffset -= 1  # this number will be used to specify which node's property to copy to the chunk node.
 
         return VirtualTokenNum
 
-
-    def CreateChunk(self, StartOffset, Length, ChunkLevel = 1):
+    def CreateChunk(self, StartOffset, Length, ChunkLevel=1):
         c = RuleChunk()
         c.StartOffset = StartOffset
         c.Length = Length
         VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset,
-                           Length=Length, HeadOffset=0)
+                                                                 Length=Length, HeadOffset=0)
 
         if c.HeadOffset == -1:
             if not self.RuleName.startswith("CleanRule"):
@@ -687,7 +706,6 @@ class Rule:
                 logging.warning(self.Origin)
                 logging.warning(str(self))
             c.HeadOffset = c.Length
-
 
         c.StringChunkLength = c.Length - VirtualTokenNum
         c.ChunkLevel = ChunkLevel
@@ -758,7 +776,9 @@ def Tokenize(RuleContent):
 
 def ProcessTokens(Tokens):
     for node in Tokens:
-        node.word = node.word.replace("\\(", IMPOSSIBLESTRINGLP).replace("\\)", IMPOSSIBLESTRINGRP).replace("\\'", IMPOSSIBLESTRINGSQ).replace("\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
+        node.word = node.word.replace("\\(", IMPOSSIBLESTRINGLP).replace("\\)", IMPOSSIBLESTRINGRP).replace("\\'",
+                                                                                                            IMPOSSIBLESTRINGSQ).replace(
+            "\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]
@@ -797,7 +817,7 @@ def ProcessTokens(Tokens):
         ActionPosition = node.word.find(":")
         if ActionPosition > 0:
             if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
-                node.action = node.word[ActionPosition+1:].rstrip("]")
+                node.action = node.word[ActionPosition + 1:].rstrip("]")
                 node.word = node.word[:ActionPosition] + "]"
 
             if "(" not in node.word and ":" in node.word:
@@ -815,13 +835,12 @@ def ProcessTokens(Tokens):
                             node.word = "[" + actionMatch.group(1) + "]"
                             node.action = actionMatch.group(2)
 
-        #Note: unification would be quoted, such as <['^V-' ] [不] ^V[V|V0|v]>
+        # Note: unification would be quoted, such as <['^V-' ] [不] ^V[V|V0|v]>
         # so it won't be pointer or subtree pointer.
         pointerMatch = re.match("(\^\w*)\[(.*)\]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
-
 
         pointerMatch = re.match("\^(.+)$", node.word, re.DOTALL)
         if pointerMatch:
@@ -830,22 +849,22 @@ def ProcessTokens(Tokens):
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = '^'
 
-        pointerSubtreeMatch = re.search("\[(\^(.+)=)", node.word, re.DOTALL)    # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(.+)=)", node.word, re.DOTALL)  # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
-        pointerSubtreeMatch = re.search("\[(\^(.+?) )", node.word, re.DOTALL)    # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(.+?) )", node.word, re.DOTALL)  # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
-        pointerSubtreeMatch = re.search("\[(\^(\S+))\]", node.word, re.DOTALL)    # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(\S+))\]", node.word, re.DOTALL)  # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
             node.SubtreePointer = pointerSubtreeMatch.group(2)
 
-        if node.SubtreePointer:     #remove all the "^" sign inside the SubtreePointer
+        if node.SubtreePointer:  # remove all the "^" sign inside the SubtreePointer
             node.SubtreePointer = node.SubtreePointer.replace("^", "")
 
         orQuoteMatch = re.search("(['\"/])(\S*\|\S*?)\\1", node.word, re.DOTALL)
@@ -863,25 +882,29 @@ def ProcessTokens(Tokens):
         if notOrMatch:
             for match in notOrMatch:
                 expandAnd = ExpandNotOrToAndNot(match)
-                node.word = node.word.replace("|"+match, " !" + expandAnd)
+                node.word = node.word.replace("|" + match, " !" + expandAnd)
 
         notOrMatch = re.findall("!([^() ]*)\|(\(\S*?\))", node.word, re.DOTALL)
         if notOrMatch:
             for match in notOrMatch:
                 expandAnd = ExpandNotOrToAndNot(match[0])
-                node.word = node.word.replace(match[0]+"|", expandAnd + " !")
+                node.word = node.word.replace(match[0] + "|", expandAnd + " !")
 
         notOrMatch = re.findall("!\(([^() ]*\|[^() ]*)\)", node.word, re.DOTALL)
         if notOrMatch:
             for match in notOrMatch:
                 expandAnd = ExpandNotOrToAndNot(match)
-                node.word = node.word.replace("("+match+")", expandAnd)
+                node.word = node.word.replace("(" + match + ")", expandAnd)
 
-        if node.word and len(node.word)>1 and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
-            node.word = '[FULLSTRING ' + node.word[1:]   #If Chinese character is not surrounded by quote, then add feature 0.
+        if node.word and len(node.word) > 1 and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
+            node.word = '[FULLSTRING ' + node.word[
+                                         1:]  # If Chinese character is not surrounded by quote, then add feature 0.
 
-        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=").replace("\>", ">").replace("\<", "<")
-        node.action = node.action.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
+        node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(
+            IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=").replace(
+            "\>", ">").replace("\<", "<")
+        node.action = node.action.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(
+            IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=")
 
 
 # Avoid [(AS:action)|sjfa]
@@ -912,7 +935,8 @@ def ExpandQuotedOrs(text, sign):
             logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding")
         return text
 
-    return text.replace("|", sign+"|"+sign)
+    return text.replace("|", sign + "|" + sign)
+
 
 def ExpandNotOrToAndNot(text):
     if "(" in text:
@@ -994,10 +1018,9 @@ def ProcessMacro(ruleContent, MacroDict):
 
 def LoadGlobalMacro(RuleFolder, RuleFileName):
     RuleLocation = os.path.join(RuleFolder, RuleFileName)
-    
 
     if RuleLocation.startswith("."):
-        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
+        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
 
     rule = ''
     try:
@@ -1012,7 +1035,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
                     if rule:
 
                         node = Rule()
-                        node.FileName = RuleFileName # used in keeping record of the winning rules.
+                        node.FileName = RuleFileName  # used in keeping record of the winning rules.
                         node.SetRule(rule, _GlobalMacroDict)
                         if node.RuleContent:
                             if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
@@ -1029,7 +1052,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
                         rule = ""
                 rule += "\n" + line
 
-            if rule:    #last one
+            if rule:  # last one
                 node = Rule()
                 node.FileName = RuleFileName  # used in keeping record of the winning rules.
                 node.SetRule(rule, _GlobalMacroDict)
@@ -1048,6 +1071,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
     except UnicodeError:
         logging.error("Error when processing " + RuleFileName)
         logging.error("Currently rule=" + rule)
+
 
 # a rule is not necessary in one line.
 # if the line is end with ";", then this is one rule;
@@ -1069,13 +1093,14 @@ def LoadRules(RuleFolder, RuleFileName):
 
     RuleLocation = os.path.join(RuleFolder, RuleFileName)
     if RuleLocation.startswith("."):
-        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  RuleLocation)
+        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
 
-    #RuleFileName = os.path.basename(RuleLocation)
+    # RuleFileName = os.path.basename(RuleLocation)
     logging.info("Start Loading Rule " + RuleLocation)
     rulegroup = RuleGroup(RuleFileName)
 
-    if RuleFileOlderThanDB(RuleFileName):
+    # if RuleFileOlderThanDB(RuleFileName):
+    if RuleFileOlderThanDB(RuleLocation):
         rulegroup.LoadedFromDB = True
         LoadRulesFromDB(rulegroup)
     else:
@@ -1097,7 +1122,7 @@ def LoadRules(RuleFolder, RuleFileName):
 
                 if rule:
                     InsertRuleInList(rule, rulegroup)
-        except UnicodeError :
+        except UnicodeError:
             logging.error("Error when processing " + RuleFileName)
             logging.error("Currently rule=" + rule)
         # UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
@@ -1124,7 +1149,7 @@ def LoadRules(RuleFolder, RuleFileName):
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         _PreProcess_CompileHash(rulegroup)
-        rulegroup.RuleList = sorted(rulegroup.RuleList, key = lambda x: x.TokenLength, reverse=True)
+        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: x.TokenLength, reverse=True)
         _OutputRuleDB(rulegroup)
         for r in rulegroup.RuleList:
             if r.norms:
@@ -1135,14 +1160,15 @@ def LoadRules(RuleFolder, RuleFileName):
         RuleNum_AfterExpand = len(rulegroup.RuleList)
         logging.info("Rules from file:" + str(RuleNum_BeforeExpand) + " \t After expanded:" + str(RuleNum_AfterExpand))
 
-    #BuildIdenticalNetwork(rulegroup)
+    # BuildIdenticalNetwork(rulegroup)
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
-    logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB) )
-    logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)) )
+    logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB))
+    logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)))
 
     return
+
 
 # def BuildIdenticalNetwork(rg):
 #     for rule in rg.RuleList:
@@ -1169,35 +1195,38 @@ def LoadRules(RuleFolder, RuleFileName):
 
 def RuleFileOlderThanDB(RuleLocation):
     return False
-    cur = DBCon.cursor()
+
+    cur = utils.DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
+    if RuleFileName == "5ngramKG9_top1k.txt":
+        RuleFileName = "Q/rule/5ngramKG9_top1k.txt"
     strsql = "select ID, verifytime from rulefiles where filelocation=?"
-    cur.execute(strsql, [RuleFileName,])
+    cur.execute(strsql, [RuleFileName, ])
     resultrecord = cur.fetchone()
     cur.close()
 
     if not resultrecord or not resultrecord[1]:
         return False
 
-    FileDBTime = resultrecord[1]    #utc time.
+    FileDBTime = resultrecord[1]  # utc time.
     FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
 
-#    logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
+    #    logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
     return FileDiskTime < FileDBTime
 
 
 def LoadRulesFromDB(rulegroup):
-    cur = DBCon.cursor()
+    cur = utils.DBCon.cursor()
     strsql = "select ID from rulefiles where filelocation=?"
-    cur.execute(strsql, [rulegroup.FileName,])
+    cur.execute(strsql, [rulegroup.FileName, ])
     resultrecord = cur.fetchone()
     if not resultrecord:
         logging.error("Trying to load rules from DB for :" + rulegroup.FileName)
         return False
     rulefileid = resultrecord[0]
 
-    #order by tokenlength desc, and by hits desc.
-    #note: order using hit can have less than 1% benefit. not worth the trouble.
+    # order by tokenlength desc, and by hits desc.
+    # note: order using hit can have less than 1% benefit. not worth the trouble.
     strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment
                     from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? and status=1 group by r.id
                         order by tokenlength desc, count(h.ruleid ) desc """
@@ -1206,8 +1235,10 @@ def LoadRulesFromDB(rulegroup):
     #                     order by tokenlength desc"""
     strsql_node = "SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"
     strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
+    strsql_node_orfeature = "select featureid from rulenode_orfeatures where rulenodeid=? and groupid=?"
+    strsql_countorfeatures = "select count(DISTINCT groupid) from rulenode_orfeatures where rulenodeid=?"
     strsql_node_text = "select text from rulenode_texts where rulenodeid=? and type=?"
-#    strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
+    #    strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
     strsql_chunk = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
 
     cur.execute(strsql_rule, [rulefileid, ])
@@ -1226,7 +1257,7 @@ def LoadRulesFromDB(rulegroup):
         rule.Origin = row[5]
         rule.comment = row[6]
 
-        cur.execute(strsql_node, [rule.ID,])
+        cur.execute(strsql_node, [rule.ID, ])
         noderows = cur.fetchall()
         for noderow in noderows:
             token = RuleToken()
@@ -1243,11 +1274,24 @@ def LoadRulesFromDB(rulegroup):
             featurerows = cur.fetchall()
             for featurerow in featurerows:
                 token.AndFeatures.add(int(featurerow[0]))
-            cur.execute(strsql_node_feature, [nodeid, 2])
-            featurerows = cur.fetchall()
-            for featurerow in featurerows:
-                token.OrFeatures.add(int(featurerow[0]))
-                # TODO: Modified as OrFeatureGroup. Need to save to DB properly.
+            # cur.execute(strsql_node_feature, [nodeid, 2])
+            # featurerows = cur.fetchall()
+            # for featurerow in featurerows:
+            #     token.OrFeatures.add(int(featurerow[0]))
+            #     # TODO: Modified as OrFeatureGroup. Need to save to DB properly.
+            cur.execute(strsql_countorfeatures,[nodeid])
+            countrows = cur.fetchall()
+            for row in countrows:
+                sizefeaturegroup = row[0]
+            # sizefeaturegroup = int(cur.execute(strsql_countorfeatures,[nodeid]))
+            for groupid in range(0, sizefeaturegroup):
+                cur.execute(strsql_node_orfeature,[nodeid,groupid])
+                featurerows = cur.fetchall()
+                orfeaturegroup = set()
+                for featurerow in featurerows:
+                    orfeaturegroup.add(int(featurerow[0]))
+                token.OrFeatureGroups.append(orfeaturegroup)
+
             cur.execute(strsql_node_feature, [nodeid, 3])
             featurerows = cur.fetchall()
             for featurerow in featurerows:
@@ -1259,7 +1303,7 @@ def LoadRulesFromDB(rulegroup):
 
             rule.Tokens.append(token)
 
-        cur.execute(strsql_chunk, [rule.ID,])
+        cur.execute(strsql_chunk, [rule.ID, ])
         chunkrows = cur.fetchall()
         for chunkrow in chunkrows:
             chunk = RuleChunk()
@@ -1274,7 +1318,7 @@ def LoadRulesFromDB(rulegroup):
         rulegroup.RuleList.append(rule)
 
     strsql = "update rulefiles set verifytime=DATETIME('now') where filelocation=?"
-    cur.execute(strsql, [rulegroup.FileName,])
+    cur.execute(strsql, [rulegroup.FileName, ])
     rulegroup.LoadedFromDB = True
     cur.close()
     return True
@@ -1282,7 +1326,7 @@ def LoadRulesFromDB(rulegroup):
 
 def InsertRuleInList(string, rulegroup):
     node = Rule()
-    node.FileName = rulegroup.FileName  #used in keeping record of the winning rules.
+    node.FileName = rulegroup.FileName  # used in keeping record of the winning rules.
     remaining = node.SetRule(string, rulegroup.MacroDict)
     if node.RuleContent:
         if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
@@ -1297,7 +1341,7 @@ def InsertRuleInList(string, rulegroup):
 
     if remaining:
         RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
-        if node.RuleContent:    #the last was one rule, so we know the rest should be
+        if node.RuleContent:  # the last was one rule, so we know the rest should be
             # one rule each line. let's not to call it recursively.
             lines = remaining.splitlines()
             counter = 0
@@ -1315,7 +1359,7 @@ def InsertRuleInList(string, rulegroup):
                     counter += 1
         else:
             code, _ = SeparateComment(remaining)
-            if  code:
+            if code:
                 RuleName = GetPrefix(node.RuleName) + "_" + str(node.ID)
 
                 fakeString = RuleName + " == " + remaining
@@ -1361,14 +1405,14 @@ def _ExpandRuleWildCard_List(OneList):
                         new_node = RuleToken(rule.Tokens[tokenindex])
                         new_node.repeat = [1, 1]
                         if tokenindex_this != 0 and rule.Tokens[tokenindex].StartChunk != 0:
-                            new_node.StartChunk = 0 # in the copies, only the first one can be StartChunk
-                        if tokenindex_this != repeat_num-1 and rule.Tokens[tokenindex].EndChunk != 0:
-                            new_node.EndChunk = 0   # in the copies, only the last one can be EndChunk
+                            new_node.StartChunk = 0  # in the copies, only the first one can be StartChunk
+                        if tokenindex_this != repeat_num - 1 and rule.Tokens[tokenindex].EndChunk != 0:
+                            new_node.EndChunk = 0  # in the copies, only the last one can be EndChunk
                         newrule.Tokens.append(new_node)
 
                     NextIsStart = False
                     NextIsRestart = False
-                    #NextIsPointer = False
+                    # NextIsPointer = False
                     origin_node = None
                     if repeat_num == 0:  # this token is removed. some features need to copy to others
                         origin_node = rule.Tokens[tokenindex]
@@ -1427,37 +1471,37 @@ def _RemoveExcessiveParenthesis(token):
     if StartParenthesesPosition < 0:
         return False
     if StartParenthesesPosition > 0 and \
-        token.word[StartParenthesesPosition-1] == "'" and token.word[StartParenthesesPosition+1] == "'":
+            token.word[StartParenthesesPosition - 1] == "'" and token.word[StartParenthesesPosition + 1] == "'":
         logging.info("_RemoveExcessiveParenthesis: Quoted. Ignore this parentheses:" + str(token))
         return False
     if StartParenthesesPosition > 0 and \
-        token.word[StartParenthesesPosition-1].isalpha():
+            token.word[StartParenthesesPosition - 1].isalpha():
         logging.info("_RemoveExcessiveParenthesis: Alpha before it. Ignore this parentheses:" + str(token))
         return False
-    EndParenthesesPosition = StartParenthesesPosition + 1 + SearchPair(token.word[StartParenthesesPosition+1:], "()")
-    if EndParenthesesPosition == StartParenthesesPosition:   #not paired
-        logging.warning("The parenthesis are not paired:" + token.word + " in this token:\n" + str(token) )
+    EndParenthesesPosition = StartParenthesesPosition + 1 + SearchPair(token.word[StartParenthesesPosition + 1:], "()")
+    if EndParenthesesPosition == StartParenthesesPosition:  # not paired
+        logging.warning("The parenthesis are not paired:" + token.word + " in this token:\n" + str(token))
         return False
 
     if "]" in token.word[StartParenthesesPosition:EndParenthesesPosition] \
-        or ":" in token.word[StartParenthesesPosition:EndParenthesesPosition]:
-        return False    #not excessive, if ]: in parenthesis.
+            or ":" in token.word[StartParenthesesPosition:EndParenthesesPosition]:
+        return False  # not excessive, if ]: in parenthesis.
 
-    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition-1] not in "|!") \
-        and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition+1] != "|"):
-        if StartParenthesesPosition>0:
+    if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition - 1] not in "|!") \
+            and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition + 1] != "|"):
+        if StartParenthesesPosition > 0:
             before = token.word[:StartParenthesesPosition]
         else:
             before = ""
-        if EndParenthesesPosition<len(token.word):
-            after = token.word[EndParenthesesPosition+1:]
+        if EndParenthesesPosition < len(token.word):
+            after = token.word[EndParenthesesPosition + 1:]
         else:
             after = ""
 
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Removing excessive parenthesis in: " + token.word)
-        token.word = before + token.word[StartParenthesesPosition+1:EndParenthesesPosition] + after
-        #logging.info("\t\t as: " + token.word)
+        token.word = before + token.word[StartParenthesesPosition + 1:EndParenthesesPosition] + after
+        # logging.info("\t\t as: " + token.word)
         return True
     else:
         return False
@@ -1472,7 +1516,7 @@ def _ExpandParenthesis(OneList):
             continue
         Expand = False
         for tokenindex in range(rule.TokenLength):
-            if  _RemoveExcessiveParenthesis(rule.Tokens[tokenindex]):
+            if _RemoveExcessiveParenthesis(rule.Tokens[tokenindex]):
                 RemovedExcessive = True
             token = rule.Tokens[tokenindex]
 
@@ -1551,22 +1595,22 @@ def _ProcessOrBlock(Content, orIndex):
     leftBlock = Content[start:orIndex]
     rightBlock = Content[orIndex + 1:end + 1]
 
-    #if left/right block is enclosed by (), and it is part of one token , then the () can be removed:
+    # if left/right block is enclosed by (), and it is part of one token , then the () can be removed:
     # write out in log as confirmation.
-    if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content)-2:
+    if Content[0] == "[" and SearchPair(Content[1:], "[]") == len(Content) - 2:
         if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-            #logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+            # logging.debug("New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
             leftBlock = leftBlock[1:-1]
         if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-            #logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+            # logging.debug("New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
             rightBlock = rightBlock[1:-1]
     else:
-        if "[" not in originBlock :
+        if "[" not in originBlock:
             if leftBlock[0] == "(" and SearchPair(leftBlock[1:], "()") == len(leftBlock) - 2:
-                #logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
+                # logging.debug("Extra New kind of removing (): Removing them from " + leftBlock + " in :\n" + Content)
                 leftBlock = leftBlock[1:-1]
             if rightBlock[0] == "(" and SearchPair(rightBlock[1:], "()") == len(rightBlock) - 2:
-                #logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
+                # logging.debug("Extra New kind of removing (): Removing them from " + rightBlock + " in :\n" + Content)
                 rightBlock = rightBlock[1:-1]
 
     return originBlock, leftBlock, rightBlock
@@ -1591,11 +1635,12 @@ def _ExpandOrBlock(OneList):
                     if orIndex <= 0:
                         continue
                     else:
-                        orIndex += 1    #move the pointer from ] to |
+                        orIndex += 1  # move the pointer from ] to |
             # if (token.word[0] == "!" or token.word[0:2] == "[!") \
             #         and (token.word.find(")|")>0 or token.word.find("|(")>0):
             if re.search("![^ )]*\|\(", token.word) or re.search("!\(.*\)\|", token.word):
-                logging.warning("_ExpandOrBlock: Not Or means Not And in this word:{} in rule {}".format(token.word, rule.RuleName))
+                logging.warning(
+                    "_ExpandOrBlock: Not Or means Not And in this word:{} in rule {}".format(token.word, rule.RuleName))
                 token.word = token.word.replace("|", " !")
                 logging.info("\t After modification, the word is: {}".format(token.word))
                 Modified = True
@@ -1685,15 +1730,16 @@ def _ExpandOrBlock(OneList):
     return Modified
 
 
-#only expand the text, not the feature.
+# only expand the text, not the feature.
 def _ProcessOrToken(word):
     word = word.strip("[|]")
     spaceseparated = word.split()
     i = 0
     for i in range(len(spaceseparated)):
-        if spaceseparated[i].find("'|")>0 or spaceseparated[i].find("/|")>0 or spaceseparated[i].find("\"|")>0 \
-               or spaceseparated[i].find("|'") > 0 or spaceseparated[i].find("|/") > 0 or spaceseparated[i].find("|\"") > 0:
-            #this is the piece we need to separate
+        if spaceseparated[i].find("'|") > 0 or spaceseparated[i].find("/|") > 0 or spaceseparated[i].find("\"|") > 0 \
+                or spaceseparated[i].find("|'") > 0 or spaceseparated[i].find("|/") > 0 or spaceseparated[i].find(
+            "|\"") > 0:
+            # this is the piece we need to separate
             break
     if i > 0:
         leftpieces = " ".join(spaceseparated[:i])
@@ -1701,7 +1747,7 @@ def _ProcessOrToken(word):
         leftpieces = ""
 
     if i < len(spaceseparated):
-        rightpieces = " ".join(spaceseparated[i+1:])
+        rightpieces = " ".join(spaceseparated[i + 1:])
     else:
         rightpieces = ""
 
@@ -1714,12 +1760,12 @@ def _ProcessOrToken(word):
     # else:
     #     orlist = textlist
 
-    return orlist, "["+leftpieces, rightpieces+"]"
+    return orlist, "[" + leftpieces, rightpieces + "]"
 
 
-#Expand | inside of one token without (). Should be done after the _ExpandOrBlock and compilation.
+# Expand | inside of one token without (). Should be done after the _ExpandOrBlock and compilation.
 # in here, each "or" operator should be one feature or one word.
-#Also Expand !(A B). Should be done after the _ExpandOrBlock and compilation.
+# Also Expand !(A B). Should be done after the _ExpandOrBlock and compilation.
 # in here, each "or" operator should be one feature or one word.
 
 def _ExpandOrToken(OneList):
@@ -1742,7 +1788,7 @@ def _ExpandOrToken(OneList):
 
             elif token.word.find("'|") > 0 or token.word.find("/|") > 0 or token.word.find("\"|") > 0 \
                     or token.word.find("|'") > 0 or token.word.find("|/") > 0 or token.word.find("|\"") > 0:
-                #only expand the Text .
+                # only expand the Text .
                 orlist, leftBlock, rightBlock = _ProcessOrToken(token.word)
                 if orlist is None:
                     logging.error("ExpandOrBlock: Failed to process or block for: \n" + str(rule))
@@ -1760,7 +1806,7 @@ def _ExpandOrToken(OneList):
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
-                    #current token
+                    # current token
                     node = RuleToken(token)
                     node.word = leftBlock + " " + orpiece + " " + rightBlock
                     newrule.Tokens.append(node)
@@ -1774,9 +1820,9 @@ def _ExpandOrToken(OneList):
 
                 Expand = True
                 # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
-                break   # don't work on the next | in this rule. wait for the next round.
+                break  # don't work on the next | in this rule. wait for the next round.
 
-            if token.SubtreePointer.find("|") > 0 :
+            if token.SubtreePointer.find("|") > 0:
                 for subtreepointer in token.SubtreePointer.split("|"):
                     # left of the token:
                     newrule = Rule()
@@ -1788,7 +1834,7 @@ def _ExpandOrToken(OneList):
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
-                    #current token
+                    # current token
                     node = RuleToken(token)
                     node.SubtreePointer = subtreepointer
                     newrule.Tokens.append(node)
@@ -1802,7 +1848,7 @@ def _ExpandOrToken(OneList):
 
                 Expand = True
                 # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
-                break   # don't work on the next | in this rule. wait for the next round.
+                break  # don't work on the next | in this rule. wait for the next round.
 
         if Expand:
             OneList.remove(rule)
@@ -1849,7 +1895,7 @@ def _ProcessOrToken_Unification(word, match):
     return orlist, "[" + leftpieces, rightpieces + "]"
 
 
-#Expand %F(per|animal|org|bodyPart|furniture)
+# Expand %F(per|animal|org|bodyPart|furniture)
 def _ExpandOrToken_Unification(OneList):
     Modified = False
     # counter = 0
@@ -1857,7 +1903,7 @@ def _ExpandOrToken_Unification(OneList):
         if len(rule.RuleName) > 200:
             logging.error("Rule Name is too long. Stop processing this rule:\n" + str(rule))
             continue
-        Expand = False 
+        Expand = False
         for tokenindex in range(rule.TokenLength):
             orlist = None
             leftBlock = None
@@ -1882,7 +1928,7 @@ def _ExpandOrToken_Unification(OneList):
                         newtoken.word = newtoken.word.replace("%F", orpiece)
                         newrule.Tokens.append(newtoken)
 
-                    #current token
+                    # current token
                     node = RuleToken(token)
                     node.word = leftBlock + " " + orpiece + " " + rightBlock
                     newrule.Tokens.append(node)
@@ -1899,7 +1945,7 @@ def _ExpandOrToken_Unification(OneList):
 
                 Expand = True
                 # logging.warning("\tExpand OrBlock is true, because of " + rule.RuleName)
-                break   # don't work on the next | in this rule. wait for the next round.
+                break  # don't work on the next | in this rule. wait for the next round.
 
         if Expand:
             OneList.remove(rule)
@@ -1914,22 +1960,22 @@ def _ExpandOrToken_Unification(OneList):
 def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
     for rule in OneList:
         for token in rule.Tokens:
-            #_CheckFeature(token, rule.RuleName)
-            token.word = "[" +  _CheckFeature_returnword(token.word) + "]"
+            # _CheckFeature(token, rule.RuleName)
+            token.word = "[" + _CheckFeature_returnword(token.word) + "]"
         rule.CompileChunk()
     _ExpandOrToken(OneList)
 
 
 def _PreProcess_CompileHash(rulegroup):
     for rule in rulegroup.RuleList:
-        for token in rule.Tokens:   #remove extra [] in match body.
+        for token in rule.Tokens:  # remove extra [] in match body.
             token.word = token.word.strip("[|]").strip()
 
             Features = token.word.split()
             for f in Features:
                 if f[0] == "!":
                     if "\"" in f or "'" in f or "/" in f:
-                        NotText, token.NotTextMatchtype =  LogicOperation_CheckPrefix(f[1:])
+                        NotText, token.NotTextMatchtype = LogicOperation_CheckPrefix(f[1:])
                         token.NotTexts.add(NotText)
                     else:
                         token.NotFeatures.add(FeatureOntology.GetFeatureID(f[1:]))
@@ -1951,8 +1997,10 @@ def _PreProcess_CompileHash(rulegroup):
         # rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
         #                                           and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else ''
         #               for token in rule.Tokens if not token.SubtreePointer ]
-        rule.norms = [token.AndText.lower() if token.AndTextMatchtype=='norm' and "-" not in token.AndText and token.AndText and "^" != token.AndText[0] else ''
-                      for token in rule.Tokens if token.SubtreePointer == '' ]
+        rule.norms = [
+            token.AndText.lower() if token.AndTextMatchtype == 'norm' and "-" not in token.AndText and token.AndText and "^" !=
+                                     token.AndText[0] else ''
+            for token in rule.Tokens if token.SubtreePointer == '']
         if len("".join(rule.norms)) == 0:
             rule.norms = []
 
@@ -1967,7 +2015,7 @@ def _PreProcess_CompileHash(rulegroup):
 
 def _PreProcess_RuleIDNormalize():
     logging.info("Start _PreProcess_RuleIDNormalize")
-    for rulegroup in  RuleGroupDict.values():
+    for rulegroup in RuleGroupDict.values():
         for rule in rulegroup.RuleList:
             for token in rule.Tokens:
                 if token.SubtreePointer:
@@ -2002,35 +2050,35 @@ def _CheckFeature_returnword(word):
     if matchtype == 'norm':
         if "|" in word:
             items = re.split("\|", word)
-            word =  "'|'".join(items)
-#                elif " " in word:  # 'this is a good': separate as multiple token.
-#                    raise NotImplementedError("TODO: separate this as multiple token")
+            word = "'|'".join(items)
+    #                elif " " in word:  # 'this is a good': separate as multiple token.
+    #                    raise NotImplementedError("TODO: separate this as multiple token")
 
     elif matchtype == 'atom':
         if "|" in word:
             items = re.split("\|", word)
             word = "/|/".join(items)
-#                elif " " in word:  # 'this is a good': separate as multiple token.
-#                    raise NotImplementedError("TODO: separate this as multiple token")
+    #                elif " " in word:  # 'this is a good': separate as multiple token.
+    #                    raise NotImplementedError("TODO: separate this as multiple token")
 
     elif matchtype == 'text':
         if "|" in word:
             items = re.split("\|", word)
             word = "\"|\"".join(items)
-#                elif " " in word:  # 'this is a good': separate as multiple token.
-#                    raise NotImplementedError("TODO: separate this as multiple token")
+    #                elif " " in word:  # 'this is a good': separate as multiple token.
+    #                    raise NotImplementedError("TODO: separate this as multiple token")
 
     elif matchtype == 'unknown':
         if not re.search('[| !]', word):
             if FeatureOntology.GetFeatureID(word) == -1:
                 # logging.warning("Will treat this word as a stem:" + word)
                 word = "'" + word + "'"
-        elif "|" in word and " " not in word and "[" not in word and  "(" not in word:
+        elif "|" in word and " " not in word and "[" not in word and "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             try:
                 OrBlocks = LogicOperation_SeparateOrBlocks(word)
             except RuntimeError as e:
-                logging.error("Error for rule:" + word )
+                logging.error("Error for rule:" + word)
                 logging.error(str(e))
                 return  # not to process the rest.
 
@@ -2043,23 +2091,23 @@ def _CheckFeature_returnword(word):
                 else:
                     newword += OrBlock + "|"
             word = newword.rstrip("|")
-        elif " " in word and  "[" not in word and  "(" not in word:
+        elif " " in word and "[" not in word and "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             AndBlocks = word.split()
             newword = ""
             for AndBlock in AndBlocks:
-                if AndBlock.startswith("%F"):   #for unification extention, leave it to next step (ExpandOrBlock)
+                if AndBlock.startswith("%F"):  # for unification extention, leave it to next step (ExpandOrBlock)
                     newword += AndBlock + " "
                 else:
                     newword += _CheckFeature_returnword(AndBlock) + " "
             word = newword.rstrip(" ")
-    return  prefix + word
+    return prefix + word
 
 
 def OutputRules(rulegroup, style="details"):
     output = "// ****Rules**** " + rulegroup.FileName + "\n"
     output += "// * size: " + str(len(rulegroup.RuleList)) + " *\n"
-    #for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
+    # for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
     for rule in rulegroup.RuleList:
         output += rule.output(style) + "\n"
 
@@ -2074,7 +2122,7 @@ def OutputRules(rulegroup, style="details"):
 
 def OutputRuleFiles(FolderLocation):
     if FolderLocation.startswith("."):
-        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FolderLocation)
+        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), FolderLocation)
 
     for RuleFile in RuleGroupDict:
         rg = RuleGroupDict[RuleFile]
@@ -2094,12 +2142,12 @@ def OutputRuleFiles(FolderLocation):
         with open(utFileLocation, "w", encoding="utf-8") as writer:
             writer.write(utoutput)
 
-    #OutputRuleDB()
+    # OutputRuleDB()
 
 
 def _OutputRuleDB(rulegroup):
-    return  #disable, to avoid locking.
-    cur = DBCon.cursor()
+    return  # disable, to avoid locking.
+    cur = utils.DBCon.cursor()
     startdatetime = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
     strsql = "SELECT ID from rulefiles where filelocation=?  limit 1"
@@ -2124,7 +2172,9 @@ def _OutputRuleDB(rulegroup):
     strsql = "UPDATE ruleinfo set status=-1 where rulefileid=? and verifytime<?"
     cur.execute(strsql, [rulefileid, startdatetime])
     cur.close()
-    DBCon.commit()
+    utils.DBCon.commit()
+
+
 """
 sqlite3 parser.db
 ### ruleinfo.body is the body part of each token. for unique comparison.
@@ -2133,10 +2183,11 @@ CREATE TABLE rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TE
 CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, origin TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
 CREATE TABLE rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );
 CREATE TABLE rulenodes    (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT, sequence INT, matchbody TEXT, action TEXT , pointer TEXT, subtreepointer TEXT, andtext TEXT, andtextmatchtype TEXT, nottext TEXT, nottextmatchtype TEXT, CONSTRAINT unique_position UNIQUE(ruleid, sequence));
-CREATE TABLE rulenode_features (rulenodeid INT, featureid INT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid, featureid));
-CREATE TABLE rulenode_texts (rulenodeid INT, `text` TEXT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid, `text`));
-CREATE TABLE sentences    (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
 CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
+CREATE TABLE rulenode_texts (rulenodeid INT, `text` TEXT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid, `text`));
+CREATE TABLE sentences (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result BLOB, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
+CREATE TABLE rulenode_orfeatures (rulenodeid INT, featureid INT, groupid INT, CONSTRAINT unique_type UNIQUE(rulenodeid, featureid));
+CREATE TABLE rulenode_features (rulenodeid INT, featureid INT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid,type,featureid));
 
 """
 if __name__ == "__main__":
@@ -2152,7 +2203,9 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/mainX2.txt")
     # LoadRules("../../fsa/X/ruleLexiconX.txt")
     # # #
-    #LoadRules("../../fsa/X/0defLexX.txt")
+    # LoadRules("../../fsa/X/0defLexX.txt")
+    if utils.DBCon is None:
+        utils.InitDB()
     LoadRules('../../fsa/X/', '0test.txt')
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
@@ -2161,7 +2214,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_6_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_7_list.txt")
 
-    #LoadRules("../../fsa/X/10compound.txt")
+    # LoadRules("../../fsa/X/10compound.txt")
 
     # LoadRules("../../fsa/X/180NPx.txt")
 
@@ -2174,4 +2227,4 @@ if __name__ == "__main__":
 
     # print (OutputRules("concise"))
     OutputRuleFiles("../compiled/")
-    #print(FeatureOntology.OutputMissingFeatureSet())
+    # print(FeatureOntology.OutputMissingFeatureSet())
