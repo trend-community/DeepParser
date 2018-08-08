@@ -308,7 +308,7 @@ class Rule:
 
     # body is the part that being used to identify this specific rule. It is also that part to match the rule.
     def body(self):
-        return "/".join(t.word for t in self.Tokens)
+        return "/".join(t.word + t.SubtreePointer for t in self.Tokens)
 
     # if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
     #    update the verifytime, and status.
@@ -1194,7 +1194,7 @@ def LoadRules(RuleFolder, RuleFileName):
 
 
 def RuleFileOlderThanDB(RuleLocation):
-    return False
+    #return False
 
     cur = utils.DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
@@ -1263,6 +1263,8 @@ def LoadRulesFromDB(rulegroup):
             token = RuleToken()
             nodeid = int(noderow[0])
             token.word = noderow[1]
+            if "FULLSTRING" in token.word:
+                token.FullString = True
             token.action = noderow[2]
             token.pointer = noderow[3]
             token.SubtreePointer = noderow[4]
@@ -2108,7 +2110,7 @@ def OutputRules(rulegroup, style="details"):
     output = "// ****Rules**** " + rulegroup.FileName + "\n"
     output += "// * size: " + str(len(rulegroup.RuleList)) + " *\n"
     # for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
-    for rule in rulegroup.RuleList:
+    for rule in sorted(rulegroup.RuleList) :
         output += rule.output(style) + "\n"
 
     output += "// ****Macros****\n"
@@ -2146,7 +2148,7 @@ def OutputRuleFiles(FolderLocation):
 
 
 def _OutputRuleDB(rulegroup):
-    return  # disable, to avoid locking.
+    #return  # disable, to avoid locking.
     cur = utils.DBCon.cursor()
     startdatetime = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 

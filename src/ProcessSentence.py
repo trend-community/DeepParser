@@ -381,8 +381,8 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         #     logging.debug("DAG: Start checking rule {}".format( rule))
         node = DAGMatch(Dag,  rule, 0)
         if node:
-            if logging.root.isEnabledFor(logging.INFO):
-                logging.info("DAG: Winning rule! {}".format(rule))
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("DAG: Winning rule! {}".format(rule))
             try:
                     if rule.ID not in WinningRules:
                         WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
@@ -399,7 +399,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
 
             except IndexError as e:
                 logging.error("Failed to apply this rule:")
-                logging.error(str(rule))
+                logging.info(str(rule))
                 logging.error(str(e))
             #search the rest of rules using other nodes
             #node.applied = True    #apply to apply to the same node
