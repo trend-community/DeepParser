@@ -1825,7 +1825,15 @@ def _ExpandOrToken(OneList):
                 break  # don't work on the next | in this rule. wait for the next round.
 
             if token.SubtreePointer.find("|") > 0:
-                for subtreepointer in token.SubtreePointer.split("|"):
+                SubtreePointer = token.SubtreePointer
+                SubtreePointerExtra = ''
+                ExtraMatch = re.match("(^.*?)([<>].*)", SubtreePointer)
+                if ExtraMatch:
+                    SubtreePointer = ExtraMatch[1]
+                    SubtreePointerExtra = ExtraMatch[2]
+
+
+                for subtreepointer in SubtreePointer.split("|"):
                     # left of the token:
                     newrule = Rule()
                     newrule.FileName = rule.FileName
@@ -1838,7 +1846,7 @@ def _ExpandOrToken(OneList):
 
                     # current token
                     node = RuleToken(token)
-                    node.SubtreePointer = subtreepointer
+                    node.SubtreePointer = subtreepointer + SubtreePointerExtra
                     newrule.Tokens.append(node)
 
                     # right of the token:
