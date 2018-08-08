@@ -58,8 +58,29 @@ In your browser visit
 3.1, Below is list of all Restful APIs:
 	/GetFeatureID/CL		# return the feature id of "CL"
 	/GetFeatureName/23		# return the feature name of id 23
-	/LexicalAnalyze: Type: [json (default), simple, parsetree]
-					Debug: when Type is parsetree and Debug is true, show some debug information.
+	/LexicalAnalyze: 
+		Key: Required. Authorization key. Please contact NLU team for this key.
+		
+		Sentence: Required. The sentence to process. Quoted in single quotes.
+		
+		type: [json (default), segmentation, simple, simpleEx, graph, simplegraph, parsetree]
+			json: current default output. 
+			segmentation: segmentation format "中文/分词/方法"
+			simple/simpleEx: simple presentation of the json format.
+			graph: DOT format of graph
+			simpleggraph: simple presentation of the graph format "M{分词->中文}; M{方法->分词}; "
+			parsetree: for web presentation only, not to use as API.
+			
+		schema: [full (default), segonly, shallowcomplete]
+			full: default. Run the whole deep-parsing pipeline.
+			segonly: stop running pipeline after the lexical analysis.
+			shallowcomplete: stop running pipeline after shallow parsing.
+			
+		action: [none (default), headdown]
+			none: default. no extra action to apply.
+			headdown: Subj/Obj/Pred is propagated from upper node to head leaf node.
+			
+		Debug: when Type is parsetree and Debug is true, show some extra debug information.
 	
 
 4, Running the standalone LexicalAnalyze program
