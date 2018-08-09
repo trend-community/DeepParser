@@ -190,6 +190,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.wfile.write("".encode("utf-8"))
 
     def Reload(self, ReloadTask):
+        utils.InitDB()
         PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
         XLocation = os.path.dirname(PipeLineLocation) + "/"
         Reply = "Lexicon/Rule/Pipeline:"
@@ -292,7 +293,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_header('Content-type', "text/html; charset=utf-8")
         self.end_headers()
         self.wfile.write(Reply.encode("utf-8"))
-
+        utils.CloseDB(utils.DBCon)
 
     def ShowFeatureOntology(self):
         output_type = "text/html;"
