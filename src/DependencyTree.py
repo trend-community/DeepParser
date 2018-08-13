@@ -232,38 +232,38 @@ class DependencyTree:
         return output
 
 
-    def _AddEdge(self, node1id, relation, node2id):
+    def _AddEdge(self, node1id, relation, parentid):
         #find the write relation to add, if already have a child relation for the same nodes.
-        self.graph.add((node1id, relation, node2id, FeatureOntology.GetFeatureID(relation)))
+        self.graph.add((node1id, relation, parentid, FeatureOntology.GetFeatureID(relation)))
         # Use ontology to find the ancestors of the relation
         relationid = FeatureOntology.GetFeatureID(relation)
         if FeatureOntology.SearchFeatureOntology(relationid):
             for ancestor in FeatureOntology.SearchFeatureOntology(relationid).ancestors:
                 ancestorname = FeatureOntology.GetFeatureName(ancestor)
-                if (node1id, ancestorname, node2id,ancestor) in self.graph:
-                    self.graph.remove((node1id, ancestorname, node2id,ancestor))
+                if (node1id, ancestorname, parentid,ancestor) in self.graph:
+                    self.graph.remove((node1id, ancestorname, parentid,ancestor))
 
         #Set the parent to have the relation.
         hasFeatureID = FeatureOntology.GetFeatureID("has" + relation)
         if hasFeatureID >= 0:
-            self.nodes[node2id].ApplyFeature(hasFeatureID)
+            self.nodes[parentid].ApplyFeature(hasFeatureID)
         else:
             logging.error("There is no has{} feature in the feature.txt!".format(relation))
 
 
-    def _RemoveEdge(self, node1id, relation, node2id):
-        if relation[0] == "~":
-            self._RemoveEdge(node2id, relation[1:], node1id)
+    def _RemoveEdge(self, node1id, relation, parentid):
+        if relation[0] == "~":  #revert
+            self._RemoveEdge(parentid, relation[1:], node1id)
             return
 
         relationid = FeatureOntology.GetFeatureID(relation)
 
-        for edge in [ x for x in self.graph if x[0] == node1id and x[2] == node2id]:
+        for edge in [ e for e in self.graph if e[0] == node1id and e[2] == parentid]:
             if relationid == edge[3] or relationid in FeatureOntology.SearchFeatureOntology(edge[3]).ancestors:
                 self.graph.remove(edge)
 
 
-    def _CheckEdge(self, node1id, relation, node2id):
+    def _CheckEdge(self, node1id, relation, parentid):
         Reverse = False
         if relation[0] == "~":
             logging.debug("_CheckEdge: Reverse! {}".format(relation))
@@ -272,9 +272,9 @@ class DependencyTree:
 
         relationid = FeatureOntology.GetFeatureID(relation)
         if Reverse:
-            edgecandidates = [e for e in self.graph if e[0] == node2id and e[2] == node1id]
+            edgecandidates = [e for e in self.graph if e[0] == parentid and e[2] == node1id]
         else:
-            edgecandidates = [e for e in self.graph if e[0] == node1id and e[2] == node2id]
+            edgecandidates = [e for e in self.graph if e[0] == node1id and e[2] == parentid]
 
         for edge in sorted(edgecandidates, key = operator.itemgetter(2, 1, 0)):
             if relationid == edge[3]:
@@ -522,9 +522,20 @@ class DependencyTree:
                 Satisfied = True
 
             elif start_nodeID and relations:
+
                 relationlist = relations.split(".")
                 if len(relationlist) == 1:
-                    Satisfied = self._CheckEdge( nodeID, relationlist[0], start_nodeID)
+                    if relations in ("LINKNUM1", "LINKNUM2", "LINKNUM3"):
+                        linkcount = len([e for e in self.graph if e[0] == nodeID and e[2] == start_nodeID])
+                        logging.debug("\tLink count from parent {} to node {} is {}".format(self.nodes[start_nodeID], self.nodes[nodeID], linkcount))
+                        if relations == "LINKNUM1":
+                            Satisfied = linkcount == 1
+                        elif relations == "LINKNUM2":
+                            Satisfied = linkcount == 2
+                        elif relations == "LINKNUM3":
+                            Satisfied = linkcount == 3
+                    else:
+                        Satisfied = self._CheckEdge( nodeID, relationlist[0], start_nodeID)
                 elif len(relationlist) == 2:
                     for second_nodeID in self.nodes:
                         Satisfied = self._CheckEdge( nodeID, relationlist[1], second_nodeID) and \

@@ -300,7 +300,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
     if level >= len(Rule.Tokens):
-        # now the rule tokens are all matched.
+        # now the rule tokens are all matched!
         routeSignature = GetRouteSignature(Rule)
         #logging.info("RouteSignature:{}".format(RouteSignature))
         if not hasattr(DAGMatch, "DagSuccessRoutes"):
