@@ -194,6 +194,18 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
         XLocation = os.path.dirname(PipeLineLocation) + "/"
         Reply = "Lexicon/Rule/Pipeline:"
+        GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+        RuleFolder = os.path.dirname(GlobalmacroLocation)
+        RuleFileName = os.path.basename(GlobalmacroLocation)
+        Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
+        FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
+        FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
+        systemfileolderthanDB = ProcessSentence.SystemFileOlderThanDB(XLocation)
+        PunctuatefileLocation = os.path.join(XLocation, "../Y/LexY-EnglishPunctuate.txt")
+        if "/X/" in XLocation:
+            Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+        else:
+            Lexicon.LoadLexicon(PunctuatefileLocation)
 
         if ReloadTask.lower() == "/lexicon":
             logging.info("Start loading lexicon...")
@@ -263,23 +275,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             Rules.ResetAllRules()
             ProcessSentence.WinningRuleDict.clear()
 
-            GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
-            RuleFolder = os.path.dirname(GlobalmacroLocation)
-            RuleFileName = os.path.basename(GlobalmacroLocation)
-            Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
-            # XLocation = '../../fsa/X/'
-            # for action in ProcessSentence.PipeLine:
-            #     if action.startswith("FSA"):
-            #         Rulefile = action[3:].strip()
-            #         Rulefile = os.path.join(XLocation, Rulefile)
-            #         Rules.LoadRules(Rulefile)
             for action in ProcessSentence.PipeLine:
                 if action.startswith("FSA"):
                     Rulefile = action[3:].strip()
-                    Rules.LoadRules(XLocation, Rulefile)
+                    Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
                 if action.startswith("DAGFSA"):
                     Rulefile = action[6:].strip()
-                    Rules.LoadRules(XLocation, Rulefile)
+                    Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
             Reply += "Reloaded rules at " + str(datetime.now())
 
         if ReloadTask.lower() == "/pipeline":
@@ -288,6 +290,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             ProcessSentence.PipeLine = []
             ProcessSentence.LoadCommon()
             Reply += "Reloaded pipeline at " + str(datetime.now())
+
+        ProcessSentence.UpdateSystemFileFromDB(XLocation)
 
         self.send_response(200)
         self.send_header('Content-type', "text/html; charset=utf-8")

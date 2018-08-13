@@ -1087,7 +1087,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
 # -Sept, change to : until the next "==" or "::" is found, give the whole block to "InsetRuleInList"
 #   The rule.SetRule() will judge whether it is one whole rule (base on {}), or several rules (or condition),
 #       when it will process current rule, and give the rest as "remaining" for next round.
-def LoadRules(RuleFolder, RuleFileName):
+def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
     # global UnitTest, RuleFileList
     global RuleGroupDict
 
@@ -1095,14 +1095,15 @@ def LoadRules(RuleFolder, RuleFileName):
     if RuleLocation.startswith("."):
         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
 
-    # RuleFileName = os.path.basename(RuleLocation)
     logging.info("Start Loading Rule " + RuleLocation)
     rulegroup = RuleGroup(RuleFileName)
 
-    # if RuleFileOlderThanDB(RuleFileName):
-    if RuleFileOlderThanDB(RuleLocation):
+    # check if feature.txt and global macro is changed before load rules from DB
+
+    if systemfileolderthanDB and RuleFileOlderThanDB(RuleLocation):
         rulegroup.LoadedFromDB = True
         LoadRulesFromDB(rulegroup)
+
     else:
         rulegroup.LoadedFromDB = False
         rule = ""
@@ -1193,6 +1194,8 @@ def LoadRules(RuleFolder, RuleFileName):
 #                     RuleIdenticalNetwork[(rule.ID, i)].add(comparerule.ID)
 
 
+
+
 def RuleFileOlderThanDB(RuleLocation):
     #return False
 
@@ -1213,6 +1216,7 @@ def RuleFileOlderThanDB(RuleLocation):
 
     #    logging.info("Disk:" + str(FileDiskTime + "  DB:" + str(FileDBTime)))
     return FileDiskTime < FileDBTime
+
 
 
 def LoadRulesFromDB(rulegroup):
@@ -2189,6 +2193,7 @@ def _OutputRuleDB(rulegroup):
 sqlite3 parser.db
 ### ruleinfo.body is the body part of each token. for unique comparison.
 
+CREATE TABLE systemfiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, modifytime DATETIME);
 CREATE TABLE rulefiles    (ID INTEGER PRIMARY KEY AUTOINCREMENT, filelocation TEXT, createtime DATETIME, verifytime DATETIME);
 CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY AUTOINCREMENT, rulefileid INT, name, strtokenlength INT, tokenlength INT, body TEXT, status INT, norms TEXT, origin TEXT, comment TEXT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_body UNIQUE(rulefileid, body) );
 CREATE TABLE rulechunks   (ID INTEGER PRIMARY KEY AUTOINCREMENT, ruleid INT , chunklevel INT, startoffset INT, length INT, stringchunklength INT, headoffset INT, action TEXT  );

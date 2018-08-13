@@ -7,11 +7,13 @@ from LogicOperation import LogicMatch, Clear_LogicMatch_notpointer_Cache
 import DependencyTree
 from utils import *
 import utils
+from datetime import datetime
 counterMatch = 0
 
 WinningRuleDict = {}
 invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
 PipeLine = []
+
 
 
 def MarkWinningTokens(strtokens, rule, StartPosition):
@@ -631,6 +633,48 @@ def LoadPipeline(PipelineLocation):
                 continue
             PipeLine.append(action.strip())
 
+def SystemFileOlderThanDB(XLocation):
+    Systemfilelist = ["../Y/feature.txt","../Y/GlobalMacro.txt"]
+
+    for file in Systemfilelist:
+        fileLocation = os.path.join(XLocation,file)
+        cur = utils.DBCon.cursor()
+        strsql = "select ID, modifytime from systemfiles where filelocation=?"
+        cur.execute(strsql, [file, ])
+        resultrecord =  cur.fetchone()
+        cur.close()
+
+        if not resultrecord or not resultrecord[1]:
+            return False
+
+
+        FileDBTime = resultrecord[1]  # utc time.
+        FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(fileLocation)).strftime('%Y-%m-%d %H:%M:%S')
+
+        if FileDiskTime > FileDBTime:
+            return False
+
+    return True
+
+def UpdateSystemFileFromDB(XLocation):
+    Systemfilelist = ["../Y/feature.txt", "../Y/GlobalMacro.txt"]
+    for file in Systemfilelist:
+        fileLocation = os.path.join(XLocation, file)
+        cur = utils.DBCon.cursor()
+        strsql = "select ID, modifytime from systemfiles where filelocation=?"
+        cur.execute(strsql, [file, ])
+        resultrecord = cur.fetchone()
+        FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(fileLocation)).strftime('%Y-%m-%d %H:%M:%S')
+        if resultrecord:
+            strsql = "update systemfiles set modifytime=? where filelocation=?"
+            cur.execute(strsql, [FileDiskTime, file])
+
+        else:
+            strsql = "INSERT into systemfiles (filelocation, modifytime) VALUES(?, ?)"
+            cur.execute(strsql, [file, FileDiskTime])
+
+        cur.close()
+
 def LoadCommon():
 
     InitDB()
@@ -647,6 +691,7 @@ def LoadCommon():
 
 
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
+    systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
 
     # XLocation = '../../fsa/X/'
 
@@ -670,11 +715,11 @@ def LoadCommon():
     for action in PipeLine:
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
-            Rules.LoadRules(XLocation, Rulefile)
+            Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
 
         if action.startswith("DAGFSA"):
             Rulefile = action[6:].strip()
-            Rules.LoadRules(XLocation, Rulefile)
+            Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
 
         if action.startswith("Lookup Spelling:"):
             Spellfile = action[action.index(":")+1:].strip().split(",")
@@ -733,6 +778,7 @@ def LoadCommon():
                     Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
 
     Lexicon.LoadSegmentLexicon()
+    UpdateSystemFileFromDB(XLocation)
 
     CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
