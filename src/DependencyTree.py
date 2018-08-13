@@ -369,6 +369,7 @@ class DependencyTree:
             self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)] = nodeID
             return nodeID
         else:
+            logging.warning("Can't find {} pointer in this rule{}".format(SubtreePointer, rule))
             return None
 
 
