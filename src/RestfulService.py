@@ -268,7 +268,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
         if ReloadTask.lower() == "/rule":
             logging.info("Start loading rules...")
-            Rules.ResetAllRules()
+            #Rules.ResetAllRules()
             ProcessSentence.WinningRuleDict.clear()
             GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
             Rules.LoadGlobalMacro(GlobalmacroLocation)
@@ -276,10 +276,19 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             for action in ProcessSentence.PipeLine:
                 if action.startswith("FSA"):
                     Rulefile = action[3:].strip()
-                    Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
+                    RuleLocation = os.path.join(XLocation, Rulefile)
+                    if RuleLocation.startswith("."):
+                        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
+                    if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
+                        Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
+
                 if action.startswith("DAGFSA"):
                     Rulefile = action[6:].strip()
-                    Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
+                    RuleLocation = os.path.join(XLocation, Rulefile)
+                    if RuleLocation.startswith("."):
+                        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
+                    if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
+                        Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB)
             Reply += "Reloaded rules at " + str(datetime.now())
 
         if ReloadTask.lower() == "/pipeline":
@@ -336,6 +345,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             self.send_header('Cache-Control', 'public, max-age=31536000')
             self.end_headers()
             self.wfile.write(f.read().encode("utf-8"))
+
 
 
 def init():
