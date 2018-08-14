@@ -703,9 +703,7 @@ def LoadCommon():
     if logging.root.isEnabledFor(logging.DEBUG):
         logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
-    RuleFolder = os.path.dirname(GlobalmacroLocation)
-    RuleFileName = os.path.basename(GlobalmacroLocation)
-    Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
+    Rules.LoadGlobalMacro(GlobalmacroLocation)
 
     if "/X/" in XLocation:
         Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')

@@ -1016,9 +1016,7 @@ def ProcessMacro(ruleContent, MacroDict):
     return ruleContent
 
 
-def LoadGlobalMacro(RuleFolder, RuleFileName):
-    RuleLocation = os.path.join(RuleFolder, RuleFileName)
-
+def LoadGlobalMacro(RuleLocation):
     if RuleLocation.startswith("."):
         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
 
@@ -1033,9 +1031,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
                 code, _ = SeparateComment(line)
                 if code.find("::") >= 0 or code.find("==") >= 0:
                     if rule:
-
                         node = Rule()
-                        node.FileName = RuleFileName  # used in keeping record of the winning rules.
                         node.SetRule(rule, _GlobalMacroDict)
                         if node.RuleContent:
                             if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
@@ -1054,7 +1050,6 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
 
             if rule:  # last one
                 node = Rule()
-                node.FileName = RuleFileName  # used in keeping record of the winning rules.
                 node.SetRule(rule, _GlobalMacroDict)
                 if node.RuleContent:
                     if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
@@ -1069,7 +1064,7 @@ def LoadGlobalMacro(RuleFolder, RuleFileName):
                         logging.error("There should be no rule in this Global Macro File:" + rule)
 
     except UnicodeError:
-        logging.error("Error when processing " + RuleFileName)
+        logging.error("Error when processing Global Macro file " + RuleLocation)
         logging.error("Currently rule=" + rule)
 
 
@@ -1287,8 +1282,7 @@ def LoadRulesFromDB(rulegroup):
             #     # TODO: Modified as OrFeatureGroup. Need to save to DB properly.
             cur.execute(strsql_countorfeatures,[nodeid])
             countrows = cur.fetchall()
-            for row in countrows:
-                sizefeaturegroup = row[0]
+            sizefeaturegroup = countrows[0][0]
             # sizefeaturegroup = int(cur.execute(strsql_countorfeatures,[nodeid]))
             for groupid in range(0, sizefeaturegroup):
                 cur.execute(strsql_node_orfeature,[nodeid,groupid])
