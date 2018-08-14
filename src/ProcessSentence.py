@@ -300,7 +300,7 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
 def DAGMatch(Dag, Rule, level, OpenNodeID = None):
     #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
     if level >= len(Rule.Tokens):
-        # now the rule tokens are all matched.
+        # now the rule tokens are all matched!
         routeSignature = GetRouteSignature(Rule)
         #logging.info("RouteSignature:{}".format(RouteSignature))
         if not hasattr(DAGMatch, "DagSuccessRoutes"):
@@ -703,9 +703,7 @@ def LoadCommon():
     if logging.root.isEnabledFor(logging.DEBUG):
         logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
-    RuleFolder = os.path.dirname(GlobalmacroLocation)
-    RuleFileName = os.path.basename(GlobalmacroLocation)
-    Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
+    Rules.LoadGlobalMacro(GlobalmacroLocation)
 
     if "/X/" in XLocation:
         Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')

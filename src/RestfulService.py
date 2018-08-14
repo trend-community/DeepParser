@@ -194,10 +194,6 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
         XLocation = os.path.dirname(PipeLineLocation) + "/"
         Reply = "Lexicon/Rule/Pipeline:"
-        GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
-        RuleFolder = os.path.dirname(GlobalmacroLocation)
-        RuleFileName = os.path.basename(GlobalmacroLocation)
-        Rules.LoadGlobalMacro(RuleFolder, RuleFileName)
         FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
         FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
         systemfileolderthanDB = ProcessSentence.SystemFileOlderThanDB(XLocation)
@@ -274,6 +270,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             logging.info("Start loading rules...")
             #Rules.ResetAllRules()
             ProcessSentence.WinningRuleDict.clear()
+            GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+            Rules.LoadGlobalMacro(GlobalmacroLocation)
 
             for action in ProcessSentence.PipeLine:
                 if action.startswith("FSA"):
