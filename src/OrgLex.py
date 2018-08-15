@@ -163,7 +163,7 @@ def SplitFeaturesWithSemicolon(FeatureString, node):
     return features,node
 
 
-def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
+def compareLex(_LexiconDict1,_LexiconDict2):
 
 
     removeWord = set()
@@ -175,7 +175,7 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
             feature1 = node1.features
             node2 = _LexiconDict2.get(word)
             feature2 = node2.features
-            temp = feature1.union(feature2)
+            temp = set(feature1).union(set(feature2))
             featuresCopy = temp.copy()
 
             for feature in temp:
@@ -214,9 +214,9 @@ def compareLex(_LexiconDict1,_LexiconDict2, lexXandOther = False):
     # print (len(removeWord))
 
     for word in removeWord:
-        if not lexXandOther:
-            del _LexiconDict1[word]
+        print ("repeated word is " + word)
         del _LexiconDict2[word]
+
 
 
 def EnrichFeature( _LexiconDict):
@@ -303,7 +303,7 @@ def printNewLex(_CommentDictTemp, _LexiconDictTemp, newloc):
         if _CommentDictTemp.get("firstCommentLine"):
             output += _CommentDictTemp.get("firstCommentLine") + "\n"
         oldWord = None
-        logging.debug("the size of lexX is: " + str(len(_LexiconDictTemp)))
+        logging.debug("the size of " + newloc + " is: " + str(len(_LexiconDictTemp)))
         for word in s:
             if oldWord in _CommentDictTemp.keys():
                 output += _CommentDictTemp[oldWord]
@@ -879,32 +879,31 @@ if __name__ == "__main__":
 
     compareLex(_LexiconDictI, _LexiconDictI4)
 
-    compareLex(_LexiconDictLexX, _LexiconDictB, lexXandOther=True)
-    compareLex(_LexiconDictLexX, _LexiconDictP, lexXandOther=True)
-    compareLex(_LexiconDictLexX, _LexiconDictL, lexXandOther=True)
-    compareLex(_LexiconDictLexX, _LexiconDictI, lexXandOther=True)
-    compareLex(_LexiconDictLexX, _LexiconDictI4, lexXandOther=True)
+    compareLex(_LexiconDictLexX, _LexiconDictB)
+    compareLex(_LexiconDictLexX, _LexiconDictP)
+    compareLex(_LexiconDictLexX, _LexiconDictL)
+    compareLex(_LexiconDictLexX, _LexiconDictI)
+    compareLex(_LexiconDictLexX, _LexiconDictI4)
 
-    compareLex(_LexiconDictLexXc2c3, _LexiconDictB, lexXandOther=True)
-    compareLex(_LexiconDictLexXc2c3, _LexiconDictP, lexXandOther=True)
-    compareLex(_LexiconDictLexXc2c3, _LexiconDictL, lexXandOther=True)
-    compareLex(_LexiconDictLexXc2c3, _LexiconDictI, lexXandOther=True)
-    compareLex(_LexiconDictLexXc2c3, _LexiconDictI4, lexXandOther=True)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictB)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictP)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictL)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictI)
+    compareLex(_LexiconDictLexXc2c3, _LexiconDictI4)
 
-    compareLex(_LexiconDictZidian, _LexiconDictLexXc2c3, lexXandOther=True)
-    compareLex(_LexiconDictZidian, _LexiconDictLexX, lexXandOther=True)
-    compareLex(_LexiconDictLexX, _LexiconDictLexXc2c3, lexXandOther=True)
+    compareLex(_LexiconDictZidian, _LexiconDictLexXc2c3)
+    compareLex(_LexiconDictZidian, _LexiconDictLexX)
+    compareLex(_LexiconDictLexX, _LexiconDictLexXc2c3)
 
 
-    compareLex(_LexiconDictB,_LexiconDictDefX)
-    compareLex( _LexiconDictP,_LexiconDictDefX)
-    compareLex( _LexiconDictL,_LexiconDictDefX)
-    compareLex(_LexiconDictI,_LexiconDictDefX)
-    compareLex( _LexiconDictI4,_LexiconDictDefX)
-    compareLex( _LexiconDictLexX,_LexiconDictDefX)
-    compareLex( _LexiconDictLexXc2c3,_LexiconDictDefX)
-
-    compareLex(_LexiconDictZidian, _LexiconDictDefX, lexXandOther=True)
+    compareLex(_LexiconDictDefX,_LexiconDictB)
+    compareLex(_LexiconDictDefX, _LexiconDictP)
+    compareLex(_LexiconDictDefX, _LexiconDictL)
+    compareLex(_LexiconDictDefX,_LexiconDictI)
+    compareLex(_LexiconDictDefX, _LexiconDictI4)
+    compareLex(_LexiconDictDefX, _LexiconDictLexX)
+    compareLex(_LexiconDictDefX, _LexiconDictLexXc2c3)
+    compareLex(_LexiconDictDefX, _LexiconDictZidian)
 
 
     _LexiconDictDefXOrig = _LexiconDictDefX.copy()

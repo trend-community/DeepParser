@@ -205,6 +205,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
         if ReloadTask.lower() == "/lexicon":
             logging.info("Start loading lexicon...")
+            Lexicon.ResetAllLexicons()
             # ProcessSentence.LoadCommonLexicon(XLocation)
             for action in ProcessSentence.PipeLine:
                 if action.startswith("Lookup Spelling:"):

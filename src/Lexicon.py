@@ -518,6 +518,22 @@ def ApplyLexiconToNodes(NodeList):
     return NodeList
 
 
+def ResetAllLexicons():
+    _LexiconDict.clear()
+    _LexiconLookupSet.clear()
+    _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
+    _LexiconLookupSet[LexiconLookupSource.defLex] = set()
+    _LexiconLookupSet[LexiconLookupSource.External] = set()
+    _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
+    _LexiconSegmentDict.clear() # from main2017. used for segmentation onln. there is no feature.
+    _LexiconSegmentSlashDict.clear() #
+    _LexiconCuobieziDict.clear()
+    _LexiconFantiDict.clear()
+    CompositeKG.clear()
+    CompositeKGSetADict.clear()
+    _CommentDict.clear()
+
+
 def InitLengthSet():
     global C1ID, C2ID, C3ID, C4ID, C4plusID
     global C5ID, C5plusID, C6ID, C6plusID, C7ID, C7plusID, C8ID, C8plusID
