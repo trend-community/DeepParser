@@ -1677,6 +1677,11 @@ def _ExpandOrBlock(OneList):
                     if len(subTokenlist) > 1:
                         logging.warning("The block has action before Or expand!")
                     subTokenlist[-1].action = token.action
+                if token.SubtreePointer:
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has Subtreepointer for multiple subtokens!")
+                    subTokenlist[-1].SubtreePointer = token.SubtreePointer
+
             for subtoken in subTokenlist:
                 newrule.Tokens.append(subtoken)
 
@@ -1711,6 +1716,10 @@ def _ExpandOrBlock(OneList):
                     if len(subTokenlist) > 1:
                         logging.warning("The block has action before Or expand!")
                     subTokenlist[-1].action = token.action
+                if token.SubtreePointer:
+                    if len(subTokenlist) > 1:
+                        logging.warning("The block has Subtreepointer for multiple subtokens!")
+                    subTokenlist[-1].SubtreePointer = token.SubtreePointer
             for subtoken in subTokenlist:
                 newrule.Tokens.append(subtoken)
 
