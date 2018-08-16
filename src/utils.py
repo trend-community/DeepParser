@@ -285,7 +285,7 @@ def SearchToEnd(string, Reverse=False):
 def GetPrefix(Name):
     match = re.findall("(.*?)_\d", Name)
     if match:
-        return match.group(0)
+        return match[0]
     else:
         return Name
 
