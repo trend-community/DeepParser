@@ -211,12 +211,17 @@ def OutputFeatureOntologyGraph():
 
                 OpenWord, ancestors = code.split(",", 1)
                 OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  #remove the alias.
-
+                if OpenWordID == -1:
+                    logging.warning("OutputFeatureOntologyGraph: wrong word ID for line {}.".format(code))
+                    continue
                 for path in ancestors.split(";"):
                     prev = OpenWordID
                     for node in path.split(","):
                         if node.strip():
                             parentid = GetFeatureID(node.strip())
+                            if parentid == -1:
+                                logging.warning("OutputFeatureOntologyGraph: wrong parentid for node {}".format(node))
+                                continue
                             if (prev, parentid) not in OutputFeatureOntologyGraph.graph:
                                 OutputFeatureOntologyGraph.graph.add((prev, parentid))
                                 OutputFeatureOntologyGraph.outbound[prev] += 1
@@ -227,11 +232,11 @@ def OutputFeatureOntologyGraph():
                             prev = GetFeatureID(node.strip())
 
     output = "{\n"
-    for node in OutputFeatureOntologyGraph.nodeset:
-        output += "{} [ tooltip=\"Inbound:{} Outbound:{}\"];\n".format(GetFeatureName(node), OutputFeatureOntologyGraph.inbound[node], OutputFeatureOntologyGraph.outbound[node])
+    for node in sorted(OutputFeatureOntologyGraph.nodeset):
+        output += "{} [label=\"{}\" tooltip=\"Inbound:{} Outbound:{} \" ];\n".format(node, GetFeatureName(node), OutputFeatureOntologyGraph.inbound[node], OutputFeatureOntologyGraph.outbound[node])
     for edge in sorted(OutputFeatureOntologyGraph.graph, key=operator.itemgetter(0, 1)):
         #output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
-        output += "\t{}->{} ;\n".format(GetFeatureName(edge[0]), GetFeatureName(edge[1]))
+        output += "\t{}->{} ;\n".format(edge[0], edge[1])
     output += "}\n"
 
     logging.info("In Feature ontology, There are {} edges, for {} nodes.".format(len(OutputFeatureOntologyGraph.graph), len(OutputFeatureOntologyGraph.nodeset)))
