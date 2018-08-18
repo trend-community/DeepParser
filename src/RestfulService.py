@@ -194,14 +194,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
         XLocation = os.path.dirname(PipeLineLocation) + "/"
         Reply = "Lexicon/Rule/Pipeline:"
-        FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
-        FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
         systemfileolderthanDB = ProcessSentence.SystemFileOlderThanDB(XLocation)
-        PunctuatefileLocation = os.path.join(XLocation, "../Y/LexY-EnglishPunctuate.txt")
-        if "/X/" in XLocation:
-            Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
-        else:
-            Lexicon.LoadLexicon(PunctuatefileLocation)
+       
 
         if ReloadTask.lower() == "/lexicon":
             logging.info("Start loading lexicon...")
