@@ -88,8 +88,8 @@ def SeparateRules(multilineString):
 
     endlineMatch = re.match("(.*;)\s*(//.*)", newlines[-1])
     if endlineMatch and endlineMatch.lastindex == 2:
-        newlines[-1] = endlineMatch[1]
-        newlines[0] += endlineMatch[2]
+        newlines[-1] = endlineMatch.group(1)
+        newlines[0] += endlineMatch.group(2)
 
     newString = "\n".join(newlines)
 
@@ -887,8 +887,8 @@ def ProcessTokens(Tokens):
         notOrMatch = re.findall("!([^() ]*)\|(\(\S*?\))", node.word, re.DOTALL)
         if notOrMatch:
             for match in notOrMatch:
-                expandAnd = ExpandNotOrToAndNot(match[0])
-                node.word = node.word.replace(match[0] + "|", expandAnd + " !")
+                expandAnd = ExpandNotOrToAndNot(match.group(1))
+                node.word = node.word.replace(match.group(0) + "|", expandAnd + " !")
 
         notOrMatch = re.findall("!\(([^() ]*\|[^() ]*)\)", node.word, re.DOTALL)
         if notOrMatch:
@@ -1836,8 +1836,8 @@ def _ExpandOrToken(OneList):
                 SubtreePointerExtra = ''
                 ExtraMatch = re.match("(^.*?)([<>].*)", SubtreePointer)
                 if ExtraMatch:
-                    SubtreePointer = ExtraMatch[1]
-                    SubtreePointerExtra = ExtraMatch[2]
+                    SubtreePointer = ExtraMatch.group(1)
+                    SubtreePointerExtra = ExtraMatch.group(2)
 
 
                 for subtreepointer in SubtreePointer.split("|"):
@@ -1881,8 +1881,8 @@ def _ExpandOrToken(OneList):
 
 def _ProcessOrToken_NotAnd(word, match):
     word = word.strip("[|]")
-    OriginalNotAndWord = match[0]
-    NotAndString = match[1]
+    OriginalNotAndWord = match.group(0)
+    NotAndString = match.group(1)
     orlist = []
     for x in NotAndString.split(" "):
         oritem = x.strip()
@@ -1901,8 +1901,8 @@ def _ProcessOrToken_NotAnd(word, match):
 
 def _ProcessOrToken_Unification(word, match):
     word = word.strip("[|]")
-    OriginalUnificationWord = match[0]
-    UnificationString = match[1]
+    OriginalUnificationWord = match.group(0)
+    UnificationString = match.group(1)
     orlist = UnificationString.split("|")
 
     leftindex = word.find(OriginalUnificationWord)
