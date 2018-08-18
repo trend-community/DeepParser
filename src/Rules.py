@@ -1,4 +1,4 @@
-import copy
+import copy, traceback
 from datetime import datetime
 from utils import *
 import utils
@@ -345,22 +345,26 @@ class Rule:
         strsql_node_feature = "INSERT into rulenode_features (rulenodeid, featureid, type) values(?,?,?)"
         strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
         strsql_node_orfeature = "INSERT into rulenode_orfeatures (rulenodeid, featureid, groupid) values(?,?,?)"
-        for i in range(self.TokenLength):
-            cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer,
-                                      self.Tokens[i].SubtreePointer,
-                                      self.Tokens[i].AndText, self.Tokens[i].AndTextMatchtype,
-                                      self.Tokens[i].NotTextMatchtype])
-            nodeid = cur.lastrowid
-            for fid in self.Tokens[i].AndFeatures:
-                cur.execute(strsql_node_feature, [nodeid, fid, 1])
-            for gid in range(len(self.Tokens[i].OrFeatureGroups)):
-                for fid in self.Tokens[i].OrFeatureGroups[gid]:
-                    cur.execute(strsql_node_orfeature, [nodeid, fid, gid])
-            for fid in self.Tokens[i].NotFeatures:
-                cur.execute(strsql_node_feature, [nodeid, fid, 3])
-            for NotText in self.Tokens[i].NotTexts:
-                cur.execute(strsql_node_text, [nodeid, NotText, 2])
-
+        try:
+            for i in range(self.TokenLength):
+                cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer,
+                                          self.Tokens[i].SubtreePointer,
+                                          self.Tokens[i].AndText, self.Tokens[i].AndTextMatchtype,
+                                          self.Tokens[i].NotTextMatchtype])
+                nodeid = cur.lastrowid
+                for fid in self.Tokens[i].AndFeatures:
+                    cur.execute(strsql_node_feature, [nodeid, fid, 1])
+                for gid in range(len(self.Tokens[i].OrFeatureGroups)):
+                    for fid in self.Tokens[i].OrFeatureGroups[gid]:
+                        cur.execute(strsql_node_orfeature, [nodeid, fid, gid])
+                for fid in self.Tokens[i].NotFeatures:
+                    cur.execute(strsql_node_feature, [nodeid, fid, 3])
+                for NotText in self.Tokens[i].NotTexts:
+                    cur.execute(strsql_node_text, [nodeid, NotText, 2])
+        except sqlite3.Error as e:
+            logging.error(e)
+            logging.error(traceback.format_exc())
+            logging.info("DBSeve: {}".format(self))
         strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
         for i in range(len(self.Chunks)):
             cur.execute(strsql_chunk, [self.ID, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
