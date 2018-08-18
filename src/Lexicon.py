@@ -36,6 +36,8 @@ class LexiconNode(object):
         self.atom = word
         self.features = set()
         self.missingfeature = ""
+        self.origFeatures = set()
+        self.stemFeatures = set()
         # self.forLookup = False
 
     def __str__(self):
@@ -99,6 +101,10 @@ def SplitFeatures(FeatureString):
     if normMatch and normMatch.lastindex == 3:
         NormPart = normMatch.group(2)
         FeatureString = normMatch.group(1) + normMatch.group(3)
+
+    # Added by Xiaochen, for English lexicon, ";" exists to distinguish features from stem or original word
+    if ";" in FeatureString:
+        FeatureString = FeatureString.replace(";"," ")
 
     features = FeatureString.split()
     if StemPart:
@@ -166,18 +172,43 @@ def OutputLexiconFile(FolderLocation):
 #             _LexiconBlacklist.append(pattern)
 
 
-def LoadSegmentLexicon():
+def LoadMainLexicon(lexiconLocation):
     global _LexiconSegmentDict
-
-    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
-    lexiconLocation = XLocation + 'main2017.txt'
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             word, _ = SeparateComment(line)
             if word:
                 word = word.replace("/", "").lower()
                 _LexiconSegmentDict[word] = 0.9
-    logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
+    # logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+
+
+def LoadSegmentSlash(lexiconLocation):
+    global _LexiconSegmentDict
+    with open(lexiconLocation, encoding='utf-8') as dictionary:
+        for line in dictionary:
+            word, _ = SeparateComment(line)
+            if word:
+                combinedword = word.replace("/", "")
+                _LexiconSegmentSlashDict[combinedword] = word
+                if combinedword not in _LexiconSegmentDict:
+                    _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
+
+
+def LoadSegmentLexicon():
+    global _LexiconSegmentDict
+
+    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
+    # lexiconLocation = XLocation + 'main2017.txt'
+    # with open(lexiconLocation, encoding='utf-8') as dictionary:
+    #     for line in dictionary:
+    #         word, _ = SeparateComment(line)
+    #         if word:
+    #             word = word.replace("/", "").lower()
+    #             _LexiconSegmentDict[word] = 0.9
+    # logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
     if _LexiconDict:
         for word in _LexiconDict:
@@ -200,15 +231,15 @@ def LoadSegmentLexicon():
     #    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
-    lexiconLocation = XLocation + 'SegmentSlash.txt'
-    with open(lexiconLocation, encoding='utf-8') as dictionary:
-        for line in dictionary:
-            word, _ = SeparateComment(line)
-            if word:
-                combinedword = word.replace("/", "")
-                _LexiconSegmentSlashDict[combinedword] = word
-                if combinedword not in _LexiconSegmentDict:
-                    _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+    # lexiconLocation = XLocation + 'SegmentSlash.txt'
+    # with open(lexiconLocation, encoding='utf-8') as dictionary:
+    #     for line in dictionary:
+    #         word, _ = SeparateComment(line)
+    #         if word:
+    #             combinedword = word.replace("/", "")
+    #             _LexiconSegmentSlashDict[combinedword] = word
+    #             if combinedword not in _LexiconSegmentDict:
+    #                 _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
 
     for word in list(_LexiconSegmentDict):
         if IsAlphaLetter(word):
@@ -229,6 +260,8 @@ def LoadExtraReference(lexiconLocation, thedict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
             code, _ = SeparateComment(line)
+            if "：" in code:
+                code = code.replace("：", ":")
             if code and ":" in code:
                 goodword, badwords = code.split(":", 1)
                 for badword in badwords.split():
@@ -293,6 +326,9 @@ def LoadCompositeKG(lexiconLocation):
                 try:
                     KGKey, Sets = code.split("=")
                     CompositeConditions = []
+                    if "：" in Sets:
+                        Sets = Sets.replace("：", ":")
+
                     for Set in Sets.split(":"):
                         CompositeConditions.append([x.strip().lower() for x in Set.split("|")])
                     CompositeKG.append((KGKey, CompositeConditions))
@@ -332,6 +368,15 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             code, comment = SeparateComment(line)
 
             code = code.replace("\:", utils.IMPOSSIBLESTRING)
+
+            # convert Chinese colon to English colon
+            if "ChinesePunctuate" not in lexiconLocation and "：" in code:
+                code = code.replace("：", ":")
+            if  ":::" in code:
+                code = code.replace(":::", ":")
+            if "::" in code :
+                code = code.replace("::",":")
+
             blocks = [x.strip() for x in re.split(":", code) if x]
             if not blocks:
                 continue
@@ -471,6 +516,22 @@ def ApplyLexiconToNodes(NodeList):
         node = node.next
 
     return NodeList
+
+
+def ResetAllLexicons():
+    _LexiconDict.clear()
+    _LexiconLookupSet.clear()
+    _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
+    _LexiconLookupSet[LexiconLookupSource.defLex] = set()
+    _LexiconLookupSet[LexiconLookupSource.External] = set()
+    _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
+    _LexiconSegmentDict.clear() # from main2017. used for segmentation onln. there is no feature.
+    _LexiconSegmentSlashDict.clear() #
+    _LexiconCuobieziDict.clear()
+    _LexiconFantiDict.clear()
+    CompositeKG.clear()
+    CompositeKGSetADict.clear()
+    _CommentDict.clear()
 
 
 def InitLengthSet():
@@ -616,7 +677,7 @@ def ApplyLexicon(node, lex=None):
             node.ApplyFeature(utils.FeatureID_CD)
         elif node.text in string.punctuation:
             node.ApplyFeature(utils.FeatureID_SYM)
-        elif node.text == " ":
+        elif node.norm == " ":
             node.ApplyFeature(utils.FeatureID_CM)
             # not to apply NNP/OOV to space.
         else:
@@ -672,7 +733,7 @@ def LexiconLookup(strTokens, lookupsource):
                 logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[j] = combinedCount
 
-    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+    #logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
     i = strTokens.size - 1
     while i > 0:
@@ -715,7 +776,7 @@ def _LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
                 logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
                 bestScore[j] = combinedCount
 
-    logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+    #logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
     i = strTokens.size - 1
     while i > 0:

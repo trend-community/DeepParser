@@ -1,6 +1,6 @@
 #!/usr/bin/env bash  
 # if it comes with a parameter, then ignore gitpull, just do the restart.
-if [$# -eq 0]
+if [ $# -eq 0 ]
 then
 #use the gitpull.sh for normal process.
     bash gitpull.sh

@@ -3,14 +3,17 @@ import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
 #from threading import Thread
-from LogicOperation import LogicMatch, FindPointerNode #, LogicMatchFeatures
+from LogicOperation import LogicMatch, Clear_LogicMatch_notpointer_Cache
+import DependencyTree
 from utils import *
 import utils
+from datetime import datetime
 counterMatch = 0
 
 WinningRuleDict = {}
 invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
 PipeLine = []
+
 
 
 def MarkWinningTokens(strtokens, rule, StartPosition):
@@ -66,14 +69,16 @@ def HeadMatch(strTokenList, StartPosition, rule):
                 return False  #  this rule does not fit for this string
             if rule.Tokens[i].SubtreePointer:
                 StartPosition -= 1  # do not skip to next strToken, if this token is for Subtree.
-            if rule.Tokens[i].pointer:
-                HaveTempPointer = True
-                strTokenList.get(i + StartPosition).TempPointer = rule.Tokens[i].pointer
+            else:
+                if rule.Tokens[i].pointer:
+                    HaveTempPointer = True
+                    strTokenList.get(i + StartPosition).TempPointer = rule.Tokens[i].pointer
+                    #logging.debug("   Set TempPointer: node {} -> {}".format(strTokenList.get(i + StartPosition).text, rule.Tokens[i].pointer))
         except RuntimeError as e:
-            logging.error("Error in HeadMatch rule:" + str(rule.Tokens))
+            logging.error("Error in HeadMatch rule:" + str(rule))
             logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text)
             logging.error(e)
-            # raise
+            raise
         except Exception as e:
             logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
@@ -82,7 +87,6 @@ def HeadMatch(strTokenList, StartPosition, rule):
             logging.error("Using " + rule.Tokens[i].word + " to match:" + strTokenList.get(i+StartPosition).text )
             logging.error(e)
             raise
-    #RemoveTempPointer(strTokenList)
     return True
 
 
@@ -94,17 +98,9 @@ def RemoveTempPointer(StrList):
         x = x.next
 
 
-def MarkTempPointer_obsolete(strtokens, rule, StrStartPosition):
-    VirtualRuleToken = 0
-    for i in range(rule.TokenLength):
-        if rule.Tokens[i].SubtreePointer:
-            VirtualRuleToken += 1
-        if rule.Tokens[i].pointer:
-            strtokens.get(i + StrStartPosition - VirtualRuleToken).TempPointer = rule.Tokens[i].pointer
-
-
 # Apply the features, and other actions.
 def ApplyWinningRule(strtokens, rule, StartPosition):
+    Clear_LogicMatch_notpointer_Cache()
 
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
@@ -116,20 +112,18 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
         logging.error(str(rule))
         raise(RuntimeError("Rule error"))
 
-    #MarkTempPointer(strtokens, rule, StartPosition)
     VirtualRuleToken = 0
     for i in range(rule.TokenLength):
         if rule.Tokens[i].SubtreePointer:
             VirtualRuleToken += 1
 
         if rule.Tokens[i].action:
-            if rule.Tokens[i].SubtreePointer:
-                SubtreePointer = rule.Tokens[i].SubtreePointer
-                #logging.debug("Start looking for Subtree: " + SubtreePointer)
-                token = FindPointerNode(strtokens, i + StartPosition - VirtualRuleToken, rule.Tokens, i, Pointer=SubtreePointer)
-            else:
-                token = strtokens.get(i + StartPosition - VirtualRuleToken)
-
+            try:
+                token = strtokens.searchID(rule.Tokens[i].MatchedNodeID)
+            except :
+                logging.error("Trying to find str token of the rule token {}".format(rule.Tokens[i]))
+                logging.error("The strtokens is: {}".format(jsonpickle.dumps(strtokens)))
+                raise
             token.ApplyActions(rule.Tokens[i].action)
 
     if rule.Chunks:
@@ -138,12 +132,31 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
             for chunk in rule.Chunks:   # the chunks are presorted to process right chucks first.
                 if chunk.ChunkLevel != ChunkLevel:
                     continue
-                strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
-                strtokens.get(StartPosition+chunk.StartOffset).ApplyActions(chunk.Action)
+                newnode = strtokens.combine(StartPosition+chunk.StartOffset, chunk.StringChunkLength, chunk.HeadOffset)
+                newnode.ApplyActions(chunk.Action)
+                newnode.ApplyDefaultUpperRelationship()
 
     RemoveTempPointer(strtokens)
     return 0
 
+
+# Apply the features, and other actions.
+def ApplyWinningDagRule(Dag, rule, OpenNode):
+    Clear_LogicMatch_notpointer_Cache()
+
+    for i in range(rule.TokenLength):
+        if rule.Tokens[i].action:
+            nodeID = rule.Tokens[i].MatchedNodeID
+            node = Dag.nodes[nodeID]
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("Start applying action {} to node {}".format(rule.Tokens[i].action, node.text))
+            Dag.ApplyDagActions(OpenNode, node, rule.Tokens[i].action, rule)
+
+    for nodeid in Dag.nodes:
+        #logging.info("node: {}".format(nodeid))
+        Dag.nodes[nodeid].TempPointer = ''  # remove TempPointer after applying action.
+
+    return 0
 
 #list1 is combination of norm and Head0Text.
 # either of them equals to the item in list2, that means match.
@@ -217,6 +230,7 @@ def ListMatch_UsingCache(list1, list2):
 #         StrNorms.append(newset)
 #     return StrNorms
 
+
 #FailedRules: gets set according to RuleIdenticalNetwork. gets reset when apply rule.
 def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
     WinningRules = {}
@@ -256,7 +270,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 WinningRule = rule
                 break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
         if WinningRule:
-            logging.debug("Found winning rule at counter: " + str(counter))
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("Found winning rule at counter: {}. The winning rule is: {}".format(counter, WinningRule) )
             try:
                 if WinningRule.ID not in WinningRules:
                     WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
@@ -268,19 +283,145 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                     logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
                     rulegroup.RuleList.remove(WinningRule)
                 else:
-                    logging.error("Unknown Rule Applying Error:" + str(e))
+                    logging.error("Unknown Rule Applying Error when applying{}:\n {}".format(WinningRule.RuleName, e))
+                    logging.info("strtokenlist={}".format(strtokenlist))
+                    #raise  #ignore this rule, do the next.
 
             except IndexError as e:
                 logging.error("Failed to apply this rule:")
                 logging.error(str(WinningRule))
                 logging.error(str(e))
+                #raise
         i += 1
         strtoken = strtoken.next
     return WinningRules
 
 
+def DAGMatch(Dag, Rule, level, OpenNodeID = None):
+    #logging.debug("DAGMatch: level {}, OpenNodeID {}".format( level, OpenNodeID))
+    if level >= len(Rule.Tokens):
+        # now the rule tokens are all matched!
+        routeSignature = GetRouteSignature(Rule)
+        #logging.info("RouteSignature:{}".format(RouteSignature))
+        if not hasattr(DAGMatch, "DagSuccessRoutes"):
+            DAGMatch.DagSuccessRoutes = set()       #initialize.
+
+        for route in DAGMatch.DagSuccessRoutes:
+            if routeSignature.RuleFileName == route.RuleFileName and \
+                    len(routeSignature.Route) < len(route.Route) and \
+                    routeSignature.Route.issubset(route.Route):
+                return None #a longer route is already matched and applied.
+            if routeSignature.RuleID == route.RuleID and \
+                    routeSignature.Route == route.Route:
+                return None #a longer route is already matched and applied.
+
+        DAGMatch.DagSuccessRoutes.add(routeSignature)
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Dag.TokenMatch(): Matched all tokens.")
+        return Dag.nodes[OpenNodeID]
+
+    if level < 0:
+        #Dag.ClearVisited()
+        return None
+
+    ruletoken = Rule.Tokens[level]
+    for nodeID in Dag.nodes:
+        if  Dag.nodes[nodeID].visited:
+            continue
+        if level == 0:     #when the OpneNode is None, level should be 0
+            OpenNodeID = nodeID
+
+        if Dag.TokenMatch(nodeID, ruletoken, OpenNodeID, Rule):
+            Dag.nodes[nodeID].visited = True
+            ruletoken.MatchedNodeID = nodeID
+            Dag.nodes[nodeID].TempPointer = ruletoken.pointer
+            if ruletoken.pointer:
+                logging.debug("DAGMatch: setting this node {} to TempPointer: {}".format(nodeID, ruletoken.pointer))
+            successnode = DAGMatch(Dag, Rule, level+1, OpenNodeID)
+            if successnode:
+                return successnode
+            else:
+                Dag.nodes[nodeID].visited = False
+                ruletoken.MatchedNodeID = None
+                Dag.nodes[nodeID].TempPointer = ''
+    return None
+    #return DAGMatch(Dag, Rule, level-1, OpenNodeID)
+
+
+class RouteSignature(object):
+    RuleFileName = ""
+    RuleID = -1
+    Route = None
+
+    def __init__(self, RuleFileName, RuleID, Route):
+        self.RuleFileName = RuleFileName
+        self.RuleID = RuleID
+        self.Route = Route
+
+    def __str__(self):
+        return "RuleID:{}\tRoute:{}".format(self.RuleID, self.Route)
+
+def GetRouteSignature(rule):
+    RouteSet = frozenset([token.MatchedNodeID for token in rule.Tokens if token.MatchedNodeID is not None])
+    return RouteSignature(rule.FileName, rule.ID, RouteSet)
+
+
+def MatchAndApplyDagRuleFile(Dag, RuleFileName):
+    WinningRules = {}
+    rulegroup = Rules.RuleGroupDict[RuleFileName]
+
+    rule_sequence = 0
+    counter = 0
+    RuleLength = len(rulegroup.RuleList)
+    while rule_sequence < RuleLength:
+        counter += 1
+        if counter > 10 * RuleLength:
+            break
+        rule = rulegroup.RuleList[rule_sequence]
+
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("DAG: Start checking rule {}".format( rule))
+        node = DAGMatch(Dag,  rule, 0)
+        if node:
+            if logging.root.isEnabledFor(logging.DEBUG):
+                logging.debug("DAG: Winning rule! {}".format(rule))
+            try:
+                    if rule.ID not in WinningRules:
+                        WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
+                    else:
+                        WinningRules[rule.ID] += ' <li class="indent">' + node.text
+                    ApplyWinningDagRule(Dag, rule, node)
+                    rule_sequence -= 1  # allow the same rule to match other nodes too.
+            except RuntimeError as e:
+                if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
+                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
+                    rulegroup.RuleList.remove(rule)
+                else:
+                    logging.error("Unknown Rule Applying Error:" + str(e))
+
+            except IndexError as e:
+                logging.error("Failed to apply this rule:")
+                logging.info(str(rule))
+                logging.error(str(e))
+            #search the rest of rules using other nodes
+            #node.applied = True    #apply to apply to the same node
+#            break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
+
+        Dag.ClearVisited()
+        for node_id in Dag.nodes:
+            # if logging.root.isEnabledFor(logging.INFO):
+            #     logging.info("node: {}".format(node))
+            Dag.nodes[node_id].TempPointer = ''   #remove TempPointer from failed rules.
+
+        rule_sequence += 1
+
+    return WinningRules
+
+
 def DynamicPipeline(NodeList, schema):
     WinningRules = {}
+    Dag = DependencyTree.DependencyTree()
+
 
     for action in PipeLine:
         if action == "segmentation":
@@ -299,19 +440,41 @@ def DynamicPipeline(NodeList, schema):
             # if NodeList:
             #     logging.debug(NodeList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-        if action.startswith("lookup"):
-            lookupSourceName = action[6:].strip()
+        # if action.startswith("lookup"):
+        #     lookupSourceName = action[6:].strip()
+        #     for x in LexiconLookupSource:
+        #         if x.name == lookupSourceName:
+        #             Lexicon.LexiconLookup(NodeList, x)
+        #
+        # if action == "APPLY COMPOSITE KG":
+        #     Lexicon.ApplyCompositeKG(NodeList)
+
+        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
+            lookupSourceName = action[6:action.index(":")].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
 
-        if action.startswith("MarkqOqC"):
-            pass
-
-        if action == "APPLY COMPOSITE KG":
+        if action == "Lookup IE":
             Lexicon.ApplyCompositeKG(NodeList)
+        #
+        # if action == "TRANSFORM DAG":
+        #     Dag.transform(NodeList)
+        #     logging.info("Dag:{}".format(Dag))
 
-    return  WinningRules
+        if action.startswith("DAGFSA"):
+            if len(Dag.nodes) == 0:
+                try:
+                    Dag.transform(NodeList)
+                except Exception as e:
+                    logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
+                    return NodeList, Dag, WinningRules
+                if logging.root.isEnabledFor(logging.INFO):
+                    logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
+            Rulefile = action[6:].strip()
+            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
+
+    return  NodeList, Dag, WinningRules
 
 
 def PrepareJSandJM(nodes):
@@ -381,18 +544,19 @@ def LexicalAnalyzeTask( SubSentence, schema):
     PrepareJSandJM(NodeList)
     #Lexicon.LexiconoQoCLookup(NodeList)
 
-    WinningRules = DynamicPipeline(NodeList, schema)
+    NodeList, Dag, WinningRules = DynamicPipeline(NodeList, schema)
         # t = Thread(target=Cache.WriteSentenceDB, args=(SubSentence, NodeList))
         # t.start()
 
-    return NodeList, WinningRules
+    return NodeList, Dag, WinningRules
 
 
 """After testing, the _multithread version is not faster than normal one.
 abandened. """
 def LexicalAnalyze_multithread(Sentence, schema = "full"):
     try:
-        logging.debug("-Start LexicalAnalyze: tokenize")
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("-Start LexicalAnalyze: tokenize")
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
 
@@ -436,23 +600,9 @@ def LexicalAnalyze(Sentence, schema = "full"):
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
         if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None  # assume ResultWinningRules is none.
+            return Cache.SentenceCache[Sentence], None, None  # assume ResultWinningRules is none.
 
-        ResultNodeList = None
-        ResultWinningRules = {}
-        for SubSentence in SeparateSentence(Sentence):
-
-            NodeList, WinningRules = LexicalAnalyzeTask(SubSentence, schema)
-            if ResultNodeList:
-                if not ResultNodeList.tail.text:
-                    ResultNodeList.remove(ResultNodeList.tail)
-                if not NodeList.head.text:
-                    NodeList.remove(NodeList.head)
-                ResultNodeList.appendnodelist(NodeList)
-            else:
-                ResultNodeList = NodeList
-            if WinningRules:
-                ResultWinningRules.update(WinningRules)
+        ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
         if schema == "full" and utils.runtype != "debug":
             if len(Cache.SentenceCache) < utils.maxcachesize:
@@ -465,12 +615,12 @@ def LexicalAnalyze(Sentence, schema = "full"):
         logging.debug("-End LexicalAnalyze")
 
     except Exception as e:
-        logging.error("Overall Error in LexicalAnalyze:")
+        logging.error("Overall Error in LexicalAnalyze({}) :".format(Sentence))
         logging.error(e)
         logging.error(traceback.format_exc())
-        return None, None
+        return None, None, None
 
-    return ResultNodeList, ResultWinningRules
+    return ResultNodeList, Dag, ResultWinningRules
 
 
 def LoadPipeline(PipelineLocation):
@@ -483,37 +633,47 @@ def LoadPipeline(PipelineLocation):
                 continue
             PipeLine.append(action.strip())
 
-def LoadCommonLexicon(XLocation):
-    Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+def SystemFileOlderThanDB(XLocation):
+    Systemfilelist = ["../Y/feature.txt","../Y/GlobalMacro.txt"]
 
-    Lexicon.LoadLexicon(XLocation + 'LexX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexXplus.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomXdomain.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-idiomX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-locX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-perX.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-EnglishPunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-ChinesePunctuate.txt')
-    Lexicon.LoadLexicon(XLocation + 'LexX-brandsKG.txt')
+    for file in Systemfilelist:
+        fileLocation = os.path.join(XLocation,file)
+        cur = utils.DBCon.cursor()
+        strsql = "select ID, modifytime from systemfiles where filelocation=?"
+        cur.execute(strsql, [file, ])
+        resultrecord =  cur.fetchone()
+        cur.close()
 
-    Lexicon.LoadLexicon(XLocation + 'defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexX.txt', lookupSource=LexiconLookupSource.defLex)
-    Lexicon.LoadLexicon(XLocation + 'defLexXKG.txt', lookupSource=LexiconLookupSource.defLex)
+        if not resultrecord or not resultrecord[1]:
+            return False
 
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_2_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_3_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_4_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/CleanLexicon_gram_5_list.txt', lookupSource=LexiconLookupSource.External)
-    Lexicon.LoadLexicon(XLocation + 'Q/lexicon/comment_companyname.txt',    lookupSource=LexiconLookupSource.External)
 
-    Lexicon.LoadLexicon(XLocation + 'LexX-oQcQ.txt',    lookupSource=LexiconLookupSource.oQcQ)
+        FileDBTime = resultrecord[1]  # utc time.
+        FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(fileLocation)).strftime('%Y-%m-%d %H:%M:%S')
 
-    Lexicon.LoadSegmentLexicon()    #note: the locations are hard-coded
-    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
-    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
+        if FileDiskTime > FileDBTime:
+            return False
 
-    Rules.LoadGlobalMacro(XLocation, 'GlobalMacro.txt')
+    return True
+
+def UpdateSystemFileFromDB(XLocation):
+    Systemfilelist = ["../Y/feature.txt", "../Y/GlobalMacro.txt"]
+    for file in Systemfilelist:
+        fileLocation = os.path.join(XLocation, file)
+        cur = utils.DBCon.cursor()
+        strsql = "select ID, modifytime from systemfiles where filelocation=?"
+        cur.execute(strsql, [file, ])
+        resultrecord = cur.fetchone()
+        FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(fileLocation)).strftime('%Y-%m-%d %H:%M:%S')
+        if resultrecord:
+            strsql = "update systemfiles set modifytime=? where filelocation=?"
+            cur.execute(strsql, [FileDiskTime, file])
+
+        else:
+            strsql = "INSERT into systemfiles (filelocation, modifytime) VALUES(?, ?)"
+            cur.execute(strsql, [file, FileDiskTime])
+
+        cur.close()
 
 def LoadCommon():
 
@@ -521,21 +681,102 @@ def LoadCommon():
 
     import Cache
     Cache.LoadSentenceDB()
-    FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
 
-    XLocation = '../../fsa/X/'
+    PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+    XLocation = os.path.dirname(PipeLineLocation) + "/"
 
-    LoadCommonLexicon(XLocation)
+    FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
+    GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+    PunctuatefileLocation = os.path.join(XLocation,"../Y/LexY-EnglishPunctuate.txt")
 
-    LoadPipeline(XLocation + 'pipelineX.txt')
 
-    logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
-    logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
+    FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
+    systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
+
+    # XLocation = '../../fsa/X/'
+
+
+    LoadPipeline(PipeLineLocation)
+
+    if logging.root.isEnabledFor(logging.DEBUG):
+        logging.debug("Runtype:" + ParserConfig.get("main", "runtype"))
+    if logging.root.isEnabledFor(logging.DEBUG):
+        logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
+
+    Rules.LoadGlobalMacro(GlobalmacroLocation)
+
+    if "/X/" in XLocation:
+        Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+    else:
+        Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
-            Rules.LoadRules(XLocation, Rulefile)
+            Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
+
+        if action.startswith("DAGFSA"):
+            Rulefile = action[6:].strip()
+            Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
+
+        if action.startswith("Lookup Spelling:"):
+            Spellfile = action[action.index(":")+1:].strip().split(",")
+            for spell in Spellfile:
+                spell = spell.strip()
+                if spell:
+                    Lexicon.LoadExtraReference(XLocation + spell, Lexicon._LexiconCuobieziDict)
+
+        if action.startswith("Lookup Encoding:"):
+            Encodefile = action[action.index(":")+1:].strip().split(",")
+            for encode in Encodefile:
+                encode = encode.strip()
+                if encode:
+                    Lexicon.LoadExtraReference(XLocation + encode, Lexicon._LexiconFantiDict)
+
+        if action.startswith("Lookup Main:"):
+            Mainfile = action[action.index(":")+1:].strip().split(",")
+            for main in Mainfile:
+                main = main.strip()
+                if main:
+                    Lexicon.LoadMainLexicon(XLocation + main)
+
+        if action.startswith("Lookup SegmentSlash:"):
+            Slashfile = action[action.index(":")+1:].strip().split(",")
+            for slash in Slashfile:
+                slash = slash.strip()
+                if slash:
+                    Lexicon.LoadSegmentSlash(XLocation + slash)
+
+        if action.startswith("Lookup Lex:"):
+            Lexfile = action[action.index(":")+1:].strip().split(",")
+            for lex in Lexfile:
+                lex = lex.strip()
+                if lex:
+                    Lexicon.LoadLexicon(XLocation + lex)
+
+        if action.startswith("Lookup defLex:"):
+            Compoundfile = action[action.index(":")+1:].strip().split(",")
+            for compound in Compoundfile:
+                compound = compound.strip()
+                if compound:
+                    Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.defLex)
+
+        if action.startswith("Lookup External:"):
+            Externalfile = action[action.index(":")+1:].strip().split(",")
+            for external in Externalfile:
+                external = external.strip()
+                if external:
+                    Lexicon.LoadLexicon(XLocation + external,lookupSource=LexiconLookupSource.External)
+
+        if action.startswith("Lookup oQcQ:"):
+            oQoCfile = action[action.index(":")+1:].strip().split(",")
+            for oQoC in oQoCfile:
+                oQoC = oQoC.strip()
+                if oQoC:
+                    Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
+
+    Lexicon.LoadSegmentLexicon()
+    UpdateSystemFileFromDB(XLocation)
 
     CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
@@ -546,6 +787,7 @@ def LoadCommon():
         #Lexicon.OutputLexiconFile(ParserConfig.get("main", "compiledfolder"))
 
 
+    #Rules._PreProcess_RuleIDNormalize()
     logging.debug("Done of LoadCommon!")
 
         #print(Lexicon.OutputLexicon(False))
@@ -556,7 +798,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "a, b c"
+    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
@@ -565,21 +807,31 @@ if __name__ == "__main__":
 
 
 
-    m_nodes, winningrules = LexicalAnalyze(target)
-    if not m_nodes:
-        logging.warning("The result is None!")
-        exit(1)
+    # m_nodes, winningrules = LexicalAnalyze(target)
+    # if not m_nodes:
+    #     logging.warning("The result is None!")
+    #     exit(1)
+    #
+    # logging.info("\tDone! counterMatch=%s" % counterMatch)
+    #
+    # print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
+    # print(OutputStringTokens_oneliner(m_nodes))
+    #
+    #
+    # print("Winning rules:\n" + OutputWinningRules())
+    #
+    # print(FeatureOntology.OutputMissingFeatureSet())
+    #
+    # print(m_nodes.root().CleanOutput().toJSON())
+    # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
+    # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    logging.info("\tDone! counterMatch=%s" % counterMatch)
+    nodelist, dag, winningrules = LexicalAnalyze("虽然经济实惠，但味道好苦啊")
+    print("dag: {}".format(dag))
+    print("winning rules: {}".format(winningrules))
 
-    print(OutputStringTokens_oneliner(m_nodes, NoFeature=True))
-    print(OutputStringTokens_oneliner(m_nodes))
+    # nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
+    # print("dag: {}".format(dag))
+    # print("winning rules: {}".format(winningrules))
 
-
-    print("Winning rules:\n" + OutputWinningRules())
-
-    print(FeatureOntology.OutputMissingFeatureSet())
-
-    print(m_nodes.root().CleanOutput().toJSON())
-    print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
-    print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+    #LexicalAnalyze("张三做好事所有人都觉得是沽名钓誉")

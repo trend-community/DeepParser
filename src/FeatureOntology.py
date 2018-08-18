@@ -4,7 +4,7 @@
 #usage: to output feature list, run:
 #       python Rules.py > features.txt
 
-import  sys, requests
+import  sys, requests, operator
 from utils import *
 
 
@@ -21,12 +21,20 @@ BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC'
             ['NP'],
             ['PoP', 'PP'],
             ['VP'],
-            ['Pred'],
+            #['Pred'],  06/18/2018 suspend 'Pred' for now, may return back later
             ['CL']   ]
 BarTagIDs = []
 BarTagIDSet = set()
 MergeTokenList = ['+++', 'nnn', 'mn', 'N', 'NE', 'DE']
-
+SentimentTags = ['repent', 'sent', 'fear', 'nC', 'cherish', 'apologize', 'mental', 'EMOc', 'EMO', 'emo', 'nEMOc', 'pEMOc', 'nEMO', 'pEMO', 'tuihuan', 'ntV', 'nt', 'bonus', 'pro', 'pt',
+                    'pC', 'mianxi', 'mianyou', 'manjian', 'aspir', 'wish', 'solve', 'need', 'pWeather', 'nWeather', 'pt0', 'nt0', 'ntN0', 'ptN0',  'damage', 'conV', 'con', 'adversary',
+                 'victim', 'con2', 'beBad', 'beGood', 'negAct', 'posAct', 'ntA', 'ptA', 'ntN', 'ptN', 'ptV', 'proV', 'conA', 'proA', 'conN', 'proN', 'curse', 'nEmo', 'emo', 'illBehave',
+                'shameless', 'satisfied', 'sigh', 'weep', 'condole', 'mishap', 'guarantee', 'agree', 'disagree', 'pAttitude', 'emotion', 'laugh', 'joy', 'thank', 'welcome', 'entertain',
+                'wellTreat', 'excited', 'nAttitude', 'calm', 'worry', 'unsatisfied', 'uneasy', 'sad', 'embarrassed', 'disappointed', 'ppEmo', 'nnEmo', 'interested', 'hello', 'salute', 'praise',
+                'commemorate', 'congr', 'endorse', 'appreciate', 'accept', 'reward', 'illTreat', 'mock', 'protest', 'oppose', 'reject', 'refuse', 'betray', 'pEmo', 'blame', 'angry', 'suffer',
+                'full', 'vWell', 'lucky', 'succeed', 'prosper', 'surpass', 'win', 'famous', 'good', 'bad', 'happy', 'annoy', 'hate', 'love', 'frighten', 'mkWorried', 'irritate', 'offend', 'tease',
+                'please', 'soothe', 'enLive', 'surprise', 'shy','Pro', 'Con', 'PosEmo', 'NegEmo','PosType', 'NegType','transP','transN']
+SentimentTagIDSet = set()
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
 
@@ -167,6 +175,10 @@ def OutputFeatureOntology():
     for OpenWord in sorted(_FeatureOntologyDict.keys()):
         if _FeatureOntologyDict[OpenWord].ancestors:
             output += str(_FeatureOntologyDict[OpenWord]) + "\n"
+    output += "//***Ontology* * single nodes**" + "\n"
+    for OpenWord in sorted(_FeatureOntologyDict.keys()):
+        if not _FeatureOntologyDict[OpenWord].ancestors:
+            output += str(_FeatureOntologyDict[OpenWord]) + "\n"
     output += "//***Alias***" + "\n"
     for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
         output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"
@@ -180,6 +192,55 @@ def OutputFeatureOntologyFile(FolderLocation):
     with open(FileLocation, "w", encoding="utf-8") as writer:
         writer.write(OutputFeatureOntology())
 
+def OutputFeatureOntologyGraph():
+    #output = "//***Ontology***" + "\n"
+    if not hasattr(OutputFeatureOntologyGraph, "graph"):
+        from collections import defaultdict
+        OutputFeatureOntologyGraph.outbound = defaultdict(int)
+        OutputFeatureOntologyGraph.inbound = defaultdict(int)
+        OutputFeatureOntologyGraph.nodeset = set()
+
+        OutputFeatureOntologyGraph.graph = set()
+        PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+        XLocation = os.path.dirname(PipeLineLocation)
+        with open(XLocation + '/../Y/feature.txt', encoding="utf-8") as dictionary:
+            for line in dictionary:
+                code, comment = SeparateComment(line)
+                if "," not in code:
+                    continue    #no edge. ignore
+
+                OpenWord, ancestors = code.split(",", 1)
+                OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  #remove the alias.
+                if OpenWordID == -1:
+                    logging.warning("OutputFeatureOntologyGraph: wrong word ID for line {}.".format(code))
+                    continue
+                for path in ancestors.split(";"):
+                    prev = OpenWordID
+                    for node in path.split(","):
+                        if node.strip():
+                            parentid = GetFeatureID(node.strip())
+                            if parentid == -1:
+                                logging.warning("OutputFeatureOntologyGraph: wrong parentid for node {}".format(node))
+                                continue
+                            if (prev, parentid) not in OutputFeatureOntologyGraph.graph:
+                                OutputFeatureOntologyGraph.graph.add((prev, parentid))
+                                OutputFeatureOntologyGraph.outbound[prev] += 1
+                                OutputFeatureOntologyGraph.inbound[parentid] += 1
+                                OutputFeatureOntologyGraph.nodeset.add(prev)
+                                OutputFeatureOntologyGraph.nodeset.add(parentid)
+
+                            prev = GetFeatureID(node.strip())
+
+    output = "{\n"
+    for node in sorted(OutputFeatureOntologyGraph.nodeset):
+        output += "{} [label=\"{}\" tooltip=\"Inbound:{} Outbound:{} \" ];\n".format(node, GetFeatureName(node), OutputFeatureOntologyGraph.inbound[node], OutputFeatureOntologyGraph.outbound[node])
+    for edge in sorted(OutputFeatureOntologyGraph.graph, key=operator.itemgetter(0, 1)):
+        #output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
+        output += "\t{}->{} ;\n".format(edge[0], edge[1])
+    output += "}\n"
+
+    logging.info("In Feature ontology, There are {} edges, for {} nodes.".format(len(OutputFeatureOntologyGraph.graph), len(OutputFeatureOntologyGraph.nodeset)))
+    return output
 
 def LoadFeatureOntology(featureOncologyLocation):
     if featureOncologyLocation.startswith("."):
@@ -240,13 +301,14 @@ def GetFeatureID(feature):
     if ChinesePattern.search(feature):
         return -1   # Chinese is not a feature.
 
-    logging.warning("Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
+    logging.warning("GetFeatureID: Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
     return -1    # -1? 0?
 
 
 def GetFeatureName(featureID):
     if len(_FeatureList) == 0:
+        logging.warning("GettingFeatureName using URL")
         GetFeatureNameURL = ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureName/"
         try:
             ret = requests.get(GetFeatureNameURL + str(featureID))
@@ -260,7 +322,7 @@ def GetFeatureName(featureID):
     if 0 <= featureID < len(_FeatureList):
         return _FeatureList[featureID]
     else:
-        logging.warning("Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureList)=" + str(len(_FeatureList)))
+        logging.warning("GetFeatureName: Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureList)=" + str(len(_FeatureList)))
         # raise(Exception("error"))
         return ""
 
@@ -284,6 +346,15 @@ def ProcessBarTags(featureset):
                 if taglevel != MaxBarTagLevel:
                     featureset.remove(f)
 
+def ProcessSentimentTags(featureset):
+    featureset_copy = featureset.copy()
+    for f in featureset_copy:
+        if f not in SentimentTagIDSet:
+            continue
+        else:
+            featureset.remove(f)
+
+
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -303,10 +374,12 @@ if __name__ == "__main__":
         #LoadFullFeatureList(dir_path + '/../../fsa/extra/featurelist.txt')
         #_CreateFeatureList = True
         LoadFeatureOntology(dir_path + '/../../fsa/Y/feature.txt')
-        print(OutputFeatureOntology())
+        #print(OutputFeatureOntology())
         OutputFeatureOntologyFile('../temp')
+        print(OutputFeatureOntologyGraph())
 
     else:
         print("Usage: python FeatureOntology.py CreateFeatureList/CreateFeatureOntology > outputfile.txt")
         exit(0)
+
 

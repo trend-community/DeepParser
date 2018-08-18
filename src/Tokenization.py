@@ -28,6 +28,8 @@ class SentenceLinkedList:
         self.size += 1
         self._setnorms()
         if self.isPureAscii and IsAscii(node.text):
+            self.isPureAscii = True
+        else:
             self.isPureAscii = False
 
     def appendnodelist(self, nodelist):    #Add to the tail
@@ -68,6 +70,8 @@ class SentenceLinkedList:
         self.size += 1
         self._setnorms()
         if self.isPureAscii and IsAscii(node.text):
+            self.isPureAscii = True
+        else:
             self.isPureAscii = False
 
     def remove(self, node):
@@ -83,6 +87,25 @@ class SentenceLinkedList:
 
         self.size -= 1
         self._setnorms()
+
+    def searchID(self, ID):
+        p = self.head
+        nodestack = set()
+        while p:
+            if p.ID == ID:
+                return p
+
+            if p.sons:
+                if p.next:
+                    nodestack.add(p.next)
+                p = p.sons[0]
+            else:
+                p = p.next
+                if p == None and nodestack:
+                    p = nodestack.pop()
+        logging.error("Failed to find {} in the nodelist.searchID!".format(ID))
+        raise("Failed searchID.")
+        return None
 
     def get(self, index):
         if index in self.get_cache:
@@ -156,6 +179,7 @@ class SentenceLinkedList:
         NewText = ""
         NewNorm = ""
         NewAtom = ""
+        hasUpperRelations = []
         for i in range(count):
             if i == 0:
                 spaces = ""
@@ -165,7 +189,8 @@ class SentenceLinkedList:
             NewText += spaces + p.text
             NewNorm += spaces + p.norm
             NewAtom += spaces + p.atom
-
+            if p.UpperRelationship and p.UpperRelationship != 'H':
+                hasUpperRelations.append(FeatureOntology.GetFeatureID("has"+p.UpperRelationship))
             sons.append(p)
             p = p.next
 
@@ -175,11 +200,14 @@ class SentenceLinkedList:
         NewNode.sons = sons
         NewNode.StartOffset = startnode.StartOffset
         NewNode.EndOffset = endnode.EndOffset
+        Lexicon.ApplyWordLengthFeature(NewNode)
+        for haverelation in hasUpperRelations:
+            NewNode.ApplyFeature(haverelation)
         return NewNode, startnode, endnode
 
     def combine(self, start, count, headindex=0):
         if count == 1:
-            return  #we don't actually want to just wrap one word as one chunk
+            return self.get(start+headindex) #we don't actually want to just wrap one word as one chunk
         NewNode, startnode, endnode = self.newnode(start, count)
 
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
@@ -207,6 +235,7 @@ class SentenceLinkedList:
             endnode.next.prev = NewNode
         else:
             self.tail = NewNode
+        endnode.next = None
 
         self.size = self.size - count + 1
         self._setnorms()
@@ -216,11 +245,13 @@ class SentenceLinkedList:
         return NewNode
 
     def root(self, KeepOrigin=False):
+
         if self.size < 1:
             logging.warning("A root with size 0!")
             return None
         length = self.size
         start = 0
+
         if not KeepOrigin:
             start = 1       #remove the first token (JS)
             if self.tail.text == "":
@@ -235,7 +266,10 @@ class SentenceLinkedList:
 
 
 class SentenceNode(object):
+    idCounter = 0
     def __init__(self, word):
+        SentenceNode.idCounter += 1
+        self.ID = SentenceNode.idCounter
         self.text = word
         self.norm = word.lower()
         self.atom = word.lower()
@@ -247,11 +281,12 @@ class SentenceNode(object):
         self.prev = None
         self.sons = []
         self.UpperRelationship = ''
-        Lexicon.ApplyWordLengthFeature(self)
+        #Lexicon.ApplyWordLengthFeature(self)
         self.Head0Text = ''
         self.TempPointer = ''
         #self.FailedRuleTokens = set()
         #self.signature = None
+        self.visited = False
 
     #     #From webservice, only word/StartOffset/features are set,
     #     #    and the features are "list", need to change to "set"
@@ -286,7 +321,7 @@ class SentenceNode(object):
             if self.UpperRelationship == SYM_PAIR_HEAD[0]:
                 return SYM_PAIR_HEAD[1] + BarFeature + ' '
             elif self.UpperRelationship:
-                return BarFeature + SYM_HYPHEN + self.UpperRelationship + ' '
+                return self.UpperRelationship + SYM_HYPHEN + BarFeature + ' '
             else:
                 return BarFeature + ' '
         return ''  
@@ -300,13 +335,13 @@ class SentenceNode(object):
                 for f in self.features if f not in FeatureOntology.NotShowList]
         BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
         if not self.UpperRelationship and BarFeature:                       # syntactic role is empty
-            ret = BarFeature 
+            ret = BarFeature  + "/" 
         elif self.UpperRelationship == SYM_PAIR_HEAD[0] and BarFeature:     # syntactic role is HEAD
-            ret = SYM_PAIR_HEAD[1] + BarFeature
+            ret = SYM_PAIR_HEAD[1] + BarFeature  + "/" 
         elif self.UpperRelationship == SYM_PAIR_HEAD[0] and not BarFeature:
             ret = SYM_PAIR_HEAD[1]
         elif self.UpperRelationship != SYM_PAIR_HEAD[0] and BarFeature:     # syntactic role is not HEAD
-            ret = BarFeature + SYM_HYPHEN + self.UpperRelationship 
+            ret = self.UpperRelationship + "/" # SYM_HYPHEN + BarFeature # Wei note: POS left out.  For leaf label POS, we do not really care in tracking as long as Relationship is right.
         elif self.UpperRelationship != SYM_PAIR_HEAD[0] and not BarFeature:
             ret = self.UpperRelationship
         return ret
@@ -333,7 +368,7 @@ class SentenceNode(object):
             output = utils.format_parenthesis(output.strip(), layer_counter)
             layer_counter += 1
         else:
-            output += self.get_leaf_label() # add syntactic role label OR head label 
+            output += self.get_leaf_label() # + " " # add syntactic role label OR head label 
             output += self.text
         return output.strip(), layer_counter
 
@@ -356,6 +391,22 @@ class SentenceNode(object):
             if featureString:
                 output += ":" + featureString + ";"
         return output.strip()
+
+    def onelinerSegment(self):
+        """
+            basic oneliner function
+        """
+        output = ""
+        if self.sons \
+                and utils.FeatureID_0 not in self.features:
+            for son in self.sons:
+                output += son.onelinerSegment()
+            output = output.strip()
+        else:
+            if self.text:
+                output = self.text+"/"
+        return output.strip()
+
 
 
     def oneliner_merge(self, layer_counter):
@@ -397,12 +448,22 @@ class SentenceNode(object):
         return False
 
 
+    def ApplyDefaultUpperRelationship(self):
+        for son in self.sons:
+            if not son.UpperRelationship:
+                if utils.FeatureID_0 in self.features:
+                    son.UpperRelationship = "x"
+                else:
+                    son.UpperRelationship = "X"
+
+
     def ApplyFeature(self, featureID):
         self.features.add(featureID)
         FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
         if FeatureNode and FeatureNode.ancestors:
             self.features.update(FeatureNode.ancestors)
         #self.signature=pickle.dumps({"w":self.text, "f": self.features})
+
 
     def ApplyActions(self, actinstring):
         #self.FailedRuleTokens.clear()
@@ -411,11 +472,15 @@ class SentenceNode(object):
 
         if "NEW" in Actions:
             self.features = set()
+        if "NEUTRAL"in Actions :
+            FeatureOntology.ProcessSentimentTags(self.features)
 
         HasBartagAction = False
         for Action in Actions:
-            if Action == "NEW":
-                continue  # already process before.
+            # if Action == "NEW":
+            #     continue  # already process before.
+            # if Action == "NEUTRAL":
+            #     continue  # already process before.
 
             if Action[-1] == "-":
                 if Action[0] == "^":    #Remove UpperRelationship
@@ -437,6 +502,7 @@ class SentenceNode(object):
                 if Action[-2] == "+":
                     if Action[-3] == "+":    #"+++"
                         self.ApplyFeature(utils.FeatureID_0)
+                        self.sons=[]        #remove the sons of this
                     else:                   #"X++":
                         #this should be in a chunk, only apply to the new node
                         HasBartagAction = True
@@ -465,6 +531,12 @@ class SentenceNode(object):
                         self.ApplyFeature(RelationActionID)
                     else:
                         logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
+                    # apply this "has" to the parent (new) node (chunk)
+                    # RelationActionID = FeatureOntology.GetFeatureID("has" + self.UpperRelationship)
+                    # if RelationActionID != -1:
+                    #     self.ApplyFeature(RelationActionID)
+                    # else:
+                    #     logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
 
                 else:
                     logging.error("The Action is wrong: It does not have dot to link to proper pointer")
@@ -486,25 +558,25 @@ class SentenceNode(object):
             else:
                 logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
 
+
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
         if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
             FeatureOntology.ProcessBarTags(self.features)
 
         #self.signature = pickle.dumps({"w": self.text, "f": self.features})
 
+
     def GetFeatures(self):
-        featureString = ""
-        for feature in sorted(self.features):
+        featureList = []
+        for feature in self.features:
             if feature in FeatureOntology.NotShowList:
                 continue
             f = FeatureOntology.GetFeatureName(feature)
             if f:
-                if featureString:
-                    featureString += ","
-                featureString += f
+                featureList.append(f)
             else:
                 logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
-        return featureString
+        return ",".join(sorted(featureList))
 
     def CleanOutput(self, KeepOriginFeature=False):
         a = JsonClass()
@@ -513,10 +585,10 @@ class SentenceNode(object):
             a.norm = self.norm
         if self.atom != self.text:
             a.atom = self.atom
-        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList])
 
         if KeepOriginFeature:
-            a.features = [FeatureOntology.GetFeatureName(f) for f in self.features ]
+            a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features ])
             if self.Head0Text:
                 a.Head0Text = self.Head0Text
 
@@ -677,7 +749,7 @@ def Tokenize_CnEnMix(sentence):
             TokenList.tail.norm += t.lower()
             TokenList.tail.atom += t.lower()
             TokenList.tail.EndOffset += len(t)
-            Lexicon.ApplyWordLengthFeature(TokenList.tail)
+            #Lexicon.ApplyWordLengthFeature(TokenList.tail)
             start += len(t)
         else:
             attribute_prev = [isHanzi, isdigit, isalpha, isspace]
@@ -691,6 +763,17 @@ def Tokenize_CnEnMix(sentence):
             start += len(t)
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
+    PuncSet = {"，", "：","（", "）","／","＜","＞","？","；","“","”","【","】"
+        ,"｛","｝","｜","～","！","＠","＃","＄","％","＆","＊","－","＝","＿","＋"
+        ,"。。。","。。。。","。。。。。","。。。。。。","．","《","》","。","、","•","丶","￥","@@","——","————"}
+    p = TokenList.head
+    while p:
+        if p.text.isspace():
+            if p.prev and p.prev.text in PuncSet:
+                TokenList.remove(p)
+        p = p.next
+    # print (TokenList)
+
     return TokenList
 
 #
@@ -878,7 +961,7 @@ def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
                 segments = segmentslashed + segments
         elif bestPhraseLen[i] > 1 and not lexicononly and Lexicon._LexiconSegmentDict[segment] < 1.2:
             # from main2007.txt, not trustworthy
-            subsegments = _Tokenize_Lexicon_maxweight(segment, True)
+            subsegments = _Tokenize_Lexicon_minseg(segment, True)
             segments = subsegments + segments
         else:
             segments = [sentence[i - bestPhraseLen[i]:i]] + segments

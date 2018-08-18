@@ -1,20 +1,34 @@
 # Organize lexY and LEXICON_1
 # Organize compound_Y and LEXICON_2
-import os
 from Lexicon import *
+import os
 from shutil import copyfile
-
 _lexYdict = {}
 _lexYCommentdict = {}
+_lexY3colonsdict = {}
+_lexY3colonsCommentdict = {}
+_lexYformsdict = {}
+_lexYformsCommentdict = {}
 _lexicon1dict = {}
 _lexicon1Commentdict = {}
 
 _allLexdict = {}
 
+_stemYdict = {}
+_stemYCommentdict = {}
+
+
 _compoundYdict = {}
 _compoundYCommentdict = {}
+_compoundY3colonsdict = {}
+_compoundY3colonsCommentdict = {}
+_compoundYformsdict = {}
+_compoundYformsCommentdict = {}
 _lexicon2dict = {}
 _lexicon2Commentdict = {}
+
+_FeatureNotCopy = set()
+_MissingStem = set()
 
 YDirLocation = os.path.dirname(os.path.realpath(__file__))
 tmpDirPath = YDirLocation + '/../../fsa/tmp/'
@@ -23,16 +37,28 @@ if not os.path.exists(tmpDirPath):
 
 lexYLocation = YDirLocation + '/../../fsa/Y/lexY.txt'
 tmpLexY = tmpDirPath + 'lexYCopy.txt'
+lexY3colonsLocation = YDirLocation + '/../../fsa/Y/lexY_3colons.txt'
+tmpLexY3colons = tmpDirPath + 'lexY_3colonsCopy.txt'
+lexYformsLocation = YDirLocation + '/../../fsa/Y/lexY_forms.txt'
+tmpLexYforms = tmpDirPath + 'lexY_formsCopy.txt'
 lexicon1Location = YDirLocation + "/../../fsa/Y/LEXICON_1.txt"
 tmpLexicon1 = tmpDirPath + 'Lexicon1Copy.txt'
+stemYLocation = YDirLocation + "/../../fsa/Y/stemY.txt"
+tmpstemY = tmpDirPath + 'stemYCopy.txt'
 compoundYLocation = YDirLocation + '/../../fsa/Y/compoundY.txt'
 tmpCompound = tmpDirPath + 'compoundYCopy.txt'
+compoundY3colonsLocation = YDirLocation + '/../../fsa/Y/compoundY_3colons.txt'
+tmpCompoundY3colons = tmpDirPath + 'compoundY3colonsCopy.txt'
+compoundYformsLocation = YDirLocation + '/../../fsa/Y/compoundY_forms.txt'
+tmpCompoundYforms = tmpDirPath + 'compoundYformsCopy.txt'
 lexicon2Location = YDirLocation + '/../../fsa/Y/LEXICON_2.txt'
 tmpLexicon2 = tmpDirPath + 'Lexicon2Copy.txt'
 
-_lexLocationList = [lexYLocation, lexicon1Location, compoundYLocation, lexicon2Location]
-_lexDictList = [_lexYdict, _lexicon1dict, _compoundYdict, _lexicon2dict]
-_lexCommentList = [_lexYCommentdict, _lexicon1Commentdict, _compoundYCommentdict, _lexicon2Commentdict]
+paraFeatureNotCopy = YDirLocation + "/../../fsa/Y/FeatureNotCopy.txt"
+
+_lexLocationList = [lexYLocation, lexY3colonsLocation,lexYformsLocation, lexicon1Location, stemYLocation, compoundYLocation, compoundY3colonsLocation,compoundYformsLocation,lexicon2Location]
+_lexDictList = [_lexYdict,_lexY3colonsdict,_lexYformsdict,  _lexicon1dict, _stemYdict, _compoundYdict, _compoundY3colonsdict, _compoundYformsdict, _lexicon2dict]
+_lexCommentList = [_lexYCommentdict, _lexY3colonsCommentdict, _lexYformsCommentdict, _lexicon1Commentdict, _stemYCommentdict, _compoundYCommentdict, _compoundY3colonsCommentdict, _compoundYformsCommentdict,  _lexicon2Commentdict]
 
 
 def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
@@ -46,6 +72,14 @@ def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
                     _CommentDict.update({oldWord: line})
                 continue
             code, comment = SeparateComment(line)
+
+            if "ChinesePunctuate" in lexiconLocation and "：" in code:
+                code = code.replace("：", ":")
+            if ":::" in code:
+                code = code.replace(":::", ":")
+            if "::" in code:
+                code = code.replace("::", ":")
+
             blocks = [x.strip() for x in re.split(":", code) if x]
             if len(blocks) != 2:
                 continue
@@ -66,7 +100,7 @@ def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
             # else:
             #     logging.debug("This word is repeated in lexicon: %s" % blocks[0])
 
-            features = SplitFeatures(blocks[1])  # blocks[1].split()
+            features, node = SplitFeaturesWithSemicolon(blocks[1],node)  # blocks[1].split()
             for feature in features:
                 if re.match('^\'.*\'$', feature):
                     node.norm = feature.strip('\'')
@@ -80,7 +114,11 @@ def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
 
                     if featureID == -1:
                         logging.debug("Missing Feature: " + feature)
-                        node.missingfeature += "\\" + feature
+                        if not feature.startswith("\\"):
+                            node.missingfeature += "\\" + feature
+                        else:
+                            node.missingfeature = feature
+
 
                     node.features.add(featureID)
                     ontologynode = SearchFeatureOntology(featureID)
@@ -88,6 +126,10 @@ def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
                         ancestors = ontologynode.ancestors
                         if ancestors:
                             node.features.update(ancestors)
+                            if featureID in node.stemFeatures:
+                                node.stemFeatures.update(ancestors)
+                            elif featureID in node.origFeatures:
+                                node.origFeatures.update(ancestors)
 
             if newNode:
                 _LexiconDict.update({node.text: node})
@@ -96,6 +138,50 @@ def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
 
     logging.info("Finish loading lexicon" + lexiconLocation)
 
+
+def SplitFeaturesWithSemicolon(FeatureString, node):
+    StemPart = None
+    stemMatch = re.match("(.*)(\'.+\')(.*)", FeatureString)
+    # if re.search('\'.*\'$', FeatureString):
+    if stemMatch and stemMatch.lastindex == 3:
+        StemPart = stemMatch.group(2)
+        FeatureString = stemMatch.group(1) + stemMatch.group(3)
+
+    NormPart = None
+    normMatch = re.match("(.*)(/.+/)(.*)", FeatureString)
+    # if re.search('\'.*\'$', FeatureString):
+    if normMatch and normMatch.lastindex == 3:
+        NormPart = normMatch.group(2)
+        FeatureString = normMatch.group(1) + normMatch.group(3)
+
+    # Added by Xiaochen, for English lexicon, ";" exists to distinguish features from stem or original word
+    if ";" in FeatureString:
+        origFeatures = FeatureString[0:FeatureString.index(";")]
+        origFeaturesSet = set(origFeatures.split())
+        for feature in origFeaturesSet:
+            node.origFeatures.add(GetFeatureID(feature))
+
+        stemFeatures = FeatureString[FeatureString.index(";")+1:]
+        stemFeaturesSet = set(stemFeatures.split())
+        for feature in stemFeaturesSet:
+            node.stemFeatures.add(GetFeatureID(feature))
+
+
+
+    else:
+        origFeatures = FeatureString.split()
+        for feature in origFeatures:
+            node.origFeatures.add(GetFeatureID(feature))
+
+    if ";" in FeatureString:
+        FeatureString = FeatureString.replace(";", " ")
+
+    features = FeatureString.split()
+    if StemPart:
+        features += [StemPart]
+    if NormPart:
+        features += [NormPart]
+    return features,node
 
 def compareLex(_LexiconDict1,_LexiconDict2):
     removeWord = set()
@@ -135,42 +221,58 @@ def compareLex(_LexiconDict1,_LexiconDict2):
         del _LexiconDict2[word]
 
 
-def searchAtomOrNorm(atom):
-    if atom in _lexYdict.keys():
-        features = _lexYdict.get(atom).features
-        return features
-    if atom in _lexicon1dict.keys():
-        features = _lexicon1dict.get(atom).features
-        return features
-    if atom in _compoundYdict.keys():
-        features = _compoundYdict.get(atom).features
-        return features
-    if atom in _lexicon2dict.keys():
-        features = _lexicon2dict.get(atom).features
-        return features
 
-    return None
+def FeatureNotCopy():
+    with open(paraFeatureNotCopy, encoding='utf-8') as file:
+        for line in file:
+            if line.startswith("//"):
+                continue
+            line = line.strip()
+            line = GetFeatureID(line)
+            _FeatureNotCopy.add(line)
 
 
-def enrichFeature():
-    for word in _lexYdict.keys():
-        node = _lexYdict.get(word)
+def GetStemFeatures(word):
+    copyFeatures = None
+    for d in _lexDictList:
+        if word in d.keys():
+            node = d.get(word)
+            features = node.stemFeatures
+            copyFeatures = features.copy()
+
+            for ID in features:
+                if ID in _FeatureNotCopy:
+                    copyFeatures.remove(ID)
+                    # print ("feature not copy " + GetFeatureName(ID))
+
+    logging.debug("stem does not exist" + word)
+    _MissingStem.add(word)
+    return copyFeatures
+
+
+def enrichFeature(_lexDict):
+    for word in _lexDict.keys():
+        node = _lexDict.get(word)
         atom = node.atom
         norm = node.norm
         feature = node.features
 
         if atom != word:
-            atomfeatures = searchAtomOrNorm(atom)
+            atomfeatures = GetStemFeatures(atom)
             if atomfeatures:
+                node.stemFeatures = set()
+                node.stemFeatures.update(atomfeatures)
                 temp = feature.union(atomfeatures)
                 node.features = temp
-                _lexYdict.update({word: node})
+                _lexDict.update({word: node})
         elif norm != word:
-            normfeatures = searchAtomOrNorm(norm)
+            normfeatures = GetStemFeatures(norm)
             if normfeatures:
+                node.stemFeatures = set()
+                node.stemFeatures.update(normfeatures)
                 temp = feature.union(normfeatures)
                 node.features = temp
-                _lexYdict.update({word: node})
+                _lexDict.update({word: node})
 
 
 def printNewLex(newloc, _lexDict,_CommentDict):
@@ -184,10 +286,99 @@ def printNewLex(newloc, _lexDict,_CommentDict):
         for word in s:
             if oldWord in _CommentDict.keys():
                 output += _CommentDict[oldWord]
-            output += _lexDict.get(word).entry() + "\n"
+            # output += _lexDict.get(word).entry() + "\n"
+            output += getOutput(_lexDict.get(word)) + "\n"
             oldWord = word
+        if newloc == lexY3colonsLocation or newloc == compoundY3colonsLocation:
+            output = output.replace(":",":::")
+        elif newloc == lexYformsLocation or newloc == compoundYformsLocation:
+            output = output.replace(":", "::")
         file.write(output+"\n")
 
+
+def getOutput(node):
+    output = node.text + ": "
+    # word = node.text
+    # atom = node.atom
+    # norm = node.norm
+    # feature = node.features
+    # diffSet = set()  #diffSet contains original feature of the node
+    #
+    # if atom != word:
+    #     atomfeatures = GetStemFeatures(atom)
+    #     if atomfeatures:
+    #         diffSet = feature.difference(atomfeatures)
+    # elif norm != word:
+    #     normfeatures = GetStemFeatures(norm)
+    #     if normfeatures:
+    #         diffSet = feature.difference(normfeatures)
+
+    # featuresCopy = CopyFeatureLeaves(node.features)
+
+    origFeaturesCopy = CopyFeatureLeaves(node.origFeatures)
+    stemFeaturesCopy = CopyFeatureLeaves(node.stemFeatures)
+
+    for feature in stemFeaturesCopy:
+        if feature in origFeaturesCopy:
+            origFeaturesCopy.remove(feature)
+
+    # diffSetCopy = CopyFeatureLeaves(diffSet)
+    #
+    # featuresCopy = set(featuresCopy).difference(set(diffSetCopy))
+    #
+    # diffSorted = set()
+    # for f in diffSetCopy:
+    #     featureName = GetFeatureName(f)
+    #     if featureName:
+    #         diffSorted.add(featureName)
+    #     else:
+    #         logging.warning("Can't find feature of " + node.text)
+    #
+    # diffSorted = sorted(diffSorted)
+    #
+    # if diffSorted:
+    #     output += " ".join(diffSorted)
+    #     output += "; "
+
+
+
+    featureSorted = set()
+    for f in origFeaturesCopy:
+        featureName = GetFeatureName(f)
+        if featureName:
+            featureSorted.add(featureName)
+        else:
+            logging.warning("Can't find feature of " + node.text)
+
+    featureSorted = sorted(featureSorted)
+
+
+    output += " ".join(featureSorted) + ";"
+
+
+    featureSorted = set()
+    for f in stemFeaturesCopy:
+        featureName = GetFeatureName(f)
+        if featureName:
+            featureSorted.add(featureName)
+        else:
+            logging.warning("Can't find feature of " + node.text)
+
+    featureSorted = sorted(featureSorted)
+
+
+    output += " ".join(featureSorted) + " "
+
+    if node.norm != node.text:
+        output += "'" + node.norm + "' "
+    if node.atom != node.text:
+        output += "/" + node.atom + "/ "
+    if node.missingfeature != "":
+        output += node.missingfeature
+    if hasattr(node, "comment"):
+        output += node.comment
+
+    return output
 
 if __name__ == "__main__":
 
@@ -197,7 +388,10 @@ if __name__ == "__main__":
 
     # make copy of original lexicons
     copyfile(lexYLocation, tmpLexY)
+    copyfile(lexY3colonsLocation, tmpLexY3colons)
+    copyfile(lexYformsLocation, tmpLexYforms)
     copyfile(lexicon1Location, tmpLexicon1)
+    copyfile(stemYLocation, tmpstemY)
     copyfile(compoundYLocation, tmpCompound)
     copyfile(lexicon2Location, tmpLexicon2)
     LoadFeatureOntology(YDirLocation + '/../../fsa/Y/feature.txt')
@@ -205,16 +399,37 @@ if __name__ == "__main__":
     for i in range(0, len(_lexDictList)):
         LoadLex(_lexLocationList[i], _lexCommentList[i], _lexDictList[i])
 
+    FeatureNotCopy()
+
     # deal with feature enrichment
-    enrichFeature()
+    for i in range(0, len(_lexDictList)):
+        enrichFeature( _lexDictList[i])
 
     # compare the corresponding lexicons of same level
     compareLex(_lexYdict,_lexicon1dict)
+    compareLex(_lexY3colonsdict, _lexicon1dict)
+    compareLex(_lexYformsdict, _lexicon1dict)
+    compareLex(_lexY3colonsdict,_lexYdict)
+    compareLex(_lexY3colonsdict, _lexYformsdict)
+    compareLex(_lexYdict, _lexYformsdict)
+
+
+
     compareLex(_compoundYdict, _lexicon2dict)
+    compareLex(_compoundY3colonsdict, _lexicon2dict)
+    compareLex(_compoundYformsdict, _lexicon2dict)
+    compareLex(_compoundY3colonsdict,_compoundYdict)
+    compareLex(_compoundY3colonsdict, _compoundYformsdict)
+    compareLex(_compoundYdict, _compoundYformsdict)
 
     printNewLex(lexYLocation,_lexYdict,_lexYCommentdict)
+    printNewLex(lexY3colonsLocation, _lexY3colonsdict, _lexY3colonsCommentdict)
+    printNewLex(lexYformsLocation, _lexYformsdict, _lexYformsCommentdict)
     printNewLex(lexicon1Location,_lexicon1dict,_lexicon1Commentdict)
+    printNewLex(stemYLocation, _stemYdict, _stemYCommentdict)
     printNewLex(compoundYLocation, _compoundYdict,_compoundYCommentdict)
+    printNewLex(compoundY3colonsLocation, _compoundY3colonsdict, _compoundY3colonsCommentdict)
+    printNewLex(compoundYformsLocation, _compoundYformsdict, _compoundYformsCommentdict)
     printNewLex(lexicon2Location, _lexicon2dict,_lexicon2Commentdict)
 
 

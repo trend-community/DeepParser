@@ -115,6 +115,8 @@ def InitGlobalFeatureID():
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
         for IDList in FeatureOntology.BarTagIDs:
             FeatureOntology.BarTagIDSet.update(set(IDList))
+        FeatureOntology.SentimentTagIDSet = [FeatureOntology.GetFeatureID(t) for t in FeatureOntology.SentimentTags]
+        FeatureOntology.SentimentTagIDSet = set(FeatureOntology.SentimentTagIDSet)
 
 # return -1 if failed. Should throw error?
 @lru_cache(1000000)
@@ -305,6 +307,60 @@ def OutputStringTokens_oneliner(strTokenList, NoFeature=False):
         node = node.next
     return output
 
+
+def OutputStringTokensSegment_oneliner(strTokenList):
+    output = ""
+    node = strTokenList.head
+    while node:
+        # if output:
+        #     output += " "
+        output += node.onelinerSegment()
+        node = node.next
+    output = output[:-1]
+    return output
+
+
+def OutputStringTokens_onelinerSA(dag):
+    # print("Dag:{}".format(dag))
+    output = ""
+    TargetFeature = "Target"
+    ProFeature = "Pro"
+    ConFeature = "Con"
+    PosEmo = "PosEmo"
+    NegEmo = "NegEmo"
+    Neutral = "Neutral"
+    Needed = "Needed"
+    Key = "Key"
+    Value = "Value"
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x:x.StartOffset)
+    for node in nodelist:
+        output += node.text + "/"
+        featureString = node.GetFeatures()
+        featureSet = featureString.split(",")
+        # print (featureSet)
+        if TargetFeature in featureSet:
+            output +=  TargetFeature + " "
+        if ProFeature in featureSet:
+            output +=  ProFeature + " "
+        if ConFeature in featureSet:
+            output += ConFeature + " "
+        if PosEmo in featureSet:
+            output +=  PosEmo + " "
+        if NegEmo in featureSet:
+            output +=  NegEmo + " "
+        if Needed in featureSet:
+            output += Needed + " "
+        if Neutral in featureSet:
+            output += Neutral + " "
+        if Key in featureSet:
+            output +=  Key + " "
+        if Value in featureSet:
+            output +=  Value + " "
+        if output.endswith("/"):
+            output = output[:-1]
+    return output
 
 def OutputStringTokens_oneliner_merge(strTokenList):
     output = ""

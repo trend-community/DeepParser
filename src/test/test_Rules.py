@@ -2,8 +2,10 @@
 import unittest
 from Rules import *
 from Rules import _ExpandParenthesis, _ExpandOrBlock, _ProcessOrBlock
-from Rules import  _CheckFeature_returnword
+from Rules import  _CheckFeature_returnword, _ExpandRuleWildCard_List, _PreProcess_CheckFeaturesAndCompileChunk, _PreProcess_CompileHash
 import FeatureOntology
+dir_path = os.path.dirname(os.path.realpath(__file__))
+FeatureOntology.LoadFeatureSet(dir_path + '/../../../fsa/Y/feature.txt')
 
 class RuleTest(unittest.TestCase):
     def test_Tokenization(self):
@@ -153,12 +155,12 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(rulegroup.RuleList), 0)
         InsertRuleInList("aaa==[NR] [PP]?", rulegroup)
         self.assertEqual(len(rulegroup.RuleList), 1)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 2)
         InsertRuleInList("bbb==[JS]? [JM]?", rulegroup)
         self.assertEqual(len(rulegroup.RuleList), 3)
-        ExpandRuleWildCard()
-        self.assertEqual(len(rulegroup.RuleList), 6)
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
+        self.assertEqual(len(rulegroup.RuleList), 5)
 
         #OutputRules()
 
@@ -177,7 +179,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(r.Tokens), 6)
         if r.RuleName:
             rulegroup.RuleList.append(r)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 16)
         print("Before expand  parenthesis")
         #OutputRules()
@@ -186,7 +188,7 @@ class RuleTest(unittest.TestCase):
         print("Before expand rule, after parenthesis")
         #OutputRules()
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         print(" after expand rule again")
         #OutputRules()
         #self.assertEqual(len(rulegroup.RuleList), 24)
@@ -201,18 +203,125 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(r.Tokens), 1)
         if r.RuleName:
             rulegroup.RuleList.append(r)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 2)
         _ExpandParenthesis(rulegroup.RuleList)
         print("Start rules after expand parenthesis")
         #OutputRules()
         newr = rulegroup.RuleList[1]
         self.assertEqual(len(newr.Tokens), 2)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         print("Start rules after expand wild card again")
         #OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 3)
 
+
+    def test_not_parenthsis(self):
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        r = Rule()
+        r.SetRule(           "d == [!c4|(c1 !c3)] ")
+        self.assertEqual(len(r.Tokens), 1)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
+
+        r = Rule()
+        r.SetRule(           "e == [!(c1 !c3)|c5] ")
+        self.assertEqual(len(r.Tokens), 1)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
+
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
+        print("Start rules after _ExpandRuleWildCard_List")
+        print(OutputRules(rulegroup))
+        _ExpandParenthesis(rulegroup.RuleList)
+        print("Start rules after _ExpandParenthesis")
+        print(OutputRules(rulegroup))
+        _ExpandOrBlock(rulegroup.RuleList)
+        print("Start rules after _ExpandOrBlock")
+        print(OutputRules(rulegroup))
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        print("Start rules after _PreProcess_CheckFeaturesAndCompileChunk")
+        print(OutputRules(rulegroup))
+        _PreProcess_CompileHash(rulegroup)
+        print("Start rules after _PreProcess_CompileHash")
+        print(OutputRules(rulegroup))
+        self.assertEqual(len(rulegroup.RuleList), 4)
+
+        newr = rulegroup.RuleList[0]
+        self.assertEqual(newr.Tokens[0].word, "!c4  !c1")
+        newr = rulegroup.RuleList[1]
+        self.assertEqual(newr.Tokens[0].word, "!c4  c3")
+
+        newr = rulegroup.RuleList[2]
+        self.assertEqual(newr.Tokens[0].word, "!c1  !c5")
+        newr = rulegroup.RuleList[3]
+        self.assertEqual(newr.Tokens[0].word, "c3  !c5")
+
+
+    def test_simpleNotAnd(self):
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        r = Rule()
+        r.SetRule(           "c == [!(c1 !c3)] ")
+        self.assertEqual(len(r.Tokens), 1)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
+
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
+        print("Start rules after _ExpandRuleWildCard_List")
+        print(OutputRules(rulegroup))
+        _ExpandParenthesis(rulegroup.RuleList)
+        print("Start rules after _ExpandParenthesis")
+        print(OutputRules(rulegroup))
+        _ExpandOrBlock(rulegroup.RuleList)
+        print("Start rules after _ExpandOrBlock")
+        print(OutputRules(rulegroup))
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        print("Start rules after _PreProcess_CheckFeaturesAndCompileChunk")
+        print(OutputRules(rulegroup))
+        _PreProcess_CompileHash(rulegroup)
+        print("Start rules after _PreProcess_CompileHash")
+        print(OutputRules(rulegroup))
+        self.assertEqual(len(rulegroup.RuleList), 2)
+
+        newr = rulegroup.RuleList[0]
+        self.assertEqual(newr.Tokens[0].word, "!c1")
+        newr = rulegroup.RuleList[1]
+        self.assertEqual(newr.Tokens[0].word, "c3")
+
+    def test_UnificationExtension(self):
+
+        rulegroup = RuleGroup("test")
+        ResetRules(rulegroup)
+        RuleGroupDict.update({rulegroup.FileName: rulegroup})
+
+        r = Rule()
+        r.SetRule("e == [nN %F(per|animal|org):^.CN] [CC] [nN %F:NG++ H]")
+        self.assertEqual(len(r.Tokens), 3)
+        if r.RuleName:
+            rulegroup.RuleList.append(r)
+
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
+        print("Start rules after _ExpandRuleWildCard_List")
+        print(OutputRules(rulegroup))
+        _ExpandParenthesis(rulegroup.RuleList)
+        print("Start rules after _ExpandParenthesis")
+        print(OutputRules(rulegroup))
+        _ExpandOrBlock(rulegroup.RuleList)
+        print("Start rules after _ExpandOrBlock")
+        print(OutputRules(rulegroup))
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        print("Start rules after _PreProcess_CheckFeaturesAndCompileChunk")
+        print(OutputRules(rulegroup))
+        _PreProcess_CompileHash(rulegroup)
+        print("Start rules after _PreProcess_CompileHash")
+        print(OutputRules(rulegroup))
+        self.assertEqual(len(rulegroup.RuleList), 3)
 
     def test_parenthsis_complicate_little(self):
         rulegroup = RuleGroup("test")
@@ -224,7 +333,7 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(len(r.Tokens), 3)
         if r.RuleName:
             rulegroup.RuleList.append(r)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 2)
         #print("Before expand  parenthesis")
         #OutputRules()
@@ -233,7 +342,7 @@ class RuleTest(unittest.TestCase):
         #print("Before expand rule, after parenthesis")
         #OutputRules()
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         #print(" after expand rule again")
         #OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 3)
@@ -254,7 +363,7 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("DT_NN_VBG_NN2 == (/the/|'any|such|these|those'|@yourC) ", rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 1)
         #print("Before expand  parenthesis")
         #OutputRules()
@@ -264,7 +373,7 @@ class RuleTest(unittest.TestCase):
         #OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 4)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         #print(" after expand wild card")
         #OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 4)
@@ -281,7 +390,7 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("DT_NN_VBG_NN2 == @yourC ", rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 1)
         # print("Before expand  parenthesis")
         # OutputRules()
@@ -291,7 +400,7 @@ class RuleTest(unittest.TestCase):
         # OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 2)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         # print(" after expand wild card")
         # OutputRules()
         self.assertEqual(len(rulegroup.RuleList), 2)
@@ -350,7 +459,7 @@ class RuleTest(unittest.TestCase):
         print(r.Tokens[2])
         r.Tokens[2].word = "[" + _CheckFeature_returnword(r.Tokens[2].word) + "]"
         print(r.Tokens[2])
-        self.assertEqual(r.Tokens[2].word, "[!punc|xC|v]")
+        self.assertEqual(r.Tokens[2].word, "[!punc !xC !v]")
 
     def test_ExpandOrBlock(self):
         rulegroup = RuleGroup("test")
@@ -455,9 +564,9 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("""ACTION == ([pureDT:^.A] | [POS:^.M])""", rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         #OutputRules("concise")
         self.assertEqual(len(rulegroup.RuleList), 2)
@@ -469,11 +578,11 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("""ACTION == (([pureDT:^.A] | [POS:^.M]| [POS:^.M POS]))""", rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         #OutputRules("concise")
         self.assertEqual(len(rulegroup.RuleList), 4)
@@ -485,11 +594,11 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("""ACTION == [pureDT:^.A] | [POS:^.M]| [POS:^.M POS]""", rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         #OutputRules("concise")
         self.assertEqual(len(rulegroup.RuleList), 4)
@@ -506,9 +615,9 @@ class RuleTest(unittest.TestCase):
                      [AP:^.M]
 
                  """, rulegroup)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         #OutputRules("concise")
         word = rulegroup.RuleList[0].Tokens[0].word
@@ -528,9 +637,9 @@ class RuleTest(unittest.TestCase):
                  <[NNP:NE] ['\(':^.X] [OOV:^.EQ] ['\)':^.X]> // Test: 卡雷尼奥.杜兰（Carrenoduran）
 
                  """, rulegroup)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         # OutputRules("concise")
         word = rulegroup.RuleList[0].Tokens[0].word
@@ -548,9 +657,9 @@ class RuleTest(unittest.TestCase):
         VNPAP2 == ^[VNPAP !passive VG2] [NP !JS2:^.O ^V2.O2] RB? ^V2[AP OTHO:ingAdj]|[enAdj:^.C] infinitive [!passive:^.purposeR]?
         """  , rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
 
         #OutputRules("concise")
@@ -584,9 +693,9 @@ class RuleTest(unittest.TestCase):
         InsertRuleInList("""    DT_NN_VBG_NN2 ==
             '!with' (/the/|'any|such|these|those'|@yourC)""", rulegroup)
 
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         OutputRules(rulegroup, "concise")
         word = rulegroup.RuleList[0].Tokens[0].word
@@ -618,9 +727,9 @@ class RuleTest(unittest.TestCase):
 
         InsertRuleInList("""NP_CM_VBN ==
         ^[NP2|DE2 !pro !that !date|durR|time|percent:^V.O2] [CM:Done] advP* ^V[enVG VNP|VNPPP Kid Obj:^.X] [PP|RP|DE|R]* ([CM:Done]|[COLN|JM])""", rulegroup)
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
         ExpandParenthesisAndOrBlock()
-        ExpandRuleWildCard()
+        _ExpandRuleWildCard_List(rulegroup.RuleList)
 
         #OutputRules("concise")
         self.assertTrue(len(rulegroup.RuleList) >= 3)
@@ -672,7 +781,7 @@ third line};""")
             'a|b|c';
                  """, rulegroup)
 
-        PreProcess_CheckFeatures()
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 3)
         word = rulegroup.RuleList[0].Tokens[0].word
         self.assertEqual(word, "[ 'a' ]")
@@ -682,7 +791,7 @@ third line};""")
             [notfeature:xx];
                  """, rulegroup)
         #OutputRules()
-        PreProcess_CheckFeatures()
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         self.assertEqual(len(rulegroup.RuleList), 4)
         word = rulegroup.RuleList[3].Tokens[0].word
         self.assertEqual(word, "['notfeature']")
@@ -692,7 +801,7 @@ third line};""")
             notfeature|'a'|notfeature2;
                  """, rulegroup)
 
-        PreProcess_CheckFeatures()
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         OutputRules(rulegroup)
         self.assertEqual(len(rulegroup.RuleList), 7)
         word = rulegroup.RuleList[6].Tokens[0].word
@@ -712,7 +821,7 @@ third line};""")
  	[!NN|plural]|[date|measure|dur]|[RP|PP]
 };
    """, rulegroup)
-        PreProcess_CheckFeatures()
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         OutputRules(rulegroup)
 
         origin = "this is \(, \), \\', \:, \= as origin"
