@@ -3,6 +3,7 @@
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import string
+
 import utils
 from FeatureOntology import *
 # (O.O)
@@ -16,7 +17,6 @@ _LexiconLookupSet[LexiconLookupSource.External] = set()
 _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
 _LexiconLookupSet[LexiconLookupSource.Compound] = set()
 _LexiconSegmentDict = {}  # from main2017. used for segmentation only. there is no feature.
-_StemSegmentDict = {}
 _LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
 _LexiconFantiDict = {}
@@ -356,7 +356,6 @@ def LoadCompositeKG(lexiconLocation):
     # for key in CompositeKGSetADict:
     #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
 
-
 def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet, _StemDict
     global _CommentDict
@@ -524,7 +523,6 @@ def SearchLexicon(word, SearchType='flexible'):
 
     return None
 
-
 def SearchStem(word):
     if word in _StemDict:
         return _StemDict[word]
@@ -554,7 +552,8 @@ def ResetAllLexicons():
     _LexiconLookupSet[LexiconLookupSource.defLex] = set()
     _LexiconLookupSet[LexiconLookupSource.External] = set()
     _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
-    _LexiconSegmentDict.clear() # from main2017. used for segmentation onln. there is no feature.
+    _LexiconLookupSet[LexiconLookupSource.Compound] = set()
+    _LexiconSegmentDict.clear() # from main2017. used for segmentation only. there is no feature.
     _LexiconSegmentSlashDict.clear() #
     _LexiconCuobieziDict.clear()
     _LexiconFantiDict.clear()
@@ -729,7 +728,7 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
 
             suffix = word[stem_length:].lower()
 
-            if lex is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
+            if lex is not None and suffix in _SuffixList:  # both the stem_word exists and the suffix exists
                 # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
                 o_norm = node.norm
                 o_atom = node.atom
@@ -768,9 +767,9 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
                     break
                 else:
                     lex = None
-                    if stemming_version == "stem": # failing from small suffixes could still work for longer ones
+                    if stemming_version == "stem":  # failing from small suffixes could still work for longer ones
                         continue
-                    else: # starting for longer suffixes, if matching failed it would fail everything
+                    else:  # starting for longer suffixes, if matching failed it would fail everything
                         break
 
     if lex is None:

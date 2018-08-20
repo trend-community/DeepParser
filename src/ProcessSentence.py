@@ -760,7 +760,7 @@ def LoadCommon():
         if action.startswith("Stemming:"):
             Stemfile = action[action.index(":") + 1:].strip().split(",")
             inf = Stemfile[0].strip()
-            Rules.LoadRules(XLocation, inf)
+            Rules.LoadRules(XLocation, inf, systemfileolderthanDB)
             Lexicon.LoadSuffix(XLocation + inf, inf)
             for stem in Stemfile[1:]:
                 stem = stem.strip()
@@ -773,7 +773,6 @@ def LoadCommon():
                 compound = compound.strip()
                 if compound:
                     Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.Compound)
-
 
         if action.startswith("Lookup defLex:"):
             Compoundfile = action[action.index(":")+1:].strip().split(",")
@@ -819,7 +818,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    #target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
+    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
