@@ -434,8 +434,6 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
-
-
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -533,7 +531,6 @@ def SeparateSentence(Sentence):
 
     #logging.info(str(SubSentences))
     return SubSentences
-
 
 def LexicalAnalyzeTask( SubSentence, schema):
 
@@ -696,8 +693,6 @@ def LoadCommon():
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
 
-
-
     LoadPipeline(PipeLineLocation)
 
     if logging.root.isEnabledFor(logging.DEBUG):
@@ -818,7 +813,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
+    #target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
