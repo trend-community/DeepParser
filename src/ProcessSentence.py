@@ -449,7 +449,8 @@ def DynamicPipeline(NodeList, schema):
         # if action == "APPLY COMPOSITE KG":
         #     Lexicon.ApplyCompositeKG(NodeList)
 
-        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
+        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") \
+                or action.startswith("Lookup oQcQ") or action.startswith("Lookup Compound:"):
             lookupSourceName = action[6:action.index(":")].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
@@ -474,7 +475,7 @@ def DynamicPipeline(NodeList, schema):
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
-    return  NodeList, Dag, WinningRules
+    return NodeList, Dag, WinningRules
 
 
 def PrepareJSandJM(nodes):
@@ -530,7 +531,6 @@ def SeparateSentence(Sentence):
 
     #logging.info(str(SubSentences))
     return SubSentences
-
 
 def LexicalAnalyzeTask( SubSentence, schema):
 
@@ -693,9 +693,6 @@ def LoadCommon():
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
 
-    # XLocation = '../../fsa/X/'
-
-
     LoadPipeline(PipeLineLocation)
 
     if logging.root.isEnabledFor(logging.DEBUG):
@@ -754,6 +751,24 @@ def LoadCommon():
                 if lex:
                     Lexicon.LoadLexicon(XLocation + lex)
 
+        # (O.O)
+        if action.startswith("Stemming:"):
+            Stemfile = action[action.index(":") + 1:].strip().split(",")
+            inf = Stemfile[0].strip()
+            Rules.LoadRules(XLocation, inf, systemfileolderthanDB)
+            Lexicon.LoadSuffix(XLocation + inf, inf)
+            for stem in Stemfile[1:]:
+                stem = stem.strip()
+                if stem:
+                    Lexicon.LoadLexicon(XLocation + stem, lookupSource=LexiconLookupSource.stemming)
+
+        if action.startswith("Lookup Compound:"):
+            Compoundfile = action[action.index(":")+1:].strip().split(",")
+            for compound in Compoundfile:
+                compound = compound.strip()
+                if compound:
+                    Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.Compound)
+
         if action.startswith("Lookup defLex:"):
             Compoundfile = action[action.index(":")+1:].strip().split(",")
             for compound in Compoundfile:
@@ -798,7 +813,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
+    #target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
@@ -826,7 +841,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("虽然经济实惠，但味道好苦啊")
+    nodelist, dag, winningrules = LexicalAnalyze("They sing blenchly")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
