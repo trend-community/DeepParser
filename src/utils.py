@@ -42,6 +42,8 @@ FeatureID_NC = None
 FeatureID_VC = None
 
 FeatureID_comPair = None
+whQlist = ["whNQ", "orQ", "whatQ", "whenQ", "whereQ", "whoQ", "whBrand", "whProd", "whyQ", "howQ", "howDoQ",
+           "whatHappenQ", "whatForQ", "howAQ"]
 
 
 IMPOSSIBLESTRING = "@#$%@impossible@"
@@ -361,6 +363,50 @@ def OutputStringTokens_onelinerSA(dag):
         if output.endswith("/"):
             output = output[:-1]
     return output
+
+def OutputStringTokens_onelinerQA(dag):
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x:x.StartOffset)
+
+
+    output = ""
+    for node in nodelist:
+        haswhq, whqfeature = nodehaswhqfeature(node)
+        if "yesnoQ" in node.GetFeatures():
+            for n in nodelist:
+                output += n.text
+            if output:
+                output += "\tyesnoQ"
+            return output
+        elif haswhq:
+            for n in nodelist:
+                output += n.text
+            if output:
+                output += "\t" + whqfeature
+            return output
+        elif "whQ" in node.GetFeatures():
+            for n in nodelist:
+                output += n.text
+            if output:
+                output += "\twhQ"
+            return output
+
+    for n in nodelist:
+        output += n.text
+    if output:
+        output += "\tother"
+    return output
+
+def nodehaswhqfeature(node):
+
+    for whqfeature in whQlist:
+        if whqfeature in node.GetFeatures():
+            return True, whqfeature
+    return False, None
+
+
+
 
 def OutputStringTokens_oneliner_merge(strTokenList):
     output = ""

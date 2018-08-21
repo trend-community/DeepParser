@@ -140,6 +140,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 if len(dag.nodes) == 0:
                     dag.transform(nodes)
                 output_text = utils.OutputStringTokens_onelinerSA(dag)
+            elif Type =='QA':
+                output_type = 'text/plain;'
+                if len(dag.nodes) == 0:
+                    dag.transform(nodes)
+                output_text = utils.OutputStringTokens_onelinerQA(dag)
             elif Type == "parsetree":
                 output_type = "text/html;"
                 if action == "headdown":
@@ -195,7 +200,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         XLocation = os.path.dirname(PipeLineLocation) + "/"
         Reply = "Lexicon/Rule/Pipeline:"
         systemfileolderthanDB = ProcessSentence.SystemFileOlderThanDB(XLocation)
-       
+
 
         if ReloadTask.lower() == "/lexicon":
             logging.info("Start loading lexicon...")
