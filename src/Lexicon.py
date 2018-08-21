@@ -844,43 +844,6 @@ def LoadSuffix(inf_location, inf_name):
         inf.close()
 
 
-# (O.O)
-def LoadSuffix(inf_location, inf_name):
-    global _SuffixList, _InfFile
-    suffix_set = set()
-    _InfFile = inf_name
-    inf = open(inf_location, 'r')
-
-    f = inf.readlines()
-    try:
-        for line in f:
-            if line.startswith("//"):
-                pass
-            else:
-                double = True  # determines whether the rule is in double quotes or single quotes
-                index = line.find('"')
-                if index == -1:
-                    double = False
-                    index = line.find("'")
-                if index == -1:
-                    pass
-                else:
-                    if double:
-                        index2 = line.find('"', index + 1)
-                    else:
-                        index2 = line.find("'", index + 1)
-                    phrase = line[index + 2: index2]  # get rid of initial -
-                    if phrase.startswith("\\"): # get rid of \ if it exists at beginning
-                        phrase = phrase[1:]
-                    suffix_set.add(phrase)
-
-        for suffix in suffix_set:
-            _SuffixList.append(suffix)
-    finally:
-        inf.close()
-
-
-
 # Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens, lookupsource):
