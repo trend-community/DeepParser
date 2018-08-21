@@ -763,7 +763,7 @@ def LoadCommon():
                     Lexicon.LoadLexicon(XLocation + stem, lookupSource=LexiconLookupSource.stemming)
 
         if action.startswith("Lookup Compound:"):
-            Compoundfile = action[action.index(":") + 1:].strip().split(",")
+            Compoundfile = action[action.index(":")+1:].strip().split(",")
             for compound in Compoundfile:
                 compound = compound.strip()
                 if compound:
