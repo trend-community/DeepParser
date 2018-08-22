@@ -3,8 +3,6 @@
 # and the current user already setup key-based (passwordless) connection with root of other servers.
 
 rootdirectory_local=~/git
-rootdirectory_remote=/export/App/git
-nluuser=nlu
 
 set -x
 
@@ -28,6 +26,10 @@ then
     rm -rf log/*
     rm -rf temp/*
 
+    cd data
+    find . ! -name 'parser*.db' -type f -exec rm -f {} +
+    cd ..
+
     find . -name "*.pyc" -delete
 
     cd /tmp/git
@@ -35,13 +37,33 @@ then
 
     echo /tmp/git/parser_release.tar.gz is created.
 fi
-read -p "Press [Enter] key to start deploying. Press Ctrl-C to stop."
+#read -p "Press [Enter] key to start deploying. Press Ctrl-C to stop."
+echo "Option 1: Deploying to SV office ( should have total=10 in the gitpull_restart.sh "
+echo "Option 2: Deploying to Production  ( should have total=30 in the gitpull_restart.sh "
+echo "Option 3: Deploying to Production Neo4j ( should have total=4 in the gitpull_restart.sh "
 
-#for testing in dev.
-#scp /tmp/git/parser_release.tar.gz root@172.22.190.95:$rootdirectory_remote
-#ssh root@172.22.190.95 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+PS3='Please enter your choice: '
+options=("Option 1" "Option 2" "Option 3" "Quit")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Option 1")
+        echo "Option 1: Deploying to SV office"
+rootdirectory_remote=/nlpengine
+nluuser=team
 
-#for parsers without neo4j
+scp /tmp/git/parser_release.tar.gz team@10.153.152.253:$rootdirectory_remote
+ssh team@10.153.152.253 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh "
+scp /tmp/git/parser_release.tar.gz team@10.153.152.254:$rootdirectory_remote
+ssh team@10.153.152.254 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh "
+scp /tmp/git/parser_release.tar.gz team@10.153.152.251:$rootdirectory_remote
+ssh team@10.153.152.251 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh "
+break;;
+
+        "Option 2")
+        echo "Option 2: Deploying to Production"
+rootdirectory_remote=/export/App/git
+nluuser=nlu
 
 scp /tmp/git/parser_release.tar.gz root@172.18.188.2:$rootdirectory_remote
 ssh root@172.18.188.2 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
@@ -57,11 +79,21 @@ ssh root@172.18.189.137 " cd $rootdirectory_remote && tar xzvf parser_release.ta
 
 scp /tmp/git/parser_release.tar.gz root@172.18.189.138:$rootdirectory_remote
 ssh root@172.18.189.138 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+break;;
 
-# for parses WITH neo4j
-#scp /tmp/git/parser_release.tar.gz root@172.18.189.135:$rootdirectory_remote
-#ssh root@172.18.189.135 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+        "Option 3")
+        echo "Option 3: Deploying to Production neo4j servers"
+rootdirectory_remote=/export/App/git
+nluuser=nlu
+scp /tmp/git/parser_release.tar.gz root@172.18.189.135:$rootdirectory_remote
+ssh root@172.18.189.135 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 
-#scp /tmp/git/parser_release.tar.gz root@172.18.189.202:$rootdirectory_remote
-#ssh root@172.18.189.202 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
-
+scp /tmp/git/parser_release.tar.gz root@172.18.189.202:$rootdirectory_remote
+ssh root@172.18.189.202 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+break;;
+        "Quit")
+            break
+            ;;
+        *) echo "invalid option $REPLY";;
+    esac
+done

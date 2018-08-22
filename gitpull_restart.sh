@@ -30,7 +30,7 @@ total=10
 for ((i=5001; i<5001+$total; i++)); do
     echo starting $i of $total ...
     nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
-    sleep 30s
+    sleep 100s
 done
 
 echo 'RestfulService is restarted.'
