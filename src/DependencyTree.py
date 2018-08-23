@@ -206,22 +206,48 @@ class DependencyTree:
                                 self.nodes[edge[2]].text,
                                 self.nodes[edge[0]].text   )
         elif Type == 'simple2':
-            for nodeid in sorted(self.nodes):
+            for nodeid in sorted(self.nodes, key=operator.attrgetter("Index")):
                 output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
             output += "{"
             for edge in sorted(self.graph, key= lambda e: e[2]):
                 output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
             output += "}"
-        else:
-            output = "{"
-            for nodeid in sorted(self.nodes):
+        elif Type == 'graphjson':
+            output += '  nodes: ['
+            for nodeid in sorted(self.nodes, key=operator.attrgetter("Index")):
                 danzi = self.getDanzi(nodeid)
                 if danzi:
-                    output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(nodeid, danzi, self.nodes[nodeid].GetFeatures())
+                    output +=  '"{}":{ text:"{}", features:"{}"'.format(nodeid, danzi, self.nodes[nodeid].GetFeatures())
                 else:
-                    output += "{} [label=\"{}\" tooltip=\"{}\"];\n".format(nodeid, self.nodes[nodeid].text,
-                                                                           self.nodes[nodeid].GetFeatures())
 
+                    output += '"{}":{ text:"{}", features:"{}"'.format(nodeid, self.nodes[nodeid].text,
+                                                                           self.nodes[nodeid].GetFeatures())
+                if self.nodes[nodeid].norm != self.nodes[nodeid.text]:
+                    output += ' norm:"{}",'.format(self.nodes[nodeid].norm)
+                if self.nodes[nodeid].atom != self.nodes[nodeid.text]:
+                    output += ' atom:"{}",'.format(self.nodes[nodeid].atom)
+                output += ''
+            output += """},  "nodes": {"""
+            for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
+                    output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
+
+            output += "}"
+
+        else:
+            output = "{"
+            for node in sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+                nodeid = node.ID
+                danzi = self.getDanzi(nodeid)
+                if danzi:
+                    output +=  "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, danzi, node.GetFeatures())
+                else:
+
+                    output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, node.GetFeatures())
+                if node.norm != node.text:
+                    output += " norm=\"{}\"".format(node.norm)
+                if node.atom != node.text:
+                    output += " atom=\"{}\"".format(node.atom)
+                output += "];\n"
             output += "//edges:\n"
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
