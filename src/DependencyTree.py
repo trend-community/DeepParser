@@ -45,7 +45,7 @@ class DependencyTree:
             root = root.next        #ignore the first empty (virtual) JS node
         temp_subgraphs = []
         # Collect all the leaf nodes into self.nodes.
-        while root != None:
+        while root is not None:
             #each "root" has a tree, independent from others.
             node = root
             nodestack = set()
@@ -68,7 +68,7 @@ class DependencyTree:
                         continue
 
                     node = node.next
-                    if node == None and nodestack:
+                    if node is None and nodestack:
                         node = nodestack.pop()
             if not (root.text == '' and utils.FeatureID_JM in root.features):
                 temp_subgraphs.append(SubGraph(root))
@@ -89,7 +89,7 @@ class DependencyTree:
                             temp_subgraphs.append(SubGraph(subnode))    # non-leaf, non-H. it is a subgraph.
                             subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
                             subnode = subnode.next
-                            if subnode == None and nodestack:
+                            if subnode is None and nodestack:
                                 subnode = nodestack.pop()
                         else:
                             if subnode.next:
@@ -105,7 +105,7 @@ class DependencyTree:
                             if not(subnode.text == '' and utils.FeatureID_JM  in subnode.features):
                                 subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
                         subnode = subnode.next
-                        if subnode == None and nodestack:
+                        if subnode is None and nodestack:
                             subnode = nodestack.pop()
             else:
                 subgraph.headID = subgraph.startnode.ID
@@ -565,7 +565,6 @@ class DependencyTree:
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
         Actions = actinstring.split()
-        #logging.debug("Word:" + self.text)
 
         for Action in copy.copy(Actions):
             if "---" in Action:

@@ -456,7 +456,7 @@ def DynamicPipeline(NodeList, schema):
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
 
-        if action == "Lookup IE":
+        if action.startswith("Lookup IE"):
             Lexicon.ApplyCompositeKG(NodeList)
         #
         # if action == "TRANSFORM DAG":

@@ -291,7 +291,7 @@ def ApplyCompositeKG(NodeList):
             node = node.sons[0]
         else:
             node = node.next
-            if node == None and nodestack:
+            if node is None and nodestack:
                 node = nodestack.pop()
 
     node = NodeList.head
@@ -306,13 +306,14 @@ def ApplyCompositeKG(NodeList):
                 PassAllSets = True
                 for Set in CompositeKG[ID][1][1:]:
                     if not TextSet.intersection(Set):
-#                        logging.info("Do not have any of Set in TextSet. This condition failed")
+                        #logging.debug("Do not have any of Set in TextSet. This condition failed")
                         PassAllSets = False
                         break
                 if PassAllSets:
                     node.norm = CompositeKG[ID][0]
                     node.ApplyFeature(utils.FeatureID_comPair)
-                    logging.info("CompositeKG Winner after tring  " + str(len(CompositeKG[ID][1])) + " conditions.:" + CompositeKG[ID][0])
+                    logging.info("CompositeKG Winner after trying  " + str(len(CompositeKG[ID][1])) + " conditions.:" + CompositeKG[ID][0])
+                    #logging.info("The CompositeKG:{}".format(CompositeKG[ID]))
                     break
         if node.sons:
             if node.next:
@@ -320,7 +321,7 @@ def ApplyCompositeKG(NodeList):
             node = node.sons[0]
         else:
             node = node.next
-            if node == None and nodestack:
+            if node is None and nodestack:
                 node = nodestack.pop()
 
 
