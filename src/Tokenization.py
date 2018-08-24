@@ -583,6 +583,7 @@ class SentenceNode(object):
 
     def CleanOutput(self, KeepOriginFeature=False):
         a = JsonClass()
+        a.ID = self.ID
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm

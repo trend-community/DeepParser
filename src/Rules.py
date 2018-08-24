@@ -129,11 +129,14 @@ class RuleToken(object):
             self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = RuleToken.idCounter
 
-    def __eq__(self, other):  # only compare the matching part, not the action part.
-        if self.word.strip() == other.word.strip():  # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
-            return True
-        else:
-            return False
+    # def __eq__(self, other):  # only compare the matching part, not the action part.
+    #     logging.error("Utilizing the RuleToken __eq__ function!")
+    #     if self.word.strip() == other.word.strip():  # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
+    #         return True
+    #     else:
+    #         return False
+
+
 
     def __str__(self):
         output = ""

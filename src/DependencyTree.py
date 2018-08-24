@@ -213,25 +213,25 @@ class DependencyTree:
                 output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
             output += "}"
         elif Type == 'graphjson':
-            output += '  nodes: ['
-            for nodeid in sorted(self.nodes, key=operator.attrgetter("Index")):
-                danzi = self.getDanzi(nodeid)
-                if danzi:
-                    output +=  '"{}":{ text:"{}", features:"{}"'.format(nodeid, danzi, self.nodes[nodeid].GetFeatures())
+            output += '{  "nodes": ['
+            first = True
+            for node in sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+                if first:
+                    first = False
                 else:
+                    output += ", "
+                output += node.CleanOutput().toJSON()
 
-                    output += '"{}":{ text:"{}", features:"{}"'.format(nodeid, self.nodes[nodeid].text,
-                                                                           self.nodes[nodeid].GetFeatures())
-                if self.nodes[nodeid].norm != self.nodes[nodeid.text]:
-                    output += ' norm:"{}",'.format(self.nodes[nodeid].norm)
-                if self.nodes[nodeid].atom != self.nodes[nodeid.text]:
-                    output += ' atom:"{}",'.format(self.nodes[nodeid].atom)
-                output += ''
-            output += """},  "nodes": {"""
+            output += '],  "edges": ['
+            first = True
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
-                    output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
+                if first:
+                    first = False
+                else:
+                    output += ", "
+                output += '{{ "from":{}, "to":{}, "relation":"{}" }}'.format(edge[2], edge[0], edge[1])
 
-            output += "}"
+            output += "]}"
 
         else:
             output = "{"
@@ -350,7 +350,14 @@ class DependencyTree:
             else:
                 if pointer.isdigit():
                     pointer_num = int(pointer)
-                    nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    try:
+                        nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    except AttributeError as e: #AttributeError: 'RuleToken' object has no attribute 'MatchedNodeID'
+                        logging.error(e)
+                        logging.error("FindPointerNode: The rule is written error, because the reference token is not yet matched. Please rewrite!")
+                        logging.info(rule)
+                        return None
+
                 else:
                     pointer = "^" + pointer
                     #logging.info("Finding pointer node {} from TempPointer".format(pointer))
@@ -515,6 +522,9 @@ class DependencyTree:
             if node.Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
+        # if not SubtreePointer:  #Apparently after comparing index with referencenode, the subtreepointer is not empty
+        #     return True         # so the condition was like ^<
+        #
         for AndCondition in SubtreePointer.split("+"):
             Negation = False
 
@@ -534,7 +544,17 @@ class DependencyTree:
             else:
                 if pointer.isdigit():
                     pointer_num = int(pointer)
-                    start_nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    if pointer_num == rule.Tokens.index(ruletoken):
+                        start_nodeID = nodeID
+                    else:
+                        try:
+                            start_nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                        except AttributeError as e: #AttributeError: 'RuleToken' object has no attribute 'MatchedNodeID'
+                            logging.error(e)
+                            logging.error("TokenMatch: The rule is written error, because the reference token is not yet matched. Please rewrite!")
+                            logging.info(rule)
+                            return False
+
                 else:
                     pointer = "^" + pointer
                     #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
