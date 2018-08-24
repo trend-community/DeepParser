@@ -506,6 +506,8 @@ class SentenceNode(object):
                     if Action[-3] == "+":    #"+++"
                         self.ApplyFeature(utils.FeatureID_0)
                         self.sons=[]        #remove the sons of this
+                        self.Head0Text = '' #remove Head0Text.
+
                     else:                   #"X++":
                         #this should be in a chunk, only apply to the new node
                         HasBartagAction = True

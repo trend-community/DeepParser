@@ -238,15 +238,16 @@ class DependencyTree:
             for node in sorted(self.nodes.values(), key=operator.attrgetter("Index")):
                 nodeid = node.ID
                 danzi = self.getDanzi(nodeid)
-                if danzi:
-                    output +=  "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, danzi, node.GetFeatures())
-                else:
-
-                    output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, node.GetFeatures())
+                tooltip = node.GetFeatures()
                 if node.norm != node.text:
-                    output += " norm=\"{}\"".format(node.norm)
+                    tooltip += " '{}'".format(node.norm)
                 if node.atom != node.text:
-                    output += " atom=\"{}\"".format(node.atom)
+                    tooltip += " /{}/".format(node.atom)
+                if danzi:
+                    output +=  "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, danzi, tooltip)
+                else:
+                    output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, tooltip)
+
                 output += "];\n"
             output += "//edges:\n"
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
@@ -501,6 +502,11 @@ class DependencyTree:
             return True
 
         SubtreePointer = ruletoken.SubtreePointer
+        # if "~~"in SubtreePointer:
+        #     SubtreePointer, ReferenceNodePointer = SubtreePointer.split("~~", 1)
+        #     ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
+        #     if abs(node.Index - self.nodes[ReferenceNodeID].Index ) > len(self.nodes)/3:
+        #         return False
         if ">>" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)

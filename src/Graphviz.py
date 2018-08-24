@@ -23,6 +23,11 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
     node.endOffset = inputnode['EndOffset']
     node.startOffset = inputnode['StartOffset']
     node.features = inputnode['features']
+    #node.text = inputnode['text']
+    if 'norm' in inputnode:
+        node.norm = inputnode['norm']
+    if 'atom' in inputnode:
+        node.atom = inputnode['atom']
 
     # if not hasattr(CreateFlatTree, "nodeid"):
     #     CreateFlatTree.nodeid = 1
@@ -70,12 +75,17 @@ def orgChart(json_input, Debug):
         else:
             manager = ''    # root. parentid is zero
 
+        tooltip = ' {}\n StartOffset: {} EndOffset: {}'.format(node.features, node.startOffset, node.endOffset)
+
         source = GetSourceLexicon(node.text)
         if source:
-            tooltip = ' '.join(node.features) + '\n' + " StartOffset: " + str(node.startOffset) + " EndOffset:" + str(node.endOffset) + "\nFrom: " + source
-        else:
-            tooltip = ' '.join(node.features) + '\n' + " StartOffset: " + str(node.startOffset) + " EndOffset:" + str(
-                node.endOffset)
+            tooltip +=  "\nFrom: " + source
+
+        if hasattr(node, "norm"):
+            tooltip += " '{}'".format(node.norm)
+        if hasattr(node, "atom"):
+            tooltip += " /{}/".format(node.atom)
+
         f = node.text
         f_extra = ""
         BarFeature = utils.LastItemIn2DArray(node.features, FeatureOntology.BarTags)

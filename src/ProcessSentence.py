@@ -676,7 +676,6 @@ def UpdateSystemFileFromDB(XLocation):
         cur.close()
 
 def LoadCommon():
-
     InitDB()
 
     import Cache
@@ -687,8 +686,6 @@ def LoadCommon():
 
     FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
     GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
-    PunctuatefileLocation = os.path.join(XLocation,"../Y/LexY-EnglishPunctuate.txt")
-
 
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
@@ -701,11 +698,6 @@ def LoadCommon():
         logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
     Rules.LoadGlobalMacro(GlobalmacroLocation)
-
-    if "/X/" in XLocation:
-        Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
-    else:
-        Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
         if action.startswith("FSA"):
@@ -789,6 +781,13 @@ def LoadCommon():
                 oQoC = oQoC.strip()
                 if oQoC:
                     Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
+
+        if action.startswith("Lookup IE:"):
+            compositefile = action[action.index(":")+1:].strip().split(",")
+            for composite in compositefile:
+                comp = composite.strip()
+                if comp:
+                    Lexicon.LoadCompositeKG(XLocation + comp)
 
     Lexicon.LoadSegmentLexicon()
     UpdateSystemFileFromDB(XLocation)

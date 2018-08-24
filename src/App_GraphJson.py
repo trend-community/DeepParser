@@ -6,6 +6,20 @@
 import logging, configparser, os
 import requests,  jsonpickle, operator
 
+class Node(object): pass
+
+def TransformNode(nodedict):
+    _n = Node()
+    _n.ID = nodedict['ID']
+    _n.endOffset = nodedict['EndOffset']
+    _n.startOffset = nodedict['StartOffset']
+    _n.features = nodedict['features']
+    _n.text = nodedict['text']
+    if 'norm' in nodedict:
+        _n.norm = nodedict['norm']
+    if 'atom' in nodedict:
+        _n.atom = nodedict['atom']
+    return _n
 
 
 if __name__ == "__main__":
@@ -22,6 +36,7 @@ if __name__ == "__main__":
         Sentence
     )
     ret = requests.get(LexicalAnalyzeURL )
+    print(ret.text)
     g = jsonpickle.decode(ret.text)
     for node in g["nodes"]:
         print(node)
@@ -31,8 +46,12 @@ if __name__ == "__main__":
     OriginSentence = ""
     Nodes = {}
     for node in g["nodes"]:
+
         OriginSentence += node["text"]
-        Nodes[node["ID"]] = node["text"]
+        #Nodes[node["ID"]] = node["text"]
+
+        n = TransformNode(node)
+        Nodes[n.ID] = n.text
 
     print("Origin Sentece is {}".format(OriginSentence))
     for edge in g["edges"]:
