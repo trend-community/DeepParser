@@ -6,20 +6,17 @@
 import logging, configparser, os
 import requests,  jsonpickle, operator
 
-class Node(object): pass
-
-def TransformNode(nodedict):
-    _n = Node()
-    _n.ID = nodedict['ID']
-    _n.endOffset = nodedict['EndOffset']
-    _n.startOffset = nodedict['StartOffset']
-    _n.features = nodedict['features']
-    _n.text = nodedict['text']
-    if 'norm' in nodedict:
-        _n.norm = nodedict['norm']
-    if 'atom' in nodedict:
-        _n.atom = nodedict['atom']
-    return _n
+class Node(object):
+    def __init__(self, nodedict):
+        self.ID = nodedict['ID']
+        self.endOffset = nodedict['EndOffset']
+        self.startOffset = nodedict['StartOffset']
+        self.features = nodedict['features']
+        self.text = nodedict['text']
+        if 'norm' in nodedict:
+            self.norm = nodedict['norm']
+        if 'atom' in nodedict:
+            self.atom = nodedict['atom']
 
 
 if __name__ == "__main__":
@@ -36,25 +33,28 @@ if __name__ == "__main__":
         Sentence
     )
     ret = requests.get(LexicalAnalyzeURL )
-    print(ret.text)
-    g = jsonpickle.decode(ret.text)
-    for node in g["nodes"]:
-        print(node)
-    for edge in g["edges"]:
-        print(edge)
+    if 100 < ret.status_code < 400:
+        print(ret.text)
+        g = jsonpickle.decode(ret.text)
+        for node in g["nodes"]:
+            print(node)
+        for edge in g["edges"]:
+            print(edge)
 
-    OriginSentence = ""
-    Nodes = {}
-    for node in g["nodes"]:
+        OriginSentence = ""
+        Nodes = {}
+        for node in g["nodes"]:
 
-        OriginSentence += node["text"]
-        #Nodes[node["ID"]] = node["text"]
+            OriginSentence += node["text"]
+            #Nodes[node["ID"]] = node["text"]   #first way to use the dict.
 
-        n = TransformNode(node)
-        Nodes[n.ID] = n.text
+            n = Node(node)              #second way to use it. more formal.
+            Nodes[n.ID] = n.text
 
-    print("Origin Sentece is {}".format(OriginSentence))
-    for edge in g["edges"]:
-        print("{} --{}--> {}".format(Nodes[edge["from"]],
-                                     edge["relation"],
-                                     Nodes[edge["to"]]))
+        print("Origin Sentece is {}".format(OriginSentence))
+        for edge in g["edges"]:
+            print("{} --{}--> {}".format(Nodes[edge["from"]],
+                                         edge["relation"],
+                                         Nodes[edge["to"]]))
+    else:
+        print("Error in accessing {}".format(LexicalAnalyzeURL))
