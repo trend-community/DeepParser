@@ -529,10 +529,6 @@ def SearchStem(word):
         return _StemDict[word]
     return None
 
-def SearchStem(word):
-    if word in _StemDict:
-        return _StemDict[word]
-    return None
 
 
 def SearchFeatures(word):
@@ -791,6 +787,13 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
             node.ApplyFeature(utils.FeatureID_OOV)
     else:
         node.norm = lex.norm
+
+        #to have correct stem, e.g. carries -> carrie -> carry
+        if lex.norm in _StemDict:
+            stem_lex = SearchStem(lex.norm)
+            if stem_lex.norm:
+                node.norm = stem_lex.norm
+
         node.atom = lex.atom
         if utils.FeatureID_NEW in lex.features:
             node.features = set()
