@@ -686,6 +686,8 @@ def LoadCommon():
 
     FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
     GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+    PunctuatefileLocation = os.path.join(XLocation, "../Y/LexY-EnglishPunctuate.txt")
+
 
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
@@ -698,6 +700,11 @@ def LoadCommon():
         logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
     Rules.LoadGlobalMacro(GlobalmacroLocation)
+
+    if "/X/" in XLocation:
+        Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
+    else:
+        Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
         if action.startswith("FSA"):
