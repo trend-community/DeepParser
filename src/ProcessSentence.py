@@ -434,6 +434,10 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
+        #applies caseab, caseAb, caseaB, or caseAB
+        if action == "CASES":
+            Lexicon.ApplyCasesToNodes(NodeList)
+
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
