@@ -61,7 +61,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             elif link.path.startswith('/Reload'):
                 print (link.path[7:])
                 self.Reload(link.path[7:])
-            elif link.path in ['/gchart_loader.js', '/favicon.ico']:
+            elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
                 self.feed_file(link.path[1:])
             else:
                 logging.error("Wrong link.")
@@ -111,7 +111,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             if  Type  == "segmentation":
                 output_type = "text/plain;"
                 output_text = utils.OutputStringTokensSegment_oneliner(nodes)
-
+            elif Type == "keyword":
+                output_type = "text/plain;"
+                output_text = utils.OutputStringTokensKeyword_oneliner(dag)
             elif  Type  == "simple":
                 output_type = "text/plain;"
                 output_text = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
@@ -347,7 +349,12 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html; charset=utf-8')
             self.send_header('Cache-Control', 'public, max-age=31536000')
             self.end_headers()
-            self.wfile.write(f.read().encode("utf-8"))
+            filecontent = f.read()
+            if len(filepath)>4 and filepath[-4:] == ".txt":
+                reply = "<pre>" + filecontent + "</pre>"
+                self.wfile.write(reply.encode("utf-8") )
+            else:
+                self.wfile.write(filecontent.encode("utf-8"))
 
 
 
