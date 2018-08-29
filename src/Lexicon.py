@@ -847,6 +847,27 @@ def LoadSuffix(inf_location, inf_name):
     finally:
         inf.close()
 
+def ApplyCasesToNodes(NodeList):
+    node = NodeList.head
+    while node:
+        ApplyCases(node)
+        node = node.next
+
+    return NodeList
+
+def ApplyCases(node):
+    word = node.text
+    case = "caseaB"
+    if word.islower():
+        case = "caseab"
+    elif word.isupper():
+        case = "caseAB"
+    elif word[1:].islower():
+        if word[0].isupper():
+            case = "caseAb"
+    node.features.add(GetFeatureID(case))
+    return node
+
 
 # Lookup will be used right after segmentation.
 # Dynamic programming?

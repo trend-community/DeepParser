@@ -434,6 +434,10 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
+        #applies caseab, caseAb, caseaB, or caseAB
+        if action == "CASES":
+            Lexicon.ApplyCasesToNodes(NodeList)
+
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -686,6 +690,8 @@ def LoadCommon():
 
     FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
     GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
+    # PunctuatefileLocation = os.path.join(XLocation, "../Y/LexY-EnglishPunctuate.txt")
+
 
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
@@ -698,6 +704,9 @@ def LoadCommon():
         logging.debug("utils.Runtype:" + utils.ParserConfig.get("main", "runtype"))
 
     Rules.LoadGlobalMacro(GlobalmacroLocation)
+
+
+    # Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
         if action.startswith("FSA"):
