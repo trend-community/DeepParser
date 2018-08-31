@@ -101,11 +101,11 @@ class SentenceLinkedList:
                 p = p.sons[0]
             else:
                 p = p.next
-                if p == None and nodestack:
+                if p is None and nodestack:
                     p = nodestack.pop()
         logging.error("Failed to find {} in the nodelist.searchID!".format(ID))
-        raise("Failed searchID.")
-        return None
+        raise Exception("Failed searchID.")
+        #return None
 
     def get(self, index):
         if index in self.get_cache:
@@ -275,6 +275,7 @@ class SentenceNode(object):
         self.ID = SentenceNode.idCounter
         self.text = word
         self.norm = word.lower()
+        self.pnorm = word.lower()
         self.atom = word.lower()
         self.features = set()
 
@@ -553,6 +554,10 @@ class SentenceNode(object):
                 #Make the norm of the token to this key
                 self.norm = Action[1:-1]
                 continue
+            if Action[0] == '%':
+                #Make the pnorm of the token to this key
+                self.pnorm = Action[1:-1]
+                continue
             if Action[0] == '/':
                 #Make the atom of the token to this key
                 self.atom = Action[1:-1]
@@ -589,6 +594,8 @@ class SentenceNode(object):
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
+        if self.pnorm != self.text:
+            a.pnorm = self.pnorm
         if self.atom != self.text:
             a.atom = self.atom
         a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList])
@@ -617,6 +624,8 @@ class SentenceNode(object):
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
+        if self.pnorm != self.text:
+            a.pnorm = self.pnorm
         if self.atom != self.text:
             a.atom = self.atom
         a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
@@ -642,6 +651,8 @@ class SentenceNode(object):
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
+        if self.pnorm != self.text:
+            a.pnorm = self.pnorm
         if self.atom != self.text:
             a.atom = self.atom
         features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features)
@@ -753,6 +764,7 @@ def Tokenize_CnEnMix(sentence):
         if attribute_prev == [isHanzi, isdigit, isalpha, isspace]:
             TokenList.tail.text += t
             TokenList.tail.norm += t.lower()
+            TokenList.tail.pnorm += t.lower()
             TokenList.tail.atom += t.lower()
             TokenList.tail.EndOffset += len(t)
             #Lexicon.ApplyWordLengthFeature(TokenList.tail)

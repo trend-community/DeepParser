@@ -113,7 +113,7 @@ class RuleToken(object):
             self.repeat = [1, 1]
             self.word = ''
             self.RestartPoint = False
-            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom
+            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom 4:pnorm (as in Aug 2018, not being used for matching)
             self.pointer = ''
             self.action = ''
             self.SubtreePointer = ''
