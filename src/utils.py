@@ -479,7 +479,9 @@ def LastItemIn2DArray(xlist, array):
 def InitDB():
     global DBCon
     try:
-        DBCon = sqlite3.connect('../data/parser.db')
+        PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/parser.db')
+        DBCon = sqlite3.connect(PATH)
+        #DBCon = sqlite3.connect('../data/parser.db')
         #DBCon.setLockingEnabled(False);
         cur = DBCon.cursor()
         cur.execute("PRAGMA read_uncommitted = true;")

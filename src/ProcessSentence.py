@@ -686,7 +686,9 @@ def LoadCommon():
     Cache.LoadSentenceDB()
 
     PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
-    XLocation = os.path.dirname(PipeLineLocation) + "/"
+    FILE_ABS_PATH = os.path.dirname(os.path.abspath(__file__))
+    XLocation = FILE_ABS_PATH  + '/' + os.path.dirname(PipeLineLocation) + "/"
+    #XLocation = os.path.dirname(PipeLineLocation) + "/"
 
     FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
     GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
