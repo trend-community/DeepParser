@@ -113,7 +113,7 @@ class RuleToken(object):
             self.repeat = [1, 1]
             self.word = ''
             self.RestartPoint = False
-            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom
+            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom 4:pnorm (as in Aug 2018, not being used for matching)
             self.pointer = ''
             self.action = ''
             self.SubtreePointer = ''
@@ -243,7 +243,16 @@ class Rule:
                         remaining = self.comment
                 return remaining  # stop processing if the RuleCode is null
 
-            self.RuleContent = ProcessMacro(RuleCode, MacroDict)
+            self.RuleContent = RemoveExcessiveSpace(ProcessMacro(RuleCode, MacroDict))
+            PriorityMatch = re.match("(/d*) (.*)", self.RuleContent)
+            if PriorityMatch:
+                self.Priority = int(PriorityMatch.group(1))
+                self.RuleContent = PriorityMatch.group(2)
+
+            WindowMatch = re.match("win=(.*) (.*)", self.RuleContent)
+            if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
+                self.Window = int(WindowMatch.group(1))
+                self.RuleContent = PriorityMatch.group(2)
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -732,7 +741,7 @@ def Tokenize(RuleContent):
     TokenList = []
     StartToken = False
 
-    RuleContent = RemoveExcessiveSpace(RuleContent)
+    #RuleContent = RemoveExcessiveSpace(RuleContent)
 
     while i < len(RuleContent):
         if RuleContent[i] in SignsToIgnore:
@@ -784,8 +793,7 @@ def Tokenize(RuleContent):
 def ProcessTokens(Tokens):
     for node in Tokens:
         node.word = node.word.replace("\\(", IMPOSSIBLESTRINGLP).replace("\\)", IMPOSSIBLESTRINGRP).replace("\\'",
-                                                                                                            IMPOSSIBLESTRINGSQ).replace(
-            "\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
+                                      IMPOSSIBLESTRINGSQ).replace("\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]

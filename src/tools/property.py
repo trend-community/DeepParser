@@ -1,3 +1,6 @@
+#>/export/App/neo4j-community-3.3.2/bin/cypher-shell -a bolt://localhost:22087 "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs) and p.item_valid_flag='1' and p.sku_valid_flag='1' RETURN p.item_sku_id, o limit 1000000" > dajiadianattr1m.txt
+#>/export/App/neo4j-community-3.3.2/bin/cypher-shell -a bolt://localhost:22087 "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs) and p.item_valid_flag='1' and p.sku_valid_flag='1' RETURN p.item_sku_id, o skip 1000000 limit 1000000" > dajiadianattr1m.2.txt
+#>/export/App/neo4j-community-3.3.2/bin/cypher-shell -a bolt://localhost:22087 "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs) and p.item_valid_flag='1' and p.sku_valid_flag='1' RETURN p.item_sku_id, o skip 2000000 limit 1000000" > dajiadianattr1m.3.txt
 
 import logging, argparse, re
 propertypair = set()

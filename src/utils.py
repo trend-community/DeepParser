@@ -324,6 +324,19 @@ def OutputStringTokensSegment_oneliner(strTokenList):
     return output
 
 
+def OutputStringTokensKeyword_oneliner(dag):
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x: x.StartOffset)
+
+    output = ""
+    for node in nodelist:
+        if "keyWord" in node.GetFeatures():
+            output += node.text +"/"
+
+    return output[:-1]
+
+
 def OutputStringTokens_onelinerSA(dag):
     # print("Dag:{}".format(dag))
     output = ""
