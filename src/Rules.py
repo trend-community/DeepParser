@@ -299,7 +299,7 @@ class Rule:
 
     # style: concise, or detail
     def output(self, style="concise"):
-        output = "//ID:" + str(self.ID)
+        output = "//ID:{} Priority:{}".format(self.ID, self.Priority)
         if self.RuleName.startswith("@"):
             output += "[Macro]\n"
         elif self.RuleName.startswith("#"):
@@ -1434,6 +1434,8 @@ def _ExpandRuleWildCard_List(OneList):
                     newrule.comment = rule.comment
                     newrule.RuleName = rule.RuleName + "_" + str(repeat_num)
                     newrule.RuleContent = rule.RuleContent
+                    newrule.Priority = rule.Priority
+                    newrule.Window = rule.Window
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
                     for tokenindex_this in range(repeat_num):
@@ -1578,6 +1580,8 @@ def _ExpandParenthesis(OneList):
                 newrule.comment = rule.comment
                 newrule.RuleName = rule.RuleName + "_p" + str(tokenindex)
                 newrule.RuleContent = rule.RuleContent
+                newrule.Priority = rule.Priority
+                newrule.Window = rule.Window
                 for tokenindex_pre in range(tokenindex):
                     newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
                 for subtoken in subTokenlist:
@@ -1693,6 +1697,8 @@ def _ExpandOrBlock(OneList):
             newrule.comment = rule.comment
             newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
+            newrule.Priority = rule.Priority
+            newrule.Window = rule.Window
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1732,6 +1738,8 @@ def _ExpandOrBlock(OneList):
             newrule.comment = rule.comment
             newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
             newrule.RuleContent = rule.RuleContent
+            newrule.Priority = rule.Priority
+            newrule.Window = rule.Window
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1847,6 +1855,8 @@ def _ExpandOrToken(OneList):
                     newrule.comment = rule.comment
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
                     newrule.RuleContent = rule.RuleContent
+                    newrule.Priority = rule.Priority
+                    newrule.Window = rule.Window
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1883,6 +1893,8 @@ def _ExpandOrToken(OneList):
                     newrule.comment = rule.comment
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
                     newrule.RuleContent = rule.RuleContent
+                    newrule.Priority = rule.Priority
+                    newrule.Window = rule.Window
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1975,6 +1987,8 @@ def _ExpandOrToken_Unification(OneList):
                     newrule.comment = rule.comment
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
                     newrule.RuleContent = rule.RuleContent
+                    newrule.Priority = rule.Priority
+                    newrule.Window = rule.Window
                     for tokenindex_pre in range(tokenindex):
                         newtoken = RuleToken(rule.Tokens[tokenindex_pre])
                         newtoken.word = newtoken.word.replace("%F", orpiece)
