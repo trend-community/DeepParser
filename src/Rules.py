@@ -235,7 +235,7 @@ class Rule:
 
         if PriorityMatch:
             logging.info("Rule {} Priority: {}".format(PriorityMatch.group(1), PriorityMatch.group(2)))
-            self.RuleName = PriorityMatch.group(1)
+            self.RuleName = PriorityMatch.group(1).strip()
             if PriorityMatch.group(2).lower() == "top":
                 self.Priority = 1
             if PriorityMatch.group(2).lower() == "bottom":
