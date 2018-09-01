@@ -275,7 +275,7 @@ class SentenceNode(object):
         self.ID = SentenceNode.idCounter
         self.text = word
         self.norm = word.lower()
-        self.pnorm = word.lower()
+        self.pnorm = ''
         self.atom = word.lower()
         self.features = set()
 
@@ -594,7 +594,7 @@ class SentenceNode(object):
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
-        if self.pnorm != self.text:
+        if self.pnorm:
             a.pnorm = self.pnorm
         if self.atom != self.text:
             a.atom = self.atom
@@ -624,7 +624,7 @@ class SentenceNode(object):
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
-        if self.pnorm != self.text:
+        if self.pnorm:
             a.pnorm = self.pnorm
         if self.atom != self.text:
             a.atom = self.atom
@@ -651,7 +651,7 @@ class SentenceNode(object):
         a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
-        if self.pnorm != self.text:
+        if self.pnorm:
             a.pnorm = self.pnorm
         if self.atom != self.text:
             a.atom = self.atom
@@ -764,7 +764,7 @@ def Tokenize_CnEnMix(sentence):
         if attribute_prev == [isHanzi, isdigit, isalpha, isspace]:
             TokenList.tail.text += t
             TokenList.tail.norm += t.lower()
-            TokenList.tail.pnorm += t.lower()
+            #TokenList.tail.pnorm += t.lower()
             TokenList.tail.atom += t.lower()
             TokenList.tail.EndOffset += len(t)
             #Lexicon.ApplyWordLengthFeature(TokenList.tail)

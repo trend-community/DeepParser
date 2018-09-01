@@ -172,21 +172,24 @@ class RuleChunk(object):
 class Rule:
     idCounter = 0
 
-    def __init__(self):
+    def __init__(self, orig=None):
         Rule.idCounter += 1
+        if orig is None:
+            self.FileName = ''
+            self.RuleName = ''
+            self.Origin = ''
+            self.RuleContent = ''
+            self.Tokens = []
+            self.TokenLength = 0
+            self.StrTokenLength = -1
+            self.Chunks = []
+            self.comment = ''
+            self.norms = []
+            self.Priority = 0   #default is 0. (Top) is 1. (Bottom) is -1.
+            self.Window = 0     #default 0 means none.  Only used for graph.
+        else:
+            self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = Rule.idCounter
-        self.FileName = ''
-        self.RuleName = ''
-        self.Origin = ''
-        self.RuleContent = ''
-        self.Tokens = []
-        self.TokenLength = 0
-        self.StrTokenLength = -1
-        self.Chunks = []
-        self.comment = ''
-        self.norms = []
-        self.Priority = 0   #default is 0. (Top) is 1. (Bottom) is -1.
-        self.Window = 0     #default 0 means none.  Only used for graph.
 
     def SetStrTokenLength(self):
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
@@ -267,6 +270,11 @@ class Rule:
             if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
                 self.Window = int(WindowMatch.group(1))
                 self.RuleContent = WindowMatch.group(2)
+
+            LengthMatch = re.match("win=(.*) (.*)", self.RuleContent)
+            if LengthMatch:     #len=5  # the sentence length must be small or equal to 5.
+                self.Window = int(LengthMatch.group(1))
+                self.RuleContent = LengthMatch.group(2)
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -961,7 +969,7 @@ def ExpandQuotedOrs(text, sign):
         return text
     if sign in text[1:-1]:
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding")
+            logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding:\n {}".format(text))
         return text
 
     return text.replace("|", sign + "|" + sign)
@@ -1428,14 +1436,9 @@ def _ExpandRuleWildCard_List(OneList):
             token = rule.Tokens[tokenindex]
             if token.repeat != [1, 1]:
                 for repeat_num in range(token.repeat[0], token.repeat[1] + 1):
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_" + str(repeat_num)
-                    newrule.RuleContent = rule.RuleContent
-                    newrule.Priority = rule.Priority
-                    newrule.Window = rule.Window
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
                     for tokenindex_this in range(repeat_num):
@@ -1574,14 +1577,9 @@ def _ExpandParenthesis(OneList):
                     subTokenlist[0].StartChunk = token.StartChunk
                     subTokenlist[-1].EndChunk = token.EndChunk
 
-                newrule = Rule()
-                newrule.FileName = rule.FileName
-                newrule.Origin = rule.Origin
-                newrule.comment = rule.comment
+                newrule = Rule(rule)
                 newrule.RuleName = rule.RuleName + "_p" + str(tokenindex)
-                newrule.RuleContent = rule.RuleContent
-                newrule.Priority = rule.Priority
-                newrule.Window = rule.Window
+                newrule.Tokens.clear()
                 for tokenindex_pre in range(tokenindex):
                     newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
                 for subtoken in subTokenlist:
@@ -1691,14 +1689,10 @@ def _ExpandOrBlock(OneList):
                 continue  # failed to process. might be pair tag issue.
 
             # left of |:
-            newrule = Rule()
-            newrule.FileName = rule.FileName
-            newrule.Origin = rule.Origin
-            newrule.comment = rule.comment
+            newrule = Rule(rule)
             newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-            newrule.RuleContent = rule.RuleContent
-            newrule.Priority = rule.Priority
-            newrule.Window = rule.Window
+            newrule.Tokens.clear()
+
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1732,14 +1726,10 @@ def _ExpandOrBlock(OneList):
             OneList.append(newrule)
 
             # right of |:
-            newrule = Rule()
-            newrule.FileName = rule.FileName
-            newrule.Origin = rule.Origin
-            newrule.comment = rule.comment
+            newrule = Rule(rule)
             newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
-            newrule.RuleContent = rule.RuleContent
-            newrule.Priority = rule.Priority
-            newrule.Window = rule.Window
+            newrule.Tokens.clear()
+
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1849,14 +1839,9 @@ def _ExpandOrToken(OneList):
             if orlist:
                 for orpiece in orlist:
                     # left of the token:
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                    newrule.RuleContent = rule.RuleContent
-                    newrule.Priority = rule.Priority
-                    newrule.Window = rule.Window
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1887,14 +1872,9 @@ def _ExpandOrToken(OneList):
 
                 for subtreepointer in SubtreePointer.split("|"):
                     # left of the token:
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                    newrule.RuleContent = rule.RuleContent
-                    newrule.Priority = rule.Priority
-                    newrule.Window = rule.Window
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1981,14 +1961,9 @@ def _ExpandOrToken_Unification(OneList):
             if orlist:
                 for orpiece in orlist:
                     # left of the token:
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                    newrule.RuleContent = rule.RuleContent
-                    newrule.Priority = rule.Priority
-                    newrule.Window = rule.Window
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newtoken = RuleToken(rule.Tokens[tokenindex_pre])
                         newtoken.word = newtoken.word.replace("%F", orpiece)
@@ -2273,7 +2248,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/0defLexX.txt")
     if utils.DBCon is None:
         utils.InitDB()
-    LoadRules('../../fsa/X/', '0test.txt')
+    LoadRules('../../fsa/X/', '0test.txt', False)
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")

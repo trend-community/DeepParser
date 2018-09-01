@@ -687,6 +687,7 @@ class DependencyTree:
             if Action[0] == '%':
                 # Make the pnorm of the token to this key
                 node.pnorm = Action[1:-1]
+                continue
             if Action[0] == '/':
                 #Make the atom of the token to this key
                 node.atom = Action[1:-1]
