@@ -274,9 +274,9 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 logging.debug("Found winning rule at counter: {}. The winning rule is: {}".format(counter, WinningRule) )
             try:
                 if WinningRule.ID not in WinningRules:
-                    WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                    WinningRules[WinningRule.ID] = '<li> [{}] {} <li class="indent"> {}'.format( WinningRule.FileName, WinningRule.Origin, MarkWinningTokens(strtokenlist, WinningRule, i))
                 else:
-                    WinningRules[WinningRule.ID] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                    WinningRules[WinningRule.ID] += ' <li class="indent"> {}'.format( MarkWinningTokens(strtokenlist, WinningRule, i))
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
@@ -387,9 +387,9 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
                 logging.debug("DAG: Winning rule! {}".format(rule))
             try:
                     if rule.ID not in WinningRules:
-                        WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
+                        WinningRules[rule.ID] = '<li> [{}] {} <li class="indent"> {} </li>'.format(rule.FileName, rule.Origin, node.text)
                     else:
-                        WinningRules[rule.ID] += ' <li class="indent">' + node.text
+                        WinningRules[rule.ID] += ' <li class="indent"> {} </li>'.format( node.text)
                     ApplyWinningDagRule(Dag, rule, node)
                     rule_sequence -= 1  # allow the same rule to match other nodes too.
             except RuntimeError as e:

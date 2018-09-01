@@ -1,4 +1,4 @@
-import copy, traceback
+import copy
 from datetime import datetime
 from utils import *
 import utils
@@ -185,6 +185,8 @@ class Rule:
         self.Chunks = []
         self.comment = ''
         self.norms = []
+        self.Priority = 0   #default is 0. (Top) is 1. (Bottom) is -1.
+        self.Window = 0     #default 0 means none.  Only used for graph.
 
     def SetStrTokenLength(self):
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
@@ -228,6 +230,18 @@ class Rule:
             self.comment = comment
             return  # stop processing macro.
 
+        # SampleRule1a(Top >SampleRule1) ; SampleRule5(Bottom >SampleRule3 >SampleRule4)
+        PriorityMatch = re.match("(.*)\((.*)\)$", self.RuleName)
+
+        if PriorityMatch:
+            logging.info("Rule {} Priority: {}".format(PriorityMatch.group(1), PriorityMatch.group(2)))
+            self.RuleName = PriorityMatch.group(1)
+            if PriorityMatch.group(2).lower() == "top":
+                self.Priority = 1
+            if PriorityMatch.group(2).lower() == "bottom":
+                self.Priority = -1
+            #TODO: work on the ">SampleRule3 >SampleRule4" this kind of rules.
+
         remaining = ''
         try:
             RuleContent, remaining = SeparateRules(RuleBlocks.group(2).strip())
@@ -244,15 +258,15 @@ class Rule:
                 return remaining  # stop processing if the RuleCode is null
 
             self.RuleContent = RemoveExcessiveSpace(ProcessMacro(RuleCode, MacroDict))
-            PriorityMatch = re.match("(/d*) (.*)", self.RuleContent)
-            if PriorityMatch:
-                self.Priority = int(PriorityMatch.group(1))
-                self.RuleContent = PriorityMatch.group(2)
+            # PriorityMatch = re.match("(/d*) (.*)", self.RuleContent)  #comment out on Sept 1: leave the priority in RuleName part as in the spec.
+            # if PriorityMatch:
+            #     self.Priority = int(PriorityMatch.group(1))
+            #     self.RuleContent = PriorityMatch.group(2)
 
             WindowMatch = re.match("win=(.*) (.*)", self.RuleContent)
             if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
                 self.Window = int(WindowMatch.group(1))
-                self.RuleContent = PriorityMatch.group(2)
+                self.RuleContent = WindowMatch.group(2)
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -1160,8 +1174,9 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         _PreProcess_CompileHash(rulegroup)
-        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: x.TokenLength, reverse=True)
-        _OutputRuleDB(rulegroup)
+        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: (x.Priority, x.TokenLength), reverse=True)
+        if not utils.DisableDB:
+            _OutputRuleDB(rulegroup)
         for r in rulegroup.RuleList:
             if r.norms:
                 norms = "".join(r.norms)
@@ -1208,6 +1223,8 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
 
 def RuleFileOlderThanDB(RuleLocation):
     #return False
+    if utils.DisableDB:
+        return False
 
     cur = utils.DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
@@ -1230,6 +1247,9 @@ def RuleFileOlderThanDB(RuleLocation):
 
 
 def LoadRulesFromDB(rulegroup):
+    if utils.DisableDB:
+        logging.error("In the config.ini, DisableDB is true, so it is not supposed to LoadrulesFromDB!")
+        return False
     cur = utils.DBCon.cursor()
     strsql = "select ID from rulefiles where filelocation=?"
     cur.execute(strsql, [rulegroup.FileName, ])
@@ -2226,7 +2246,7 @@ CREATE TABLE rulenode_features (rulenodeid INT, featureid INT, type INT, CONSTRA
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    LoadGlobalMacro('../../fsa/Y/', 'GlobalMacro.txt')
+    LoadGlobalMacro('../../fsa/Y/GlobalMacro.txt')
     # LoadRules("../../fsa/Y/900NPy.xml")
     # LoadRules("../../fsa/Y/800VGy.txt")
     # # LoadRules("../../fsa/Y/1800VPy.xml")
