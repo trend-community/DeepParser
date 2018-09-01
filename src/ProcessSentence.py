@@ -638,6 +638,8 @@ def LoadPipeline(PipelineLocation):
             PipeLine.append(action.strip())
 
 def SystemFileOlderThanDB(XLocation):
+    if utils.DisableDB:
+        return False
     Systemfilelist = ["../Y/feature.txt","../Y/GlobalMacro.txt"]
 
     for file in Systemfilelist:
@@ -660,7 +662,11 @@ def SystemFileOlderThanDB(XLocation):
 
     return True
 
+
 def UpdateSystemFileFromDB(XLocation):
+    if utils.DisableDB:
+        return
+
     Systemfilelist = ["../Y/feature.txt", "../Y/GlobalMacro.txt"]
     for file in Systemfilelist:
         fileLocation = os.path.join(XLocation, file)
@@ -680,10 +686,11 @@ def UpdateSystemFileFromDB(XLocation):
         cur.close()
 
 def LoadCommon():
-    InitDB()
+    if not utils.DisableDB:
+        InitDB()
 
-    import Cache
-    Cache.LoadSentenceDB()
+        import Cache
+        Cache.LoadSentenceDB()
 
     PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
     XLocation = os.path.dirname(PipeLineLocation) + "/"
@@ -801,7 +808,8 @@ def LoadCommon():
     Lexicon.LoadSegmentLexicon()
     UpdateSystemFileFromDB(XLocation)
 
-    CloseDB(utils.DBCon)
+    if not utils.DisableDB:
+        CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
