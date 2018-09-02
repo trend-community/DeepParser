@@ -1348,10 +1348,10 @@ def LoadRulesFromDB(rulegroup):
             cur.execute("select featureid, type from rulenode_features where rulenodeid=?", [nodeid])
             featurerows = cur.fetchall()
             for featurerow in featurerows:
-                if featurerow[1] == "1":
-                    token.AndFeatures.add(int(featurerow[0]))
-                elif featurerow[1] == "3":
-                    token.NotFeatures.add(int(featurerow[0]))
+                if featurerow[1] == 1:
+                    token.AndFeatures.add(featurerow[0])
+                elif featurerow[1] == 3:
+                    token.NotFeatures.add(featurerow[0])
                 else:
                     logging.warning("There is other feature type in: {} for this rule {}".format(featurerow, rule))
 
