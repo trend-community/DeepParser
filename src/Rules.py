@@ -371,9 +371,11 @@ class Rule:
             cur.execute(strsql, [self.ID, ])
 
         strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
+                 "priority, windowlimit, lengthlimit, " \
                  "norms, origin, comment, createtime, verifytime) " \
-                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
         cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
+                             self.Priority, self.WindowLimit, self.LengthLimit,
                              '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]),
                              self.Origin, self.comment])
         self.ID = cur.lastrowid
@@ -1272,14 +1274,15 @@ def LoadRulesFromDB(rulegroup):
 
     # order by tokenlength desc, and by hits desc.
     # note: order using hit can have less than 1% benefit. not worth the trouble.
-    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment
+    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment,
+                    priority, windowlimit, lengthlimit
                     from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? and status=1 group by r.id
                         order by tokenlength desc, count(h.ruleid ) desc """
     # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
     #                 from ruleinfo r    where rulefileid=?
     #                     order by tokenlength desc"""
-    strsql_node = "SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"
-    strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
+    strsql_node = """SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"""
+    #strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
     strsql_node_orfeature = "select featureid from rulenode_orfeatures where rulenodeid=? and groupid=?"
     strsql_countorfeatures = "select count(DISTINCT groupid) from rulenode_orfeatures where rulenodeid=?"
     strsql_node_text = "select text from rulenode_texts where rulenodeid=? and type=?"
@@ -1301,6 +1304,9 @@ def LoadRulesFromDB(rulegroup):
             rule.norms = []
         rule.Origin = row[5]
         rule.comment = row[6]
+        rule.Priority = row[7]
+        rule.WindowLimit = row[8]
+        rule.LengthLimit = row[9]
 
         cur.execute(strsql_node, [rule.ID, ])
         noderows = cur.fetchall()
@@ -1317,15 +1323,7 @@ def LoadRulesFromDB(rulegroup):
             token.AndTextMatchtype = noderow[6]
             token.NotTextMatchtype = noderow[7]
 
-            cur.execute(strsql_node_feature, [nodeid, 1])
-            featurerows = cur.fetchall()
-            for featurerow in featurerows:
-                token.AndFeatures.add(int(featurerow[0]))
-            # cur.execute(strsql_node_feature, [nodeid, 2])
-            # featurerows = cur.fetchall()
-            # for featurerow in featurerows:
-            #     token.OrFeatures.add(int(featurerow[0]))
-            #     # TODO: Modified as OrFeatureGroup. Need to save to DB properly.
+
             cur.execute(strsql_countorfeatures,[nodeid])
             countrows = cur.fetchall()
             sizefeaturegroup = countrows[0][0]
@@ -1338,10 +1336,25 @@ def LoadRulesFromDB(rulegroup):
                     orfeaturegroup.add(int(featurerow[0]))
                 token.OrFeatureGroups.append(orfeaturegroup)
 
-            cur.execute(strsql_node_feature, [nodeid, 3])
+            # cur.execute(strsql_node_feature, [nodeid, 1])
+            # featurerows = cur.fetchall()
+            # for featurerow in featurerows:
+            #     token.AndFeatures.add(int(featurerow[0]))
+            # cur.execute(strsql_node_feature, [nodeid, 3])
+            # featurerows = cur.fetchall()
+            # for featurerow in featurerows:
+            #     token.NotFeatures.add(int(featurerow[0]))
+            #
+            cur.execute("select featureid, type from rulenode_features where rulenodeid=?", [nodeid])
             featurerows = cur.fetchall()
             for featurerow in featurerows:
-                token.NotFeatures.add(int(featurerow[0]))
+                if featurerow[1] == "1":
+                    token.AndFeatures.add(int(featurerow[0]))
+                elif featurerow[1] == "3":
+                    token.NotFeatures.add(int(featurerow[0]))
+                else:
+                    logging.warning("There is other feature type in: {} for this rule {}".format(featurerow, rule))
+
             cur.execute(strsql_node_text, [nodeid, 2])
             featurerows = cur.fetchall()
             for featurerow in featurerows:
