@@ -378,34 +378,37 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         if counter > 10 * RuleLength:
             break
         rule = rulegroup.RuleList[rule_sequence]
+        if 0 < rule.LengthLimit < len(Dag.nodes):
+            rule_sequence += 1
+            logging.warning("This sentence is too long to try this rule:()".format(rule.Origin))
+            continue
 
         # if logging.root.isEnabledFor(logging.DEBUG):
         #     logging.debug("DAG: Start checking rule {}".format( rule))
         node = DAGMatch(Dag,  rule, 0)
         if node:
-            if logging.root.isEnabledFor(logging.DEBUG):
-                logging.debug("DAG: Winning rule! {}".format(rule))
-            try:
-                    if rule.ID not in WinningRules:
-                        WinningRules[rule.ID] = '<li> [{}] {} <li class="indent"> {} </li>'.format(rule.FileName, rule.Origin, node.text)
+            if rule.WindowLimit == 0 or rule.WindowLimit >= Dag.MaxDistanceOfMatchNodes( rule):
+                if logging.root.isEnabledFor(logging.DEBUG):
+                    logging.debug("DAG: Winning rule! {}".format(rule))
+                try:
+                        if rule.ID not in WinningRules:
+                            WinningRules[rule.ID] = '<li> [{}] {} <li class="indent"> {} </li>'.format(rule.FileName, rule.Origin, node.text)
+                        else:
+                            WinningRules[rule.ID] += ' <li class="indent"> {} </li>'.format( node.text)
+                        ApplyWinningDagRule(Dag, rule, node)
+                        rule_sequence -= 1  # allow the same rule to match other nodes too.
+                except RuntimeError as e:
+                    if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
+                        logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
+                        rulegroup.RuleList.remove(rule)
                     else:
-                        WinningRules[rule.ID] += ' <li class="indent"> {} </li>'.format( node.text)
-                    ApplyWinningDagRule(Dag, rule, node)
-                    rule_sequence -= 1  # allow the same rule to match other nodes too.
-            except RuntimeError as e:
-                if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
-                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
-                    rulegroup.RuleList.remove(rule)
-                else:
-                    logging.error("Unknown Rule Applying Error:" + str(e))
+                        logging.error("Unknown Rule Applying Error:" + str(e))
 
-            except IndexError as e:
-                logging.error("Failed to apply this rule:")
-                logging.info(str(rule))
-                logging.error(str(e))
-            #search the rest of rules using other nodes
-            #node.applied = True    #apply to apply to the same node
-#            break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
+                except IndexError as e:
+                    logging.error("Failed to apply this rule:")
+                    logging.info(str(rule))
+                    logging.error(str(e))
+                #search the rest of rules using other nodes
 
         Dag.ClearVisited()
         for node_id in Dag.nodes:

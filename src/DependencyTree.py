@@ -483,6 +483,18 @@ class DependencyTree:
             raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
+    def MaxDistanceOfMatchNodes(self, rule):
+        index_min = len(self.nodes)
+        index_max = 0
+        for i in range(rule.TokenLength):
+            nodeID = rule.Tokens[i].MatchedNodeID
+            node = self.nodes[nodeID]
+            index_min = min(node.Index, index_min)
+            index_max = max(node.Index, index_max)
+        logging.info("This rule, window size is {}; the MaxDistanceOfMatchNodes is {}.".format(rule.WindowLimit, index_max-index_min+1))
+        return index_max-index_min+1
+
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.

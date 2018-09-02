@@ -186,7 +186,8 @@ class Rule:
             self.comment = ''
             self.norms = []
             self.Priority = 0   #default is 0. (Top) is 1. (Bottom) is -1.
-            self.Window = 0     #default 0 means none.  Only used for graph.
+            self.WindowLimit = 0     #default 0 means none.  Only used for graph.
+            self.LengthLimit = 0    #default 0 means none. Only used for graph.(for now, as Sept 1, 2018)
         else:
             self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = Rule.idCounter
@@ -215,9 +216,11 @@ class Rule:
                 logging.debug("string:" + ruleString)
                 return
 
-        RuleBlocks = re.match("(.+)==(.+)$", ruleString, re.DOTALL)
+        #Note: codeblocks can't be used to set rule, because I need the origin comment (of each line) to set Test for each rule.
+
+        RuleBlocks = re.match("(.+?)==(.+)$", ruleString, re.DOTALL)
         if not RuleBlocks:
-            RuleBlocks = re.match("(.+)::(.+)$", ruleString, re.DOTALL)
+            RuleBlocks = re.match("(.+?)::(.+)$", ruleString, re.DOTALL)
         if not RuleBlocks or RuleBlocks.lastindex != 2:
             raise RuntimeError("This rule can't be correctly parsed:\n\t" + ruleString)
 
@@ -266,15 +269,15 @@ class Rule:
             #     self.Priority = int(PriorityMatch.group(1))
             #     self.RuleContent = PriorityMatch.group(2)
 
-            WindowMatch = re.match("win=(.*) (.*)", self.RuleContent)
+            WindowMatch = re.match("win=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
             if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
-                self.Window = int(WindowMatch.group(1))
-                self.RuleContent = WindowMatch.group(2)
+                self.WindowLimit = int(WindowMatch.group(1))
+                self.RuleContent = WindowMatch.group(2).strip()
 
-            LengthMatch = re.match("win=(.*) (.*)", self.RuleContent)
+            LengthMatch = re.match("len=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
             if LengthMatch:     #len=5  # the sentence length must be small or equal to 5.
-                self.Window = int(LengthMatch.group(1))
-                self.RuleContent = LengthMatch.group(2)
+                self.LengthLimit = int(LengthMatch.group(1))
+                self.RuleContent = LengthMatch.group(2).strip()
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -1182,7 +1185,7 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         _PreProcess_CompileHash(rulegroup)
-        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: (x.Priority, x.TokenLength), reverse=True)
+        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: (x.Priority, x.TokenLength, x.RuleName), reverse=True)
         if not utils.DisableDB:
             _OutputRuleDB(rulegroup)
         for r in rulegroup.RuleList:
@@ -2149,7 +2152,7 @@ def OutputRules(rulegroup, style="details"):
     output = "// ****Rules**** " + rulegroup.FileName + "\n"
     output += "// * size: " + str(len(rulegroup.RuleList)) + " *\n"
     # for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
-    for rule in sorted(rulegroup.RuleList) :
+    for rule in rulegroup.RuleList :
         output += rule.output(style) + "\n"
 
     output += "// ****Macros****\n"
