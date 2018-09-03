@@ -300,7 +300,7 @@ def ApplyCompositeKG(NodeList):
             for ID in CompositeKGSetADict[node.text.lower()]:
                 if len(CompositeKG[ID][1]) == 1:
                     logging.info("CompositeKG Winner! Only has one composite set. ")
-                    node.norm = CompositeKG[ID][0]
+                    node.pnorm = CompositeKG[ID][0]
                     node.ApplyFeature(utils.FeatureID_comPair)
                     break
                 PassAllSets = True
@@ -310,7 +310,7 @@ def ApplyCompositeKG(NodeList):
                         PassAllSets = False
                         break
                 if PassAllSets:
-                    node.norm = CompositeKG[ID][0]
+                    node.pnorm = CompositeKG[ID][0]
                     node.ApplyFeature(utils.FeatureID_comPair)
                     logging.info("CompositeKG Winner after trying  " + str(len(CompositeKG[ID][1])) + " conditions.:" + CompositeKG[ID][0])
                     #logging.info("The CompositeKG:{}".format(CompositeKG[ID]))

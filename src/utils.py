@@ -1,5 +1,5 @@
 import logging, re, json, jsonpickle, configparser, os
-import sqlite3
+import sqlite3, traceback
 from functools import lru_cache
 import operator
 import FeatureOntology
@@ -8,6 +8,9 @@ ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
 maxcachesize = int(ParserConfig.get("main", "maxcachesize"))
 runtype = ParserConfig.get("main", "runtype").lower()
+DisableDB = False
+if ParserConfig.has_option("main", "disabledb") and ParserConfig.get("main", "disabledb").lower() == "true":
+    DisableDB = True
 
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
@@ -520,8 +523,14 @@ def LastItemIn2DArray(xlist, array):
 
 def InitDB():
     global DBCon
+
+    if DisableDB:
+        return
+
     try:
-        DBCon = sqlite3.connect('../data/parser.db')
+        PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/parser.db')
+        DBCon = sqlite3.connect(PATH)
+        #DBCon = sqlite3.connect('../data/parser.db')
         #DBCon.setLockingEnabled(False);
         cur = DBCon.cursor()
         cur.execute("PRAGMA read_uncommitted = true;")
@@ -544,6 +553,8 @@ def CloseDB(tempDB):
         logging.info("DBCon closed.")
     except sqlite3.ProgrammingError:
         logging.info("DBCon is closed.")
+    except AttributeError:
+        logging.warning("DBCon is not initialized.")
 # try:
 #     if not DBCon:
 #         InitDB()    #initialize this

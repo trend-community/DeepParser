@@ -483,6 +483,18 @@ class DependencyTree:
             raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
+    def MaxDistanceOfMatchNodes(self, rule):
+        index_min = len(self.nodes)
+        index_max = 0
+        for i in range(rule.TokenLength):
+            nodeID = rule.Tokens[i].MatchedNodeID
+            node = self.nodes[nodeID]
+            index_min = min(node.Index, index_min)
+            index_max = max(node.Index, index_max)
+        logging.info("This rule, window size is {}; the MaxDistanceOfMatchNodes is {}.".format(rule.WindowLimit, index_max-index_min+1))
+        return index_max-index_min+1
+
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.
@@ -495,9 +507,9 @@ class DependencyTree:
         if not logicmatch:
             return False
         #might need open node for pointer
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, node))
-            logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, node))
+        #     logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
         if not ruletoken.SubtreePointer:
             return True
 
@@ -683,6 +695,10 @@ class DependencyTree:
             if Action[0] == '\'':
                 #Make the norm of the token to this key
                 node.norm = Action[1:-1]
+                continue
+            if Action[0] == '%':
+                # Make the pnorm of the token to this key
+                node.pnorm = Action[1:-1]
                 continue
             if Action[0] == '/':
                 #Make the atom of the token to this key
