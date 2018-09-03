@@ -1,7 +1,8 @@
 import logging, re, json, jsonpickle, configparser, os
 import sqlite3
 from functools import lru_cache
-
+import operator
+import FeatureOntology
 
 ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
@@ -340,43 +341,71 @@ def OutputStringTokensKeyword_oneliner(dag):
 def OutputStringTokens_onelinerSA(dag):
     # print("Dag:{}".format(dag))
     output = ""
-    TargetFeature = "Target"
-    ProFeature = "Pro"
-    ConFeature = "Con"
-    PosEmo = "PosEmo"
-    NegEmo = "NegEmo"
-    Neutral = "Neutral"
-    Needed = "Needed"
-    Key = "Key"
-    Value = "Value"
+    # TargetFeature = "Target"
+    # ProFeature = "Pro"
+    # ConFeature = "Con"
+    # PosEmo = "PosEmo"
+    # NegEmo = "NegEmo"
+    # Neutral = "Neutral"
+    # Needed = "Needed"
+    # Key = "Key"
+    # Value = "Value"
+    sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
     nodes = dag.nodes
     nodelist = list(nodes.values())
     nodelist.sort(key=lambda x:x.StartOffset)
-    for node in nodelist:
-        output += node.text + "/"
-        featureString = node.GetFeatures()
-        featureSet = featureString.split(",")
-        # print (featureSet)
-        if TargetFeature in featureSet:
-            output +=  TargetFeature + " "
-        if ProFeature in featureSet:
-            output +=  ProFeature + " "
-        if ConFeature in featureSet:
-            output += ConFeature + " "
-        if PosEmo in featureSet:
-            output +=  PosEmo + " "
-        if NegEmo in featureSet:
-            output +=  NegEmo + " "
-        if Needed in featureSet:
-            output += Needed + " "
-        if Neutral in featureSet:
-            output += Neutral + " "
-        if Key in featureSet:
-            output +=  Key + " "
-        if Value in featureSet:
-            output +=  Value + " "
-        if output.endswith("/"):
-            output = output[:-1]
+
+    output += '{  "nodes": ['
+    sentence = ""
+    first = True
+    for node in sorted(nodes.values(), key=operator.attrgetter("Index")):
+        if first:
+            first = False
+        else:
+            output += ", "
+        text = node.text
+        sentence += text
+        features = sorted(
+            [FeatureOntology.GetFeatureName(f) for f in node.features if f not in FeatureOntology.NotShowList])
+        filteredfeatures = []
+        for f in features:
+            if f in sentimentfeature:
+                filteredfeatures.append(f)
+        jsondict = dict()
+        jsondict["text"] = text
+        jsondict["features"] = filteredfeatures
+
+        output += json.dumps(jsondict, default=lambda o: o.__dict__,
+                   sort_keys=True, ensure_ascii=False)
+    output += '],  "sentence": "' + sentence + '"}'
+
+    # for node in nodelist:
+    #     output += node.text + "/"
+    #     featureString = node.GetFeatures()
+    #     featureSet = featureString.split(",")
+    #     # print (featureSet)
+    #     if TargetFeature in featureSet:
+    #         output +=  TargetFeature + " "
+    #     if ProFeature in featureSet:
+    #         output +=  ProFeature+ " "
+    #     if ConFeature in featureSet:
+    #         output += ConFeature+ " "
+    #     if PosEmo in featureSet:
+    #         output +=  PosEmo+ " "
+    #     if NegEmo in featureSet:
+    #         output +=  NegEmo+ " "
+    #     if Needed in featureSet:
+    #         output += Needed+ " "
+    #     if Neutral in featureSet:
+    #         output += Neutral+ " "
+    #     if Key in featureSet:
+    #         output +=  Key+ " "
+    #     if Value in featureSet:
+    #         output +=  Value + " "
+    #     if output.endswith("/"):
+    #         output = output[:-1]
+    #     if not output.endswith(" "):
+    #         output += " "
     return output
 
 def OutputStringTokens_onelinerQA(dag):
