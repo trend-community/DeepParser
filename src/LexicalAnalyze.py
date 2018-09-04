@@ -1,5 +1,5 @@
 import argparse
-import ProcessSentence, Rules, FeatureOntology
+import ProcessSentence
 from utils import *
 
 import singleton
@@ -17,9 +17,12 @@ def ProcessFile(FileName):
         for line in RuleFile:
             if line.strip():
                 if line.strip():
-                    columns = line.split(args.delimiter)
-                    if len(columns) >= int(args.sentencecolumn):
-                        UnitTest.append(columns[int(args.sentencecolumn) - 1].strip())
+                    if int(args.sentencecolumn) == 0:
+                        UnitTest.append(line.strip())
+                    else:
+                        columns = line.split(args.delimiter)
+                        if len(columns) >= int(args.sentencecolumn):
+                            UnitTest.append(columns[int(args.sentencecolumn) - 1].strip())
 
     for TestSentence in UnitTest:
         nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence)
@@ -60,7 +63,7 @@ if __name__ == "__main__":
     parser.add_argument("--winningrules")
     parser.add_argument("--keeporigin")
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
-                        default=1)
+                        default=0)
     parser.add_argument("--delimiter", default="\t")
     args = parser.parse_args()
 
@@ -80,12 +83,12 @@ if __name__ == "__main__":
     ProcessSentence.LoadCommon()
 
 
-    # ProcessFile(UnitTestFileName)
+    ProcessFile(args.inputfile)
     # pass
     import cProfile, pstats
     cProfile.run("ProcessFile(args.inputfile)", 'restats')
-    # p = pstats.Stats('restats')
-    # p.sort_stats('time').print_stats(60)
+    p = pstats.Stats('restats')
+    p.sort_stats('time').print_stats(60)
 
     from LogicOperation import hitcount
     logging.warning("LogicMatch hit count:{}".format(hitcount))

@@ -1,5 +1,6 @@
 import concurrent.futures
-import Tokenization, FeatureOntology, Lexicon
+import traceback
+import Tokenization,  Lexicon
 import Rules, Cache
 #from threading import Thread
 from LogicOperation import LogicMatch, Clear_LogicMatch_notpointer_Cache
@@ -610,7 +611,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
 
         ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
-        if schema == "full" and utils.runtype != "debug":
+        if schema == "full" and utils.runtype != "debug" and utils.DisableDB is False:
             if len(Cache.SentenceCache) < utils.maxcachesize:
                 Cache.SentenceCache[Sentence] = ResultNodeList
                 Cache.WriteSentenceDB(Sentence, ResultNodeList)
@@ -861,7 +862,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("They sing blenchly")
+    nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 

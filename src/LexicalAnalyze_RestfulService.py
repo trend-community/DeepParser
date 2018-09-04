@@ -29,7 +29,7 @@ if __name__ == "__main__":
                         default='simplegraph')
     parser.add_argument("--keeporigin")
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
-                        default=1)
+                        default=0)
     parser.add_argument("--delimiter", default="\t")
     args = parser.parse_args()
 
@@ -67,9 +67,12 @@ if __name__ == "__main__":
     with open(args.inputfile, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                columns = line.split(args.delimiter)
-                if len(columns) >= int(args.sentencecolumn):
-                    UnitTest.append(columns[int(args.sentencecolumn)-1].strip())
+                if int(args.sentencecolumn) == 0:
+                    UnitTest.append(line.strip())
+                else:
+                    columns = line.split(args.delimiter)
+                    if len(columns) >= int(args.sentencecolumn):
+                        UnitTest.append(columns[int(args.sentencecolumn)-1].strip())
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
