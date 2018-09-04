@@ -45,7 +45,7 @@ class DependencyTree:
             root = root.next        #ignore the first empty (virtual) JS node
         temp_subgraphs = []
         # Collect all the leaf nodes into self.nodes.
-        while root != None:
+        while root is not None:
             #each "root" has a tree, independent from others.
             node = root
             nodestack = set()
@@ -68,7 +68,7 @@ class DependencyTree:
                         continue
 
                     node = node.next
-                    if node == None and nodestack:
+                    if node is None and nodestack:
                         node = nodestack.pop()
             if not (root.text == '' and utils.FeatureID_JM in root.features):
                 temp_subgraphs.append(SubGraph(root))
@@ -89,7 +89,7 @@ class DependencyTree:
                             temp_subgraphs.append(SubGraph(subnode))    # non-leaf, non-H. it is a subgraph.
                             subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
                             subnode = subnode.next
-                            if subnode == None and nodestack:
+                            if subnode is None and nodestack:
                                 subnode = nodestack.pop()
                         else:
                             if subnode.next:
@@ -105,7 +105,7 @@ class DependencyTree:
                             if not(subnode.text == '' and utils.FeatureID_JM  in subnode.features):
                                 subgraph.leaves.append([subnode.ID, subnode.UpperRelationship])
                         subnode = subnode.next
-                        if subnode == None and nodestack:
+                        if subnode is None and nodestack:
                             subnode = nodestack.pop()
             else:
                 subgraph.headID = subgraph.startnode.ID
@@ -206,22 +206,49 @@ class DependencyTree:
                                 self.nodes[edge[2]].text,
                                 self.nodes[edge[0]].text   )
         elif Type == 'simple2':
-            for nodeid in sorted(self.nodes):
+            for nodeid in sorted(self.nodes, key=operator.attrgetter("Index")):
                 output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
             output += "{"
             for edge in sorted(self.graph, key= lambda e: e[2]):
                 output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
             output += "}"
+        elif Type == 'graphjson':
+            output += '{  "nodes": ['
+            first = True
+            for node in sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+                if first:
+                    first = False
+                else:
+                    output += ", "
+                output += node.CleanOutput().toJSON()
+
+            output += '],  "edges": ['
+            first = True
+            for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
+                if first:
+                    first = False
+                else:
+                    output += ", "
+                output += '{{ "from":{}, "to":{}, "relation":"{}" }}'.format(edge[2], edge[0], edge[1])
+
+            output += "]}"
+
         else:
             output = "{"
-            for nodeid in sorted(self.nodes):
+            for node in sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+                nodeid = node.ID
                 danzi = self.getDanzi(nodeid)
+                tooltip = node.GetFeatures()
+                if node.norm != node.text:
+                    tooltip += " '{}'".format(node.norm)
+                if node.atom != node.text:
+                    tooltip += " /{}/".format(node.atom)
                 if danzi:
-                    output +=  "{} [label=\"{}\" tooltip=\"{}\"];\n".format(nodeid, danzi, self.nodes[nodeid].GetFeatures())
+                    output +=  "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, danzi, tooltip)
                 else:
-                    output += "{} [label=\"{}\" tooltip=\"{}\"];\n".format(nodeid, self.nodes[nodeid].text,
-                                                                           self.nodes[nodeid].GetFeatures())
+                    output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, tooltip)
 
+                output += "];\n"
             output += "//edges:\n"
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
@@ -324,7 +351,14 @@ class DependencyTree:
             else:
                 if pointer.isdigit():
                     pointer_num = int(pointer)
-                    nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    try:
+                        nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    except AttributeError as e: #AttributeError: 'RuleToken' object has no attribute 'MatchedNodeID'
+                        logging.error(e)
+                        logging.error("FindPointerNode: The rule is written error, because the reference token is not yet matched. Please rewrite!")
+                        logging.info(rule)
+                        return None
+
                 else:
                     pointer = "^" + pointer
                     #logging.info("Finding pointer node {} from TempPointer".format(pointer))
@@ -449,6 +483,18 @@ class DependencyTree:
             raise RuntimeError("The matchtype should be text/norm/atom. Please check syntax!")
 
 
+    def MaxDistanceOfMatchNodes(self, rule):
+        index_min = len(self.nodes)
+        index_max = 0
+        for i in range(rule.TokenLength):
+            nodeID = rule.Tokens[i].MatchedNodeID
+            node = self.nodes[nodeID]
+            index_min = min(node.Index, index_min)
+            index_max = max(node.Index, index_max)
+        logging.info("This rule, window size is {}; the MaxDistanceOfMatchNodes is {}.".format(rule.WindowLimit, index_max-index_min+1))
+        return index_max-index_min+1
+
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.
@@ -461,13 +507,18 @@ class DependencyTree:
         if not logicmatch:
             return False
         #might need open node for pointer
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, node))
-            logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("DAG.TokenMatch: comparing ruletoken {} with nodeid {}".format(ruletoken, node))
+        #     logging.debug("Dag.TokenMatch for SubtreePointer {} in rule token {}".format(ruletoken.SubtreePointer, ruletoken))
         if not ruletoken.SubtreePointer:
             return True
 
         SubtreePointer = ruletoken.SubtreePointer
+        # if "~~"in SubtreePointer:
+        #     SubtreePointer, ReferenceNodePointer = SubtreePointer.split("~~", 1)
+        #     ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
+        #     if abs(node.Index - self.nodes[ReferenceNodeID].Index ) > len(self.nodes)/3:
+        #         return False
         if ">>" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
@@ -489,6 +540,9 @@ class DependencyTree:
             if node.Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
+        # if not SubtreePointer:  #Apparently after comparing index with referencenode, the subtreepointer is not empty
+        #     return True         # so the condition was like ^<
+        #
         for AndCondition in SubtreePointer.split("+"):
             Negation = False
 
@@ -508,7 +562,17 @@ class DependencyTree:
             else:
                 if pointer.isdigit():
                     pointer_num = int(pointer)
-                    start_nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                    if pointer_num == rule.Tokens.index(ruletoken):
+                        start_nodeID = nodeID
+                    else:
+                        try:
+                            start_nodeID = rule.Tokens[pointer_num].MatchedNodeID
+                        except AttributeError as e: #AttributeError: 'RuleToken' object has no attribute 'MatchedNodeID'
+                            logging.error(e)
+                            logging.error("TokenMatch: The rule is written error, because the reference token is not yet matched. Please rewrite!")
+                            logging.info(rule)
+                            return False
+
                 else:
                     pointer = "^" + pointer
                     #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
@@ -565,7 +629,6 @@ class DependencyTree:
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
         Actions = actinstring.split()
-        #logging.debug("Word:" + self.text)
 
         for Action in copy.copy(Actions):
             if "---" in Action:
@@ -632,6 +695,10 @@ class DependencyTree:
             if Action[0] == '\'':
                 #Make the norm of the token to this key
                 node.norm = Action[1:-1]
+                continue
+            if Action[0] == '%':
+                # Make the pnorm of the token to this key
+                node.pnorm = Action[1:-1]
                 continue
             if Action[0] == '/':
                 #Make the atom of the token to this key

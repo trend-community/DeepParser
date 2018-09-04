@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("--schema", help="full[default]/segonly/shallowcomplete")
     parser.add_argument("--action", help="none[default]/headdown")
     parser.add_argument("--type", help="segmentation/json/simple/simpleEx/graph/simplegraph[default]",
-                        choices=['segmentation','json', 'simple', 'simpleEx', 'sentiment', 'graph', 'simplegraph'],
+                        choices=['segmentation','json', 'simple', 'simpleEx', 'sentiment', 'graph', 'simplegraph','QA'],
                         default='simplegraph')
     parser.add_argument("--keeporigin")
     args = parser.parse_args()

@@ -1,4 +1,4 @@
-import copy, traceback
+import copy
 from datetime import datetime
 from utils import *
 import utils
@@ -113,7 +113,7 @@ class RuleToken(object):
             self.repeat = [1, 1]
             self.word = ''
             self.RestartPoint = False
-            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom
+            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom 4:pnorm (as in Aug 2018, not being used for matching)
             self.pointer = ''
             self.action = ''
             self.SubtreePointer = ''
@@ -129,11 +129,14 @@ class RuleToken(object):
             self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = RuleToken.idCounter
 
-    def __eq__(self, other):  # only compare the matching part, not the action part.
-        if self.word.strip() == other.word.strip():  # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
-            return True
-        else:
-            return False
+    # def __eq__(self, other):  # only compare the matching part, not the action part.
+    #     logging.error("Utilizing the RuleToken __eq__ function!")
+    #     if self.word.strip() == other.word.strip():  # can be more complicate, comparint SubtreePointer, AndFeatures, OrFeatureGroups...
+    #         return True
+    #     else:
+    #         return False
+
+
 
     def __str__(self):
         output = ""
@@ -169,19 +172,25 @@ class RuleChunk(object):
 class Rule:
     idCounter = 0
 
-    def __init__(self):
+    def __init__(self, orig=None):
         Rule.idCounter += 1
+        if orig is None:
+            self.FileName = ''
+            self.RuleName = ''
+            self.Origin = ''
+            self.RuleContent = ''
+            self.Tokens = []
+            self.TokenLength = 0
+            self.StrTokenLength = -1
+            self.Chunks = []
+            self.comment = ''
+            self.norms = []
+            self.Priority = 0   #default is 0. (Top) is 1. (Bottom) is -1.
+            self.WindowLimit = 0     #default 0 means none.  Only used for graph.
+            self.LengthLimit = 0    #default 0 means none. Only used for graph.(for now, as Sept 1, 2018)
+        else:
+            self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = Rule.idCounter
-        self.FileName = ''
-        self.RuleName = ''
-        self.Origin = ''
-        self.RuleContent = ''
-        self.Tokens = []
-        self.TokenLength = 0
-        self.StrTokenLength = -1
-        self.Chunks = []
-        self.comment = ''
-        self.norms = []
 
     def SetStrTokenLength(self):
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
@@ -207,9 +216,11 @@ class Rule:
                 logging.debug("string:" + ruleString)
                 return
 
-        RuleBlocks = re.match("(.+)==(.+)$", ruleString, re.DOTALL)
+        #Note: codeblocks can't be used to set rule, because I need the origin comment (of each line) to set Test for each rule.
+
+        RuleBlocks = re.match("(.+?)==(.+)$", ruleString, re.DOTALL)
         if not RuleBlocks:
-            RuleBlocks = re.match("(.+)::(.+)$", ruleString, re.DOTALL)
+            RuleBlocks = re.match("(.+?)::(.+)$", ruleString, re.DOTALL)
         if not RuleBlocks or RuleBlocks.lastindex != 2:
             raise RuntimeError("This rule can't be correctly parsed:\n\t" + ruleString)
 
@@ -224,6 +235,18 @@ class Rule:
             self.RuleContent = RuleContent
             self.comment = comment
             return  # stop processing macro.
+
+        # SampleRule1a(Top >SampleRule1) ; SampleRule5(Bottom >SampleRule3 >SampleRule4)
+        PriorityMatch = re.match("(.*)\((.*)\)$", self.RuleName)
+
+        if PriorityMatch:
+            logging.info("Rule {} Priority: {}".format(PriorityMatch.group(1), PriorityMatch.group(2)))
+            self.RuleName = PriorityMatch.group(1).strip()
+            if PriorityMatch.group(2).lower() == "top":
+                self.Priority = 1
+            if PriorityMatch.group(2).lower() == "bottom":
+                self.Priority = -1
+            #TODO: work on the ">SampleRule3 >SampleRule4" this kind of rules.
 
         remaining = ''
         try:
@@ -240,7 +263,21 @@ class Rule:
                         remaining = self.comment
                 return remaining  # stop processing if the RuleCode is null
 
-            self.RuleContent = ProcessMacro(RuleCode, MacroDict)
+            self.RuleContent = RemoveExcessiveSpace(ProcessMacro(RuleCode, MacroDict))
+            # PriorityMatch = re.match("(/d*) (.*)", self.RuleContent)  #comment out on Sept 1: leave the priority in RuleName part as in the spec.
+            # if PriorityMatch:
+            #     self.Priority = int(PriorityMatch.group(1))
+            #     self.RuleContent = PriorityMatch.group(2)
+
+            WindowMatch = re.match("win=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
+            if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
+                self.WindowLimit = int(WindowMatch.group(1))
+                self.RuleContent = WindowMatch.group(2).strip()
+
+            LengthMatch = re.match("len=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
+            if LengthMatch:     #len=5  # the sentence length must be small or equal to 5.
+                self.LengthLimit = int(LengthMatch.group(1))
+                self.RuleContent = LengthMatch.group(2).strip()
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -273,7 +310,7 @@ class Rule:
 
     # style: concise, or detail
     def output(self, style="concise"):
-        output = "//ID:" + str(self.ID)
+        output = "//ID:{} Priority:{}".format(self.ID, self.Priority)
         if self.RuleName.startswith("@"):
             output += "[Macro]\n"
         elif self.RuleName.startswith("#"):
@@ -334,9 +371,11 @@ class Rule:
             cur.execute(strsql, [self.ID, ])
 
         strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
+                 "priority, windowlimit, lengthlimit, " \
                  "norms, origin, comment, createtime, verifytime) " \
-                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
+                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
         cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
+                             self.Priority, self.WindowLimit, self.LengthLimit,
                              '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]),
                              self.Origin, self.comment])
         self.ID = cur.lastrowid
@@ -729,7 +768,7 @@ def Tokenize(RuleContent):
     TokenList = []
     StartToken = False
 
-    RuleContent = RemoveExcessiveSpace(RuleContent)
+    #RuleContent = RemoveExcessiveSpace(RuleContent)
 
     while i < len(RuleContent):
         if RuleContent[i] in SignsToIgnore:
@@ -781,8 +820,7 @@ def Tokenize(RuleContent):
 def ProcessTokens(Tokens):
     for node in Tokens:
         node.word = node.word.replace("\\(", IMPOSSIBLESTRINGLP).replace("\\)", IMPOSSIBLESTRINGRP).replace("\\'",
-                                                                                                            IMPOSSIBLESTRINGSQ).replace(
-            "\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
+                                      IMPOSSIBLESTRINGSQ).replace("\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
         # logging.info("\tnode word:" + node.word)
         while node.word.startswith("<"):
             node.word = node.word[1:]
@@ -936,7 +974,7 @@ def ExpandQuotedOrs(text, sign):
         return text
     if sign in text[1:-1]:
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding")
+            logging.debug("There is sign " + str(sign) + " inside of text, no need to do expanding:\n {}".format(text))
         return text
 
     return text.replace("|", sign + "|" + sign)
@@ -1149,8 +1187,9 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
         _PreProcess_CompileHash(rulegroup)
-        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: x.TokenLength, reverse=True)
-        _OutputRuleDB(rulegroup)
+        rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: (x.Priority, x.TokenLength, x.RuleName), reverse=True)
+        if not utils.DisableDB:
+            _OutputRuleDB(rulegroup)
         for r in rulegroup.RuleList:
             if r.norms:
                 norms = "".join(r.norms)
@@ -1197,6 +1236,8 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
 
 def RuleFileOlderThanDB(RuleLocation):
     #return False
+    if utils.DisableDB:
+        return False
 
     cur = utils.DBCon.cursor()
     RuleFileName = os.path.basename(RuleLocation)
@@ -1219,6 +1260,9 @@ def RuleFileOlderThanDB(RuleLocation):
 
 
 def LoadRulesFromDB(rulegroup):
+    if utils.DisableDB:
+        logging.error("In the config.ini, DisableDB is true, so it is not supposed to LoadrulesFromDB!")
+        return False
     cur = utils.DBCon.cursor()
     strsql = "select ID from rulefiles where filelocation=?"
     cur.execute(strsql, [rulegroup.FileName, ])
@@ -1230,14 +1274,15 @@ def LoadRulesFromDB(rulegroup):
 
     # order by tokenlength desc, and by hits desc.
     # note: order using hit can have less than 1% benefit. not worth the trouble.
-    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment
+    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment,
+                    priority, windowlimit, lengthlimit
                     from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? and status=1 group by r.id
                         order by tokenlength desc, count(h.ruleid ) desc """
     # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
     #                 from ruleinfo r    where rulefileid=?
     #                     order by tokenlength desc"""
-    strsql_node = "SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"
-    strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
+    strsql_node = """SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"""
+    #strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
     strsql_node_orfeature = "select featureid from rulenode_orfeatures where rulenodeid=? and groupid=?"
     strsql_countorfeatures = "select count(DISTINCT groupid) from rulenode_orfeatures where rulenodeid=?"
     strsql_node_text = "select text from rulenode_texts where rulenodeid=? and type=?"
@@ -1259,6 +1304,9 @@ def LoadRulesFromDB(rulegroup):
             rule.norms = []
         rule.Origin = row[5]
         rule.comment = row[6]
+        rule.Priority = row[7]
+        rule.WindowLimit = row[8]
+        rule.LengthLimit = row[9]
 
         cur.execute(strsql_node, [rule.ID, ])
         noderows = cur.fetchall()
@@ -1275,15 +1323,7 @@ def LoadRulesFromDB(rulegroup):
             token.AndTextMatchtype = noderow[6]
             token.NotTextMatchtype = noderow[7]
 
-            cur.execute(strsql_node_feature, [nodeid, 1])
-            featurerows = cur.fetchall()
-            for featurerow in featurerows:
-                token.AndFeatures.add(int(featurerow[0]))
-            # cur.execute(strsql_node_feature, [nodeid, 2])
-            # featurerows = cur.fetchall()
-            # for featurerow in featurerows:
-            #     token.OrFeatures.add(int(featurerow[0]))
-            #     # TODO: Modified as OrFeatureGroup. Need to save to DB properly.
+
             cur.execute(strsql_countorfeatures,[nodeid])
             countrows = cur.fetchall()
             sizefeaturegroup = countrows[0][0]
@@ -1296,10 +1336,25 @@ def LoadRulesFromDB(rulegroup):
                     orfeaturegroup.add(int(featurerow[0]))
                 token.OrFeatureGroups.append(orfeaturegroup)
 
-            cur.execute(strsql_node_feature, [nodeid, 3])
+            # cur.execute(strsql_node_feature, [nodeid, 1])
+            # featurerows = cur.fetchall()
+            # for featurerow in featurerows:
+            #     token.AndFeatures.add(int(featurerow[0]))
+            # cur.execute(strsql_node_feature, [nodeid, 3])
+            # featurerows = cur.fetchall()
+            # for featurerow in featurerows:
+            #     token.NotFeatures.add(int(featurerow[0]))
+            #
+            cur.execute("select featureid, type from rulenode_features where rulenodeid=?", [nodeid])
             featurerows = cur.fetchall()
             for featurerow in featurerows:
-                token.NotFeatures.add(int(featurerow[0]))
+                if featurerow[1] == 1:
+                    token.AndFeatures.add(featurerow[0])
+                elif featurerow[1] == 3:
+                    token.NotFeatures.add(featurerow[0])
+                else:
+                    logging.warning("There is other feature type in: {} for this rule {}".format(featurerow, rule))
+
             cur.execute(strsql_node_text, [nodeid, 2])
             featurerows = cur.fetchall()
             for featurerow in featurerows:
@@ -1397,12 +1452,9 @@ def _ExpandRuleWildCard_List(OneList):
             token = rule.Tokens[tokenindex]
             if token.repeat != [1, 1]:
                 for repeat_num in range(token.repeat[0], token.repeat[1] + 1):
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_" + str(repeat_num)
-                    newrule.RuleContent = rule.RuleContent
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
                     for tokenindex_this in range(repeat_num):
@@ -1541,12 +1593,9 @@ def _ExpandParenthesis(OneList):
                     subTokenlist[0].StartChunk = token.StartChunk
                     subTokenlist[-1].EndChunk = token.EndChunk
 
-                newrule = Rule()
-                newrule.FileName = rule.FileName
-                newrule.Origin = rule.Origin
-                newrule.comment = rule.comment
+                newrule = Rule(rule)
                 newrule.RuleName = rule.RuleName + "_p" + str(tokenindex)
-                newrule.RuleContent = rule.RuleContent
+                newrule.Tokens.clear()
                 for tokenindex_pre in range(tokenindex):
                     newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
                 for subtoken in subTokenlist:
@@ -1656,12 +1705,10 @@ def _ExpandOrBlock(OneList):
                 continue  # failed to process. might be pair tag issue.
 
             # left of |:
-            newrule = Rule()
-            newrule.FileName = rule.FileName
-            newrule.Origin = rule.Origin
-            newrule.comment = rule.comment
+            newrule = Rule(rule)
             newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-            newrule.RuleContent = rule.RuleContent
+            newrule.Tokens.clear()
+
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1695,12 +1742,10 @@ def _ExpandOrBlock(OneList):
             OneList.append(newrule)
 
             # right of |:
-            newrule = Rule()
-            newrule.FileName = rule.FileName
-            newrule.Origin = rule.Origin
-            newrule.comment = rule.comment
+            newrule = Rule(rule)
             newrule.RuleName = rule.RuleName + "_or" + str(tokenindex)
-            newrule.RuleContent = rule.RuleContent
+            newrule.Tokens.clear()
+
             for tokenindex_pre in range(tokenindex):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1810,12 +1855,9 @@ def _ExpandOrToken(OneList):
             if orlist:
                 for orpiece in orlist:
                     # left of the token:
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                    newrule.RuleContent = rule.RuleContent
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1846,12 +1888,9 @@ def _ExpandOrToken(OneList):
 
                 for subtreepointer in SubtreePointer.split("|"):
                     # left of the token:
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                    newrule.RuleContent = rule.RuleContent
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_pre]))
 
@@ -1938,12 +1977,9 @@ def _ExpandOrToken_Unification(OneList):
             if orlist:
                 for orpiece in orlist:
                     # left of the token:
-                    newrule = Rule()
-                    newrule.FileName = rule.FileName
-                    newrule.Origin = rule.Origin
-                    newrule.comment = rule.comment
+                    newrule = Rule(rule)
                     newrule.RuleName = rule.RuleName + "_ol" + str(tokenindex)
-                    newrule.RuleContent = rule.RuleContent
+                    newrule.Tokens.clear()
                     for tokenindex_pre in range(tokenindex):
                         newtoken = RuleToken(rule.Tokens[tokenindex_pre])
                         newtoken.word = newtoken.word.replace("%F", orpiece)
@@ -2129,7 +2165,7 @@ def OutputRules(rulegroup, style="details"):
     output = "// ****Rules**** " + rulegroup.FileName + "\n"
     output += "// * size: " + str(len(rulegroup.RuleList)) + " *\n"
     # for rule in sorted(rulegroup.RuleList, key=lambda x: (GetPrefix(x.RuleName), x.RuleContent)):
-    for rule in sorted(rulegroup.RuleList) :
+    for rule in rulegroup.RuleList :
         output += rule.output(style) + "\n"
 
     output += "// ****Macros****\n"
@@ -2215,7 +2251,7 @@ CREATE TABLE rulenode_features (rulenodeid INT, featureid INT, type INT, CONSTRA
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-    LoadGlobalMacro('../../fsa/Y/', 'GlobalMacro.txt')
+    LoadGlobalMacro('../../fsa/Y/GlobalMacro.txt')
     # LoadRules("../../fsa/Y/900NPy.xml")
     # LoadRules("../../fsa/Y/800VGy.txt")
     # # LoadRules("../../fsa/Y/1800VPy.xml")
@@ -2228,7 +2264,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/0defLexX.txt")
     if utils.DBCon is None:
         utils.InitDB()
-    LoadRules('../../fsa/X/', '0test.txt')
+    LoadRules('../../fsa/X/', '0test.txt', False)
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")

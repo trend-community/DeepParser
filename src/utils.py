@@ -1,12 +1,16 @@
 import logging, re, json, jsonpickle, configparser, os
-import sqlite3
+import sqlite3, traceback
 from functools import lru_cache
-
+import operator
+import FeatureOntology
 
 ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
 maxcachesize = int(ParserConfig.get("main", "maxcachesize"))
 runtype = ParserConfig.get("main", "runtype").lower()
+DisableDB = False
+if ParserConfig.has_option("main", "disabledb") and ParserConfig.get("main", "disabledb").lower() == "true":
+    DisableDB = True
 
 ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
@@ -42,6 +46,8 @@ FeatureID_NC = None
 FeatureID_VC = None
 
 FeatureID_comPair = None
+whQlist = ["whNQ", "orQ", "whatQ", "whenQ", "whereQ", "whoQ", "whBrand", "whProd", "whyQ", "howQ", "howDoQ",
+           "whatHappenQ", "whatForQ", "howAQ"]
 
 
 IMPOSSIBLESTRING = "@#$%@impossible@"
@@ -70,6 +76,8 @@ class LexiconLookupSource(Enum):
     defLex = 1
     External = 2
     oQcQ = 3
+    stemming = 4
+    Compound = 5
 
 
 def InitGlobalFeatureID():
@@ -320,47 +328,132 @@ def OutputStringTokensSegment_oneliner(strTokenList):
     return output
 
 
+def OutputStringTokensKeyword_oneliner(dag):
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x: x.StartOffset)
+
+    output = ""
+    for node in nodelist:
+        if "keyWord" in node.GetFeatures():
+            output += node.text +"/"
+
+    return output[:-1]
+
+
 def OutputStringTokens_onelinerSA(dag):
     # print("Dag:{}".format(dag))
     output = ""
-    TargetFeature = "Target"
-    ProFeature = "Pro"
-    ConFeature = "Con"
-    PosEmo = "PosEmo"
-    NegEmo = "NegEmo"
-    Neutral = "Neutral"
-    Needed = "Needed"
-    Key = "Key"
-    Value = "Value"
+    # TargetFeature = "Target"
+    # ProFeature = "Pro"
+    # ConFeature = "Con"
+    # PosEmo = "PosEmo"
+    # NegEmo = "NegEmo"
+    # Neutral = "Neutral"
+    # Needed = "Needed"
+    # Key = "Key"
+    # Value = "Value"
+    sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
     nodes = dag.nodes
     nodelist = list(nodes.values())
     nodelist.sort(key=lambda x:x.StartOffset)
-    for node in nodelist:
-        output += node.text + "/"
-        featureString = node.GetFeatures()
-        featureSet = featureString.split(",")
-        # print (featureSet)
-        if TargetFeature in featureSet:
-            output +=  TargetFeature + " "
-        if ProFeature in featureSet:
-            output +=  ProFeature + " "
-        if ConFeature in featureSet:
-            output += ConFeature + " "
-        if PosEmo in featureSet:
-            output +=  PosEmo + " "
-        if NegEmo in featureSet:
-            output +=  NegEmo + " "
-        if Needed in featureSet:
-            output += Needed + " "
-        if Neutral in featureSet:
-            output += Neutral + " "
-        if Key in featureSet:
-            output +=  Key + " "
-        if Value in featureSet:
-            output +=  Value + " "
-        if output.endswith("/"):
-            output = output[:-1]
+
+    output += '{  "nodes": ['
+    sentence = ""
+    first = True
+    for node in sorted(nodes.values(), key=operator.attrgetter("Index")):
+        if first:
+            first = False
+        else:
+            output += ", "
+        text = node.text
+        sentence += text
+        features = sorted(
+            [FeatureOntology.GetFeatureName(f) for f in node.features if f not in FeatureOntology.NotShowList])
+        filteredfeatures = []
+        for f in features:
+            if f in sentimentfeature:
+                filteredfeatures.append(f)
+        jsondict = dict()
+        jsondict["text"] = text
+        jsondict["features"] = filteredfeatures
+
+        output += json.dumps(jsondict, default=lambda o: o.__dict__,
+                   sort_keys=True, ensure_ascii=False)
+    output += '],  "sentence": "' + sentence + '"}'
+
+    # for node in nodelist:
+    #     output += node.text + "/"
+    #     featureString = node.GetFeatures()
+    #     featureSet = featureString.split(",")
+    #     # print (featureSet)
+    #     if TargetFeature in featureSet:
+    #         output +=  TargetFeature + " "
+    #     if ProFeature in featureSet:
+    #         output +=  ProFeature+ " "
+    #     if ConFeature in featureSet:
+    #         output += ConFeature+ " "
+    #     if PosEmo in featureSet:
+    #         output +=  PosEmo+ " "
+    #     if NegEmo in featureSet:
+    #         output +=  NegEmo+ " "
+    #     if Needed in featureSet:
+    #         output += Needed+ " "
+    #     if Neutral in featureSet:
+    #         output += Neutral+ " "
+    #     if Key in featureSet:
+    #         output +=  Key+ " "
+    #     if Value in featureSet:
+    #         output +=  Value + " "
+    #     if output.endswith("/"):
+    #         output = output[:-1]
+    #     if not output.endswith(" "):
+    #         output += " "
     return output
+
+def OutputStringTokens_onelinerQA(dag):
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x:x.StartOffset)
+
+
+    output = ""
+    for node in nodelist:
+        haswhq, whqfeature = nodehaswhqfeature(node)
+        if "yesnoQ" in node.GetFeatures():
+            for n in nodelist:
+                output += n.text
+            if output:
+                output += "\tyesnoQ"
+            return output
+        elif haswhq:
+            for n in nodelist:
+                output += n.text
+            if output:
+                output += "\t" + whqfeature
+            return output
+        elif "whQ" in node.GetFeatures():
+            for n in nodelist:
+                output += n.text
+            if output:
+                output += "\twhQ"
+            return output
+
+    for n in nodelist:
+        output += n.text
+    if output:
+        output += "\tother"
+    return output
+
+def nodehaswhqfeature(node):
+
+    for whqfeature in whQlist:
+        if whqfeature in node.GetFeatures():
+            return True, whqfeature
+    return False, None
+
+
+
 
 def OutputStringTokens_oneliner_merge(strTokenList):
     output = ""
@@ -430,8 +523,14 @@ def LastItemIn2DArray(xlist, array):
 
 def InitDB():
     global DBCon
+
+    if DisableDB:
+        return
+
     try:
-        DBCon = sqlite3.connect('../data/parser.db')
+        PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/parser.db')
+        DBCon = sqlite3.connect(PATH)
+        #DBCon = sqlite3.connect('../data/parser.db')
         #DBCon.setLockingEnabled(False);
         cur = DBCon.cursor()
         cur.execute("PRAGMA read_uncommitted = true;")
@@ -454,6 +553,8 @@ def CloseDB(tempDB):
         logging.info("DBCon closed.")
     except sqlite3.ProgrammingError:
         logging.info("DBCon is closed.")
+    except AttributeError:
+        logging.warning("DBCon is not initialized.")
 # try:
 #     if not DBCon:
 #         InitDB()    #initialize this

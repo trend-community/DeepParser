@@ -4,7 +4,8 @@
 
 #Major update on 20180309:
 # Remove the usage of multisegmental project, and apache website hosting.
-
+#Major update on 20180810:
+# Add graph operation
 
 Note 1: This project is running with Python 3.x. If your default python is 2.x, you need to use "python3" to replace the "python" in the following commands, and use "pip3" to replace the "pip" in the following commands.
 Note 2: Feel free to use virtenv or anaconda python, if you know what you are doing.
@@ -66,8 +67,10 @@ In your browser visit
 		type: [json (default), segmentation, simple, simpleEx, graph, simplegraph, parsetree]
 			json: current default output. 
 			segmentation: segmentation format "中文/分词/方法"
+                        keyword: segmentation format, only show words with "keyWord" feature.
 			simple/simpleEx: simple presentation of the json format.
 			graph: DOT format of graph
+                        graphjson: JSON format of graph
 			simpleggraph: simple presentation of the graph format "M{分词->中文}; M{方法->分词}; "
 			parsetree: for web presentation only, not to use as API.
 			

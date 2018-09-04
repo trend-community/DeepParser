@@ -274,9 +274,9 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 logging.debug("Found winning rule at counter: {}. The winning rule is: {}".format(counter, WinningRule) )
             try:
                 if WinningRule.ID not in WinningRules:
-                    WinningRules[WinningRule.ID] = '<li>' + WinningRule.Origin + ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                    WinningRules[WinningRule.ID] = '<li> [{}] {} <li class="indent"> {}'.format( WinningRule.FileName, WinningRule.Origin, MarkWinningTokens(strtokenlist, WinningRule, i))
                 else:
-                    WinningRules[WinningRule.ID] += ' <li class="indent">' + MarkWinningTokens(strtokenlist, WinningRule, i)
+                    WinningRules[WinningRule.ID] += ' <li class="indent"> {}'.format( MarkWinningTokens(strtokenlist, WinningRule, i))
                 ApplyWinningRule(strtokenlist, WinningRule, StartPosition=i)
             except RuntimeError as e:
                 if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
@@ -378,34 +378,37 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         if counter > 10 * RuleLength:
             break
         rule = rulegroup.RuleList[rule_sequence]
+        if 0 < rule.LengthLimit < len(Dag.nodes):
+            rule_sequence += 1
+            logging.warning("This sentence is too long to try this rule:()".format(rule.Origin))
+            continue
 
         # if logging.root.isEnabledFor(logging.DEBUG):
         #     logging.debug("DAG: Start checking rule {}".format( rule))
         node = DAGMatch(Dag,  rule, 0)
         if node:
-            if logging.root.isEnabledFor(logging.DEBUG):
-                logging.debug("DAG: Winning rule! {}".format(rule))
-            try:
-                    if rule.ID not in WinningRules:
-                        WinningRules[rule.ID] = '<li>' + rule.Origin + ' <li class="indent">' + node.text
+            if rule.WindowLimit == 0 or rule.WindowLimit >= Dag.MaxDistanceOfMatchNodes( rule):
+                if logging.root.isEnabledFor(logging.DEBUG):
+                    logging.debug("DAG: Winning rule! {}".format(rule))
+                try:
+                        if rule.ID not in WinningRules:
+                            WinningRules[rule.ID] = '<li> [{}] {} <li class="indent"> {} </li>'.format(rule.FileName, rule.Origin, node.text)
+                        else:
+                            WinningRules[rule.ID] += ' <li class="indent"> {} </li>'.format( node.text)
+                        ApplyWinningDagRule(Dag, rule, node)
+                        rule_sequence -= 1  # allow the same rule to match other nodes too.
+                except RuntimeError as e:
+                    if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
+                        logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
+                        rulegroup.RuleList.remove(rule)
                     else:
-                        WinningRules[rule.ID] += ' <li class="indent">' + node.text
-                    ApplyWinningDagRule(Dag, rule, node)
-                    rule_sequence -= 1  # allow the same rule to match other nodes too.
-            except RuntimeError as e:
-                if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
-                    logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
-                    rulegroup.RuleList.remove(rule)
-                else:
-                    logging.error("Unknown Rule Applying Error:" + str(e))
+                        logging.error("Unknown Rule Applying Error:" + str(e))
 
-            except IndexError as e:
-                logging.error("Failed to apply this rule:")
-                logging.info(str(rule))
-                logging.error(str(e))
-            #search the rest of rules using other nodes
-            #node.applied = True    #apply to apply to the same node
-#            break   #Because the file is sorted by rule length, so we are satisfied with the first winning rule.
+                except IndexError as e:
+                    logging.error("Failed to apply this rule:")
+                    logging.info(str(rule))
+                    logging.error(str(e))
+                #search the rest of rules using other nodes
 
         Dag.ClearVisited()
         for node_id in Dag.nodes:
@@ -434,6 +437,10 @@ def DynamicPipeline(NodeList, schema):
         if action == "SHALLOW COMPLETE" and schema == "shallowcomplete":
             break
 
+        #applies caseab, caseAb, caseaB, or caseAB
+        if action == "CASES":
+            Lexicon.ApplyCasesToNodes(NodeList)
+
         if action.startswith("FSA"):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
@@ -449,13 +456,14 @@ def DynamicPipeline(NodeList, schema):
         # if action == "APPLY COMPOSITE KG":
         #     Lexicon.ApplyCompositeKG(NodeList)
 
-        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") or action.startswith("Lookup oQcQ"):
+        if action.startswith("Lookup defLex:") or action.startswith("Lookup External:") \
+                or action.startswith("Lookup oQcQ") or action.startswith("Lookup Compound:"):
             lookupSourceName = action[6:action.index(":")].strip()
             for x in LexiconLookupSource:
                 if x.name == lookupSourceName:
                     Lexicon.LexiconLookup(NodeList, x)
 
-        if action == "Lookup IE":
+        if action.startswith("Lookup IE"):
             Lexicon.ApplyCompositeKG(NodeList)
         #
         # if action == "TRANSFORM DAG":
@@ -474,7 +482,7 @@ def DynamicPipeline(NodeList, schema):
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
-    return  NodeList, Dag, WinningRules
+    return NodeList, Dag, WinningRules
 
 
 def PrepareJSandJM(nodes):
@@ -530,7 +538,6 @@ def SeparateSentence(Sentence):
 
     #logging.info(str(SubSentences))
     return SubSentences
-
 
 def LexicalAnalyzeTask( SubSentence, schema):
 
@@ -634,6 +641,8 @@ def LoadPipeline(PipelineLocation):
             PipeLine.append(action.strip())
 
 def SystemFileOlderThanDB(XLocation):
+    if utils.DisableDB:
+        return False
     Systemfilelist = ["../Y/feature.txt","../Y/GlobalMacro.txt"]
 
     for file in Systemfilelist:
@@ -656,7 +665,11 @@ def SystemFileOlderThanDB(XLocation):
 
     return True
 
+
 def UpdateSystemFileFromDB(XLocation):
+    if utils.DisableDB:
+        return
+
     Systemfilelist = ["../Y/feature.txt", "../Y/GlobalMacro.txt"]
     for file in Systemfilelist:
         fileLocation = os.path.join(XLocation, file)
@@ -676,25 +689,24 @@ def UpdateSystemFileFromDB(XLocation):
         cur.close()
 
 def LoadCommon():
+    if not utils.DisableDB:
+        InitDB()
 
-    InitDB()
-
-    import Cache
-    Cache.LoadSentenceDB()
+        import Cache
+        Cache.LoadSentenceDB()
 
     PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
-    XLocation = os.path.dirname(PipeLineLocation) + "/"
+    FILE_ABS_PATH = os.path.dirname(os.path.abspath(__file__))
+    XLocation = FILE_ABS_PATH  + '/' + os.path.dirname(PipeLineLocation) + "/"
+    #XLocation = os.path.dirname(PipeLineLocation) + "/"
 
     FeaturefileLocation = os.path.join(XLocation, "../Y/feature.txt")
     GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
-    PunctuatefileLocation = os.path.join(XLocation,"../Y/LexY-EnglishPunctuate.txt")
+    # PunctuatefileLocation = os.path.join(XLocation, "../Y/LexY-EnglishPunctuate.txt")
 
 
     FeatureOntology.LoadFeatureOntology(FeaturefileLocation)
     systemfileolderthanDB = SystemFileOlderThanDB(XLocation)
-
-    # XLocation = '../../fsa/X/'
-
 
     LoadPipeline(PipeLineLocation)
 
@@ -705,10 +717,8 @@ def LoadCommon():
 
     Rules.LoadGlobalMacro(GlobalmacroLocation)
 
-    if "/X/" in XLocation:
-        Lexicon.LoadCompositeKG(XLocation + 'LexX-CompositeKG.txt')
-    else:
-        Lexicon.LoadLexicon(PunctuatefileLocation)
+
+    # Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
         if action.startswith("FSA"):
@@ -754,6 +764,24 @@ def LoadCommon():
                 if lex:
                     Lexicon.LoadLexicon(XLocation + lex)
 
+        # (O.O)
+        if action.startswith("Stemming:"):
+            Stemfile = action[action.index(":") + 1:].strip().split(",")
+            inf = Stemfile[0].strip()
+            Rules.LoadRules(XLocation, inf, systemfileolderthanDB)
+            Lexicon.LoadSuffix(XLocation + inf, inf)
+            for stem in Stemfile[1:]:
+                stem = stem.strip()
+                if stem:
+                    Lexicon.LoadLexicon(XLocation + stem, lookupSource=LexiconLookupSource.stemming)
+
+        if action.startswith("Lookup Compound:"):
+            Compoundfile = action[action.index(":")+1:].strip().split(",")
+            for compound in Compoundfile:
+                compound = compound.strip()
+                if compound:
+                    Lexicon.LoadLexicon(XLocation + compound, lookupSource=LexiconLookupSource.Compound)
+
         if action.startswith("Lookup defLex:"):
             Compoundfile = action[action.index(":")+1:].strip().split(",")
             for compound in Compoundfile:
@@ -775,10 +803,18 @@ def LoadCommon():
                 if oQoC:
                     Lexicon.LoadLexicon(XLocation + oQoC,lookupSource=LexiconLookupSource.oQcQ)
 
+        if action.startswith("Lookup IE:"):
+            compositefile = action[action.index(":")+1:].strip().split(",")
+            for composite in compositefile:
+                comp = composite.strip()
+                if comp:
+                    Lexicon.LoadCompositeKG(XLocation + comp)
+
     Lexicon.LoadSegmentLexicon()
     UpdateSystemFileFromDB(XLocation)
 
-    CloseDB(utils.DBCon)
+    if not utils.DisableDB:
+        CloseDB(utils.DBCon)
     if ParserConfig.get("main", "runtype") == "Debug":
         logging.debug("Start writing temporary rule files")
         Rules.OutputRuleFiles(ParserConfig.get("main", "compiledfolder"))
@@ -798,7 +834,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
-    target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
+    #target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
 
     # import cProfile, pstats
     # cProfile.run("LexicalAnalyze(target)", 'restatslex')
@@ -826,7 +862,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("虽然经济实惠，但味道好苦啊")
+    nodelist, dag, winningrules = LexicalAnalyze("They sing blenchly")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
