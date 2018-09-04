@@ -1,4 +1,3 @@
-import traceback
 import concurrent.futures
 import Tokenization, FeatureOntology, Lexicon
 import Rules, Cache
@@ -477,8 +476,6 @@ def DynamicPipeline(NodeList, schema):
                 except Exception as e:
                     logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
                     return NodeList, Dag, WinningRules
-                if logging.root.isEnabledFor(logging.INFO):
-                    logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 

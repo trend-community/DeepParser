@@ -197,8 +197,8 @@ class DependencyTree:
 
     #the output is in DOT language, compatible with Graphviz, Viz.js, d3-graphviz.
     def digraph(self, Type='graph'):
-        if logging.root.isEnabledFor(logging.INFO):
-            logging.info("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
+        if logging.root.isEnabledFor(logging.DEBUG):
+            logging.debug("Start making diagraph of {}. graph is:{}".format(Type, self.graph))
         output = ""
         if Type == 'simplegraph' :
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):

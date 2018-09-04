@@ -66,8 +66,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug")
-    parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph",
-                        choices=['json', 'simple', 'simpleEx', 'sentiment', 'graph', 'simplegraph'],
+    parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph/graphjson",
                         default='simplegraph')
     parser.add_argument("--winningrules")
     parser.add_argument("--keeporigin")
