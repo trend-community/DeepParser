@@ -16,23 +16,12 @@ def ProcessFile(FileName):
     with open(FileName, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                RuleName, TestSentence = SeparateComment(line.strip())
-                if not TestSentence:  # For the testfile that only have test sentence, not rule name
-                    TestSentence = RuleName
-                    RuleName = ""
-                unittest = Rules.UnitTestNode(RuleName, TestSentence)
-                UnitTest.append(unittest)
+                if line.strip():
+                    columns = line.split(args.delimiter)
+                    if len(columns) >= int(args.sentencecolumn):
+                        UnitTest.append(columns[int(args.sentencecolumn) - 1].strip())
 
-    for unittestnode in UnitTest:
-        ExtraMessageIndex = unittestnode.TestSentence.find(">")
-        if ExtraMessageIndex > 0:
-            TestSentence = unittestnode.TestSentence[:ExtraMessageIndex]
-        else:
-            TestSentence = unittestnode.TestSentence
-        TestSentence = TestSentence.strip("/")
-        if DebugMode:
-            print("***Test rule " + unittestnode.RuleName + " using sentence: " + TestSentence)
-
+    for TestSentence in UnitTest:
         nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence)
         if not nodes:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
@@ -70,6 +59,9 @@ if __name__ == "__main__":
                         default='simplegraph')
     parser.add_argument("--winningrules")
     parser.add_argument("--keeporigin")
+    parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
+                        default=1)
+    parser.add_argument("--delimiter", default="\t")
     args = parser.parse_args()
 
     DebugMode = False

@@ -1,5 +1,5 @@
 import logging, re, json, jsonpickle, configparser, os
-import sqlite3, traceback
+import sqlite3
 from functools import lru_cache
 import operator
 import FeatureOntology

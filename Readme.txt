@@ -7,7 +7,7 @@
 #Major update on 20180810:
 # Add graph operation
 
-Note 1: This project is running with Python 3.x. If your default python is 2.x, you need to use "python3" to replace the "python" in the following commands, and use "pip3" to replace the "pip" in the following commands.
+Note 1: This project is running with Python 3.x. If your default python is 2.x, you need to use "python3" to replace the "python" in the following commands, and use "pip3" (or "python3 -m pip") to replace the "pip" in the following commands.
 Note 2: Feel free to use virtenv or anaconda python, if you know what you are doing.
 
 
