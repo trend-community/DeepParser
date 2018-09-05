@@ -673,12 +673,6 @@ class SentenceNode(object):
         return a
 
 
-class JsonClass(object):
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                         sort_keys=True, ensure_ascii=False)
-    def fromJSON(self):
-        pass
 
 
 #2018030: Make space as one token. Will be removed and add spaceH/spaceQ for adjacent token in the next step.

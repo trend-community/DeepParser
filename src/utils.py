@@ -3,6 +3,7 @@ import sqlite3
 from functools import lru_cache
 import operator
 import FeatureOntology
+
 from utils import *
 
 ParserConfig = configparser.ConfigParser()
@@ -341,8 +342,43 @@ def OutputStringTokensKeyword_oneliner(dag):
 
     return output[:-1]
 
+class SentimentNode(object):
+    key = ""
+    keyfeatures = []
+    value = ""
+    valuefeatures = []
 
 def OutputStringTokens_onelinerSA(dag):
+    sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
+    sentimentfeatureids = [FeatureOntology.GetFeatureID(f) for f in sentimentfeature]
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x:x.StartOffset)
+    FeatureID_Key = FeatureOntology.GetFeatureID("Key")
+    FeatureID_Value = FeatureOntology.GetFeatureID("Value")
+    outputdict = []
+    for edge in sorted(dag.graph, key=operator.itemgetter(2, 0, 1)):
+        node1 = nodes.get(edge[2])
+        node2 = nodes.get(edge[0])
+
+        if FeatureID_Key in node1.features and FeatureID_Value in node2.features:
+            sentimentnode = SentimentNode()
+            sentimentnode.key = node1.text
+            sentimentnode.keyfeatures = [FeatureOntology.GetFeatureName(f) for f in node1.features if f in sentimentfeatureids]
+            sentimentnode.value = node2.text
+            sentimentnode.valuefeatures = [FeatureOntology.GetFeatureName(f) for f in node2.features if f in sentimentfeatureids]
+
+        if FeatureID_Key in node2.features and FeatureID_Value in node1.features:
+            sentimentnode = SentimentNode()
+            sentimentnode.key = node2.text
+            sentimentnode.keyfeatures = [FeatureOntology.GetFeatureName(f) for f in node2.features if f in sentimentfeatureids]
+            sentimentnode.value = node1.text
+            sentimentnode.valuefeatures = [FeatureOntology.GetFeatureName(f) for f in node1.features if f in sentimentfeatureids]
+            outputdict.append(sentimentnode)
+    return json.dumps(outputdict, default=lambda o: o.__dict__,
+                         sort_keys=True, ensure_ascii=False)
+
+def OutputStringTokens_onelinerSA2(dag):
     output = ""
     sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
     nodes = dag.nodes
@@ -732,3 +768,10 @@ def has_overlap(listA, listB):
     if len([i for i in listA if i in listB]) > 0:
         return True
     return False
+
+class JsonClass(object):
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+                         sort_keys=True, ensure_ascii=False)
+    def fromJSON(self):
+        pass
