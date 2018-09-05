@@ -1,5 +1,4 @@
-import logging, sys, re, jsonpickle
-import Tokenization, FeatureOntology, Lexicon
+import logging, sys, jsonpickle
 import ProcessSentence, Rules
 
 if __name__ == "__main__":

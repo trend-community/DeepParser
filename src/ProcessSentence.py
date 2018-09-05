@@ -1,6 +1,6 @@
-import traceback
 import concurrent.futures
-import Tokenization, FeatureOntology, Lexicon
+import traceback
+import Tokenization,  Lexicon
 import Rules, Cache
 #from threading import Thread
 from LogicOperation import LogicMatch, Clear_LogicMatch_notpointer_Cache
@@ -380,7 +380,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         rule = rulegroup.RuleList[rule_sequence]
         if 0 < rule.LengthLimit < len(Dag.nodes):
             rule_sequence += 1
-            logging.warning("This sentence is too long to try this rule:()".format(rule.Origin))
+            logging.debug("This sentence is too long to try this rule:{}".format(rule.Origin))
             continue
 
         # if logging.root.isEnabledFor(logging.DEBUG):
@@ -477,8 +477,6 @@ def DynamicPipeline(NodeList, schema):
                 except Exception as e:
                     logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
                     return NodeList, Dag, WinningRules
-                if logging.root.isEnabledFor(logging.INFO):
-                    logging.info(" NodeList is transformed into Dag prior to action {}".format(action))
             Rulefile = action[6:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
@@ -607,11 +605,13 @@ def LexicalAnalyze(Sentence, schema = "full"):
 
         Sentence = invalidchar_pattern.sub(u'\uFFFD', Sentence)
         if Sentence in Cache.SentenceCache:
-            return Cache.SentenceCache[Sentence], None, None  # assume ResultWinningRules is none.
+            Dag = DependencyTree.DependencyTree()
+            Dag.transform(Cache.SentenceCache[Sentence])
+            return Cache.SentenceCache[Sentence], Dag, None  # assume ResultWinningRules is none.
 
         ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
-        if schema == "full" and utils.runtype != "debug":
+        if schema == "full" and utils.runtype != "debug" and utils.DisableDB is False:
             if len(Cache.SentenceCache) < utils.maxcachesize:
                 Cache.SentenceCache[Sentence] = ResultNodeList
                 Cache.WriteSentenceDB(Sentence, ResultNodeList)
@@ -862,7 +862,7 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    nodelist, dag, winningrules = LexicalAnalyze("They sing blenchly")
+    nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 

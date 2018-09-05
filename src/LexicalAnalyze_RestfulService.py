@@ -2,7 +2,6 @@ import argparse, logging, os, configparser
 import requests, urllib, random
 
 
-
 ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
 
@@ -26,10 +25,12 @@ if __name__ == "__main__":
     parser.add_argument("--debug")
     parser.add_argument("--schema", help="full[default]/segonly/shallowcomplete")
     parser.add_argument("--action", help="none[default]/headdown")
-    parser.add_argument("--type", help="segmentation/json/simple/simpleEx/graph/simplegraph[default]",
-                        choices=['segmentation','json', 'simple', 'simpleEx', 'sentiment', 'graph', 'simplegraph','QA'],
+    parser.add_argument("--type", help="segmentation/json/simple/simpleEx/graph/graphjson/simplegraph[default]",
                         default='simplegraph')
     parser.add_argument("--keeporigin")
+    parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
+                        default=0)
+    parser.add_argument("--delimiter", default="\t")
     args = parser.parse_args()
 
     DebugMode = False
@@ -42,11 +43,9 @@ if __name__ == "__main__":
         logging.root.removeHandler(handler)
     logging.basicConfig(level=level, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
-
     UnitTest = []
     if not os.path.exists(args.inputfile):
-        print("Unit Test file " + args.inputfile + " does not exist.")
+        print("Sentence file " + args.inputfile + " does not exist.")
         exit(0)
 
     key = ''
@@ -55,8 +54,6 @@ if __name__ == "__main__":
     except :
         logging.error("Please provide legitimate authentication key in config.ini.")
 
-
-
     #logging.info("Start processing sentences")
     extra = "?Type={}&Key={}".format(args.type, key)
     if args.schema:
@@ -64,23 +61,18 @@ if __name__ == "__main__":
     if args.action:
         extra += "&Action=" + args.action
 
-    #Simple version, not multi-thread
-    # with open(args.inputfile, encoding="utf-8") as RuleFile:
-    #     for line in RuleFile:
-    #         sentence = line.strip()
-    #         if sentence:
-    #             print(LATask(extra, sentence)  + '\t' + sentence)
-
-
-    # below is a complicate version that can fully utilize the parser,
-    # using thread_num in the config file.
 
     import concurrent.futures
 
     with open(args.inputfile, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                UnitTest.append(line.strip())
+                if int(args.sentencecolumn) == 0:
+                    UnitTest.append(line.strip())
+                else:
+                    columns = line.split(args.delimiter)
+                    if len(columns) >= int(args.sentencecolumn):
+                        UnitTest.append(columns[int(args.sentencecolumn)-1].strip())
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
