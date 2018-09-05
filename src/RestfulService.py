@@ -145,6 +145,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 if len(dag.nodes) == 0:
                     dag.transform(nodes)
                 output_text = utils.OutputStringTokens_onelinerSA(dag)
+            elif Type == 'sentimenttext':
+                output_type = 'text/plain;'
+                if len(dag.nodes) == 0:
+                    dag.transform(nodes)
+                output_text = utils.OutputStringTokens_onelinerSAtext(dag)
             elif Type =='QA':
                 output_type = 'text/plain;'
                 if len(dag.nodes) == 0:

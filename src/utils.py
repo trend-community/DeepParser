@@ -3,6 +3,7 @@ import sqlite3, traceback
 from functools import lru_cache
 import operator
 import FeatureOntology
+from utils import *
 
 ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
@@ -342,17 +343,7 @@ def OutputStringTokensKeyword_oneliner(dag):
 
 
 def OutputStringTokens_onelinerSA(dag):
-    # print("Dag:{}".format(dag))
     output = ""
-    # TargetFeature = "Target"
-    # ProFeature = "Pro"
-    # ConFeature = "Con"
-    # PosEmo = "PosEmo"
-    # NegEmo = "NegEmo"
-    # Neutral = "Neutral"
-    # Needed = "Needed"
-    # Key = "Key"
-    # Value = "Value"
     sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
     nodes = dag.nodes
     nodelist = list(nodes.values())
@@ -366,6 +357,7 @@ def OutputStringTokens_onelinerSA(dag):
             first = False
         else:
             output += ", "
+        nodeid = node.ID
         text = node.text
         sentence += text
         features = sorted(
@@ -375,11 +367,46 @@ def OutputStringTokens_onelinerSA(dag):
             if f in sentimentfeature:
                 filteredfeatures.append(f)
         jsondict = dict()
+        jsondict["nodeID"] = nodeid
         jsondict["text"] = text
         jsondict["features"] = filteredfeatures
 
         output += json.dumps(jsondict, default=lambda o: o.__dict__,
                    sort_keys=True, ensure_ascii=False)
+    havekeyvalue = False
+    tempoutput = '],  "edges": ['
+    for edge in sorted(dag.graph, key=operator.itemgetter(2, 0, 1)):
+        nID = edge[2]
+        n = nodes.get(nID)
+        feats = sorted(
+            [FeatureOntology.GetFeatureName(f) for f in n.features if f not in FeatureOntology.NotShowList])
+        if "Key" in feats:
+            valueID = edge[0]
+            valuenode = nodes.get(valueID)
+            valuefeats = sorted(
+                [FeatureOntology.GetFeatureName(f) for f in valuenode.features if f not in FeatureOntology.NotShowList])
+            if "Value" in valuefeats:
+                if not havekeyvalue:
+                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[2], edge[0])
+                    havekeyvalue = True
+                else:
+                    tempoutput += ", "
+                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[2], edge[0])
+        elif "Value" in feats:
+            keyID = edge[0]
+            keynode = nodes.get(keyID)
+            keyfeats = sorted(
+                [FeatureOntology.GetFeatureName(f) for f in keynode.features if f not in FeatureOntology.NotShowList])
+            if "Key" in keyfeats:
+                if not havekeyvalue:
+                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[0], edge[2])
+                    havekeyvalue = True
+                else:
+                    tempoutput += ", "
+                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[0], edge[2])
+
+    if not tempoutput == '],  "edges": [':
+        output += tempoutput
     output += '],  "sentence": "' + sentence + '"}'
 
     # for node in nodelist:
@@ -409,6 +436,52 @@ def OutputStringTokens_onelinerSA(dag):
     #         output = output[:-1]
     #     if not output.endswith(" "):
     #         output += " "
+    return output
+
+
+def OutputStringTokens_onelinerSAtext(dag):
+    # print("Dag:{}".format(dag))
+    output = ""
+    TargetFeature = "Target"
+    ProFeature = "Pro"
+    ConFeature = "Con"
+    PosEmo = "PosEmo"
+    NegEmo = "NegEmo"
+    Neutral = "Neutral"
+    Needed = "Needed"
+    Key = "Key"
+    Value = "Value"
+    nodes = dag.nodes
+    nodelist = list(nodes.values())
+    nodelist.sort(key=lambda x:x.StartOffset)
+
+    for node in nodelist:
+        output += node.text + "/"
+        featureString = node.GetFeatures()
+        featureSet = featureString.split(",")
+        # print (featureSet)
+        if TargetFeature in featureSet:
+            output +=  TargetFeature + " "
+        if ProFeature in featureSet:
+            output +=  ProFeature+ " "
+        if ConFeature in featureSet:
+            output += ConFeature+ " "
+        if PosEmo in featureSet:
+            output +=  PosEmo+ " "
+        if NegEmo in featureSet:
+            output +=  NegEmo+ " "
+        if Needed in featureSet:
+            output += Needed+ " "
+        if Neutral in featureSet:
+            output += Neutral+ " "
+        if Key in featureSet:
+            output +=  Key+ " "
+        if Value in featureSet:
+            output +=  Value + " "
+        if output.endswith("/"):
+            output = output[:-1]
+        if not output.endswith(" "):
+            output += " "
     return output
 
 def OutputStringTokens_onelinerQA(dag):
