@@ -380,7 +380,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         rule = rulegroup.RuleList[rule_sequence]
         if 0 < rule.LengthLimit < len(Dag.nodes):
             rule_sequence += 1
-            logging.warning("This sentence is too long to try this rule:()".format(rule.Origin))
+            logging.debug("This sentence is too long to try this rule:{}".format(rule.Origin))
             continue
 
         # if logging.root.isEnabledFor(logging.DEBUG):

@@ -16,7 +16,6 @@ def ProcessFile(FileName):
     with open(FileName, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
-                if line.strip():
                     if int(args.sentencecolumn) == 0:
                         UnitTest.append(line.strip())
                     else:

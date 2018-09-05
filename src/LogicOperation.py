@@ -40,11 +40,10 @@ def CheckPrefix(word):
     return prefix+word, matchtype
 
 
-#Usage:  [] <[A] [B] [^2.S=x]>  //usage ^2 to point to the 2nd token of the rule.
+#Usage:  [] <[A] [B] [^2.S=x]>  //usage ^2 to point to the 3rd token of the rule.
 def GetNumberPointer(Pointer):
-    logging.info("GetNumberPointer")
     PointerContent = Pointer[1:]
-    if len(PointerContent) == 0:
+    if len(PointerContent) == 0:    #[^.O]  when nothing is given, then it is the first.
         Pos = 0
     else:
         try:
@@ -67,7 +66,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
 
         RulePointerPos = GetNumberPointer(Pointer)
         if RulePointerPos <= 0:
-            logging.info("LocateStrTokenOfPointer: Searching along the rule tokens to find pointer {}".format(Pointer))
+            #logging.info("LocateStrTokenOfPointer: Searching along the rule tokens to find pointer {}".format(Pointer))
             RulePointerPos = RulePosition
             #logging.debug("Testing pointer" + Pointer)
             while RulePointerPos >= 0:

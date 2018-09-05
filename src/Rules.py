@@ -1528,11 +1528,11 @@ def _RemoveExcessiveParenthesis(token):
         return False
     if StartParenthesesPosition > 0 and \
             token.word[StartParenthesesPosition - 1] == "'" and token.word[StartParenthesesPosition + 1] == "'":
-        logging.info("_RemoveExcessiveParenthesis: Quoted. Ignore this parentheses:" + str(token))
+        logging.debug("_RemoveExcessiveParenthesis: Quoted. Ignore this parentheses:" + str(token))
         return False
     if StartParenthesesPosition > 0 and \
             token.word[StartParenthesesPosition - 1].isalpha():
-        logging.info("_RemoveExcessiveParenthesis: Alpha before it. Ignore this parentheses:" + str(token))
+        logging.debug("_RemoveExcessiveParenthesis: Alpha before it. Ignore this parentheses:" + str(token))
         return False
     EndParenthesesPosition = StartParenthesesPosition + 1 + SearchPair(token.word[StartParenthesesPosition + 1:], "()")
     if EndParenthesesPosition == StartParenthesesPosition:  # not paired
