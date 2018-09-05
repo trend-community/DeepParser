@@ -34,10 +34,14 @@ class Intent(object):
 
 
 def ExtractTags(intent, graphjson):
-    g = jsonpickle.decode(graphjson)
-    for node in g["nodes"]:
-        if 'pnorm' in node:
-            intent.tags.add(node["pnorm"])
+    try:
+        g = jsonpickle.decode(graphjson)
+        for node in g["nodes"]:
+            if 'pnorm' in node:
+                intent.tags.add(node["pnorm"])
+    except json.decoder.JSONDecodeError :
+        logging.error("Failed to decode for this question: {}".format(intent.Q))
+
 
 
 intentdict = {}
