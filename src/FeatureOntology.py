@@ -5,7 +5,9 @@
 #       python Rules.py > features.txt
 
 import  sys, requests, operator
-from utils import *
+import logging, re, os
+import utils
+#from utils import *
 
 
 _FeatureSet = set()
@@ -58,7 +60,7 @@ class OntologyNode:
         return output
 
     def SetAncestors(self, line):
-        code, comment = SeparateComment(line)
+        code, comment = utils.SeparateComment(line)
         self.Comment = comment
         code = self.ProcessAliasInFeatureFile(code)
         if len(code) == 0:
@@ -142,7 +144,7 @@ def LoadFeatureSet(featureOncologyLocation):
 
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            code, __ = SeparateComment(line)
+            code, __ = utils.SeparateComment(line)
             features = [x.strip() for x in re.split("[,;=\s]", code) if x]
 
             for feature in features:
@@ -201,11 +203,11 @@ def OutputFeatureOntologyGraph():
         OutputFeatureOntologyGraph.nodeset = set()
 
         OutputFeatureOntologyGraph.graph = set()
-        PipeLineLocation = ParserConfig.get("main", "Pipelinefile")
+        PipeLineLocation = utils.ParserConfig.get("main", "Pipelinefile")
         XLocation = os.path.dirname(PipeLineLocation)
         with open(XLocation + '/../Y/feature.txt', encoding="utf-8") as dictionary:
             for line in dictionary:
-                code, comment = SeparateComment(line)
+                code, comment = utils.SeparateComment(line)
                 if "," not in code:
                     continue    #no edge. ignore
 
@@ -255,7 +257,7 @@ def LoadFeatureOntology(featureOncologyLocation):
                 _FeatureOntologyDict[node.openWordID] = node
 
     LoadAppendixList(featureOncologyLocation)
-    InitGlobalFeatureID()
+    utils.InitGlobalFeatureID()
 
 
 def LoadAppendixList(featureOncologyLocation):
@@ -263,7 +265,7 @@ def LoadAppendixList(featureOncologyLocation):
     NoShowFileLocation = os.path.join(Folder, "featureNotShow.txt")
     with open(NoShowFileLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            word, _ = SeparateComment(line)
+            word, _ = utils.SeparateComment(line)
             if not word:
                 continue
             NotShowList.append(GetFeatureID(word))
@@ -271,7 +273,7 @@ def LoadAppendixList(featureOncologyLocation):
     NoCopyFileLocation = os.path.join(Folder, "featureNotCopy.Parser.txt")
     with open(NoCopyFileLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
-            word, _ = SeparateComment(line)
+            word, _ = utils.SeparateComment(line)
             if not word:
                 continue
             NotCopyList.append(GetFeatureID(word))
@@ -287,7 +289,7 @@ def SearchFeatureOntology(featureID):
 def GetFeatureID(feature):
     if not _FeatureList:    #for some clients that the _FeatureList is not load locally.
         try:
-            GetFeatureIDURL = ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureID/"
+            GetFeatureIDURL = utils.ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
         except IOError:
             return -1
@@ -298,7 +300,7 @@ def GetFeatureID(feature):
     if feature in _FeatureDict:
         return _FeatureDict[feature]
 
-    if ChinesePattern.search(feature):
+    if utils.ChinesePattern.search(feature):
         return -1   # Chinese is not a feature.
 
     logging.warning("GetFeatureID: Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
@@ -309,7 +311,7 @@ def GetFeatureID(feature):
 def GetFeatureName(featureID):
     if len(_FeatureList) == 0:
         logging.warning("GettingFeatureName using URL")
-        GetFeatureNameURL = ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureName/"
+        GetFeatureNameURL = utils.ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureName/"
         try:
             ret = requests.get(GetFeatureNameURL + str(featureID))
             ret.raise_for_status()
@@ -333,7 +335,7 @@ def ProcessBarTags(featureset):
     for f in featureset:
         if f not in BarTagIDSet:
             continue
-        taglevel, _ = IndexIn2DArray(f, BarTagIDs)
+        taglevel, _ = utils.IndexIn2DArray(f, BarTagIDs)
         if taglevel > -1:
             if MaxBarTagLevel < taglevel:
                 MaxBarTagLevel = taglevel
@@ -341,7 +343,7 @@ def ProcessBarTags(featureset):
     featureset_copy = featureset.copy()
     if MaxBarTagLevel > -1:
         for f in featureset_copy:
-            taglevel, _ = IndexIn2DArray(f, BarTagIDs)
+            taglevel, _ = utils.IndexIn2DArray(f, BarTagIDs)
             if taglevel > -1:
                 if taglevel != MaxBarTagLevel:
                     featureset.remove(f)

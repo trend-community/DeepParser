@@ -342,15 +342,11 @@ def OutputStringTokensKeyword_oneliner(dag):
 
     return output[:-1]
 
-class SentimentNode(object):
-    key = ""
-    keyfeatures = []
-    value = ""
-    valuefeatures = []
 
-def OutputStringTokens_onelinerSA(dag):
+def OutputStringTokens_onelinerSA_ben(dag):
     sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
     sentimentfeatureids = [FeatureOntology.GetFeatureID(f) for f in sentimentfeature]
+    sentimentfeatureidset = set(sentimentfeatureids)
     nodes = dag.nodes
     nodelist = list(nodes.values())
     nodelist.sort(key=lambda x:x.StartOffset)
@@ -360,25 +356,49 @@ def OutputStringTokens_onelinerSA(dag):
     for edge in sorted(dag.graph, key=operator.itemgetter(2, 0, 1)):
         node1 = nodes.get(edge[2])
         node2 = nodes.get(edge[0])
+        sentimentnode = {}
 
         if FeatureID_Key in node1.features and FeatureID_Value in node2.features:
-            sentimentnode = SentimentNode()
-            sentimentnode.key = node1.text
-            sentimentnode.keyfeatures = [FeatureOntology.GetFeatureName(f) for f in node1.features if f in sentimentfeatureids]
-            sentimentnode.value = node2.text
-            sentimentnode.valuefeatures = [FeatureOntology.GetFeatureName(f) for f in node2.features if f in sentimentfeatureids]
+            sentimentnode["keyid"] = node1.ID
+            sentimentnode["key"] = node1.text
+            sentimentnode["keyfeatures"] = [FeatureOntology.GetFeatureName(f) for f in node1.features if f in sentimentfeatureids]
+            sentimentnode["valuyeid"] = node2.ID
+            sentimentnode["value"] = node2.text
+            sentimentnode["valuefeatures"] = [FeatureOntology.GetFeatureName(f) for f in node2.features if f in sentimentfeatureids]
+            outputdict.append(sentimentnode)
 
         if FeatureID_Key in node2.features and FeatureID_Value in node1.features:
-            sentimentnode = SentimentNode()
-            sentimentnode.key = node2.text
-            sentimentnode.keyfeatures = [FeatureOntology.GetFeatureName(f) for f in node2.features if f in sentimentfeatureids]
-            sentimentnode.value = node1.text
-            sentimentnode.valuefeatures = [FeatureOntology.GetFeatureName(f) for f in node1.features if f in sentimentfeatureids]
+            sentimentnode["keyid"] = node2.ID
+            sentimentnode["key"] = node2.text
+            sentimentnode["keyfeatures"] = [FeatureOntology.GetFeatureName(f) for f in node2.features if f in sentimentfeatureids]
+            sentimentnode["valueid"] = node1.ID
+            sentimentnode["value"] = node1.text
+            sentimentnode["valuefeatures"] = [FeatureOntology.GetFeatureName(f) for f in node1.features if f in sentimentfeatureids]
             outputdict.append(sentimentnode)
+
+    for nid in dag.nodes:
+        node = dag.nodes[nid]
+        if sentimentfeatureidset.intersection(node.features):
+            Existed = False
+            for snode in outputdict:
+                if snode["keyid"] == node.ID or snode["valueid"] == node.ID:
+                    Existed = True
+                    break
+            if not Existed:
+                sentimentnode = {}
+                sentimentnode["keyid"] = -1
+                sentimentnode["key"] = "_Emo"
+                sentimentnode["keyfeatures"] = []
+                sentimentnode["valueid"] = node.ID
+                sentimentnode["value"] = node.text
+                sentimentnode["valuefeatures"] = [FeatureOntology.GetFeatureName(f) for f in node.features if
+                                                  f in sentimentfeatureids]
+                outputdict.append(sentimentnode)
+
     return json.dumps(outputdict, default=lambda o: o.__dict__,
                          sort_keys=True, ensure_ascii=False)
 
-def OutputStringTokens_onelinerSA2(dag):
+def OutputStringTokens_onelinerSA(dag):
     output = ""
     sentimentfeature = ["Target","Pro","Con","PosEmo","NegEmo","Neutral","Needed","Key","Value"]
     nodes = dag.nodes

@@ -2,7 +2,7 @@
 # this is to run in a server (such as 172.22.290.95) which has direct network access to other servers.
 # and the current user already setup key-based (passwordless) connection with root of other servers.
 
-rootdirectory_local=~/git
+rootdirectory_local=../../
 
 set -x
 

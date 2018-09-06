@@ -3,18 +3,18 @@
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
 import string
-import utils
+
 from FeatureOntology import *
 # (O.O)
 import ProcessSentence, Tokenization
 
 _LexiconDict = {}
 _LexiconLookupSet = dict()
-_LexiconLookupSet[LexiconLookupSource.Exclude] = set()
-_LexiconLookupSet[LexiconLookupSource.defLex] = set()
-_LexiconLookupSet[LexiconLookupSource.External] = set()
-_LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
-_LexiconLookupSet[LexiconLookupSource.Compound] = set()
+_LexiconLookupSet[utils.LexiconLookupSource.Exclude] = set()
+_LexiconLookupSet[utils.LexiconLookupSource.defLex] = set()
+_LexiconLookupSet[utils.LexiconLookupSource.External] = set()
+_LexiconLookupSet[utils.LexiconLookupSource.oQcQ] = set()
+_LexiconLookupSet[utils.LexiconLookupSource.Compound] = set()
 _LexiconSegmentDict = {}  # from main2017. used for segmentation only. there is no feature.
 _LexiconSegmentSlashDict = {}  #
 _LexiconCuobieziDict = {}
@@ -183,7 +183,7 @@ def LoadMainLexicon(lexiconLocation):
     global _LexiconSegmentDict
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
-            word, _ = SeparateComment(line)
+            word, _ = utils.SeparateComment(line)
             if word:
                 word = word.replace("/", "").lower()
                 _LexiconSegmentDict[word] = 0.9
@@ -195,7 +195,7 @@ def LoadSegmentSlash(lexiconLocation):
     global _LexiconSegmentDict
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
-            word, _ = SeparateComment(line)
+            word, _ = utils.SeparateComment(line)
             if word:
                 combinedword = word.replace("/", "")
                 _LexiconSegmentSlashDict[combinedword] = word
@@ -219,24 +219,24 @@ def LoadSegmentLexicon():
 
     if _LexiconDict:
         for word in _LexiconDict:
-            if word not in _LexiconLookupSet[LexiconLookupSource.defLex] \
-                    and word not in _LexiconLookupSet[LexiconLookupSource.External]\
-                    and word not in _LexiconLookupSet[LexiconLookupSource.Compound]:
+            if word not in _LexiconLookupSet[utils.LexiconLookupSource.defLex] \
+                    and word not in _LexiconLookupSet[utils.LexiconLookupSource.External]\
+                    and word not in _LexiconLookupSet[utils.LexiconLookupSource.Compound]:
                 _LexiconSegmentDict[word] = 1.2
     else:
         lexiconLocation = XLocation + 'AllLexicon.txt'
         with open(lexiconLocation, encoding='utf-8') as dictionary:
             for line in dictionary:
-                code, _ = SeparateComment(line)
+                code, _ = utils.SeparateComment(line)
                 if code:
                     word = code.split(":")[0]
                     word = word.replace("/", "")
                     _LexiconSegmentDict[word] = 1.2
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
-    for word in _LexiconLookupSet[LexiconLookupSource.External]:
+    for word in _LexiconLookupSet[utils.LexiconLookupSource.External]:
         _LexiconSegmentDict[word] = 1
-    #    _LexiconSegmentDict.update(_LexiconLookupSet[LexiconLookupSource.External])
+    #    _LexiconSegmentDict.update(_LexiconLookupSet[utils.LexiconLookupSource.External])
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
     # lexiconLocation = XLocation + 'SegmentSlash.txt'
@@ -250,7 +250,7 @@ def LoadSegmentLexicon():
     #                 _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
 
     for word in list(_LexiconSegmentDict):
-        if IsAlphaLetter(word):
+        if utils.IsAlphaLetter(word):
             del _LexiconSegmentDict[word] #remove English words. They should be separate natually by space or numbers or punc.
             continue
         if word.lower() != word:
@@ -267,7 +267,7 @@ def LoadSegmentLexicon():
 def LoadExtraReference(lexiconLocation, thedict):
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
-            code, _ = SeparateComment(line)
+            code, _ = utils.SeparateComment(line)
             if "：" in code:
                 code = code.replace("：", ":")
             if code and ":" in code:
@@ -330,7 +330,7 @@ def LoadCompositeKG(lexiconLocation):
     CompositeKGSetADict.clear()
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
-            code, _ = SeparateComment(line)
+            code, _ = utils.SeparateComment(line)
             if code and "=" in code:
                 try:
                     KGKey, Sets = code.split("=")
@@ -356,7 +356,7 @@ def LoadCompositeKG(lexiconLocation):
     # for key in CompositeKGSetADict:
     #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
 
-def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
+def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.Exclude):
     global _LexiconDict, _LexiconLookupSet, _StemDict
     global _CommentDict
     if lexiconLocation.startswith("."):
@@ -373,7 +373,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                 else:
                     _CommentDict.update({oldWord: line})
                 continue
-            code, comment = SeparateComment(line)
+            code, comment = utils.SeparateComment(line)
 
             code = code.replace("\:", utils.IMPOSSIBLESTRING)
 
@@ -404,7 +404,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
 
             # for stemming feature
             newStemNode = False
-            if lookupSource == LexiconLookupSource.stemming:
+            if lookupSource == utils.LexiconLookupSource.stemming:
                 node = SearchStem(word)
                 if not node:
                     newStemNode = True
@@ -435,7 +435,7 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
                                 logging.warning("This punctuate is not listed:" + node.norm + " for: " + node.text)
                     elif re.match('^/.*/$', feature):
                         node.atom = feature.strip('/')
-                    elif ChinesePattern.search(feature):  # Chinese
+                    elif utils.ChinesePattern.search(feature):  # Chinese
                         node.norm = feature
                     else:
                         featureID = GetFeatureID(feature)
@@ -453,12 +453,12 @@ def LoadLexicon(lexiconLocation, lookupSource=LexiconLookupSource.Exclude):
             if newStemNode:
                 _StemDict.update({node.text: node})
             if newNode:
-                if lookupSource != LexiconLookupSource.oQcQ:
+                if lookupSource != utils.LexiconLookupSource.oQcQ:
                     _LexiconDict.update({node.text: node})
-                if lookupSource != LexiconLookupSource.Exclude:
+                if lookupSource != utils.LexiconLookupSource.Exclude:
                     _LexiconLookupSet[lookupSource].add(node.text)
                 elif "_" in node.text:
-                    _LexiconLookupSet[LexiconLookupSource.defLex].add(node.text)
+                    _LexiconLookupSet[utils.LexiconLookupSource.defLex].add(node.text)
 
             oldWord = blocks[0]
 
@@ -497,7 +497,7 @@ def SearchLexicon(word, SearchType='flexible'):
     if SearchType != 'flexible':
         return None
 
-    if ChinesePattern.search(word):
+    if utils.ChinesePattern.search(word):
         return None
 
     word = word.lower()
@@ -550,11 +550,11 @@ def ApplyLexiconToNodes(NodeList):
 def ResetAllLexicons():
     _LexiconDict.clear()
     _LexiconLookupSet.clear()
-    _LexiconLookupSet[LexiconLookupSource.Exclude] = set()
-    _LexiconLookupSet[LexiconLookupSource.defLex] = set()
-    _LexiconLookupSet[LexiconLookupSource.External] = set()
-    _LexiconLookupSet[LexiconLookupSource.oQcQ] = set()
-    _LexiconLookupSet[LexiconLookupSource.Compound] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.Exclude] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.defLex] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.External] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.oQcQ] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.Compound] = set()
     _LexiconSegmentDict.clear() # from main2017. used for segmentation only. there is no feature.
     _LexiconSegmentSlashDict.clear() #
     _LexiconCuobieziDict.clear()
@@ -618,71 +618,71 @@ def ApplyWordLengthFeature(node):
     elif wordlength == 1:
         if node.text.isnumeric():
             node.ApplyFeature(D1ID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L1ID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C1ID)
     elif wordlength == 2:
         if node.text.isnumeric():
             node.ApplyFeature(D2ID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L2ID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C2ID)
     elif wordlength == 3:
         if node.text.isnumeric():
             node.ApplyFeature(D3ID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L3ID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C3ID)
     elif wordlength == 4:
         if node.text.isnumeric():
             node.ApplyFeature(D4ID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L4ID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C4ID)
     elif wordlength == 5:
         if node.text.isnumeric():
             node.ApplyFeature(D4plusID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L4plusID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C5ID)
             node.ApplyFeature(C4plusID)
     elif wordlength == 6:
         if node.text.isnumeric():
             node.ApplyFeature(D4plusID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L4plusID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C6ID)
             node.ApplyFeature(C4plusID)
     elif wordlength == 7:
         if node.text.isnumeric():
             node.ApplyFeature(D4plusID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L4plusID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C7ID)
             node.ApplyFeature(C4plusID)
             node.ApplyFeature(C6plusID)
     elif wordlength == 8:
         if node.text.isnumeric():
             node.ApplyFeature(D4plusID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L4plusID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C8ID)
             node.ApplyFeature(C4plusID)
             node.ApplyFeature(C6plusID)
     else:
         if node.text.isnumeric():
             node.ApplyFeature(D4plusID)
-        if IsAlphaLetter(node.text):
+        if utils.IsAlphaLetter(node.text):
             node.ApplyFeature(L4plusID)
-        if not IsAscii(node.text):
+        if not utils.IsAscii(node.text):
             node.ApplyFeature(C4plusID)
             node.ApplyFeature(C6plusID)
             node.ApplyFeature(C8plusID)
@@ -775,7 +775,7 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
                         break
 
     if lex is None:
-        if IsCD(node.text):
+        if utils.IsCD(node.text):
             node.ApplyFeature(utils.FeatureID_CD)
         elif node.text in string.punctuation:
             node.ApplyFeature(utils.FeatureID_SYM)
@@ -872,7 +872,7 @@ def ApplyCases(node):
 # Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens, lookupsource):
-    if lookupsource == LexiconLookupSource.oQcQ:
+    if lookupsource == utils.LexiconLookupSource.oQcQ:
         return _LexiconoQoCLookup(strTokens)
 
     sentenceLenth = strTokens.size
@@ -893,7 +893,7 @@ def LexiconLookup(strTokens, lookupsource):
             pj = pj.next
             if not pj.text:
                 continue
-            if lookupsource == LexiconLookupSource.Compound:
+            if lookupsource == utils.LexiconLookupSource.Compound:
                 combinedText += "_"
             combinedText += pj.text.lower()
             combinedCount += 1
@@ -907,12 +907,12 @@ def LexiconLookup(strTokens, lookupsource):
     while i > 0:
         if bestScore[i] > 1:
             compound = False
-            if lookupsource == LexiconLookupSource.Compound:
+            if lookupsource == utils.LexiconLookupSource.Compound:
                 compound = True
             NewNode = strTokens.combine(i - bestScore[i] + 1, bestScore[i], -1, compound)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
-            if lookupsource == LexiconLookupSource.External:
+            if lookupsource == utils.LexiconLookupSource.External:
                 NewNode.ApplyFeature(utils.FeatureID_External)
             NewNode.sons = []  # For lookup, eliminate the sons
             #logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
@@ -920,8 +920,8 @@ def LexiconLookup(strTokens, lookupsource):
             i = i - 1
 
 
-def _LexiconoQoCLookup(strTokens, lookupsource=LexiconLookupSource.oQcQ):
-    if lookupsource!=LexiconLookupSource.oQcQ:
+def _LexiconoQoCLookup(strTokens, lookupsource=utils.LexiconLookupSource.oQcQ):
+    if lookupsource!=utils.LexiconLookupSource.oQcQ:
         logging.error("This is only for oQcQ source.")
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth + 1)]
@@ -977,14 +977,14 @@ if __name__ == "__main__":
     # LoadLexicon('../../fsa/X/locX.txt')
     # LoadLexicon('../../fsa/X/perX.txt')
     # LoadLexicon('../../fsa/X/defPlus.txt')
-    LoadLexicon('../../fsa/X/defPlus.txt', lookupSource=LexiconLookupSource.defLex)
-    # LoadLexicon('../../fsa/X/perX.txt', lookupSource=LexiconLookupSource.External)
+    LoadLexicon('../../fsa/X/defPlus.txt', lookupSource=utils.LexiconLookupSource.defLex)
+    # LoadLexicon('../../fsa/X/perX.txt', lookupSource=utils.LexiconLookupSource.External)
     #
     #
     # para = dir_path + '/../../fsa/X/perX.txt'
     # LoadLexicon(para)
     # para = dir_path + '/../../fsa/X/defLexX.txt'
-    # LoadLexicon(para, lookupSource=LexiconLookupSource.defLex)
+    # LoadLexicon(para, lookupSource=utils.LexiconLookupSource.defLex)
     # if "/fsa/X" in para:
     #     Englishflag = False
     # else:

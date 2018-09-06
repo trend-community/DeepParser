@@ -110,8 +110,9 @@ def ProcessFile(FileName):
         logging.info("Done of retrieving data")
 
 
-    PromotionTags=["能否优惠", "近期活动咨询", "促销形式", "评价晒单返券和赠品", "赠品领取更换"]
-    for Tag in PromotionTags:
+    PromotionTags=[["能否优惠"], ["近期活动咨询"], ["促销形式"], ["评价晒单返券和赠品"], ["赠品领取更换"],
+                   ["能否优惠", "近期活动咨询"], ["促销形式", "评价晒单返券和赠品", "赠品领取更换"]]
+    for Tags in PromotionTags:
         TP = 0
         FP = 0
         FN = 0
@@ -121,17 +122,17 @@ def ProcessFile(FileName):
         F = 0
         for Q in intentdict:
             intent = intentdict[Q]
-            if intent.Intent == Tag:
-                if Tag in intent.tags:
+            if intent.Intent in Tags:
+                if set(Tags).intersection(intent.tags):
                     TP += 1
                 else:
                     FN += 1
             else:
-                if Tag in intent.tags:
+                if set(Tags).intersection(intent.tags):
                     FP += 1
                 else:
                     TN += 1
-        print("Tag {}: TP={}, FN={}, FP={}, TN={}".format(Tag, TP, FN, FP, TN))
+        print("Tag {}: TP={}, FN={}, FP={}, TN={}".format(Tags, TP, FN, FP, TN))
         if (TP+FP) > 0:
             P = TP/(TP+FP)
         if (TP+FN) >0:
@@ -142,14 +143,14 @@ def ProcessFile(FileName):
         print("\tFN cases:")
         for Q in intentdict:
             intent = intentdict[Q]
-            if intent.Intent == Tag:
-                if Tag not in intent.tags:
+            if intent.Intent in Tags:
+                if not set(Tags).intersection(intent.tags):
                     print("\t\t{}-{}\t{}".format(intent.Intent, intent.tags, intent.Q))
         print("\tFP cases:")
         for Q in intentdict:
             intent = intentdict[Q]
-            if intent.Intent != Tag:
-                if Tag  in intent.tags:
+            if intent.Intent not in Tags:
+                if set(Tags).intersection(intent.tags):
                     print("\t\t{}-{}\t{}".format(intent.Intent, intent.tags, intent.Q))
 
     print("Sentence that has more than 1 tags:")
