@@ -71,7 +71,7 @@ def LoadLex(lexiconLocation, _CommentDict, _LexiconDict):
                 else:
                     _CommentDict.update({oldWord: line})
                 continue
-            code, comment = SeparateComment(line)
+            code, comment = utils.SeparateComment(line)
 
             if "ChinesePunctuate" in lexiconLocation and "：" in code:
                 code = code.replace("：", ":")
