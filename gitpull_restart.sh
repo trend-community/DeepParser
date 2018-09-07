@@ -7,13 +7,13 @@ then
 fi
 
 # 1.stop  parser service
-echo '-------------------'
-echo 'stop parser'
+#echo '-------------------'
+#echo 'stop parser'
 # mac centos
-pid=`ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'}`
-if [[ ! -z $pid ]];then
-    kill -9 $pid
-fi
+#pid=`ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'}`
+#if [[ ! -z $pid ]];then
+#    kill -9 $pid
+#fi
 #ubuntu
 #kill -9 $(ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'})
 
@@ -30,12 +30,12 @@ total=10
 for ((i=5001; i<5001+$total; i++)); do
 	echo stop $i
 	# mac centos
-	pid=`ps aux | grep ' RestfulService.py' |  grep $i | grep -v grep | awk {'print $2'}`
+	pid=`ps aux | grep ' RestfulService.py' |  grep $i$ | grep -v grep | awk {'print $2'}`
 	if [[ ! -z $pid ]];then
 	    kill -9 $pid
 	fi
 	#ubuntu
-	kill -9 $(ps aux | grep ' RestfulService.py' | grep $i | grep -v grep | awk {'print $2'})
+	kill -9 $(ps aux | grep ' RestfulService.py' | grep $i$ | grep -v grep | awk {'print $2'})
 
     echo starting $i of $total ...
 
