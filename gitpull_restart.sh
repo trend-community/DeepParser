@@ -15,7 +15,7 @@ if [[ ! -z $pid ]];then
     kill -9 $pid
 fi
 #ubuntu
-kill -9 $(ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'})
+#kill -9 $(ps aux | grep ' RestfulService.py' | grep -v grep | awk {'print $2'})
 
 
 # 2.restart  parser
@@ -28,7 +28,17 @@ mv *.log log_$newlog
 cd ../src
 total=10
 for ((i=5001; i<5001+$total; i++)); do
+	echo stop $i
+	# mac centos
+	pid=`ps aux | grep ' RestfulService.py' |  grep $i | grep -v grep | awk {'print $2'}`
+	if [[ ! -z $pid ]];then
+	    kill -9 $pid
+	fi
+	#ubuntu
+	kill -9 $(ps aux | grep ' RestfulService.py' | grep $i | grep -v grep | awk {'print $2'})
+
     echo starting $i of $total ...
+
     nohup python3 RestfulService.py --port $i >> ../log/restfulservice.$i.log 2>&1 &
     sleep 100s
 done
