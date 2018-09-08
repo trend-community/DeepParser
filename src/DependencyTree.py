@@ -5,7 +5,7 @@
 import jsonpickle, copy, logging, re
 import operator
 import utils    #for the Feature_...
-#from utils import *
+from utils import *
 import Lexicon
 import FeatureOntology
 import LogicOperation
@@ -621,8 +621,6 @@ class DependencyTree:
                     logging.error("DAG.TokenMatch(): Not yet implemented for multiple dots: {}".format(ruletoken.SubtreePointer))
 
             if ( Negation and Satisfied) or ( not Negation and not Satisfied) :
-                if logging.root.isEnabledFor(logging.DEBUG):
-                    logging.debug("Dag.TokenMatch(): False because Negation is {} and nodeID is {}".format(Negation, start_nodeID))
                 return False
         return True
 
@@ -721,7 +719,6 @@ if __name__ == "__main__":
 
     # import ProcessSentence
     # ProcessSentence.LoadCommon()
-    # #
     #
     # Sentence = "买了香奈儿眉笔"
     #
@@ -730,8 +727,8 @@ if __name__ == "__main__":
     # nodelist_str = jsonpickle.dumps(nodelist)
     # print(nodelist_str)
 
-    nodelist_str = """ {"py/object": "Tokenization.SentenceLinkedList", "get_cache": {"0": {"py/object": "Tokenization.SentenceNode", "EndOffset": 0, "Head0Text": "", "ID": 123, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [108, 107, 28, 1438]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 126, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "，你看看", "features": {"py/set": [2565, 198, 1193, 106, 105, 108, 1434, 571, 28, 29, 1438]}, "next": null, "norm": ",你看看", "pnorm": "", "prev": {"py/id": 1}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 1, "Head0Text": "", "ID": 120, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "H", "atom": "，", "features": {"py/set": [1, 2565, 198, 1193, 108, 44, 45, 566, 28, 93, 1438]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 125, "StartOffset": 1, "TempPointer": "", "UpperRelationship": "X", "atom": "你看看", "features": {"py/set": [1280, 1, 2568, 206, 207, 208, 404, 1434, 2459, 28, 29, 1827, 2406, 1831, 1193, 106, 2414, 2096, 2424, 570, 316, 317, 1278, 2431]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 124, "StartOffset": 4, "TempPointer": "", "UpperRelationship": "H", "atom": "", "features": {"py/set": [93, 2565, 198, 105, 106, 28, 29, 1434]}, "next": null, "norm": "", "pnorm": "", "prev": {"py/id": 5}, "sons": [], "text": "", "visited": false}, "norm": "你看看", "pnorm": "", "prev": {"py/id": 4}, "sons": [], "text": "你看看", "visited": false}, "norm": ",", "pnorm": "", "prev": {"py/id": 1}, "sons": [], "text": "，", "visited": false}, {"py/id": 5}, {"py/id": 6}], "text": "，你看看", "visited": false}, "norm": "", "pnorm": "", "prev": null, "sons": [], "text": "", "visited": false}, "1": {"py/id": 2}}, "head": {"py/id": 1}, "isPureAscii": false, "norms": [{"py/tuple": ["", ""]}, {"py/tuple": [",你看看", ""]}], "size": 2, "tail": {"py/id": 2}}
-            """
+    nodelist_str = """ {"py/object": "Tokenization.SentenceLinkedList", "get_cache": {"0": {"py/object": "Tokenization.SentenceNode", "EndOffset": 0, "Head0Text": "", "ID": 47, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "", "features": {"py/set": [108, 107, 28, 1438]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 50, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "", "atom": "，你看看", "features": {"py/set": [2565, 198, 1193, 106, 105, 108, 1434, 571, 28, 29, 1438]}, "next": null, "norm": ",你看看", "pnorm": "", "prev": {"py/id": 1}, "sons": [{"py/object": "Tokenization.SentenceNode", "EndOffset": 1, "Head0Text": "", "ID": 44, "StartOffset": 0, "TempPointer": "", "UpperRelationship": "X", "atom": "，", "features": {"py/set": [1, 2565, 198, 1193, 108, 44, 45, 566, 28, 1438]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 49, "StartOffset": 1, "TempPointer": "", "UpperRelationship": "X", "atom": "你看看", "features": {"py/set": [1280, 1, 2568, 206, 207, 208, 404, 1434, 2459, 28, 29, 1827, 2406, 1831, 1193, 106, 2414, 2096, 2424, 570, 316, 317, 1278, 2431]}, "next": {"py/object": "Tokenization.SentenceNode", "EndOffset": 4, "Head0Text": "", "ID": 48, "StartOffset": 4, "TempPointer": "", "UpperRelationship": "H", "atom": "", "features": {"py/set": [93, 2565, 198, 105, 106, 28, 29, 1434]}, "next": null, "norm": "", "pnorm": "", "prev": {"py/id": 5}, "sons": [], "text": "", "visited": false}, "norm": "你看看", "pnorm": "", "prev": {"py/id": 4}, "sons": [], "text": "你看看", "visited": false}, "norm": ",", "pnorm": "", "prev": {"py/id": 1}, "sons": [], "text": "，", "visited": false}, {"py/id": 5}, {"py/id": 6}], "text": "，你看看", "visited": false}, "norm": "", "pnorm": "", "prev": null, "sons": [], "text": "", "visited": false}, "1": {"py/id": 2}}, "head": {"py/id": 1}, "isPureAscii": false, "norms": [{"py/tuple": ["", ""]}, {"py/tuple": [",你看看", ""]}], "size": 2, "tail": {"py/id": 2}}
+"""
     newnodelist = jsonpickle.loads(nodelist_str)
     print(newnodelist.root().CleanOutput().toJSON())
 

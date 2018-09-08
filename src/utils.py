@@ -1,10 +1,9 @@
-import logging, re, json, jsonpickle, configparser, os
+import logging, re, json, jsonpickle, configparser, os, sys
 import sqlite3
 from functools import lru_cache
 import operator
 import FeatureOntology
 
-from utils import *
 
 ParserConfig = configparser.ConfigParser()
 ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
@@ -784,10 +783,12 @@ def format_parenthesis(text, count):
     text += right_p # add right parenthesis
     return text.replace(IMPOSSIBLESTRINGLP, left_p) # replace left symbol
 
+
 def has_overlap(listA, listB):
     if len([i for i in listA if i in listB]) > 0:
         return True
     return False
+
 
 class JsonClass(object):
     def toJSON(self):
@@ -795,3 +796,8 @@ class JsonClass(object):
                          sort_keys=True, ensure_ascii=False)
     def fromJSON(self):
         pass
+
+
+def print_var(global_dict):
+    for (k,v) in global_dict.items():
+        logging.warning("Type:{} \tSize:{}\tSample:{}".format(k, sys.getsizeof(v), str(v)[:50]))

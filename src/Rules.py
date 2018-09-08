@@ -1,4 +1,4 @@
-import copy
+import copy, traceback
 from datetime import datetime
 from utils import *
 import utils
@@ -474,54 +474,65 @@ class Rule:
             c.StartOffset = tokencount_1
             c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 + 1 + tokencount_8
             # check the part before first inner chuck.
-            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
-                                                                     HeadOffset=0)
+            VirtualTokenNum1 = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                                     HeadOffset=0, EnableLowCHead=False)
             # check the part after first inner chuck, before second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+            VirtualTokenNum2 = self.CheckTokensForHeadAndVirtualToken(c,
                                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
                                                                       Length=tokencount_4,
-                                                                      HeadOffset=tokencount_2 + 1)
+                                                                      HeadOffset=tokencount_2 + 1, EnableLowCHead=False)
             # check the part after second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+            VirtualTokenNum3 = self.CheckTokensForHeadAndVirtualToken(c,
                                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
                                                                       Length=tokencount_6,
-                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1)
+                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1, EnableLowCHead=False)
             # check the part after third inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+            VirtualTokenNum4 = self.CheckTokensForHeadAndVirtualToken(c,
                                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + tokencount_6 + tokencount_7,
                                                                       Length=tokencount_8,
-                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 + 1)
+                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 + 1, EnableLowCHead=False)
 
             if c.HeadOffset == -1:
-                c.HeadConfidence = 1
-                if "^^." in c2.Action and "^^." in c3.Action:
-                    c.HeadOffset = tokencount_2
-                    c1.Action += " H ^.H "  # add Head for the chunk.
-                elif "^^." in c1.Action and "^^." in c3.Action:
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                    c2.Action += " H ^.H "  # add Head for the chunk.
-                elif "^^." in c1.Action and "^^." in c2.Action:
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
-                    c3.Action += " H ^.H "  # add Head for the chunk.
-                elif "++" in c1.Action:
-                    c.HeadOffset = tokencount_2
-                    c1.Action += " H ^.H "  # add Head for the chunk.
-                elif "++" in c2.Action:
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                    c2.Action += " H ^.H "  # add Head for the chunk.
-                elif "++" in c3.Action:
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
-                    c3.Action += " H ^.H "  # add Head for the chunk.
-                else:
-                    if not self.RuleName.startswith("CleanRule"):
-                        logging.error(" There is no ++ for any tokens.  Can't determined the head!")
-                        logging.warning(" Set to the last chunk")
-                        logging.error(str(self))
-                    # logging.error(jsonpickle.dumps(c))
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
+                if "^^." not in c3.Action:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 - VirtualTokenNum1 - VirtualTokenNum2 - VirtualTokenNum3
                     c3.Action += " H ^.H "  # add Head for the chunk.
 
-            c.StringChunkLength = c.Length - VirtualTokenNum
+                if "^^." not in c2.Action:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 - VirtualTokenNum1 - VirtualTokenNum2
+                    c2.Action += " H ^.H "  # add Head for the chunk.
+                elif "^^." not in c1.Action:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 - VirtualTokenNum1
+                    c1.Action += " H ^.H "  # add Head for the chunk.
+
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c,
+                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5 + tokencount_6 + tokencount_7,
+                                                       Length=tokencount_8,
+                                                       HeadOffset=tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6 + 1,
+                                                       EnableLowCHead=False)
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c,
+                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
+                                                       Length=tokencount_6,
+                                                       HeadOffset=tokencount_2 + 1 + tokencount_4 + 1,
+                                                       EnableLowCHead=True)
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c,
+                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                       Length=tokencount_4,
+                                                       HeadOffset=tokencount_2 + 1, EnableLowCHead=True)
+
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                  HeadOffset=0, EnableLowCHead=True)
+
+            if c.HeadOffset == -1:
+                logging.error("Failed to find Head in this rule:{}".format(self))
+
+            c.StringChunkLength = c.Length - VirtualTokenNum1 - VirtualTokenNum2 - VirtualTokenNum3 - VirtualTokenNum4
 
             self.Chunks.append(c)
         elif Chunk2_2:  # "(.*)<(.*)<(.+)>(.*)<(.+)>(.*)>(.*)"
@@ -542,44 +553,48 @@ class Rule:
             c.Length = tokencount_2 + 1 + tokencount_4 + 1 + tokencount_6
 
             # check the part before first inner chuck.
-            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
-                                                                     HeadOffset=0)
+            VirtualTokenNum1 = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                                     HeadOffset=0, EnableLowCHead=False)
 
             # check the part after first inner chuck, before second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+            VirtualTokenNum2 = self.CheckTokensForHeadAndVirtualToken(c,
                                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
-                                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1)
+                                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1, EnableLowCHead=False)
 
             # check the part after second inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
+            VirtualTokenNum3 = self.CheckTokensForHeadAndVirtualToken(c,
                                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
                                                                       Length=tokencount_6,
-                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1)
+                                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1, EnableLowCHead=False)
 
             if c.HeadOffset == -1:
-                c.HeadConfidence = 1
-                if "^^." in c2.Action:  # or "++" in c1.Action:
-                    c.HeadOffset = tokencount_2
+                if "^^." not in c2.Action:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 + 1 + tokencount_4 - VirtualTokenNum1 - VirtualTokenNum2
+                    c2.Action += " H ^.H "  # add Head for the chunk.
+                elif "^^." not in c1.Action:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2 - VirtualTokenNum1
                     c1.Action += " H ^.H "  # add Head for the chunk.
-                elif "^^." in c1.Action:  # or "++" in c2.Action:
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                    c2.Action += " H ^.H "  # add Head for the chunk.
-                elif "++" in c1.Action:
-                    c.HeadOffset = tokencount_2
-                    c1.Action += " H ^.H "  # add Head for the chunk.
-                elif "++" in c2.Action:
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                    c2.Action += " H ^.H "  # add Head for the chunk.
-                else:
-                    if not self.RuleName.startswith("CleanRule"):
-                        logging.warning(" There is no ^^. or ++ for both tokens.  Can't determined the head!")
-                        logging.warning(" Set to the second chunk")
-                        logging.warning(str(self))
-                        # logging.warning(jsonpickle.dumps(c))
-                    c.HeadOffset = tokencount_2 + 1 + tokencount_4
-                    c2.Action += " H ^.H "  # add Head for the chunk.
 
-            c.StringChunkLength = c.Length - VirtualTokenNum
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c,
+                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3 + tokencount_4 + tokencount_5,
+                                                      Length=tokencount_6,
+                                                      HeadOffset=tokencount_2 + 1 + tokencount_4 + 1,
+                                                      EnableLowCHead=True)
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c,
+                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1, EnableLowCHead=True)
+            if c.HeadOffset == -1:
+                self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset,
+                                                     Length=tokencount_2, HeadOffset=0, EnableLowCHead=True)
+
+            if c.HeadOffset == -1:
+                logging.error("Failed to find Head in this rule:{}".format(self))
+
+            c.StringChunkLength = c.Length - VirtualTokenNum1 - VirtualTokenNum2 - VirtualTokenNum3
 
             self.Chunks.append(c)
         elif Chunk2_1:  # "(.*)<(.*)<(.+)>(.*)>(.*)"
@@ -596,28 +611,37 @@ class Rule:
             c.Length = tokencount_2 + 1 + tokencount_4
 
             # check the part before inner chuck.
-            VirtualTokenNum = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
-                                                                     HeadOffset=0)
+            VirtualTokenNum1 = self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                     HeadOffset=0, EnableLowCHead=False)
 
             # check the part after inner chuck.
-            VirtualTokenNum += self.CheckTokensForHeadAndVirtualToken(c,
-                                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
-                                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1)
+            VirtualTokenNum2 = self.CheckTokensForHeadAndVirtualToken(c,
+                                                      StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                      Length=tokencount_4, HeadOffset=tokencount_2 + 1, EnableLowCHead=False)
 
             if c.HeadOffset == -1:
-                c.HeadConfidence = 1
-                c.HeadOffset = tokencount_2
-                if "^^." not in c1.Action and "++" not in c1.Action:
-                    c.HeadConfidence = 0
-                    if not self.RuleName.startswith("CleanRule"):
-                        if logging.root.isEnabledFor(logging.DEBUG):
-                            logging.debug(
-                                "Can't find head in scattered tokens. must be the inner chuck, but it does not have ^^ or ++.")
-                            logging.debug(str(self))
-                            logging.debug(jsonpickle.dumps(c))
-                c1.Action += " H ^.H "  # add Head for the head token.
+                if "^^." not in c1.Action:
+                    c.HeadConfidence = 3
+                    c.HeadOffset = tokencount_2-VirtualTokenNum1
+                    c1.Action += " H ^.H "  # add Head for the head token.
 
-            c.StringChunkLength = c.Length - VirtualTokenNum
+
+            if c.HeadOffset == -1:
+                # check the part after inner chuck.
+                self.CheckTokensForHeadAndVirtualToken(c,
+                                                       StartOffset=c.StartOffset + tokencount_2 + tokencount_3,
+                                                       Length=tokencount_4, HeadOffset=tokencount_2 + 1,
+                                                       EnableLowCHead=True)
+
+            if c.HeadOffset == -1:
+                # check the part before inner chuck.
+                self.CheckTokensForHeadAndVirtualToken(c, StartOffset=c.StartOffset, Length=tokencount_2,
+                                                        HeadOffset=0, EnableLowCHead=True)
+
+            if c.HeadOffset == -1:
+                logging.error("Failed to find Head in this rule:{}".format(self))
+
+            c.StringChunkLength = c.Length - VirtualTokenNum1 - VirtualTokenNum2
             self.Chunks.append(c)
 
         elif Chunk1_3:  # "(.*)<(.+)>(.*)<(.+)>(.*)<(.+)>(.*)"
@@ -689,8 +713,18 @@ class Rule:
 
                 self.Chunks.pop(self.Chunks.index(chunk))
 
-    def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset=0):
 
+    def CheckTokensForVirtualToken(self, StartOffset, Length):
+        VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
+        for i in range(Length):
+            token = self.Tokens[StartOffset + i]
+            if token.SubtreePointer:
+                VirtualTokenNum += 1
+
+        return VirtualTokenNum
+
+
+    def CheckTokensForHeadAndVirtualToken(self, c, StartOffset, Length, HeadOffset=0, EnableLowCHead = True):
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
         if Length == 0:
             return 0
@@ -710,21 +744,29 @@ class Rule:
                     c.HeadConfidence = 4
                     c.HeadOffset = HeadOffset + i
                     c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif "^^." in token.action or "++" in token.action:
-                if c.HeadConfidence < 4:
-                    c.HeadConfidence = 3
-                    c.HeadOffset = HeadOffset + i
-                    c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif not token.action:
-                if c.HeadConfidence < 3:
-                    c.HeadConfidence = 2
-                    c.HeadOffset = HeadOffset + i
-                    c.Action, token.action = self.ExtractParentSonActions(token.action)
-            elif "^.H" in token.action or "^." not in token.action:
-                if c.HeadConfidence < 3:
-                    c.HeadConfidence = 1
-                    c.HeadOffset = HeadOffset + i
-                    c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+        if c.HeadConfidence < 3 and EnableLowCHead:
+            for i in range(Length):
+                token = self.Tokens[StartOffset + i]
+                if token.SubtreePointer:
+                    continue  # VirtualToken will NOT be head.
+
+                elif "^^." in token.action or "++" in token.action:
+                    if c.HeadConfidence < 4:
+                        c.HeadConfidence = 3
+                        c.HeadOffset = HeadOffset + i
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+
+                elif not token.action:
+                    if c.HeadConfidence < 3:
+                        c.HeadConfidence = 2
+                        c.HeadOffset = HeadOffset + i
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
+                elif "^.H" in token.action or "^." not in token.action:
+                    if c.HeadConfidence < 3:
+                        c.HeadConfidence = 1
+                        c.HeadOffset = HeadOffset + i
+                        c.Action, token.action = self.ExtractParentSonActions(token.action)
 
         if c.HeadConfidence > 0:
             self.Tokens[StartOffset + c.HeadOffset - HeadOffset].action += " H ^.H "  # add Head for the head token.
@@ -982,7 +1024,7 @@ def ExpandQuotedOrs(text, sign):
 
 def ExpandNotOrToAndNot(text):
     if "(" in text:
-        logging.info("Not a task in this ExpandNotOrTo function for expanding " + text)
+        logging.debug("Not a task in this ExpandNotOrTo function for expanding " + text)
         return text
     if "!" in text:
         logging.error("there should be no ! in text:" + text)

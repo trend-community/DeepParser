@@ -1,7 +1,6 @@
-import argparse
+import argparse, os, logging
 import ProcessSentence
-from utils import *
-
+import utils
 import singleton
 me = singleton.SingleInstance()
 
@@ -24,7 +23,7 @@ def ProcessFile(FileName):
                             UnitTest.append(columns[int(args.sentencecolumn) - 1].strip())
 
     for TestSentence in UnitTest:
-        nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence)
+        nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence, schema=args.schema)
         if not nodes:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
@@ -33,18 +32,18 @@ def ProcessFile(FileName):
         if args.type == 'json':
             output = nodes.root().CleanOutput().toJSON()
         elif  args.type == 'simple':
-            output = OutputStringTokens_oneliner(nodes, NoFeature=True)
+            output = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
         elif args.type == "sentiment":
             if len(dag.nodes) == 0:
                 dag.transform(nodes)
             # print (OutputStringTokens_onelinerSA(dag))
-            output = OutputStringTokens_onelinerSA(dag)
+            output = utils.OutputStringTokens_onelinerSA(dag)
         elif args.type == 'graph':
             output = dag.digraph(args.type)
         elif args.type == 'simplegraph':
             output = dag.digraph(args.type)
         else:   #simpleEx
-            output = OutputStringTokens_oneliner_ex(nodes)
+            output = utils.OutputStringTokens_oneliner_ex(nodes)
 
         if args.keeporigin:
             output += '\t' + TestSentence
@@ -64,6 +63,8 @@ if __name__ == "__main__":
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
                         default=0)
     parser.add_argument("--delimiter", default="\t")
+    parser.add_argument("--schema", help="full(default)/segonly/shallowcomplete",
+                        default="full")
     args = parser.parse_args()
 
     DebugMode = False
@@ -82,8 +83,9 @@ if __name__ == "__main__":
     ProcessSentence.LoadCommon()
 
 
-    ProcessFile(args.inputfile)
-    # pass
+    # ProcessFile(args.inputfile)
+
+
     import cProfile, pstats
     cProfile.run("ProcessFile(args.inputfile)", 'restats')
     p = pstats.Stats('restats')
