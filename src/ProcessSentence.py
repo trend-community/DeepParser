@@ -373,11 +373,16 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     rule_sequence = 0
     counter = 0
     RuleLength = len(rulegroup.RuleList)
+    AppliedPriority = 2
     while rule_sequence < RuleLength:
         counter += 1
         if counter > 10 * RuleLength:
             break
         rule = rulegroup.RuleList[rule_sequence]
+        ##Priority:default is 0. (Top) is 1. (Bottom) is -1.
+        if AppliedPriority in (0, 1) and rule.Priority < AppliedPriority:
+            break   #stop running if a higher priority rule is applied. Sept 9, 2018.
+
         if 0 < rule.LengthLimit < len(Dag.nodes):
             rule_sequence += 1
             logging.debug("This sentence is too long to try this rule:{}".format(rule.Origin))
@@ -388,6 +393,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName):
         node = DAGMatch(Dag,  rule, 0)
         if node:
             if rule.WindowLimit == 0 or rule.WindowLimit >= Dag.MaxDistanceOfMatchNodes( rule):
+                AppliedPriority = rule.Priority
                 if logging.root.isEnabledFor(logging.DEBUG):
                     logging.debug("DAG: Winning rule! {}".format(rule))
                 try:
