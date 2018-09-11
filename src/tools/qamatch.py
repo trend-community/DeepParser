@@ -41,7 +41,7 @@ if __name__ == "__main__":
         for line in RuleFile:
             sentence_type= line.rsplit("|", 1)
             if len(sentence_type) != 2:
-                logging.warning("This line has more | :{}".format(line))
+                logging.warning("This line has no | :{}".format(line))
                 continue
             sentence = sentence_type[0].strip()
             qatype = sentence_type[1].strip()   #qa=1: answer from sales; qa=0:question.
@@ -59,7 +59,10 @@ if __name__ == "__main__":
 
                     cur.execute(InsertQuery, [Q, A])
 
-    #outfile.close()
+    #outfile.close
+    cur.close()
+    DBCon.commit()
+    DBCon.close()
 
     for answerid in QList:
         with open("{}.txt".format(answerid), "w",  encoding="utf-8") as writer:
