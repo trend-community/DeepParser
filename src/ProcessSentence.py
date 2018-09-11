@@ -10,7 +10,7 @@ import utils
 from datetime import datetime
 counterMatch = 0
 
-WinningRuleDict = {}
+#WinningRuleDict = {}
 invalidchar_pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
 PipeLine = []
 
@@ -36,22 +36,22 @@ def MarkWinningTokens(strtokens, rule, StartPosition):
     return result.strip()
 
 
-def StoreWinningRule(strtokens, rule, StartPosition):
-    global WinningRuleDict
+# def StoreWinningRule(strtokens, rule, StartPosition):
+#     global WinningRuleDict
+#
+#     if rule.ID in WinningRuleDict:
+#         _, hits = WinningRuleDict[rule.ID]
+#         hits.append(MarkWinningTokens(strtokens, rule, StartPosition))
+#     else:
+#         WinningRuleDict[rule.ID] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
 
-    if rule.ID in WinningRuleDict:
-        _, hits = WinningRuleDict[rule.ID]
-        hits.append(MarkWinningTokens(strtokens, rule, StartPosition))
-    else:
-        WinningRuleDict[rule.ID] = [rule, [MarkWinningTokens(strtokens, rule, StartPosition)]]
 
-
-def OutputWinningRules():
-    output = ""
-    for rule, hits in sorted(WinningRuleDict.values()):
-        output += '[Rule file]' + rule.FileName +  '[' + str(rule.ID) + '] [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
-
-    return output
+# def OutputWinningRules():
+#     output = ""
+#     for rule, hits in sorted(WinningRuleDict.values()):
+#         output += '[Rule file]' + rule.FileName +  '[' + str(rule.ID) + '] [Rule origin]' + rule.Origin + ' [Hits_num]' + str(len(hits)) + ' [Hits]\t' + str(hits) + "\n"
+#
+#     return output
 
 
 #Every token in ruleTokens must match each token in strTokens, from StartPosition.
@@ -105,7 +105,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
         raise(RuntimeError("wrong string to apply rule?"))
-    StoreWinningRule(strtokens, rule, StartPosition)
+    #StoreWinningRule(strtokens, rule, StartPosition)
 
     if rule.TokenLength == 0:
         logging.error("Lenth = 0, error! Need to revisit the parsing process")
@@ -613,7 +613,7 @@ def LexicalAnalyze(Sentence, schema = "full"):
         if Sentence in Cache.SentenceCache:
             Dag = DependencyTree.DependencyTree()
             Dag.transform(Cache.SentenceCache[Sentence])
-            return Cache.SentenceCache[Sentence], Dag, None  # assume ResultWinningRules is none.
+            #return Cache.SentenceCache[Sentence], Dag, None  # assume ResultWinningRules is none.
 
         ResultNodeList, Dag, ResultWinningRules = LexicalAnalyzeTask(Sentence, schema)
 
@@ -868,9 +868,22 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
+    print_var(locals(), "0.log")
     nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
+
+    print_var(locals(), "1.log")
+    for x in range(1000):
+        nodelist, dag, winningrules = LexicalAnalyze("2千呼万唤不出来")
+        print("dag: {}".format(dag))
+        print("winning rules: {}".format(winningrules))
+
+    print_var(locals(), "2.log")
+    nodelist, dag, winningrules = LexicalAnalyze("3千呼万唤不出来")
+    print("dag: {}".format(dag))
+    print("winning rules: {}".format(winningrules))
+    print_var(locals(), "3.log")
 
     # nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     # print("dag: {}".format(dag))

@@ -798,6 +798,7 @@ class JsonClass(object):
         pass
 
 
-def print_var(global_dict):
-    for (k,v) in global_dict.items():
-        logging.warning("Type:{} \tSize:{}\tSample:{}".format(k, sys.getsizeof(v), str(v)[:50]))
+def print_var(global_dict, filename):
+    with open(filename, 'w') as writer:
+        for (k,v) in global_dict.items():
+            writer.write("Type:{} \tSize:{}\tSample:{}\n".format(k, sys.getsizeof(v), str(v)[:50]))

@@ -41,9 +41,11 @@ def PostProcess():
     cur.execute("create table useridlist as select userid, count(*) as work_count from qalog group by userid;")
     cur.execute("update qalog set QA = 1 where userid in (select userid from useridlist where work_count>1000);")
     cur.execute("update qalog set QA = 0 where QA is null;")
+
     cur.execute("create table sentences (sentenceid integer primary key autoincrement, sentence TEXT, QA INT, sentence_count INT, type int);")
     cur.execute(" insert into sentences(sentence, QA, sentence_count, type) select sentence, QA, count(*) as sentence_count, 3 from qalog group by sentence, QA having count(*)>10;")
     cur.execute(" create index sentences_s on sentences(sentence, QA, type);")
+
     cur.execute(" update sentences set type=1 where sentence like '【%';")
     cur.execute(" update sentences set type=2 where sentence like '（%';")
     # cur.execute("""delete from sentences where sentenceid in (select qalog.sentenceid from sentences as qalog
