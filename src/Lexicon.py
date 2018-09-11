@@ -385,7 +385,10 @@ def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.Exclude)
             if "::" in code :
                 code = code.replace("::",":")
 
-            blocks = [x.strip() for x in re.split(":", code) if x]
+            if code.count(':') > 1:
+                blocks = code.rsplit(':',1)
+            else:
+                blocks = [x.strip() for x in re.split(":", code) if x]
             if not blocks:
                 continue
             newNode = False
