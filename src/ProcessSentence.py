@@ -837,7 +837,7 @@ def LoadCommon():
 if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.WARNING, format='%(asctime)s [%(levelname)s] %(message)s')
     LoadCommon()
 
     #target = "卡雷尼奥.杜兰（Carrenoduran） 淡水珍珠项链近正圆强光微暇女送妈妈8-9mm47cm XL06122"
@@ -868,22 +868,22 @@ if __name__ == "__main__":
     # print(m_nodes.root().CleanOutput_FeatureLeave().toJSON())
     # print(m_nodes.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
 
-    print_var(locals(), "0.log")
+    print_var(globals(), "0.log")
     nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
-    print_var(locals(), "1.log")
+    print_var(globals(), "1.log")
     for x in range(1000):
         nodelist, dag, winningrules = LexicalAnalyze("2千呼万唤不出来")
         print("dag: {}".format(dag))
         print("winning rules: {}".format(winningrules))
 
-    print_var(locals(), "2.log")
+    print_var(globals(), "2.log")
     nodelist, dag, winningrules = LexicalAnalyze("3千呼万唤不出来")
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
-    print_var(locals(), "3.log")
+    print_var(globals(), "3.log")
 
     # nodelist, dag, winningrules = LexicalAnalyze("千呼万唤不出来")
     # print("dag: {}".format(dag))

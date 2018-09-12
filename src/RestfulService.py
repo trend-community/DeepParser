@@ -279,7 +279,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         if ReloadTask.lower() == "/rule":
             logging.info("Start loading rules...")
             #Rules.ResetAllRules()
-            ProcessSentence.WinningRuleDict.clear()
+            #ProcessSentence.WinningRuleDict.clear()
             GlobalmacroLocation = os.path.join(XLocation, "../Y/GlobalMacro.txt")
             Rules.LoadGlobalMacro(GlobalmacroLocation)
 
