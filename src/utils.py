@@ -47,8 +47,7 @@ FeatureID_NC = None
 FeatureID_VC = None
 
 FeatureID_comPair = None
-whQlist = ["whNQ", "orQ", "whatQ", "whenQ", "whereQ", "whoQ", "whBrand", "whProd", "whyQ", "howQ", "howDoQ",
-           "whatHappenQ", "whatForQ", "howAQ"]
+whQlist = ["whNQ", "whatQ", "whenQ", "whereQ", "whoQ", "whBrand", "whProd", "whyQ", "howQ", "howDoQ","whatHappenQ", "whatForQ", "howAQ","orQ"]
 
 
 IMPOSSIBLESTRING = "@#$%@impossible@"
@@ -576,7 +575,9 @@ def OutputStringTokens_onelinerQA(dag):
 def nodehaswhqfeature(node):
 
     for whqfeature in whQlist:
-        if whqfeature in node.GetFeatures():
+        featuresstring = node.GetFeatures()
+        features = featuresstring.split(",")
+        if whqfeature in features:
             return True, whqfeature
     return False, None
 
