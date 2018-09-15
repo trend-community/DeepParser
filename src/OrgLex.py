@@ -1,6 +1,7 @@
 import shutil
 from Lexicon import *
 from shutil import copyfile
+import utils
 
 _CommentDictZidian = {}
 _LexiconDictZidian = {}
@@ -59,7 +60,7 @@ def OrganizeLex(lexiconLocation, _CommentDict, _LexiconDict):
                 else:
                     _CommentDict.update({oldWord: line})
                 continue
-            code, comment = SeparateComment(line)
+            code, comment = utils.SeparateComment(line)
             blocks = [x.strip() for x in re.split(":", code) if x]
             if len(blocks) != 2:
                 continue
@@ -275,7 +276,7 @@ def AlignMain():
                 if line.startswith("//"):
                     file.write(line)
                     continue
-                code, comment = SeparateComment(line)
+                code, comment = utils.SeparateComment(line)
                 if (code not in _LexiconDictB.keys()) and (code not in _LexiconDictP.keys()) and (code not in _LexiconDictL.keys()) and (code not in _LexiconDictI.keys()) and (code not in _LexiconDictI4.keys()) and (code not in _LexiconDictLexX.keys()) and (code not in _LexiconDictDefX.keys()):
                     file.write(code + " " + comment + "\n")
     shutil.move(newloc,paraMain)
