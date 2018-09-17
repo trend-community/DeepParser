@@ -3,6 +3,7 @@
 # and the current user already setup key-based (passwordless) connection with root of other servers.
 
 rootdirectory_local=../../
+temp_local=/tmp/git$USER
 
 set -x
 
@@ -10,17 +11,17 @@ set -x
 if [ $# -eq 0 ]
 then
 
-    mkdir /tmp/git
-    rm -rf /tmp/git/*
-    cp -r $rootdirectory_local/parser /tmp/git
-    cp -r $rootdirectory_local/fsa   /tmp/git
+    mkdir $temp_local
+    rm -rf $temp_local/*
+    cp -r $rootdirectory_local/parser $temp_local
+    cp -r $rootdirectory_local/fsa   $temp_local
 
-    cd /tmp/git/fsa
+    cd $temp_local/fsa
     rm -rf .git
     rm -rf test
     rm -rf extra
 
-    cd /tmp/git/parser
+    cd $temp_local/parser
     rm -rf .git
     rm -rf compiled/*
     rm -rf log/*
@@ -32,10 +33,10 @@ then
 
     find . -name "*.pyc" -delete
 
-    cd /tmp/git
+    cd $temp_local
     tar --no-same-owner -zcvf parser_release.tar.gz *
 
-    echo /tmp/git/parser_release.tar.gz is created.
+    echo $temp_local/parser_release.tar.gz is created.
 fi
 #read -p "Press [Enter] key to start deploying. Press Ctrl-C to stop."
 echo "Option 1: Deploying to SV office ( should have total=10 in the gitpull_restart.sh "
@@ -52,11 +53,11 @@ do
 rootdirectory_remote=/nlpengine
 nluuser=team
 
-scp /tmp/git/parser_release.tar.gz team@10.153.152.253:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz team@10.153.152.253:$rootdirectory_remote
 ssh team@10.153.152.253 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh "
-scp /tmp/git/parser_release.tar.gz team@10.153.152.254:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz team@10.153.152.254:$rootdirectory_remote
 ssh team@10.153.152.254 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh "
-scp /tmp/git/parser_release.tar.gz team@10.153.152.251:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz team@10.153.152.251:$rootdirectory_remote
 ssh team@10.153.152.251 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh "
 break;;
 
@@ -65,19 +66,19 @@ break;;
 rootdirectory_remote=/export/App/git
 nluuser=nlu
 
-scp /tmp/git/parser_release.tar.gz root@172.18.188.2:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.188.2:$rootdirectory_remote
 ssh root@172.18.188.2 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 
-scp /tmp/git/parser_release.tar.gz root@172.18.189.72:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.189.72:$rootdirectory_remote
 ssh root@172.18.189.72 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 
-scp /tmp/git/parser_release.tar.gz root@172.18.189.136:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.189.136:$rootdirectory_remote
 ssh root@172.18.189.136 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 
-scp /tmp/git/parser_release.tar.gz root@172.18.189.137:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.189.137:$rootdirectory_remote
 ssh root@172.18.189.137 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 
-scp /tmp/git/parser_release.tar.gz root@172.18.189.138:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.189.138:$rootdirectory_remote
 ssh root@172.18.189.138 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 break;;
 
@@ -85,10 +86,10 @@ break;;
         echo "Option 3: Deploying to Production neo4j servers"
 rootdirectory_remote=/export/App/git
 nluuser=nlu
-scp /tmp/git/parser_release.tar.gz root@172.18.189.135:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.189.135:$rootdirectory_remote
 ssh root@172.18.189.135 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 
-scp /tmp/git/parser_release.tar.gz root@172.18.189.202:$rootdirectory_remote
+scp $temp_local/parser_release.tar.gz root@172.18.189.202:$rootdirectory_remote
 ssh root@172.18.189.202 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 break;;
         "Quit")

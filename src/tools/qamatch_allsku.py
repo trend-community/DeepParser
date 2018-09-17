@@ -7,12 +7,12 @@ def PreProcess():
 
 
 #the input file is created as:
-# sqlite3 -separator $'\t' midea.db "select sku, sentence, QA from qalog order by sessionid, timestamp" >midea.qalog.txt
+# sqlite3 -separator $'\t' midea.db "select sku, sentence, QA from qalog join order by sessionid, timestamp" >midea.qalog.txt
 
 if __name__ == "__main__":
 
     if len(sys.argv) != 3 :
-        print("Usage: python3 qamatch.py [inputfile] [outputdb]  ")
+        print("Usage: python3 qamatch_allsku.py [inputfile] [outputdb]  ")
         exit(1)
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -37,7 +37,7 @@ if __name__ == "__main__":
             qatype = sentence_type[2].strip()   #qa=1: answer from sales; qa=0:question.
             if qatype == '0':
                     Q = sentence
-            elif qatype == '1':
+            elif qatype == '1' and Q :
                 A = sentence
                 #cur.execute(InsertQuery, [Q, A])
                 #outfile.write("{}\t{}\n".format(Q, A))
