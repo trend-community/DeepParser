@@ -70,7 +70,7 @@ if __name__ == "__main__":
         rows = csv.reader(csvfile)
         for row in rows:
             rowcounter += 1
-            if row[5] == "1" and row[6] != "1" and row[7] != "1":
+            if row[5] == "1" and row[6] != "1" and row[7] != "1" and row[4] != 1:
                 writecounter += 1
                 cat1, cat2 = CatMapping(row[1])
                 csvwriter.writerow({'question': row[2], 'tag': row[1], 'brand': brand, 'cid3': cid3,
