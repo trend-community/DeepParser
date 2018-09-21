@@ -49,9 +49,9 @@ def CatMapping(keyword):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 5:
         print(
-            "Usage: python3 qa_converttoimport.py  [inputfile] [outputfile]")
+            "Usage: python3 qa_converttoimport.py  [inputfile] [outputfile] [cid3] [brand]")
         exit(1)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
     csvwriter.writeheader()
 
-    brand = "美的"
-    cid3 = "空调"
+    brand = sys.argv[4] #美的
+    cid3 = sys.argv[3]  #空调/冰箱
     rowcounter = 0
     writecounter = 0
 

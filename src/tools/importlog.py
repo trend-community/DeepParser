@@ -39,28 +39,29 @@ def PostProcess():
     cur.execute("create index index_userid on qalog(userid);")
     cur.execute("create index index_sentence on qalog(sentence);")
     cur.execute("create table useridlist as select userid, count(*) as work_count from qalog group by userid;")
-    cur.execute("update qalog set QA = 1 where userid in (select userid from useridlist where work_count>1000);")
-    cur.execute("update qalog set QA = 0 where QA is null;")
-
-    cur.execute("create table sentences (sentenceid integer primary key autoincrement, sentence TEXT, QA INT, sentence_count INT, type int);")
-    cur.execute(" insert into sentences(sentence, QA, sentence_count, type) select sentence, QA, count(*) as sentence_count, 3 from qalog group by sentence, QA having count(*)>10;")
-    cur.execute(" create index sentences_s on sentences(sentence, QA, type);")
-
-    cur.execute(" update sentences set type=1 where sentence like '【%';")
-    cur.execute(" update sentences set type=2 where sentence like '（%';")
-    # cur.execute("""delete from sentences where sentenceid in (select qalog.sentenceid from sentences as qalog
-    #                 join sentences on length(qalog.sentence)>length(sentences.sentence) and length(qalog.sentence)<length(sentences.sentence)+5
-    #                     and instr(qalog.sentence, sentences.sentence)>0
-    #                     and sentences.type in (1, 2) );""")
-
-    cur.execute("create table closesentence(qalogid int, qasentence text, sentenceid int, type int);")
-    # cur.execute("""insert into closesentence (qalogid, qasentence, sentenceid, type)
-    #                 select qalog.id, qalog.sentence, sentences.sentenceid, 0 from qalog
-    #                 join sentences on qalog.sentence=sentences.sentence and sentences.type in (1, 2);
-    # """)
-    cur.execute(""" insert into closesentence (qalogid, qasentence, sentenceid, type) 
-                    select qalog.id, qalog.sentence, sentences.sentenceid, sentences.type from qalog 
-                    join sentences on qalog.sentence = sentences.sentence and qalog.QA<>0 and sentences.QA<>0  ;""")
+    # TODO: use userlist of the sales representatives to set QA=1.
+    # cur.execute("update qalog set QA = 0 ")
+    # cur.execute("update qalog set QA = 1 where userid in (select userid from useridlist where work_count>500);")
+    #
+    # cur.execute("create table sentences (sentenceid integer primary key autoincrement, sentence TEXT, QA INT, sentence_count INT, type int);")
+    # cur.execute(" insert into sentences(sentence, QA, sentence_count, type) select sentence, QA, count(*) as sentence_count, 3 from qalog group by sentence, QA having count(*)>10;")
+    # cur.execute(" create unique index sentences_s on sentences(sentence, QA, type);")
+    #
+    # cur.execute(" update sentences set type=1 where sentence like '【%';")
+    # cur.execute(" update sentences set type=2 where sentence like '（%';")
+    # # cur.execute("""delete from sentences where sentenceid in (select qalog.sentenceid from sentences as qalog
+    # #                 join sentences on length(qalog.sentence)>length(sentences.sentence) and length(qalog.sentence)<length(sentences.sentence)+5
+    # #                     and instr(qalog.sentence, sentences.sentence)>0
+    # #                     and sentences.type in (1, 2) );""")
+    #
+    # cur.execute("create table closesentence(qalogid int, qasentence text, sentenceid int, type int);")
+    # # cur.execute("""insert into closesentence (qalogid, qasentence, sentenceid, type)
+    # #                 select qalog.id, qalog.sentence, sentences.sentenceid, 0 from qalog
+    # #                 join sentences on qalog.sentence=sentences.sentence and sentences.type in (1, 2);
+    # # """)
+    # cur.execute(""" insert into closesentence (qalogid, qasentence, sentenceid, type)
+    #                 select qalog.id, qalog.sentence, sentences.sentenceid, sentences.type from qalog
+    #                 join sentences on qalog.sentence = sentences.sentence and qalog.QA<>0 and sentences.QA<>0  ;""")
 
 
 if __name__ == "__main__":
