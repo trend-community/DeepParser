@@ -217,7 +217,7 @@ class SentenceLinkedList:
             HeadNode = self.get(start+headindex)
             NewNode.features.update([f for f in HeadNode.features if f not in FeatureOntology.NotCopyList] )
             if utils.FeatureID_0 in HeadNode.features:
-                NewNode.Head0Text = HeadNode.text
+                NewNode.Head0Text = HeadNode.norm
             else:
                 NewNode.Head0Text = HeadNode.Head0Text
 
