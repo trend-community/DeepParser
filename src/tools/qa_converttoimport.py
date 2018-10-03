@@ -43,17 +43,17 @@ def CatMapping(keyword, cid_3):
                 ("政策问题", "库存状态"):
                     ["没货"],
 
-                ("其他问题", "推荐"):
-                    ["推荐"],
-
-                ("其他问题", "新款"):
-                    ["新款"],
+                # ("其他问题", "推荐"):
+                #     ["推荐"],
+                #
+                # ("其他问题", "新款"):
+                #     ["新款"],
 
                 ("其他问题", "上市时间"):
                     ["上市"],
 
                 ("其他问题", "其他"):
-                    ["Other"]
+                    ["other", "推荐", "新款"]
                 }
 
     mapping["洗衣机"] = {("商品问题", "基础属性"):
@@ -73,7 +73,7 @@ def CatMapping(keyword, cid_3):
                           ["货到付款", "购买", "买", "收费", "下单", "现货", "白条"],
 
                       ("物流问题", "配送工作时间"):
-                          ["发货", "到货", "送货", "送到"],
+                          ["发货", "到货", "送货", "送到", "到货安装"],
 
                       ("政策问题", "价保条件"):
                           ["保价", "延保"],
@@ -110,23 +110,37 @@ def CatMapping(keyword, cid_3):
                           ["Other"]
                       }
 
-    for m in mapping[cid_3]:
-        if keyword in mapping[m]:
-            return m
+    for cid in mapping:
+        for m in mapping[cid]:
+            if keyword in mapping[cid][m]:
+                return m
 
-    return "other", "other"
+    return "其他问题", "其他"
 
 
+KeywordList = {}
+def LoadKeywordlist(filelocation):
+    with open(filelocation, 'r', encoding="utf-8") as keyfile:
+        for line in keyfile:
+            try:
+                sentence, keyword = line.split("\t")
+                KeywordList[sentence] = keyword.strip()
+            except Exception:
+                logging.warning("Failed to split line {}".format(line))
 
+
+#if the input file has only 1 column that is keyword column, so the output has the cat1 and cat2
+#if the input file has 3 columns, that is sku/Q/A. (for SKU related)
+#otherwise, the input file should be the standard questionair format.
 if __name__ == "__main__":
 
     if len(sys.argv) < 5:
         print(
-            "Usage: python3 qa_converttoimport.py  [inputfile] [outputfile] [cid3] [brand]")
+            "Usage: python3 qa_converttoimport.py  [inputfile] [outputfile] [cid3] [brand] (referencefile optional)")
         exit(1)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
-    csvfile2 = open(sys.argv[2], 'w', encoding="utf-8")
+    csvfile2 = open(sys.argv[2], 'a', encoding="utf-8")
     fieldnames = ["question", "tag","shopid", "brand", "cid3", "sku", "anSwer", "cat1",
                   "cat2", "profession", "source"]
     csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
@@ -137,15 +151,48 @@ if __name__ == "__main__":
     rowcounter = 0
     writecounter = 0
 
+    ShopIDs={"美的": 1000001452, "海尔": 1000001782, "西门子": 1000001421}
+
+    if len(sys.argv) == 6:
+        LoadKeywordlist(sys.argv[5])
+
     with open(sys.argv[1], 'r', encoding="utf-8") as csvfile:
-        rows = csv.reader(csvfile)
+        firstline = csvfile.readline()
+        delimiter = ','
+        if "\t" in firstline:
+            delimiter='\t'
+        elif "," in firstline:
+            delimiter=','
+
+        csvfile.seek(0, 0)
+        rows = csv.reader(csvfile, delimiter=delimiter)
         for row in rows:
             rowcounter += 1
-            if row[5] == "1" and row[6] != "1" and row[7] != "1" and row[4] != 1:
+            if len(row) == 0:
+                csvwriter.writerow({'cat1': '其他问题', 'cat2': '其他'})
+            elif len(row) == 1:   #only have one row (keyword), so output the cat1 and cat2
                 writecounter += 1
-                cat1, cat2 = CatMapping(row[1])
-                csvwriter.writerow({'question': row[2], 'tag': row[1], 'brand': brand, 'cid3': cid3,
-                                 'anSwer': row[3], 'cat1': cat1, 'cat2': cat2})
+                cat1, cat2 = CatMapping(row[0], cid3)
+                csvwriter.writerow({ 'cat1': cat1, 'cat2': cat2})
+            elif len(row) == 3:
+                writecounter += 1
+                sku, Q, A = row
+                if Q in KeywordList:
+                    cat1, cat2 = ("商品问题", "基础属性")
+                    csvwriter.writerow(
+                        {'question': Q, 'tag': KeywordList[Q], 'shopid': ShopIDs[brand], 'brand': brand,
+                         'cid3': cid3,
+                         'anSwer': A, 'cat1': cat1, 'cat2': cat2, 'sku': sku})
+                else:
+                    logging.warning("This Q is not in KeywordList: {}".format(Q))
 
+            elif len(row) == 9:
+                if row[5] == "1" and row[6] != "1" and row[7] != "1" and row[4] != "1":
+                    writecounter += 1
+                    cat1, cat2 = CatMapping(row[1], cid3)
+                    csvwriter.writerow({'question': row[2], 'tag': row[1], 'shopid': ShopIDs[brand] , 'brand': brand, 'cid3': cid3,
+                                     'anSwer': row[3], 'cat1': cat1, 'cat2': cat2})
+            else:
+                logging.error("Wrong format: there are {} columns in this line {} \n{}".format(len(row), rowcounter, row))
     csvfile2.close()
     logging.info("Read {} lines; Wrote {} lines".format(rowcounter, writecounter))
