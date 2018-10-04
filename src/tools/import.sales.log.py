@@ -1,6 +1,6 @@
 
 import os, sys, logging
-import sqlite3, jsonpickle
+import sqlite3, jsonpickle, json
 
 def PreProcess():
     try:
@@ -24,8 +24,12 @@ def StoreAIAnswers(rowkey, text):
     InsertAIQuery = "insert into answer values("+ ",".join(["?" for x in range(8)]) + ")"
     for an in ans:
         answer_text = an.strip('"')
-        answer = jsonpickle.decode(answer_text)
-        print(answer)
+        try:
+            answer = jsonpickle.decode(answer_text)
+        except json.decoder.JSONDecodeError:
+            logging.warning("this answer_text failed to decode: {} in \n{}".format(answer_text, text))
+            continue
+        #print(answer)
         cur.execute(InsertAIQuery, [rowkey, sequenceid, answer['answer '].strip(), str(answer['optional ']),
                 answer['pairId '].strip() if 'pairId ' in answer else '', answer['question '].strip(),
                                     answer['score '], str(answer['sourceList '])
@@ -37,7 +41,7 @@ def StoreAIAnswers(rowkey, text):
 if __name__ == "__main__":
 
     if len(sys.argv) != 3 :
-        print("Usage: python3 qamatch.py [inputfile] [outputdb]  ")
+        print("Usage: python3 import.sales.log.py [inputfile] [outputdb]  ")
         exit(1)
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -63,6 +67,7 @@ if __name__ == "__main__":
                 #columns[9] = str(ai_answerid)
 
             cur.execute(InsertQuery, columns)
+        DBCon.commit()
 
     cur.close()
     DBCon.commit()
