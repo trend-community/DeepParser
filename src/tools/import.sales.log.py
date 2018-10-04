@@ -33,7 +33,7 @@ def StoreAIAnswers(rowkey, text):
         sequenceid += 1
 
 
-
+#log is created from hive -e "select * from fdm.fdm_hbase_crius_c_alpha_sales_alpha_sales_log" > log.txt
 if __name__ == "__main__":
 
     if len(sys.argv) != 3 :
