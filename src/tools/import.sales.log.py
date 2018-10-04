@@ -1,5 +1,5 @@
 
-import os, sys, logging
+import  sys, logging
 import sqlite3, jsonpickle, json
 
 def PreProcess():
@@ -12,18 +12,38 @@ def PreProcess():
         logging.warning("Table existed!")
     try:
         cur.execute("""CREATE TABLE answer ( rowkey text, sequenceid int, answer text, optional text,
-            pairId text, question text, score text, sourceList text);""")
+            pairId text, question text, score float, sourceList text);""")
     except sqlite3.OperationalError:
         logging.warning("Table existed!")
 
 
 def StoreAIAnswers(rowkey, text):
-    text = text.strip("[").strip("]")
-    ans = text.split("\",\"")
+    if len(text) < 6:
+        return
+    text = text[3:-3].replace("   \",", "\",").replace("   \"}", "\"}").replace("   \"", "`")    #remove three space+quotes, if there is no comma following.
+    ans = text.split("}\",\"{")
     sequenceid = 0
-    InsertAIQuery = "insert into answer values("+ ",".join(["?" for x in range(8)]) + ")"
+    InsertAIQuery = "insert into answer values("+ ",".join(["?" for _ in range(8)]) + ")"
     for an in ans:
-        answer_text = an.strip('"')
+        answer_text = "{" + an + "}"
+        try:
+            answer = jsonpickle.decode(answer_text)
+        except json.decoder.JSONDecodeError:
+            logging.warning("this answer_text failed to decode: {} in \n{}".format(answer_text, text))
+            continue
+        #print(answer)
+        cur.execute(InsertAIQuery, [rowkey, sequenceid, answer['answer '].strip(), str(answer['optional ']),
+                answer['pairId '].strip() if 'pairId ' in answer else '', answer['question '].strip(),
+                                    answer['score '], str(answer['sourceList '])
+                                  ])
+        sequenceid += 1
+
+def StoreAIAnswers_new(rowkey, text):
+    sequenceid = 0
+    InsertAIQuery = "insert into answer values("+ ",".join(["?" for _ in range(8)]) + ")"
+    json_array = json.loads(text)
+    #answerlist = jsonpickle.decode(text)
+    for answer_text in json_array:
         try:
             answer = jsonpickle.decode(answer_text)
         except json.decoder.JSONDecodeError:
@@ -50,7 +70,7 @@ if __name__ == "__main__":
     DBCon = sqlite3.connect(sys.argv[2])
     cur = DBCon.cursor()
     PreProcess()
-    InsertQuery="insert into alllog values(" + ",".join(["?" for x in range(17)]) + ")"
+    InsertQuery="insert into alllog values(" + ",".join(["?" for _ in range(17)]) + ")"
     print("InsertQuery:\t{}".format(InsertQuery))
     #ai_answerid = 0
     with open(sys.argv[1], 'r', encoding="utf-8") as RuleFile:
