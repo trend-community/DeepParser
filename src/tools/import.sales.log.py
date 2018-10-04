@@ -28,8 +28,8 @@ def StoreAIAnswers(rowkey, text):
         answer_text = "{" + an + "}"
         try:
             answer = jsonpickle.decode(answer_text)
-        except json.decoder.JSONDecodeError:
-            logging.warning("this answer_text failed to decode: {} in \n{}".format(answer_text, text))
+        except json.decoder.JSONDecodeError as e:
+            logging.warning("this answer_text failed to decode: {} in rowkey:{}\nReason:{}".format(answer_text, rowkey, e))
             continue
         #print(answer)
         cur.execute(InsertAIQuery, [rowkey, sequenceid, answer['answer '].strip(), str(answer['optional ']),
