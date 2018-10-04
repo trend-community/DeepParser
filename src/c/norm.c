@@ -6,7 +6,9 @@
 //  Copyright © 2018 Ben Lin. All rights reserved.
 //
 
-#include "main2.hpp"
+
+#define BOOST_PYTHON_STATIC_LIB
+#include <python.hpp>
 
 //#include <string>
 #include <iterator>
@@ -102,7 +104,14 @@ string norm(string input){
 
 int main()
 {   string x = "this中 文A，B ｃｈｉｎａ。 is , http://abder.dofj.sdf/sjodir/ams in text";
-    //x = "a☹︎b😐";
+    x = "a☹︎b😐";
     cout << x << endl;
     cout << norm(x) << endl;
+}
+
+
+BOOST_PYTHON_MODULE(HelloExt)
+{
+    using namespace boost::python;
+    def("normalization", norm);
 }
