@@ -1,6 +1,6 @@
 
 import  sys, logging
-import sqlite3, jsonpickle, json
+import sqlite3, jsonpickle, json, re
 
 def PreProcess():
     try:
@@ -17,10 +17,22 @@ def PreProcess():
         logging.warning("Table existed!")
 
 
+    try:
+        cur.execute("""CREATE index loganswer_i on alllog (customer_question, adopted_answer, rowkey);""")
+
+        cur.execute("""create index a_i on answer (answer, question, rowkey, sequenceid);""")
+        cur.execute("""create index aq_i on answer (question, answer, score, rowkey, sequenceid);""")
+        cur.execute("""create index a_id on answer (rowkey, sequenceid, answer, question);""")
+    except sqlite3.OperationalError:
+        logging.warning("Index existed!")
+
+
 def StoreAIAnswers(rowkey, text):
     if len(text) < 6:
         return
-    text = text[3:-3].replace("   \",", "\",").replace("   \"}", "\"}").replace("   \"", "`")    #remove three space+quotes, if there is no comma following.
+    text = text[3:-3].replace("   \",", "\",").replace("   \"}", "\"}").replace("   \"}", "\"}").replace("  \"}",
+                    "\"}").replace("   \"", "``").replace("哦\",</i>", "哦`,</i>").replace("哦\", \",", "哦`, \",")
+    #remove three space+quotes, if there is no comma following.
     ans = text.split("}\",\"{")
     sequenceid = 0
     InsertAIQuery = "insert into answer values("+ ",".join(["?" for _ in range(8)]) + ")"
@@ -84,11 +96,13 @@ if __name__ == "__main__":
             if columns[9] != "[]" and len(columns[9]) > 4:
 
                 StoreAIAnswers(columns[0], columns[9])
-                #columns[9] = str(ai_answerid)
+                columns[9] = ''
 
             cur.execute(InsertQuery, columns)
         DBCon.commit()
 
+    cur.execute("delete from answer where rowkey in select rowkey from alllog where staff_pin like '%test%';")
+    cur.execute("delete from alllog where staff_pin like '%test%';")
     cur.close()
     DBCon.commit()
     DBCon.close()
