@@ -92,6 +92,44 @@ ssh root@172.18.189.135 " cd $rootdirectory_remote && tar xzvf parser_release.ta
 scp $temp_local/parser_release.tar.gz root@172.18.189.202:$rootdirectory_remote
 ssh root@172.18.189.202 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
 break;;
+        "Option 4")
+        echo "Option 4: Deploying to Production 1T servers"
+rootdirectory_remote=/export/App/git
+nluuser=nlu
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.98:$rootdirectory_remote
+ssh root@11.7.151.98 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.99:$rootdirectory_remote
+ssh root@11.7.151.99 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.100:$rootdirectory_remote
+ssh root@11.7.151.100 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.101:$rootdirectory_remote
+ssh root@111.7.151.101 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.102:$rootdirectory_remote
+ssh root@11.7.151.102 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.132:$rootdirectory_remote
+ssh root@11.7.151.132 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.133:$rootdirectory_remote
+ssh root@11.7.151.133 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.134:$rootdirectory_remote
+ssh root@11.7.151.134 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.162:$rootdirectory_remote
+ssh root@11.7.151.162 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.163:$rootdirectory_remote
+ssh root@11.7.151.163 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+
+scp $temp_local/parser_release.tar.gz root@11.7.151.164:$rootdirectory_remote
+ssh root@11.7.151.164 " cd $rootdirectory_remote && tar xzvf parser_release.tar.gz && chown -R $nluuser . && su -m $nluuser  -c ' cd $rootdirectory_remote/parser/src && bash Deploy_remote.sh' "
+break;;
         "Quit")
             break
             ;;
