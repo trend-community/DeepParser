@@ -7,10 +7,6 @@
 //
 
 
-#define BOOST_PYTHON_STATIC_LIB
-#include <python.hpp>
-
-//#include <string>
 #include <iterator>
 #include <set>
 #include <regex>
@@ -110,8 +106,3 @@ int main()
 }
 
 
-BOOST_PYTHON_MODULE(HelloExt)
-{
-    using namespace boost::python;
-    def("normalization", norm);
-}

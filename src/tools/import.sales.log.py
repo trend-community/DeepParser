@@ -7,7 +7,7 @@ def PreProcess():
         cur.execute("""CREATE TABLE alllog ( rowkey text, request_id text, timestamp text, customer_pin text, staff_pin text, plugin_state text,
             recommend_state text, adopt_state text, customer_question text, ai_answers text,
             adopted_answer text, staff_response text, session_id text, qa_pair_id text, 
-            position text, additional_info text, dt text);""")
+            position text, additional_info text, dt text, sku text);""")
     except sqlite3.OperationalError:
         logging.warning("Table existed!")
     try:
@@ -19,6 +19,7 @@ def PreProcess():
 
     try:
         cur.execute("""CREATE index loganswer_i on alllog (customer_question, adopted_answer, rowkey);""")
+        cur.execute("""CREATE index session_i on alllog (session_id, timestamp, rowkey);""")
 
         cur.execute("""create index a_i on answer (answer, question, rowkey, sequenceid);""")
         cur.execute("""create index aq_i on answer (question, answer, score, rowkey, sequenceid);""")
@@ -45,10 +46,11 @@ def StoreAIAnswers(rowkey, text):
             continue
         #print(answer)
         cur.execute(InsertAIQuery, [rowkey, sequenceid, answer['answer '].strip(), str(answer['optional ']),
-                answer['pairId '].strip() if 'pairId ' in answer else '', answer['question '].strip(),
-                                    answer['score '], str(answer['sourceList '])
+                    answer['pairId '].strip() if 'pairId ' in answer else '', answer['question '].strip(),
+                    answer['score '], str(answer['sourceList '])
                                   ])
         sequenceid += 1
+
 
 def StoreAIAnswers_new(rowkey, text):
     sequenceid = 0
@@ -63,8 +65,8 @@ def StoreAIAnswers_new(rowkey, text):
             continue
         #print(answer)
         cur.execute(InsertAIQuery, [rowkey, sequenceid, answer['answer '].strip(), str(answer['optional ']),
-                answer['pairId '].strip() if 'pairId ' in answer else '', answer['question '].strip(),
-                                    answer['score '], str(answer['sourceList '])
+                    answer['pairId '].strip() if 'pairId ' in answer else '', answer['question '].strip(),
+                    answer['score '], str(answer['sourceList '])
                                   ])
         sequenceid += 1
 
@@ -82,7 +84,7 @@ if __name__ == "__main__":
     DBCon = sqlite3.connect(sys.argv[2])
     cur = DBCon.cursor()
     PreProcess()
-    InsertQuery="insert into alllog values(" + ",".join(["?" for _ in range(17)]) + ")"
+    InsertQuery="insert into alllog values(" + ",".join(["?" for _ in range(18)]) + ")" #including sku
     print("InsertQuery:\t{}".format(InsertQuery))
     #ai_answerid = 0
     with open(sys.argv[1], 'r', encoding="utf-8") as RuleFile:
@@ -94,14 +96,19 @@ if __name__ == "__main__":
                 logging.warning("this line has different tab:{}\n\t{}".format(len(columns), line))
                 continue
             if columns[9] != "[]" and len(columns[9]) > 4:
-
                 StoreAIAnswers(columns[0], columns[9])
                 columns[9] = ''
+
+            columns.append("")  #sku
+            if columns[15] != "{}":  #additional info, contains sku
+                addition_info = jsonpickle.decode(columns[15])
+                if "sku" in addition_info:
+                    columns[17] = addition_info["sku"]
 
             cur.execute(InsertQuery, columns)
         DBCon.commit()
 
-    cur.execute("delete from answer where rowkey in select rowkey from alllog where staff_pin like '%test%';")
+    cur.execute("delete from answer where rowkey in (select rowkey from alllog where staff_pin like '%test%');")
     cur.execute("delete from alllog where staff_pin like '%test%';")
     cur.close()
     DBCon.commit()
