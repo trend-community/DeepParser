@@ -366,7 +366,7 @@ def GetRouteSignature(rule):
     return RouteSignature(rule.FileName, rule.ID, RouteSet)
 
 
-def MatchAndApplyDagRuleFile(Dag, RuleFileName):
+def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
     WinningRules = {}
     rulegroup = Rules.RuleGroupDict[RuleFileName]
 
@@ -447,7 +447,7 @@ def DynamicPipeline(NodeList, schema):
         if action == "CASES":
             Lexicon.ApplyCasesToNodes(NodeList)
 
-        if action.startswith("FSA"):
+        if action.startswith("FSA "):
             Rulefile = action[3:].strip()
             WinningRules.update(MatchAndApplyRuleFile(NodeList, Rulefile))
             # if NodeList:
@@ -476,15 +476,25 @@ def DynamicPipeline(NodeList, schema):
         #     Dag.transform(NodeList)
         #     logging.info("Dag:{}".format(Dag))
 
-        if action.startswith("DAGFSA"):
+        if action.startswith("DAGFSA "):
             if len(Dag.nodes) == 0:
                 try:
                     Dag.transform(NodeList)
                 except Exception as e:
                     logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
                     return NodeList, Dag, WinningRules
-            Rulefile = action[6:].strip()
+            Rulefile = action[7:].strip()
             WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
+
+        if action.startswith("DAGFSA_APP "):
+            if len(Dag.nodes) == 0:
+                try:
+                    Dag.transform(NodeList)
+                except Exception as e:
+                    logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
+                    return NodeList, Dag, WinningRules
+            Rulefile = action[10:].strip()
+            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile, fuzzy=True))#fuzzy
 
     return NodeList, Dag, WinningRules
 
@@ -727,13 +737,17 @@ def LoadCommon():
     # Lexicon.LoadLexicon(PunctuatefileLocation)
 
     for action in PipeLine:
-        if action.startswith("FSA"):
+        if action.startswith("FSA "):
             Rulefile = action[3:].strip()
             Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
 
-        if action.startswith("DAGFSA"):
+        if action.startswith("DAGFSA "):
             Rulefile = action[6:].strip()
             Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
+
+        if action.startswith("DAGFSA_APP "): #FUZZY
+            Rulefile = action[10:].strip()
+            Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB, fuzzy=True)
 
         if action.startswith("Lookup Spelling:"):
             Spellfile = action[action.index(":")+1:].strip().split(",")
@@ -873,11 +887,11 @@ if __name__ == "__main__":
     print("dag: {}".format(dag))
     print("winning rules: {}".format(winningrules))
 
-    print_var(globals(), "1.log")
-    for x in range(1000):
-        nodelist, dag, winningrules = LexicalAnalyze("2千呼万唤不出来")
-        print("dag: {}".format(dag))
-        print("winning rules: {}".format(winningrules))
+    # print_var(globals(), "1.log")
+    # for x in range(1000):
+    #     nodelist, dag, winningrules = LexicalAnalyze("2千呼万唤不出来")
+    #     print("dag: {}".format(dag))
+    #     print("winning rules: {}".format(winningrules))
 
     print_var(globals(), "2.log")
     nodelist, dag, winningrules = LexicalAnalyze("3千呼万唤不出来")

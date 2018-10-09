@@ -1166,7 +1166,7 @@ def LoadGlobalMacro(RuleLocation):
 # -Sept, change to : until the next "==" or "::" is found, give the whole block to "InsetRuleInList"
 #   The rule.SetRule() will judge whether it is one whole rule (base on {}), or several rules (or condition),
 #       when it will process current rule, and give the rest as "remaining" for next round.
-def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
+def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB, fuzzy=False):
     # global UnitTest, RuleFileList
     global RuleGroupDict
 
@@ -1227,7 +1227,7 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB):
         while _ExpandRuleWildCard_List(rulegroup.RuleList):
             pass
 
-        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList)
+        _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList, fuzzy)
         _PreProcess_CompileHash(rulegroup)
         rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: (x.Priority, x.TokenLength, x.RuleName), reverse=True)
         if not utils.DisableDB:
@@ -2056,11 +2056,11 @@ def _ExpandOrToken_Unification(OneList):
 # Check the rules. If it is a stem, not a feature, but omit quote
 #   then we add quote;
 # If it is like 'a|b|c', then we change it to 'a'|'b'|'c'
-def _PreProcess_CheckFeaturesAndCompileChunk(OneList):
+def _PreProcess_CheckFeaturesAndCompileChunk(OneList, fuzzy):
     for rule in OneList:
         for token in rule.Tokens:
             # _CheckFeature(token, rule.RuleName)
-            token.word = "[" + _CheckFeature_returnword(token.word) + "]"
+            token.word = "[" + _CheckFeature_returnword(token.word, fuzzy) + "]"
         rule.CompileChunk()
     _ExpandOrToken(OneList)
 
@@ -2129,7 +2129,7 @@ def _PreProcess_RuleIDNormalize():
     logging.info("Done with _PreProcess_RuleIDNormalize")
 
 
-def _CheckFeature_returnword(word):
+def _CheckFeature_returnword(word, fuzzy):
     try:
         if len(word) >= 2 and word[0] == "[" and SearchPair(word[1:], "[]") == len(word) - 2:
             word = word[1:-1].strip()
@@ -2171,7 +2171,12 @@ def _CheckFeature_returnword(word):
         if not re.search('[| !]', word):
             if FeatureOntology.GetFeatureID(word) == -1:
                 # logging.warning("Will treat this word as a stem:" + word)
-                word = "'" + word + "'"
+                if fuzzy:
+                    word = "\"{}\"|'{}'|/{}/".format(word, word, word)
+                    logging.error("Because of the fuzzy status in DAGFSA_APP, the word is:{}".format(word))
+                else:
+                    word = "'{}'".format(word, word, word)
+                    #logging.error("\tNormal fuzzy status. the word is {}".format(word))
         elif "|" in word and " " not in word and "[" not in word and "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             try:
@@ -2198,7 +2203,7 @@ def _CheckFeature_returnword(word):
                 if AndBlock.startswith("%F"):  # for unification extention, leave it to next step (ExpandOrBlock)
                     newword += AndBlock + " "
                 else:
-                    newword += _CheckFeature_returnword(AndBlock) + " "
+                    newword += _CheckFeature_returnword(AndBlock, fuzzy) + " "
             word = newword.rstrip(" ")
     return prefix + word
 
