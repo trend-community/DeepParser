@@ -40,8 +40,9 @@ then
 fi
 #read -p "Press [Enter] key to start deploying. Press Ctrl-C to stop."
 echo "Option 1: Deploying to SV office ( should have total=10 in the gitpull_restart.sh "
-echo "Option 2: Deploying to Production  ( should have total=30 in the gitpull_restart.sh "
+echo "Option 2: Deploying to Production  ( should have total=32 in the gitpull_restart.sh "
 echo "Option 3: Deploying to Production Neo4j ( should have total=4 in the gitpull_restart.sh "
+echo "Option 4: Deploying to Big Memory Production  ( should have total=32 in the gitpull_restart.sh "
 
 PS3='Please enter your choice: '
 options=("Option 1" "Option 2" "Option 3" "Quit")
