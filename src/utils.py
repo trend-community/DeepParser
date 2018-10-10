@@ -429,6 +429,7 @@ def OutputStringTokens_onelinerSA(dag):
                    sort_keys=True, ensure_ascii=False)
     havekeyvalue = False
     tempoutput = '],  "edges": ['
+    keyvalueset = set()
     for edge in sorted(dag.graph, key=operator.itemgetter(2, 0, 1)):
         nID = edge[2]
         n = nodes.get(nID)
@@ -440,24 +441,28 @@ def OutputStringTokens_onelinerSA(dag):
             valuefeats = sorted(
                 [FeatureOntology.GetFeatureName(f) for f in valuenode.features if f not in FeatureOntology.NotShowList])
             if "Value" in valuefeats:
-                if not havekeyvalue:
-                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[2], edge[0])
-                    havekeyvalue = True
-                else:
-                    tempoutput += ", "
-                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[2], edge[0])
+                if not str(edge[2])+"\t" + str(edge[0]) in keyvalueset:
+                    if not havekeyvalue:
+                        tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[2], edge[0])
+                        havekeyvalue = True
+                    else:
+                        tempoutput += ", "
+                        tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[2], edge[0])
+                    keyvalueset.add(str(edge[2])+"\t" + str(edge[0]))
         elif "Value" in feats:
             keyID = edge[0]
             keynode = nodes.get(keyID)
             keyfeats = sorted(
                 [FeatureOntology.GetFeatureName(f) for f in keynode.features if f not in FeatureOntology.NotShowList])
             if "Key" in keyfeats:
-                if not havekeyvalue:
-                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[0], edge[2])
-                    havekeyvalue = True
-                else:
-                    tempoutput += ", "
-                    tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[0], edge[2])
+                if not str(edge[0])+"\t" + str(edge[2]) in keyvalueset:
+                    if not havekeyvalue:
+                        tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[0], edge[2])
+                        havekeyvalue = True
+                    else:
+                        tempoutput += ", "
+                        tempoutput += '{{ "key":{}, "value":{}}}'.format(edge[0], edge[2])
+                    keyvalueset.add(str(edge[0])+"\t" + str(edge[2]))
 
     if not tempoutput == '],  "edges": [':
         output += tempoutput
