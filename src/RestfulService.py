@@ -284,7 +284,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             Rules.LoadGlobalMacro(GlobalmacroLocation)
 
             for action in ProcessSentence.PipeLine:
-                if action.startswith("FSA"):
+                if action.startswith("FSA "):
                     Rulefile = action[3:].strip()
                     RuleLocation = os.path.join(XLocation, Rulefile)
                     if RuleLocation.startswith("."):
@@ -292,13 +292,24 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                     if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
                         Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
 
-                if action.startswith("DAGFSA"):
+                elif action.startswith("DAGFSA_APP "):  # FUZZY
+                    Rulefile = action[10:].strip()
+                    RuleLocation = os.path.join(XLocation, Rulefile)
+                    if RuleLocation.startswith("."):
+                        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
+                    if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
+                        Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB, fuzzy= True)
+                    # Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB, fuzzy=True)
+
+                elif action.startswith("DAGFSA "):
                     Rulefile = action[6:].strip()
                     RuleLocation = os.path.join(XLocation, Rulefile)
                     if RuleLocation.startswith("."):
                         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
                     if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
                         Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB)
+
+
             Reply += "Reloaded rules at " + str(datetime.now())
 
         if ReloadTask.lower() == "/pipeline":

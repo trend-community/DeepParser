@@ -2173,7 +2173,7 @@ def _CheckFeature_returnword(word, fuzzy):
                 # logging.warning("Will treat this word as a stem:" + word)
                 if fuzzy:
                     word = "\"{}\"|'{}'|/{}/".format(word, word, word)
-                    logging.error("Because of the fuzzy status in DAGFSA_APP, the word is:{}".format(word))
+                    # logging.error("Because of the fuzzy status in DAGFSA_APP, the word is:{}".format(word))
                 else:
                     word = "'{}'".format(word, word, word)
                     #logging.error("\tNormal fuzzy status. the word is {}".format(word))
