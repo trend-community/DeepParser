@@ -41,6 +41,7 @@ class DependencyTree:
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
+        self.fullstring = nodelist.root().text
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
@@ -136,7 +137,6 @@ class DependencyTree:
         for node in sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")):
             node.Index = index
             index +=  1
-            self.fullstring += node.text
 
         self._MarkNext()
         self.root = self._roots[0]
