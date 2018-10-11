@@ -632,8 +632,26 @@ class DependencyTree:
         return [self.nodes[edge[0]] for edge in self.graph if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
 
 
+    #the ideal way is to recursively traverse the graph, while avoiding repeat nodes (loop)
+    # now doing it in 3 levels should be good enough to get the first and last node of the subgraph.
     def CollectSonList(self, nodeid):
-        return [self.nodes[edge[0]] for edge in self.graph if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
+        sonidlist =  [edge[0] for edge in self.graph
+                      if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
+        sonidlist_2 = []
+        for sonid in sonidlist:
+            sonidlist_2 += [edge[0] for edge in self.graph
+                      if edge[2] == sonid and edge[1] != "next" and edge[1] != "NX"
+                            and edge[0] not in sonidlist ]
+
+        sonidlist_3 = []
+        for sonid in sonidlist_2:
+            sonidlist_3 += [edge[0] for edge in self.graph
+                      if edge[2] == sonid and edge[1] != "next" and edge[1] != "NX"
+                            and edge[0] not in sonidlist
+                            and edge[0] not in sonidlist_2]
+
+        idlist = set(sonidlist + sonidlist_2 + sonidlist_3)
+        return [self.nodes[node_id] for node_id in idlist]
 
 
     def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
