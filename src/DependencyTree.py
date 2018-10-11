@@ -667,9 +667,6 @@ class DependencyTree:
             ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
             parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
 
-            for edge in self.graph:
-                if edge[2] == parentnodeid:
-                    logging.warning("pointer node is {}. The son is {}. The StartOffset is:{}, EndOffset is:{}".format(self.nodes[parentnodeid].text, self.nodes[edge[0]].text, self.nodes[edge[0]].StartOffset, self.nodes[edge[0]].EndOffset))
             sonlist = self.CollectSonList(parentnodeid)
             if sonlist:
                 minStartOffset = min(self.nodes[parentnodeid].StartOffset, min([n.StartOffset for n in sonlist]))
@@ -678,14 +675,6 @@ class DependencyTree:
                 value = self.fullstring[minStartOffset: maxEndOffset]
             else:
                 value = self.nodes[parentnodeid].text
-            #
-            # logging.warning("The StartOffset of node is:{}".format(node.StartOffset))
-            # minStartOffset = min([node.StartOffset].extend())
-            # logging.warning("minStartOffset={}".format(minStartOffset))
-            # for edge in self.graph:
-            #     if edge[0] == node.ID:
-            #         logging.warning("The EndOffset is:{}".format(self.nodes[edge[2]].EndOffset))
-            # maxEndOffset = max([node.EndOffset].extend([self.nodes[edge[2]].EndOffset for edge in self.graph if edge[0] == node.ID and edge[1]!="next"]))
             node.iepair = "{}={}".format(iekey, value)
             return
         raise Exception("Todo: more ^A.S ^A ^A.O ie value")
