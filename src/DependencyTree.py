@@ -41,7 +41,8 @@ class DependencyTree:
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
-        self.fullstring = nodelist.root().text
+        self.fullstring = nodelist.root().atom
+        logging.warning("sentence.root.text={}, .norm={}, .atom={}".format(nodelist.root().text, nodelist.root().norm, nodelist.root().atom))
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
@@ -650,14 +651,14 @@ class DependencyTree:
                             and edge[0] not in sonidlist
                             and edge[0] not in sonidlist_2]
 
-        idlist = set(sonidlist + sonidlist_2 + sonidlist_3)
+        idlist = set([nodeid] + sonidlist + sonidlist_2 + sonidlist_3)
         return [self.nodes[node_id] for node_id in idlist]
 
 
     def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
         ieaction = ieaction.strip("#")
         if "~" not in ieaction:
-            node.iepair = "{}={}".format(ieaction, node.text)
+            node.iepair = "{}={}".format(ieaction, node.atom)
             return
 
         iekey, ievalue = ieaction.split("~", 1)
@@ -672,7 +673,8 @@ class DependencyTree:
             sonlist = self.CollectSonList(parentnodeid)
             value = ""
             for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
-                value += n.text
+                logging.warning("node {}.atom={}".format(n.text, n.atom))
+                value += n.atom
 
             node.iepair = "{}={}".format(iekey, value)
             return
