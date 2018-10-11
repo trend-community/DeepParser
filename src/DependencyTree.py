@@ -659,24 +659,30 @@ class DependencyTree:
         if "~" not in ieaction:
             node.iepair = "{}={}".format(ieaction, node.text)
             return
+
         iekey, ievalue = ieaction.split("~", 1)
         if "^" not in ievalue:
             node.iepair = "{}={}".format(iekey, ievalue)
             return
-        if ".TREE" in ievalue:
+
+        if ievalue.endswith(".TREE"):
             ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
             parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
 
             sonlist = self.CollectSonList(parentnodeid)
-            if sonlist:
-                minStartOffset = min(self.nodes[parentnodeid].StartOffset, min([n.StartOffset for n in sonlist]))
-                maxEndOffset = max(self.nodes[parentnodeid].EndOffset, max([n.EndOffset for n in sonlist]))
-                logging.info("minStartOffset={}, maxEndOffset={}".format(minStartOffset, maxEndOffset))
-                value = self.fullstring[minStartOffset: maxEndOffset]
-            else:
-                value = self.nodes[parentnodeid].text
+            value = ""
+            for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
+                value += n.text
+
             node.iepair = "{}={}".format(iekey, value)
             return
+
+        if ievalue.endswith(".REST"):
+            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+            node.iepair = "{}={}".format(iekey, self.fullstring[self.nodes[parentnodeid].StartOffset:])
+            return
+
         raise Exception("Todo: more ^A.S ^A ^A.O ie value")
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
