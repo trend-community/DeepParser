@@ -420,6 +420,11 @@ class Rule:
 
         # if "+++" in actinstring:    # if there is +++, then all are parentaction.
         #     return actinstring, ""    #May 2nd, not to apply this rule.
+        ieaction = ''
+        iepairmatch = re.search("(#.*#)", actinstring)
+        if iepairmatch:
+            ieaction = " " + iepairmatch.group(1)    #extract IE pair action.
+            actinstring = actinstring.replace(iepairmatch.group(1), '')
 
         actions = set(actinstring.split())
 
@@ -429,7 +434,7 @@ class Rule:
 
         SonActions = list(actions - set(ParentActions))
 
-        return " ".join(sorted(ParentActions)), " ".join(sorted(SonActions))
+        return " ".join(sorted(ParentActions)), " ".join(sorted(SonActions)) + ieaction
 
     def CompileChunk(self):
         rulebody = ''

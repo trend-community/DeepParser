@@ -2,8 +2,8 @@
 #    some of the graph can be cyclic.
 # so it is required to have "root".
 
-import jsonpickle, copy, logging, re
-import operator
+import copy
+
 import utils    #for the Feature_...
 from utils import *
 import Lexicon
@@ -35,6 +35,7 @@ class DependencyTree:
         self._subgraphs = []     #this is only used when constructing from nodelist.
         self.graph = set()
         self.root = -1
+        self.fullstring = ""
 
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
@@ -43,6 +44,7 @@ class DependencyTree:
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
+
         temp_subgraphs = []
         # Collect all the leaf nodes into self.nodes.
         while root is not None:
@@ -134,6 +136,7 @@ class DependencyTree:
         for node in sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")):
             node.Index = index
             index +=  1
+            self.fullstring += node.text
 
         self._MarkNext()
         self.root = self._roots[0]
@@ -625,7 +628,57 @@ class DependencyTree:
         return True
 
 
+    def CollectSonList_onelevel(self, nodeid):
+        return [self.nodes[edge[0]] for edge in self.graph if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
+
+
+    def CollectSonList(self, nodeid):
+        return [self.nodes[edge[0]] for edge in self.graph if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
+
+
+    def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
+        ieaction = ieaction.strip("#")
+        if "~" not in ieaction:
+            node.iepair = "{}={}".format(ieaction, node.text)
+            return
+        iekey, ievalue = ieaction.split("~", 1)
+        if "^" not in ievalue:
+            node.iepair = "{}={}".format(iekey, ievalue)
+            return
+        if ".TREE" in ievalue:
+            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+
+            for edge in self.graph:
+                if edge[2] == parentnodeid:
+                    logging.warning("pointer node is {}. The son is {}. The StartOffset is:{}, EndOffset is:{}".format(self.nodes[parentnodeid].text, self.nodes[edge[0]].text, self.nodes[edge[0]].StartOffset, self.nodes[edge[0]].EndOffset))
+            sonlist = self.CollectSonList(parentnodeid)
+            if sonlist:
+                minStartOffset = min(self.nodes[parentnodeid].StartOffset, min([n.StartOffset for n in sonlist]))
+                maxEndOffset = max(self.nodes[parentnodeid].EndOffset, max([n.EndOffset for n in sonlist]))
+                logging.info("minStartOffset={}, maxEndOffset={}".format(minStartOffset, maxEndOffset))
+                value = self.fullstring[minStartOffset: maxEndOffset]
+            else:
+                value = self.nodes[parentnodeid].text
+            #
+            # logging.warning("The StartOffset of node is:{}".format(node.StartOffset))
+            # minStartOffset = min([node.StartOffset].extend())
+            # logging.warning("minStartOffset={}".format(minStartOffset))
+            # for edge in self.graph:
+            #     if edge[0] == node.ID:
+            #         logging.warning("The EndOffset is:{}".format(self.nodes[edge[2]].EndOffset))
+            # maxEndOffset = max([node.EndOffset].extend([self.nodes[edge[2]].EndOffset for edge in self.graph if edge[0] == node.ID and edge[1]!="next"]))
+            node.iepair = "{}={}".format(iekey, value)
+            return
+        raise Exception("Todo: more ^A.S ^A ^A.O ie value")
+
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
+        iepairmatch = re.search("(#.*#)", actinstring)
+        if iepairmatch:
+            ieaction = iepairmatch.group(1)
+            actinstring = actinstring.replace(iepairmatch.group(1), '')
+            self.ApplyDagActions_IEPair( OpenNode, node, rule, ieaction)
+
         Actions = actinstring.split()
 
         for Action in copy.copy(Actions):

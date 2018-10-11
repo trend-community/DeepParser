@@ -1,23 +1,19 @@
-import logging,  jsonpickle, os
+
 import urllib
 try:
     from socketserver import ThreadingMixIn, ForkingMixIn
 except: #windows? ignore it.
     pass
-import ProcessSentence, FeatureOntology
-import Graphviz, DependencyTree
-#from Rules import ResetAllRules, LoadRules
+import ProcessSentence
+import Graphviz
 import Rules
 import utils
 import Lexicon
 from utils import *
 from datetime import datetime
 from configparser import NoOptionError
-from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
-#from urlparse import urlparse, parse_qs
-# query_components = parse_qs(urlparse(self.path).query)
-# imsi = query_components["imsi"]
-#from urlparse import urlparse
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 import time, argparse, traceback
 
 current_milli_time = lambda: int(round(time.time() * 1000))
