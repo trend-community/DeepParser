@@ -808,3 +808,23 @@ def print_var(global_dict, filename):
     with open(filename, 'w') as writer:
         for (k,v) in global_dict.items():
             writer.write("Type:{} \tSize:{}\tSample:{}\n".format(k, sys.getsizeof(v), str(v)[:50]))
+
+
+
+def runSimpleSubprocess(aCommand):
+    import subprocess
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    p = subprocess.Popen(aCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error_output = p.communicate()
+    sys.stdout.flush()
+    sys.stderr.flush()
+    if p.returncode != 0:
+        logging.error('ERROR: command failed with status %d' % p.returncode)
+        logging.error('    Command: \n' + aCommand)
+        logging.error('    Output: \n' + str(output))
+        logging.error('    ErrorOutput: \n' + str(error_output))
+        return p.returncode, error_output
+    else:
+        return p.returncode, output

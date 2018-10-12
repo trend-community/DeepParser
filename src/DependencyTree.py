@@ -657,11 +657,11 @@ class DependencyTree:
 
     def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
         ieaction = ieaction.strip("#")
-        if "~" not in ieaction:
+        if "=" not in ieaction:
             node.iepair = "{}={}".format(ieaction, node.atom)
             return
 
-        iekey, ievalue = ieaction.split("~", 1)
+        iekey, ievalue = ieaction.split("=", 1)
         if "^" not in ievalue:
             node.iepair = "{}={}".format(iekey, ievalue)
             return

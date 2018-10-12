@@ -407,8 +407,18 @@ if __name__ == "__main__":
     else:
         startport = int(utils.ParserConfig.get("website", "port"))
 
+    #kill the process that is using the same port
+    returncode, psid = utils.runSimpleSubprocess("lsof -i tcp:{} | grep LISTEN | awk {{'print $2'}}".format(startport))
+    #logging.warning("returncode = {}, psid={}".format(returncode, psid))
+    if psid:
+        processid = psid.decode('ascii').strip()
+        logging.warning("Killing process {} because it is using the same port of {}".format(processid, startport))
+        utils.runSimpleSubprocess("kill -9 {}".format(processid))
+        time.sleep(0.1) #wait 100ms for the former process to exit cleanly.
+
     print("Running in port {}".format(startport))
     logging.warning("Running in port {}".format(startport))
+
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
     if utils.runtype == "release":
         httpd.request_queue_size = 0
