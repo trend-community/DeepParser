@@ -362,6 +362,11 @@ class DependencyTree:
                         logging.error("FindPointerNode: The rule is written error, because the reference token is not yet matched. Please rewrite!")
                         logging.info(rule)
                         return None
+                    except IndexError as e:
+                        logging.error(e)
+                        logging.error("FindPointerNode: The rule is written error, failed to find pointer {} IndexError!".format(pointer_num))
+                        logging.info(rule)
+                        return None
 
                 else:
                     pointer = "^" + pointer
@@ -451,6 +456,9 @@ class DependencyTree:
             PointerType = 0
 
         StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule)]
+        if not StrPointerToken:
+            return False
+
         strToken = self.nodes[nodeID]
 
         if matchtype == "text":
@@ -526,22 +534,22 @@ class DependencyTree:
         if ">>" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index != self.nodes[ReferenceNodeID].Index + 1 :
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
                 return False
         elif "<<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<<", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index != self.nodes[ReferenceNodeID].Index - 1 :
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
                 return False
         elif ">" in SubtreePointer:     #on the left side of the other pointer
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index < self.nodes[ReferenceNodeID].Index :
+            if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index > self.nodes[ReferenceNodeID].Index :
+            if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
         # if not SubtreePointer:  #Apparently after comparing index with referencenode, the subtreepointer is not empty
@@ -669,7 +677,8 @@ class DependencyTree:
         if ievalue.endswith(".TREE"):
             ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
             parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
-
+            if not parentnodeid:
+                return
             sonlist = self.CollectSonList(parentnodeid)
             value = ""
             for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
@@ -682,6 +691,9 @@ class DependencyTree:
         if ievalue.endswith(".REST"):
             ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
             parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+            if not parentnodeid:
+                return
+
             node.iepair = "{}={}".format(iekey, self.fullstring[self.nodes[parentnodeid].StartOffset:])
             return
 
@@ -700,6 +712,9 @@ class DependencyTree:
             if "---" in Action:
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                if not parentnodeid:
+                    return
+
                 if "~---" in Action:
                     self.graph = set([edge for edge in self.graph if edge[0] != parentnodeid or edge[2] != node.ID])
                     logging.debug("Dag Action {}: Removed all edge from {} to {}".format(Action, parentnodeid, node.ID))
@@ -712,6 +727,9 @@ class DependencyTree:
             if Action[0] == '^':
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                if not parentnodeid:
+                    return
+
                 #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
