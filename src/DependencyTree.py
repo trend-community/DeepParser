@@ -42,7 +42,6 @@ class DependencyTree:
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
         self.fullstring = nodelist.root().atom
-        logging.warning("sentence.root.text={}, .norm={}, .atom={}".format(nodelist.root().text, nodelist.root().norm, nodelist.root().atom))
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
@@ -250,7 +249,10 @@ class DependencyTree:
                 if danzi:
                     output +=  "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, danzi, tooltip)
                 else:
-                    output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, tooltip)
+                    if node.text == "\"":       #to output \\" , instead of "
+                        output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, "\\\\\"", tooltip)
+                    else:
+                        output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, tooltip)
 
                 output += "];\n"
             output += "//edges:\n"
@@ -325,6 +327,10 @@ class DependencyTree:
     def FindPointerNode(self, openID, SubtreePointer, rule):
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
+            # if not SubtreePointer:
+            #     #actually it is looking for the open id.
+            #     pass
+            #     #logging.warning("\tEmpty SubtreePointer for rule {}".format(rule))
         if (openID, SubtreePointer, rule.ID) in self.FindPointerNode_Cache:
             #logging.debug("FindPointerNode_Cache: hit!")
             return self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)]

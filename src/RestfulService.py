@@ -36,9 +36,18 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         try:
             if link.path == '/LexicalAnalyze':
                 try:
-                    q = link.query.split("&")
+                    query = urllib.parse.unquote(link.query)
+                    SentenceMatch = re.search("[\"“”](.*)[\"“”]", query)
+                    if SentenceMatch:
+                        Sentence = SentenceMatch.group(1)
+                        query = query.replace(Sentence, "")
+                    else:
+                        Sentence = ""
+                    q = query.split("&")
                     queries = dict(qc.split("=") for qc in q)
-                except ValueError as e:
+                    if Sentence:    #backward compatible
+                        queries["Sentence"] = Sentence
+                except ValueError :
                     logging.error("Input query is not correct: " + link.query)
                     self.send_error(500, "Link input error.")
                     return
@@ -71,7 +80,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             return
 
     def LexicalAnalyze(self, queries):
-        Sentence = urllib.parse.unquote(queries["Sentence"])[:MAXQUERYSENTENCELENGTH]
+        Sentence = queries["Sentence"][:MAXQUERYSENTENCELENGTH]
         Type = "json"
         if "Type" in queries:
             Type = queries["Type"]

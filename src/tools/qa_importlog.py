@@ -40,6 +40,7 @@ def PreProcess():
 
 
 def PostImportQALogProcess():
+    logging.info("PostImportQALogProcess")
     cur.execute("create index index_sessionid on qalog(sessionid);")
     cur.execute("create index index_userid on qalog(userid);")
     cur.execute("create index index_sentence on qalog(sentence_n, sentence);")
@@ -57,6 +58,7 @@ def PostImportQALogProcess():
 
 
 def PostQAPairProcess():
+    logging.info("PostQAPairProcess")
     cur.execute("create table sentences (sentenceid integer primary key autoincrement, sentence TEXT, QA INT, sentence_count INT);")
     cur.execute(" insert into sentences(sentence, QA, sentence_count) select q, 0, count(*) as sentence_count from qapair group by q having count(*)>1;")
     cur.execute(" insert into sentences(sentence, QA, sentence_count) select a, 1, count(*) as sentence_count from qapair group by a having count(*)>1;")
@@ -66,13 +68,14 @@ def PostQAPairProcess():
 
 
 def ExportQAFiles():
+    logging.info("ExportQAFiles")
     AQuery = "select sentenceid, sentence, sentence_count from sentences where QA = 1 order by sentence_count desc "
 
     cur.execute(AQuery)
     rows = cur.fetchall()
 
     Question_cur = DBCon.cursor()
-    QQuery = "select q from qapair where aid=?"
+    QQuery = "select  q from qapair where aid=?"    #not to do "distinct q" in here.
 
     with open("answerlist.txt", 'w', encoding="utf-8") as answerlist:
         for row in rows:
@@ -157,7 +160,7 @@ def QAPairSession(s_id):
         QA = row_s[2]
         if QA == 0:
             if q and a:     #not empty, write the qa into db
-                session_cur.execute(QAWriteQuery, [sku, q, a])
+                session_cur.execute(QAWriteQuery, [s_id, sku, q, a])
                 q = ""
                 a = ""
             if q:
@@ -188,6 +191,7 @@ def GenerateQA():
 
 
 
+
 if __name__ == "__main__":
 
     # x = "this中 文A，B ｃｈｉｎａ。 is , http://abder.dofj.sdf/sjodir/ams in text, this is a@b.c email"
@@ -206,6 +210,18 @@ if __name__ == "__main__":
 
     DBCon = sqlite3.connect(sys.argv[1])
     cur = DBCon.cursor()
+
+    if sys.argv[2] == "qafile":
+        logging.info("Generate qafile only")
+        ExportQAFiles()
+
+        cur.close()
+        DBCon.commit()
+        DBCon.close()
+        logging.info("Done")
+        exit(0)
+
+
     PreProcess()
 
     for filename in sys.argv[4:]:
