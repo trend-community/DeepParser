@@ -276,6 +276,7 @@ class SentenceNode(object):
         self.text = word
         self.norm = word.lower()
         self.pnorm = ''
+        self.iepair = ''
         self.atom = word.lower()
         self.features = set()
 
@@ -596,6 +597,8 @@ class SentenceNode(object):
             a.norm = self.norm
         if self.pnorm:
             a.pnorm = self.pnorm
+        if self.iepair:
+            a.iepair = self.iepair
         if self.atom != self.text:
             a.atom = self.atom
         a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList])
@@ -626,6 +629,8 @@ class SentenceNode(object):
             a.norm = self.norm
         if self.pnorm:
             a.pnorm = self.pnorm
+        if self.iepair:
+            a.iepair = self.iepair
         if self.atom != self.text:
             a.atom = self.atom
         a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
@@ -653,6 +658,8 @@ class SentenceNode(object):
             a.norm = self.norm
         if self.pnorm:
             a.pnorm = self.pnorm
+        if self.iepair:
+            a.iepair = self.iepair
         if self.atom != self.text:
             a.atom = self.atom
         features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features)

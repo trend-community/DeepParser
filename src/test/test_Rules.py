@@ -855,14 +855,21 @@ third line};""")
             word = word.replace(notOrMatch.group(1), expandAnd)
         self.assertEqual(word, "[c1 !CD !time !'加' !'减' !'乘' !'除']")
 
-    # def test_ExtractParentSonActions(self):
-    #     a, b = Rule.ExtractParentSonActions("a b -c NEW x y")
-    #     self.assertEqual(b, "a b -c NEW x y")
-    #
-    #     a, b = Rule.ExtractParentSonActions("a b -c a++ b++ c++")
-    #     self.assertEqual(b, "a b -c")
-    #     a, b = Rule.ExtractParentSonActions("-a x++ y++ b")
-    #     self.assertEqual(b, "-a b")
-    #
-    #     a, b = Rule.ExtractParentSonActions(" x++ y++ ")
-    #     self.assertEqual(b, "")
+    def test_ExtractParentSonActions(self):
+        a, b = Rule.ExtractParentSonActions("a b -c NEW x y ")
+        self.assertEqual(b, "-c NEW a b x y")
+
+        a, b = Rule.ExtractParentSonActions("a b -c a++ b++ c++")
+        self.assertEqual(b, "-c a b")
+        a, b = Rule.ExtractParentSonActions("-a x++ y++ b")
+        self.assertEqual(b, "-a b")
+
+        a, b = Rule.ExtractParentSonActions(" x++ y++ ")
+        self.assertEqual(b, "")
+
+        a, b = Rule.ExtractParentSonActions(" x++ y++ #xby new ab #")
+        self.assertEqual(b, " #xby new ab #")
+
+        a, b = Rule.ExtractParentSonActions("a b -c a++ b++ c++ # this is good #")
+        self.assertEqual(b, "-c a b # this is good #")
+

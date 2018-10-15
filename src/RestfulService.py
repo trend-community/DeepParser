@@ -1,23 +1,19 @@
-import logging,  jsonpickle, os
+
 import urllib
 try:
     from socketserver import ThreadingMixIn, ForkingMixIn
 except: #windows? ignore it.
     pass
-import ProcessSentence, FeatureOntology
-import Graphviz, DependencyTree
-#from Rules import ResetAllRules, LoadRules
+import ProcessSentence
+import Graphviz
 import Rules
 import utils
 import Lexicon
 from utils import *
 from datetime import datetime
 from configparser import NoOptionError
-from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, HTTPServer
-#from urlparse import urlparse, parse_qs
-# query_components = parse_qs(urlparse(self.path).query)
-# imsi = query_components["imsi"]
-#from urlparse import urlparse
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 import time, argparse, traceback
 
 current_milli_time = lambda: int(round(time.time() * 1000))
@@ -40,9 +36,18 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         try:
             if link.path == '/LexicalAnalyze':
                 try:
-                    q = link.query.split("&")
+                    query = urllib.parse.unquote(link.query)
+                    SentenceMatch = re.search("[\"“”](.*)[\"“”]", query)
+                    if SentenceMatch:
+                        Sentence = SentenceMatch.group(1)
+                        query = query.replace(Sentence, "")
+                    else:
+                        Sentence = ""
+                    q = query.split("&")
                     queries = dict(qc.split("=") for qc in q)
-                except ValueError as e:
+                    if Sentence:    #backward compatible
+                        queries["Sentence"] = Sentence
+                except ValueError :
                     logging.error("Input query is not correct: " + link.query)
                     self.send_error(500, "Link input error.")
                     return
@@ -75,7 +80,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             return
 
     def LexicalAnalyze(self, queries):
-        Sentence = urllib.parse.unquote(queries["Sentence"])[:MAXQUERYSENTENCELENGTH]
+        Sentence = queries["Sentence"][:MAXQUERYSENTENCELENGTH]
         Type = "json"
         if "Type" in queries:
             Type = queries["Type"]
@@ -284,7 +289,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             Rules.LoadGlobalMacro(GlobalmacroLocation)
 
             for action in ProcessSentence.PipeLine:
-                if action.startswith("FSA"):
+                if action.startswith("FSA "):
                     Rulefile = action[3:].strip()
                     RuleLocation = os.path.join(XLocation, Rulefile)
                     if RuleLocation.startswith("."):
@@ -292,13 +297,24 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                     if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
                         Rules.LoadRules(XLocation, Rulefile,systemfileolderthanDB)
 
-                if action.startswith("DAGFSA"):
+                elif action.startswith("DAGFSA_APP "):  # FUZZY
+                    Rulefile = action[10:].strip()
+                    RuleLocation = os.path.join(XLocation, Rulefile)
+                    if RuleLocation.startswith("."):
+                        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
+                    if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
+                        Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB, fuzzy= True)
+                    # Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB, fuzzy=True)
+
+                elif action.startswith("DAGFSA "):
                     Rulefile = action[6:].strip()
                     RuleLocation = os.path.join(XLocation, Rulefile)
                     if RuleLocation.startswith("."):
                         RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
                     if not systemfileolderthanDB or not Rules.RuleFileOlderThanDB(RuleLocation):
                         Rules.LoadRules(XLocation, Rulefile, systemfileolderthanDB)
+
+
             Reply += "Reloaded rules at " + str(datetime.now())
 
         if ReloadTask.lower() == "/pipeline":
@@ -368,7 +384,7 @@ def init():
     global MAXQUERYSENTENCELENGTH
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
@@ -400,8 +416,18 @@ if __name__ == "__main__":
     else:
         startport = int(utils.ParserConfig.get("website", "port"))
 
+    #kill the process that is using the same port
+    returncode, psid = utils.runSimpleSubprocess("lsof -i tcp:{} | grep LISTEN | awk {{'print $2'}}".format(startport))
+    #logging.warning("returncode = {}, psid={}".format(returncode, psid))
+    if psid:
+        processid = psid.decode('ascii').strip()
+        logging.warning("Killing process {} because it is using the same port of {}".format(processid, startport))
+        utils.runSimpleSubprocess("kill -9 {}".format(processid))
+        time.sleep(0.1) #wait 100ms for the former process to exit cleanly.
+
     print("Running in port {}".format(startport))
     logging.warning("Running in port {}".format(startport))
+
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
     if utils.runtype == "release":
         httpd.request_queue_size = 0

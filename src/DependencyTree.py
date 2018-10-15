@@ -2,8 +2,8 @@
 #    some of the graph can be cyclic.
 # so it is required to have "root".
 
-import jsonpickle, copy, logging, re
-import operator
+import copy
+
 import utils    #for the Feature_...
 from utils import *
 import Lexicon
@@ -35,14 +35,17 @@ class DependencyTree:
         self._subgraphs = []     #this is only used when constructing from nodelist.
         self.graph = set()
         self.root = -1
+        self.fullstring = ""
 
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
+        self.fullstring = nodelist.root().atom
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
+
         temp_subgraphs = []
         # Collect all the leaf nodes into self.nodes.
         while root is not None:
@@ -246,7 +249,10 @@ class DependencyTree:
                 if danzi:
                     output +=  "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, danzi, tooltip)
                 else:
-                    output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, tooltip)
+                    if node.text == "\"":       #to output \\" , instead of "
+                        output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, "\\\\\"", tooltip)
+                    else:
+                        output += "{} [label=\"{}\" tooltip=\"{}\"".format(nodeid, node.text, tooltip)
 
                 output += "];\n"
             output += "//edges:\n"
@@ -321,6 +327,10 @@ class DependencyTree:
     def FindPointerNode(self, openID, SubtreePointer, rule):
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
+            # if not SubtreePointer:
+            #     #actually it is looking for the open id.
+            #     pass
+            #     #logging.warning("\tEmpty SubtreePointer for rule {}".format(rule))
         if (openID, SubtreePointer, rule.ID) in self.FindPointerNode_Cache:
             #logging.debug("FindPointerNode_Cache: hit!")
             return self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)]
@@ -356,6 +366,11 @@ class DependencyTree:
                     except AttributeError as e: #AttributeError: 'RuleToken' object has no attribute 'MatchedNodeID'
                         logging.error(e)
                         logging.error("FindPointerNode: The rule is written error, because the reference token is not yet matched. Please rewrite!")
+                        logging.info(rule)
+                        return None
+                    except IndexError as e:
+                        logging.error(e)
+                        logging.error("FindPointerNode: The rule is written error, failed to find pointer {} IndexError!".format(pointer_num))
                         logging.info(rule)
                         return None
 
@@ -447,6 +462,9 @@ class DependencyTree:
             PointerType = 0
 
         StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule)]
+        if not StrPointerToken:
+            return False
+
         strToken = self.nodes[nodeID]
 
         if matchtype == "text":
@@ -522,22 +540,22 @@ class DependencyTree:
         if ">>" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index != self.nodes[ReferenceNodeID].Index + 1 :
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
                 return False
         elif "<<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<<", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index != self.nodes[ReferenceNodeID].Index - 1 :
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
                 return False
         elif ">" in SubtreePointer:     #on the left side of the other pointer
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index < self.nodes[ReferenceNodeID].Index :
+            if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
             ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if node.Index > self.nodes[ReferenceNodeID].Index :
+            if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
         # if not SubtreePointer:  #Apparently after comparing index with referencenode, the subtreepointer is not empty
@@ -625,13 +643,84 @@ class DependencyTree:
         return True
 
 
+    def CollectSonList_onelevel(self, nodeid):
+        return [self.nodes[edge[0]] for edge in self.graph if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
+
+
+    #the ideal way is to recursively traverse the graph, while avoiding repeat nodes (loop)
+    # now doing it in 3 levels should be good enough to get the first and last node of the subgraph.
+    def CollectSonList(self, nodeid):
+        sonidlist =  [edge[0] for edge in self.graph
+                      if edge[2] == nodeid and edge[1] != "next" and edge[1] != "NX" ]
+        sonidlist_2 = []
+        for sonid in sonidlist:
+            sonidlist_2 += [edge[0] for edge in self.graph
+                      if edge[2] == sonid and edge[1] != "next" and edge[1] != "NX"
+                            and edge[0] not in sonidlist ]
+
+        sonidlist_3 = []
+        for sonid in sonidlist_2:
+            sonidlist_3 += [edge[0] for edge in self.graph
+                      if edge[2] == sonid and edge[1] != "next" and edge[1] != "NX"
+                            and edge[0] not in sonidlist
+                            and edge[0] not in sonidlist_2]
+
+        idlist = set([nodeid] + sonidlist + sonidlist_2 + sonidlist_3)
+        return [self.nodes[node_id] for node_id in idlist]
+
+
+    def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
+        ieaction = ieaction.strip("#")
+        if "=" not in ieaction:
+            node.iepair = "{}={}".format(ieaction, node.atom)
+            return
+
+        iekey, ievalue = ieaction.split("=", 1)
+        if "^" not in ievalue:
+            node.iepair = "{}={}".format(iekey, ievalue)
+            return
+
+        if ievalue.endswith(".TREE"):
+            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+            if not parentnodeid:
+                return
+            sonlist = self.CollectSonList(parentnodeid)
+            value = ""
+            for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
+                logging.warning("node {}.atom={}".format(n.text, n.atom))
+                value += n.atom
+
+            node.iepair = "{}={}".format(iekey, value)
+            return
+
+        if ievalue.endswith(".REST"):
+            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+            if not parentnodeid:
+                return
+
+            node.iepair = "{}={}".format(iekey, self.fullstring[self.nodes[parentnodeid].StartOffset:])
+            return
+
+        raise Exception("Todo: more ^A.S ^A ^A.O ie value")
+
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
+        iepairmatch = re.search("(#.*#)", actinstring)
+        if iepairmatch:
+            ieaction = iepairmatch.group(1)
+            actinstring = actinstring.replace(iepairmatch.group(1), '')
+            self.ApplyDagActions_IEPair( OpenNode, node, rule, ieaction)
+
         Actions = actinstring.split()
 
         for Action in copy.copy(Actions):
             if "---" in Action:
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                if not parentnodeid:
+                    return
+
                 if "~---" in Action:
                     self.graph = set([edge for edge in self.graph if edge[0] != parentnodeid or edge[2] != node.ID])
                     logging.debug("Dag Action {}: Removed all edge from {} to {}".format(Action, parentnodeid, node.ID))
@@ -644,6 +733,9 @@ class DependencyTree:
             if Action[0] == '^':
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
                 parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                if not parentnodeid:
+                    return
+
                 #logging.warning("DAG Action: This action {} to apply, parent id={}".format(Action, parentnodeid))
                 if Action[-1] == "-":   # remove
                     relation = Action[Action.rfind('.')+1:-1]
