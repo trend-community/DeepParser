@@ -16,14 +16,12 @@ def InsertSession(OneSession):
         QAmatch = re.match("(\d*)\t(.*?):(.*)", oneline)
         if QAmatch:
             sentence = QAmatch.group(3).strip()
-            if not sku:
-                skumatch = re.match(" http://item\.jd\.com/(\d*)\.html", sentence)
-                if skumatch:
-                    sku = skumatch.group(1).strip()
-            if not sku:
-                skumatch = re.search("商品编号：(\d*)", sentence)
-                if skumatch:
-                    sku = skumatch.group(1).strip()
+            skumatch = re.match(" http://item\.jd\.com/(\d*)\.html", sentence)
+            if skumatch:
+                sku = skumatch.group(1).strip()
+            skumatch = re.search("商品编号：(\d*)", sentence)
+            if skumatch:
+                sku = skumatch.group(1).strip()
 
             if  not sku :
                 logging.error("A session without sku: {}".format(OneSession))
@@ -37,17 +35,22 @@ def PreProcess():
     cur.execute("""CREATE TABLE qapair(sessionid int, sku text, q text, a text, qid int, aid int)""")
     cur.execute("""CREATE INDEX a on qapair (a, q);""")
     cur.execute("""CREATE INDEX q on qapair (q, a);""")
+    cur.execute("""CREATE INDEX aid on qapair (aid, q);""")
+    cur.execute("""CREATE INDEX qid on qapair (qid, a);""")
 
 
 def PostImportQALogProcess():
     logging.info("PostImportQALogProcess")
-    cur.execute("create index index_sessionid on qalog(sessionid);")
+    cur.execute("create index index_sessionid on qalog(sessionid, QA);")
     cur.execute("create index index_userid on qalog(userid);")
     cur.execute("create index index_sentence on qalog(sentence_n, sentence);")
     cur.execute("create table useridlist as select userid, count(*) as work_count from qalog group by userid;")
     # TODO: use userlist of the sales representatives to set QA=1.
     cur.execute("update qalog set QA = 0 ")
-    cur.execute("update qalog set QA = 1 where userid like '{}';".format(sys.argv[3]))
+    useridlike = sys.argv[3]
+    condition = " or ".join([" userid like \"" + x + "\"" for x in useridlike.split("/")])
+    logging.info("Set Answers: " + "update qalog set QA = 1 where " + condition)
+    cur.execute("update qalog set QA = 1 where " + condition)
 
     # cur.execute("create table sentences (sentenceid integer primary key autoincrement, sentence TEXT, QA INT, sentence_count INT, type int);")
     # cur.execute(" insert into sentences(sentence, QA, sentence_count, type) select sentence_n, QA, count(*) as sentence_count, 3 from qalog group by sentence_n, QA having count(*)>1;")
@@ -69,7 +72,7 @@ def PostQAPairProcess():
 
 def ExportQAFiles():
     logging.info("ExportQAFiles")
-    AQuery = "select sentenceid, sentence, sentence_count from sentences where QA = 1 order by sentence_count desc "
+    AQuery = "select sentenceid, sentence, sentence_count from sentences where QA = 1 and sentence_count>=10 order by sentence_count desc "
 
     cur.execute(AQuery)
     rows = cur.fetchall()
@@ -89,6 +92,13 @@ def ExportQAFiles():
             with open("{}.txt".format(answerid), 'a', encoding="utf-8") as foutput:
                 for question in questions:
                     foutput.write(question[0]+"\n")
+
+    AQuery = "select sentenceid, sentence, sentence_count from sentences where QA = 0 and sentence_count>=10 order by sentence_count desc "
+    cur.execute(AQuery)
+    rows = cur.fetchall()
+    with open("questionlist.txt", 'w', encoding="utf-8") as questionlist:
+        for row in rows:
+            questionlist.write("{}\t{}\t{}\n".format(row[0], row[1], row[2]))
 
 
 def normalization(inputstr):
@@ -112,10 +122,10 @@ def normalization(inputstr):
                     tag = tag.strip()
                     word = word.strip()
                     if tag in normalization.stopwordtags:
-                        if normalization.stopwordtags[tag] not in normalization.dict_stopwords:
-                            normalization.dict_stopwords[normalization.stopwordtags[tag]] = [word]
+                        if tag not in normalization.dict_stopwords:
+                            normalization.dict_stopwords[tag] = [word]
                         else:
-                            normalization.dict_stopwords[normalization.stopwordtags[tag]].append(word)
+                            normalization.dict_stopwords[tag].append(word)
 
     temp = re.sub("(https?|ftp)://\S+", " JDHTTP ", inputstr)
     temp = re.sub("\S+@\S+", " JDHTTP ", temp)
@@ -138,9 +148,9 @@ def normalization(inputstr):
         replaced = False
         for stopwordtag in normalization.dict_stopwords:
             if word in normalization.dict_stopwords[stopwordtag]:
-                afterreplacestopwords.append(stopwordtag)
+                afterreplacestopwords.append(normalization.stopwordtags[stopwordtag])
                 replaced = True
-                continue
+                break
         if not replaced:
             afterreplacestopwords.append(word)
 
@@ -190,20 +200,18 @@ def GenerateQA():
         QAPairSession(row[0])
 
 
-
-
 if __name__ == "__main__":
-
     # x = "this中 文A，B ｃｈｉｎａ。 is , http://abder.dofj.sdf/sjodir/ams in text, this is a@b.c email"
     # print("before:{}\n   after:{}".format(x, normalization(x)))
     # x = "a☹︎b😐"
     # print("before:{}\n   after:{}".format(x, normalization(x)))
-    # x = "a☹︎b😐不买哦 不是好的 "
+    # x = "亲，这款是二级的不是一级吗 是的 嗯 不能噢 "
     # print("before:{}\n   after:{}".format(x, normalization(x)))
 
     if len(sys.argv) < 4:
         print("Usage: python3 importlog.py [databasefilename] [stopwordlist] [staff_pin_match] [inputfile1] [inputfile2]...")
-        print("Example: python3 importlog.py siemens.db ../../temp/stopword.csv boshi% siemens*.txt")
+        print("Example: nohup python3 ../src/qa_importlog.py ../siemens.db ../src/stopwords.csv 博世% ../source/wm*.txt &")
+        print("Example: nohup python3 ../src/qa_importlog.py ../haier.db ../src/stopwords.csv haier%/kaifang% ../source/wm*.txt &")
         exit(1)
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -220,7 +228,6 @@ if __name__ == "__main__":
         DBCon.close()
         logging.info("Done")
         exit(0)
-
 
     PreProcess()
 
@@ -251,7 +258,9 @@ if __name__ == "__main__":
     PostQAPairProcess()
     ExportQAFiles()
 
+    logging.info("Start closing DB.")
     cur.close()
     DBCon.commit()
     DBCon.close()
     logging.info("Done")
+
