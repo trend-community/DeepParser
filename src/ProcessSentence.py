@@ -143,10 +143,6 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 # Apply the features, and other actions.
 def ApplyWinningDagRule(Dag, rule, OpenNode):
     #Clear_LogicMatch_notpointer_Cache()
-    # for i in range(len(rule.FuzzyStringAction)):
-    #     if rule.FuzzyStringAction[i]:
-    #         node = Dag.LastNodeInFuzzyString(rule.FuzzyStringMatch[i])
-    #         Dag.ApplyDagActions(OpenNode, node, rule.FuzzyStringAction[i], rule)
 
     for i in range(rule.TokenLength):
         if rule.Tokens[i].action:
@@ -395,35 +391,6 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
         #
         # # if logging.root.isEnabledFor(logging.DEBUG):
         # #     logging.debug("DAG: Start checking rule {}".format( rule))
-        # for match in rule.FuzzyStringMatch:
-        #     if match not in Dag.fulltext and match not in Dag.fullnorm and match not in Dag.fullatom:
-        #         logging.debug("The FuzzyStringMatch does not match this fullstring")
-        #         continue
-        #
-        # if not rule.Tokens and rule.FuzzyStringAction:     #this rule only contains FuzzyString
-        #     AppliedPriority = rule.Priority
-        #     if logging.root.isEnabledFor(logging.DEBUG):
-        #         logging.debug("DAG: Winning rule! {}".format(rule))
-        #     try:
-        #         if rule.ID not in WinningRules:
-        #             WinningRules[rule.ID] = '<li> [{}] {} '.format(rule.FileName,
-        #                                                                                        rule.Origin)
-        #         ApplyWinningDagRule(Dag, rule, None)
-        #         # do not allow to match other node, because there is no RuleNodes
-        #         # rule_sequence -= 1  # allow the same rule to match other nodes too.
-        #     except RuntimeError as e:
-        #         if e.args and e.args[0] == "Rule error in ApplyWinningRule.":
-        #             logging.error("The rule is so wrong that it has to be removed from rulegroup " + RuleFileName)
-        #             rulegroup.RuleList.remove(rule)
-        #         else:
-        #             logging.error("Unknown Rule Applying Error:" + str(e))
-        #
-        #     except IndexError as e:
-        #         logging.error("Failed to apply this rule:")
-        #         logging.info(str(rule))
-        #         logging.error(str(e))
-        #
-        # else:
         node = DAGMatch(Dag,  rule, 0)
         if node:
             if rule.WindowLimit == 0 or rule.WindowLimit >= Dag.MaxDistanceOfMatchNodes( rule):

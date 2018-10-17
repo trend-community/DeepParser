@@ -2087,7 +2087,7 @@ def _PreProcess_CompileHash(rulegroup):
                     if "|" in f:
                         OrFeatureGroup = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
                         token.OrFeatureGroups.append(OrFeatureGroup)
-                    elif "\"" in f or "'" in f or "/" in f:
+                    elif "\"" in f or "'" in f or "/" in f or "." in f:
                         if token.AndText:
                             logging.error("There should be only one text in one token:" + str(rule))
                         token.AndText, token.AndTextMatchtype = LogicOperation_CheckPrefix(f)
@@ -2177,10 +2177,10 @@ def _CheckFeature_returnword(word, fuzzy):
             if FeatureOntology.GetFeatureID(word) == -1:
                 # logging.warning("Will treat this word as a stem:" + word)
                 if fuzzy:
-                    word = "\"{}\"|'{}'|/{}/".format(word, word, word)
+                    word = ".{}.".format(word)
                     # logging.error("Because of the fuzzy status in DAGFSA_APP, the word is:{}".format(word))
                 else:
-                    word = "'{}'".format(word, word, word)
+                    word = "'{}'".format(word)  #use stem for non quoted word.
                     #logging.error("\tNormal fuzzy status. the word is {}".format(word))
         elif "|" in word and " " not in word and "[" not in word and "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]

@@ -525,7 +525,16 @@ class DependencyTree:
                 return False
         node = self.nodes[nodeID]
 
-        logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken)
+        if ruletoken.AndTextMatchtype == "fuzzy":
+            PrevText = "".join([n.text.lower()  for n in  sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")) if n.StartOffset<=node.StartOffset])
+            PrevNorm = "".join([n.norm.lower()  for n in  sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")) if n.StartOffset<=node.StartOffset])
+            PrevAtom = "".join([n.atom.lower()  for n in  sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")) if n.StartOffset<=node.StartOffset])
+        else:
+            PrevText = ''
+            PrevNorm = ''
+            PrevAtom = ''
+
+        logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken, PrevText, PrevNorm, PrevAtom)
         if not logicmatch:
             return False
         #might need open node for pointer

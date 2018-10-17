@@ -55,11 +55,11 @@ def ProcessFile(FileName):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="input file")
-    parser.add_argument("--debug")
+    parser.add_argument("--debug", action='store_true')
+    parser.add_argument("--winningrules", action='store_true')
+    parser.add_argument("--keeporigin",  action='store_true')
     parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph/graphjson",
                         default='simplegraph')
-    parser.add_argument("--winningrules")
-    parser.add_argument("--keeporigin")
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
                         default=0)
     parser.add_argument("--delimiter", default="\t")
@@ -91,8 +91,8 @@ if __name__ == "__main__":
     p = pstats.Stats('restats')
     p.sort_stats('time').print_stats(60)
 
-    from LogicOperation import hitcount
-    logging.warning("LogicMatch hit count:{}".format(hitcount))
+    #from LogicOperation import hitcount
+    #logging.warning("LogicMatch hit count:{}".format(hitcount))
     # import os
     # import psutil
     #
