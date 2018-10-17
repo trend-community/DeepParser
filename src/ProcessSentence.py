@@ -369,7 +369,7 @@ def GetRouteSignature(rule):
     return RouteSignature(rule.FileName, rule.ID, RouteSet)
 
 
-def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
+def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
     rulegroup = Rules.RuleGroupDict[RuleFileName]
 
@@ -498,7 +498,7 @@ def DynamicPipeline(NodeList, schema):
                     logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
                     return NodeList, Dag, WinningRules
             Rulefile = action[10:].strip()
-            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile, fuzzy=True))#fuzzy
+            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
     return NodeList, Dag, WinningRules
 

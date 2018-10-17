@@ -36,9 +36,10 @@ def CheckPrefix(word):
     elif word[0] == "/" and word.find("/", 1) == lastlocation :
         word = word.strip("/")
         matchtype = "atom"      # case insensitive
-    # elif word[0] == "." and word.find(".", 1) == lastlocation :
-    #     word = word.strip(".")
-    #     matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
+#    elif word[0] == "." and word.find(".", 1) == lastlocation :
+    elif word[0] == "." and word[-1] == ".":
+        word = word.strip(".")
+        matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
 
     return prefix+word, matchtype
 
