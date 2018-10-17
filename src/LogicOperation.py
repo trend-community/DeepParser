@@ -10,7 +10,7 @@ from utils import *
 # so CheckPrefix() is being called from LogicMatch()
 from functools import lru_cache
 # return -1 if failed. Should throw error?
-@lru_cache(200000)
+@lru_cache(100000)
 def CheckPrefix(word):
     matchtype = "unknown"
     if len(word) < 2:
@@ -36,6 +36,9 @@ def CheckPrefix(word):
     elif word[0] == "/" and word.find("/", 1) == lastlocation :
         word = word.strip("/")
         matchtype = "atom"      # case insensitive
+    elif word[0] == "." and word.find(".", 1) == lastlocation :
+        word = word.strip(".")
+        matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
 
     return prefix+word, matchtype
 
@@ -219,16 +222,16 @@ def _FindSubtree(root, pointers):
     return None
 
 
-LogicMatch_notpointer_Cache = {}
-hitcount = 0
+# = {}
+#hitcount = 0
 def LogicMatch_notpointer(StrToken, RuleToken):
-    global hitcount
-    # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
-    if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
-        hitcount += 1
-        return LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)]
-
-    LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = False
+    # global hitcount
+    # # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
+    # if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
+    #     hitcount += 1
+    #     return LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)]
+    #
+    # LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = False
     if RuleToken.AndFeatures:
         for f in RuleToken.AndFeatures:
             if f not in StrToken.features:
@@ -273,13 +276,13 @@ def LogicMatch_notpointer(StrToken, RuleToken):
             if LogicMatchText(NotText, word):
                 return False
 
-    LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = True
+    #LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = True
     return True
 
 
 #Being called after each rule applying (assume the StrToken is modified)
-def Clear_LogicMatch_notpointer_Cache():
-    LogicMatch_notpointer_Cache.clear()
+# def Clear_LogicMatch_notpointer_Cache():
+#     LogicMatch_notpointer_Cache.clear()
 
 
 def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
@@ -317,7 +320,7 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     return LogicMatch_notpointer(strToken, RuleToken)
 
 
-@lru_cache(1000000)
+@lru_cache(100000)
 def LogicMatchText(ruletext, stringtext):
     # if (ruletext, stringtext) in LogicMatchText_Cache:
     #     return LogicMatchText_Cache[(ruletext, stringtext)]

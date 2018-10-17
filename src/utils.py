@@ -127,7 +127,7 @@ def InitGlobalFeatureID():
         FeatureOntology.SentimentTagIDSet = set(FeatureOntology.SentimentTagIDSet)
 
 # return -1 if failed. Should throw error?
-@lru_cache(1000000)
+@lru_cache(100000)
 def SearchPair(string, tagpair, Reverse=False):
     depth = 0
     if Reverse:

@@ -35,13 +35,17 @@ class DependencyTree:
         self._subgraphs = []     #this is only used when constructing from nodelist.
         self.graph = set()
         self.root = -1
-        self.fullstring = ""
+        self.fulltext = ""
+        self.fullnorm = ""
+        self.fullatom = ""
 
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
-        self.fullstring = nodelist.root().atom
+        self.fulltext = nodelist.root().text
+        self.fullnorm = nodelist.root().norm
+        self.fullatom = nodelist.root().atom
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
@@ -672,7 +676,7 @@ class DependencyTree:
     def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
         ieaction = ieaction.strip("#")
         if "=" not in ieaction:
-            node.iepair = "{}={}".format(ieaction, node.atom)
+            node.iepair = "{}={}".format(ieaction, node.norm)
             return
 
         iekey, ievalue = ieaction.split("=", 1)
@@ -688,8 +692,8 @@ class DependencyTree:
             sonlist = self.CollectSonList(parentnodeid)
             value = ""
             for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
-                logging.warning("node {}.atom={}".format(n.text, n.atom))
-                value += n.atom
+                #logging.warning("node {}.norm={}".format(n.text, n.norm))
+                value += n.norm
 
             node.iepair = "{}={}".format(iekey, value)
             return
@@ -700,10 +704,46 @@ class DependencyTree:
             if not parentnodeid:
                 return
 
-            node.iepair = "{}={}".format(iekey, self.fullstring[self.nodes[parentnodeid].StartOffset:])
+            node.iepair = "{}={}".format(iekey, self.fullnorm[self.nodes[parentnodeid].StartOffset:])
             return
 
         raise Exception("Todo: more ^A.S ^A ^A.O ie value")
+
+
+    def LastNodeInFuzzyString(self, MatchString):
+        if MatchString in self.fulltext:
+            MatchMethod = "text"
+        elif MatchString in self.fullnorm:
+            MatchMethod = "norm"
+        elif MatchString in self.fullatom:
+            MatchMethod = "atom"
+        else:
+            logging.error("Not matched Fuzzy String. Should not get to LastNodeInFuzzyString()")
+            raise RuntimeError("Wrong logic to LastNodeInFuzzyString()")
+
+        nodestring = ""
+        for node in sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")):
+            if MatchMethod == "text":
+                nodetext = node.text
+            elif MatchMethod == "norm":
+                nodetext = node.norm
+            else:
+                nodetext = node.atom
+
+            if nodestring:
+                nodestring += nodetext
+                if nodestring not in MatchString:
+                    nodestring = ""     #reset to blank.
+
+            if not nodestring and MatchString.startswith(nodetext):
+                nodestring = nodetext
+
+            if nodestring == MatchString:
+                return node
+
+        logging.error("Failed to get LastNodeInFuzzyString()")
+        raise RuntimeError("Failed to get LastNodeInFuzzyString()")
+
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
         iepairmatch = re.search("(#.*#)", actinstring)

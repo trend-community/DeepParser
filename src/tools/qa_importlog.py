@@ -85,7 +85,7 @@ def ExportQAFiles():
             answerid = row[0]
             Question_cur.execute(QQuery, [answerid, ])
             questions = Question_cur.fetchall()
-            if len(questions) < 20:     #too small amount to output/cluster.
+            if len(questions) < 10:     #too small amount to output/cluster.
                 continue
 
             answerlist.write("{}\t{}\t{}\n".format(answerid, row[1], row[2]))
