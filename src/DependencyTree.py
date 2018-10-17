@@ -431,6 +431,16 @@ class DependencyTree:
             self.nodes[nodeid].visited = False
 
 
+    def ClearHITFeatures(self):
+        for nodeid in self.nodes:
+            node = self.nodes[nodeid]
+            if FeatureID_HIT in node.features:
+                node.features.remove(FeatureID_HIT)
+            if FeatureID_HIT2 in node.features:
+                node.features.remove(FeatureID_HIT2)
+            if FeatureID_HIT3 in node.features:
+                node.features.remove(FeatureID_HIT3)
+
     # Unification: <['^V-' ] [不] ^V[V|V0|v]> // Test: 学不学习； 侃不侃大山
     # In rule, start from RulePosition, seach for pointer:
     #   Start from left side, if not found, seach right side.
@@ -534,7 +544,22 @@ class DependencyTree:
             PrevNorm = ''
             PrevAtom = ''
 
-        logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken, PrevText, PrevNorm, PrevAtom)
+        try:
+            logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken, PrevText, PrevNorm, PrevAtom)
+        except RuntimeError as e:
+            logging.error("Error in TokenMatch rule:" + str(rule))
+            logging.error("Using " + ruletoken.word + " to match:" + node.text)
+            logging.error(e)
+            raise
+        except Exception as e:
+            logging.error("Using " + ruletoken.word + " to match:" + node.text)
+            logging.error(e)
+            raise
+        except IndexError as e:
+            logging.error("Using " + ruletoken.word + " to match:" + node.text)
+            logging.error(e)
+            raise
+
         if not logicmatch:
             return False
         #might need open node for pointer

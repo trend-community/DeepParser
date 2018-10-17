@@ -46,6 +46,10 @@ FeatureID_AC = None
 FeatureID_NC = None
 FeatureID_VC = None
 
+FeatureID_HIT = None
+FeatureID_HIT2 = None
+FeatureID_HIT3 = None
+
 FeatureID_comPair = None
 whQlist = ["whNQ", "whatQ", "whenQ", "whereQ", "whoQ", "whBrand", "whProd", "whyQ", "howQ", "howDoQ","whatHappenQ", "whatForQ", "howAQ","orQ"]
 
@@ -87,6 +91,7 @@ def InitGlobalFeatureID():
     global FeatureID_VB, FeatureID_Ved, FeatureID_Ving
     global FeatureID_H, FeatureID_Subj, FeatureID_Obj, FeatureID_Pred
     global FeatureID_AC, FeatureID_NC, FeatureID_VC, FeatureID_comPair
+    global FeatureID_HIT, FeatureID_HIT2, FeatureID_HIT3
     if not FeatureID_JS2:
         import FeatureOntology
         FeatureID_JS = FeatureOntology.GetFeatureID("JS")
@@ -117,6 +122,10 @@ def InitGlobalFeatureID():
         FeatureID_AC = FeatureOntology.GetFeatureID("AC")
         FeatureID_NC = FeatureOntology.GetFeatureID("NC")
         FeatureID_VC = FeatureOntology.GetFeatureID("VC")
+
+        FeatureID_HIT = FeatureOntology.GetFeatureID("HIT")
+        FeatureID_HIT2 = FeatureOntology.GetFeatureID("HIT2")
+        FeatureID_HIT3 = FeatureOntology.GetFeatureID("HIT3")
 
         FeatureID_comPair = FeatureOntology.GetFeatureID("comPair")
 

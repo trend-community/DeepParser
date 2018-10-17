@@ -294,6 +294,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 #raise
         i += 1
         strtoken = strtoken.next
+
+    strtokenlist.ClearHITFeatures()
     return WinningRules
 
 
@@ -317,7 +319,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
 
         DAGMatch.DagSuccessRoutes.add(routeSignature)
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("Dag.TokenMatch(): Matched all tokens.")
+            logging.debug("Dag.DAGMatch(): Matched all tokens.")
         return Dag.nodes[OpenNodeID]
 
     if level < 0:
@@ -425,6 +427,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
 
         rule_sequence += 1
 
+    Dag.ClearHITFeatures()
     return WinningRules
 
 

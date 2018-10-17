@@ -107,6 +107,28 @@ class SentenceLinkedList:
         raise Exception("Failed searchID.")
         #return None
 
+
+    def ClearHITFeatures(self):
+        p = self.head
+        nodestack = set()
+        while p:
+            if FeatureID_HIT in p.features:
+                p.features.remove(FeatureID_HIT)
+            if FeatureID_HIT2 in p.features:
+                p.features.remove(FeatureID_HIT2)
+            if FeatureID_HIT3 in p.features:
+                p.features.remove(FeatureID_HIT3)
+
+            if p.sons:
+                if p.next:
+                    nodestack.add(p.next)
+                p = p.sons[0]
+            else:
+                p = p.next
+                if p is None and nodestack:
+                    p = nodestack.pop()
+
+
     def get(self, index):
         if index in self.get_cache:
             return self.get_cache[index]

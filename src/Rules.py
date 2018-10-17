@@ -2087,7 +2087,7 @@ def _PreProcess_CompileHash(rulegroup):
                     if "|" in f:
                         OrFeatureGroup = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
                         token.OrFeatureGroups.append(OrFeatureGroup)
-                    elif "\"" in f or "'" in f or "/" in f or "." in f:
+                    elif "\"" in f or "'" in f or "/" in f:
                         if token.AndText:
                             logging.error("There should be only one text in one token:" + str(rule))
                         token.AndText, token.AndTextMatchtype = LogicOperation_CheckPrefix(f)

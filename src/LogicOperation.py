@@ -36,9 +36,9 @@ def CheckPrefix(word):
     elif word[0] == "/" and word.find("/", 1) == lastlocation :
         word = word.strip("/")
         matchtype = "atom"      # case insensitive
-    elif word[0] == "." and word.find(".", 1) == lastlocation :
-        word = word.strip(".")
-        matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
+    # elif word[0] == "." and word.find(".", 1) == lastlocation :
+    #     word = word.strip(".")
+    #     matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
 
     return prefix+word, matchtype
 
@@ -262,7 +262,8 @@ def LogicMatch_notpointer(StrToken, RuleToken, PrevText, PrevNorm, PrevAtom):
                         return False
                 else:
                     logging.error("AndTextMatchtype is {} , please check the rule".format(RuleToken.AndTextMatchtype))
-                    return False
+                    raise RuntimeError("Unknown TextMatch type")
+                    #return False
 
     for OrFeatureGroup in RuleToken.OrFeatureGroups:
         CommonOrFeatures = OrFeatureGroup.intersection(StrToken.features)
