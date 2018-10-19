@@ -328,13 +328,9 @@ class DependencyTree:
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
     FindPointerNode_Cache = {}
-    def FindPointerNode(self, openID, SubtreePointer, rule):
+    def FindPointerNode(self, openID, SubtreePointer, rule, CurrentNodeID):
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
-            # if not SubtreePointer:
-            #     #actually it is looking for the open id.
-            #     pass
-            #     #logging.warning("\tEmpty SubtreePointer for rule {}".format(rule))
         if (openID, SubtreePointer, rule.ID) in self.FindPointerNode_Cache:
             #logging.debug("FindPointerNode_Cache: hit!")
             return self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)]
@@ -362,6 +358,8 @@ class DependencyTree:
             nodeID = None
             if pointer == '':
                 nodeID = openID
+            elif pointer == '~':
+                nodeID = CurrentNodeID
             else:
                 if pointer.isdigit():
                     pointer_num = int(pointer)
@@ -475,7 +473,7 @@ class DependencyTree:
             P = "^" + Pointer[1:]  # should be ^N
             PointerType = 0
 
-        StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule)]
+        StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule, nodeID)]
         if not StrPointerToken:
             return False
 
@@ -577,22 +575,22 @@ class DependencyTree:
         #         return False
         if ">>" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
             if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
                 return False
         elif "<<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<<", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
             if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
                 return False
         elif ">" in SubtreePointer:     #on the left side of the other pointer
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
             if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
                 return False
         elif "<" in SubtreePointer:
             SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
             if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
                 return False
 
@@ -720,7 +718,7 @@ class DependencyTree:
 
         if ievalue.endswith(".TREE"):
             ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
-            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
             if not parentnodeid:
                 return
             sonlist = self.CollectSonList(parentnodeid)
@@ -734,7 +732,7 @@ class DependencyTree:
 
         if ievalue.endswith(".REST"):
             ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
-            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
             if not parentnodeid:
                 return
 
@@ -791,7 +789,7 @@ class DependencyTree:
         for Action in copy.copy(Actions):
             if "---" in Action:
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
-                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
                 if not parentnodeid:
                     return
 
@@ -806,7 +804,7 @@ class DependencyTree:
         for Action in sorted(Actions, key=lambda d:(d[-1])):
             if Action[0] == '^':
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
-                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
                 if not parentnodeid:
                     return
 

@@ -185,13 +185,17 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Subtree
 
     pointer = "^" + pointer
 
+    if pointer == "^~":     #THIS pointer
+        StrPointerRootToken = StrTokenList.get(StrPosition)
+    else:
     #rootPointer = "^" + tree[0]
-    x = StrTokenList.head
-    while x:
-        if x.TempPointer == pointer:
-            StrPointerRootToken = x
-            break
-        x = x.next
+        x = StrTokenList.head
+        while x:
+            if x.TempPointer == pointer:
+                StrPointerRootToken = x
+                break
+            x = x.next
+
     if not StrPointerRootToken:
         logging.error("FindPointerNode Can't find specified pointer " + pointer + " in rule:")
         logging.error(" ".join([str(r) for r in RuleTokens]))
