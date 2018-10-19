@@ -325,6 +325,15 @@ class DependencyTree:
         return False
 
 
+    def LinearNodeOffset(self, nodeid, offset):
+        startpoint = self.nodes[nodeid].Index
+        targetindex = startpoint + offset
+
+        for n in  sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+            if n.Index == targetindex:
+                return n.ID
+        return None
+
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
     FindPointerNode_Cache = {}
@@ -339,6 +348,8 @@ class DependencyTree:
             SubtreePointer = SubtreePointer[1:]
 
         nodeID = None
+        if "+" in SubtreePointer:
+            logging.warning("There is + sign in SubtreePointer of FindPointerNode(): {} ".format(rule))
         for AndCondition in SubtreePointer.split("+"):
             Negation = False
             if len(AndCondition) > 1 and AndCondition[0] == "!":
@@ -359,6 +370,7 @@ class DependencyTree:
             if pointer == '':
                 nodeID = openID
             elif pointer == '~':
+                #logging.warning("THIS POINTER in {}".format(rule))
                 nodeID = CurrentNodeID
             else:
                 if pointer.isdigit():
@@ -388,25 +400,34 @@ class DependencyTree:
                 #logging.warning("after looping over the nodes, nodeID={}".format(nodeID))
             if nodeID and relations:
                 for relation in relations.split("."):
-                    relationid = FeatureOntology.GetFeatureID(relation)
                     Found = False
-                    for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
-                        #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
-                        if edge[2] == nodeID:
-                            if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
-                                nodeID = edge[0]
-                                Found = True
-                                if logging.root.isEnabledFor(logging.DEBUG):
-                                    logging.debug("   Found!")
-                                break
-                            else:
-                                edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
-                                if edgerelationnode and relationid in edgerelationnode.ancestors:
+                    if relation == "LEFT":
+                        nodeID = self.LinearNodeOffset(nodeID, -1)
+                        if nodeID:
+                            Found = True
+                    elif relation == "RIGHT":
+                        nodeID = self.LinearNodeOffset(nodeID, 1)
+                        if nodeID:
+                            Found = True
+                    else:
+                        relationid = FeatureOntology.GetFeatureID(relation)
+                        for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
+                            #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
+                            if edge[2] == nodeID:
+                                if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
                                     nodeID = edge[0]
                                     Found = True
                                     if logging.root.isEnabledFor(logging.DEBUG):
-                                        logging.debug("   Found ontology ancesstor relation!")
+                                        logging.debug("   Found!")
                                     break
+                                else:
+                                    edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
+                                    if edgerelationnode and relationid in edgerelationnode.ancestors:
+                                        nodeID = edge[0]
+                                        Found = True
+                                        if logging.root.isEnabledFor(logging.DEBUG):
+                                            logging.debug("   Found ontology ancesstor relation!")
+                                        break
 
                     if not Found:
                         if not Negation:
@@ -525,6 +546,33 @@ class DependencyTree:
         return index_max-index_min+1
 
 
+    def MatchProximity(self, Condition, OpenNodeID, rule, node):
+        if ">>" in Condition:
+            _, ReferenceNodePointer = Condition.split(">>", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
+                return False
+        elif "<<" in Condition:
+            _, ReferenceNodePointer = Condition.split("<<", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
+                return False
+        elif ">" in Condition:     #on the left side of the other pointer
+            _, ReferenceNodePointer = Condition.split(">", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
+                return False
+        elif "<" in Condition:
+            _, ReferenceNodePointer = Condition.split("<", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
+                return False
+        else:
+            logging.error("MatchAproximity: There should be either > or < in the Condition. \nrule:{}".format(rule))
+
+        return True
+
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.
@@ -573,31 +621,17 @@ class DependencyTree:
         #     ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
         #     if abs(node.Index - self.nodes[ReferenceNodeID].Index ) > len(self.nodes)/3:
         #         return False
-        if ">>" in SubtreePointer:
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
-            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
-                return False
-        elif "<<" in SubtreePointer:
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<<", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
-            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
-                return False
-        elif ">" in SubtreePointer:     #on the left side of the other pointer
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
-            if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
-                return False
-        elif "<" in SubtreePointer:
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, nodeID)
-            if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
-                return False
 
         # if not SubtreePointer:  #Apparently after comparing index with referencenode, the subtreepointer is not empty
         #     return True         # so the condition was like ^<
         #
         for AndCondition in SubtreePointer.split("+"):
+            if ">" in AndCondition or "<" in AndCondition:
+                if self.MatchProximity(AndCondition, OpenNodeID, rule, node):
+                    continue
+                else:
+                    return False
+            
             Negation = False
 
             #logging.warning("AndCondition:{}".format(AndCondition))
@@ -715,31 +749,37 @@ class DependencyTree:
         if "^" not in ievalue:
             node.iepair = "{}={}".format(iekey, ievalue)
             return
+        else:
 
-        if ievalue.endswith(".TREE"):
-            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
-            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
-            if not parentnodeid:
-                return
-            sonlist = self.CollectSonList(parentnodeid)
-            value = ""
-            for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
-                #logging.warning("node {}.norm={}".format(n.text, n.norm))
-                value += n.norm
+            if ievalue.endswith(".TREE"):
+                ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
+                if not parentnodeid:
+                    return
+                sonlist = self.CollectSonList(parentnodeid)
+                value = ""
+                for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
+                    #logging.warning("node {}.norm={}".format(n.text, n.norm))
+                    value += n.norm
 
-            node.iepair = "{}={}".format(iekey, value)
-            return
-
-        if ievalue.endswith(".REST"):
-            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
-            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
-            if not parentnodeid:
+                node.iepair = "{}={}".format(iekey, value)
                 return
 
-            node.iepair = "{}={}".format(iekey, self.fullnorm[self.nodes[parentnodeid].StartOffset:])
-            return
+            if ievalue.endswith(".REST"):
+                ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
+                if not parentnodeid:
+                    return
 
-        raise Exception("Todo: more ^A.S ^A ^A.O ie value")
+                node.iepair = "{}={}".format(iekey, self.fullnorm[self.nodes[parentnodeid].StartOffset:])
+                return
+            else:
+                pointernodeid =  self.FindPointerNode(OpenNode.ID, ievalue, rule, node.ID)
+                if pointernodeid:
+                    node.iepair = "{}={}".format(iekey, self.nodes[pointernodeid].norm)
+                else:
+                    logging.warning("Can't find this pointer {} in this node {}".format(ievalue, node.text))
+#        raise Exception("Todo: more ^A.S ^A ^A.O ie value: {}".format(ieaction))
 
 
     def LastNodeInFuzzyString(self, MatchString):
