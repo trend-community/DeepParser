@@ -42,13 +42,38 @@ def ExtractTerm(term):
     return t
 
 
+def Combine(termfile, templatefile, outputfile):
+    termlist = []
+    with open(termfile, 'r', encoding="utf-8") as termf:
+        for temp in termf:
+            if temp.strip():
+                termlist.append(temp.strip())
+
+    templatelist = []
+    with open(templatefile, 'r', encoding="utf-8") as templatef:
+        for temp in templatef:
+            if temp.strip():
+                templatelist.append(temp.strip())
+
+    with open(outputfile, 'w', encoding="utf-8") as outputf:
+        for term1 in termlist:
+            for template1 in templatelist:
+                outputf.write(template1.replace("{}", term1) + "\n")
+
+
 #expandquestion is created as:
 # select  question from answerfaq where question like "%是什么%" or question like "%什么是%" and shopid=1000001452;
 if __name__ == "__main__":
     logging.basicConfig( level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     if len(sys.argv) < 2:
-        print("Usage: python3 expandquestion.py [questionfile]  ")
+        print("Usage1: python3 expandquestion.py [questionfile]  ")
+        print("Usage2: python3 expandquestion.py termfile, templatefile, outputfile  ")
         exit(1)
+
+    if len(sys.argv) == 4:
+        Combine(sys.argv[1], sys.argv[2], sys.argv[3])
+        exit(0)
+
 
     questiongroups = []
     temp_terms = []
