@@ -37,6 +37,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             if link.path == '/LexicalAnalyze':
                 try:
                     query = urllib.parse.unquote(link.query)
+                    # there might be & sign in the quotes. need to include in Sentence before the query is split("&").
                     SentenceMatch = re.search("[\"“”](.*)[\"“”]", query)
                     if SentenceMatch:
                         Sentence = SentenceMatch.group(1)
