@@ -1,18 +1,9 @@
 #!/bin/python2
 import urllib
-try:
-    from socketserver import ThreadingMixIn, ForkingMixIn
-except: #windows? ignore it.
-    pass
-import ProcessSentence
-import Graphviz
-import Rules
-import utils
-import Lexicon
-from utils import *
-from datetime import datetime
-from configparser import NoOptionError
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import logging, os
+
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+import urlparse
 
 import time, argparse, traceback
 
@@ -32,24 +23,22 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         #         self.send_error(504, "Server Busy")
         #         #self.ReturnBlank()
         #         return
-        link = urllib.parse.urlparse(self.path)
+        link = urlparse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
                 try:
-                    query = urllib.parse.unquote(link.query)
+                    query = urlparse.unquote(link.query)
 
                     q = query.split("&")
                     queries = dict(qc.split("=") for qc in q)
 
-                except ValueError :
+                except ValueError as e:
                     logging.error("Input query is not correct: " + link.query)
+                    logging.error(e)
                     self.send_error(500, "Link input error.")
                     return
 
-                if "Key" not in queries or queries["Key"] not in KeyWhiteList:
-                    self.send_error(550, "Key Error. Please visit NLP team for an authorization key")
-                else:
-                    self.LexicalAnalyze(queries)
+                self.LexicalAnalyze(queries)
 
 
             elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
@@ -68,9 +57,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
     def LexicalAnalyze(self, queries):
         if queries:
             try:
-                output_text = "complete LexicalAnalyze"
+                output_text = "{'output':'example'}"
                 self.send_response(200)
-                self.send_header("Content-type:plain/text charset=utf-8")
+                self.send_header("Content-type", "Application/json; charset=utf-8")
                 self.end_headers()
                 self.wfile.write(output_text.encode("utf-8"))
 
@@ -107,7 +96,7 @@ def init():
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
 if __name__ == "__main__":
     init()
@@ -117,15 +106,13 @@ if __name__ == "__main__":
     if args.port:
         startport = int(args.port)
     else:
-        startport = int(utils.ParserConfig.get("website", "port"))
+        startport = 5022
 
-    print("Running python2 RestfulService.py in port {}".format(startport))
+    print "Running python2 RestfulService.py in port {}".format(startport)
     logging.warning("Running in port {}".format(startport))
 
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
-    if utils.runtype == "release":
-        httpd.request_queue_size = 0
-        #allow release_analyze to have normal queue size, as 5.
+
     httpd.serve_forever()
     print " End of python2 RestfulService.py"
     # app.test_client().get('/')
