@@ -138,8 +138,13 @@ class DependencyTree:
                             break
                 self._AddEdge(relation[0], relation[1], subgraph.headID)
         index = 0
+        prevnode = None
         for node in sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")):
             node.Index = index
+            if prevnode:
+                self._AddEdge(node.ID, "RIGHT", prevnode.ID)
+                self._AddEdge(prevnode.ID, "LEFT", node.ID)
+            prevnode = node
             index +=  1
 
         self._MarkNext()
@@ -209,15 +214,17 @@ class DependencyTree:
         output = ""
         if Type == 'simplegraph' :
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
-                output += """{}{{{}->{}}}; """.format(edge[1],
-                                self.nodes[edge[2]].text,
-                                self.nodes[edge[0]].text   )
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
+                    output += """{}{{{}->{}}}; """.format(edge[1],
+                                    self.nodes[edge[2]].text,
+                                    self.nodes[edge[0]].text   )
         elif Type == 'simple2':
             for nodeid in sorted(self.nodes, key=operator.attrgetter("Index")):
                 output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
             output += "{"
             for edge in sorted(self.graph, key= lambda e: e[2]):
-                output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
+                    output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
             output += "}"
         elif Type == 'graphjson':
             output += '{  "nodes": ['
@@ -232,11 +239,12 @@ class DependencyTree:
             output += '],  "edges": ['
             first = True
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
-                if first:
-                    first = False
-                else:
-                    output += ", "
-                output += '{{ "from":{}, "to":{}, "relation":"{}" }}'.format(edge[2], edge[0], edge[1])
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
+                    if first:
+                        first = False
+                    else:
+                        output += ", "
+                    output += '{{ "from":{}, "to":{}, "relation":"{}" }}'.format(edge[2], edge[0], edge[1])
 
             output += "]}"
 
@@ -261,6 +269,7 @@ class DependencyTree:
                 output += "];\n"
             output += "//edges:\n"
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
@@ -325,14 +334,14 @@ class DependencyTree:
         return False
 
 
-    def LinearNodeOffset(self, nodeid, offset):
-        startpoint = self.nodes[nodeid].Index
-        targetindex = startpoint + offset
-
-        for n in  sorted(self.nodes.values(), key=operator.attrgetter("Index")):
-            if n.Index == targetindex:
-                return n.ID
-        return None
+    # def LinearNodeOffset(self, nodeid, offset):
+    #     startpoint = self.nodes[nodeid].Index
+    #     targetindex = startpoint + offset
+    #
+    #     for n in  sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+    #         if n.Index == targetindex:
+    #             return n.ID
+    #     return None
 
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
@@ -401,33 +410,33 @@ class DependencyTree:
             if nodeID and relations:
                 for relation in relations.split("."):
                     Found = False
-                    if relation == "LEFT":
-                        nodeID = self.LinearNodeOffset(nodeID, -1)
-                        if nodeID:
-                            Found = True
-                    elif relation == "RIGHT":
-                        nodeID = self.LinearNodeOffset(nodeID, 1)
-                        if nodeID:
-                            Found = True
-                    else:
-                        relationid = FeatureOntology.GetFeatureID(relation)
-                        for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
-                            #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
-                            if edge[2] == nodeID:
-                                if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
+                    # if relation == "LEFT":
+                    #     nodeID = self.LinearNodeOffset(nodeID, -1)
+                    #     if nodeID:
+                    #         Found = True
+                    # elif relation == "RIGHT":
+                    #     nodeID = self.LinearNodeOffset(nodeID, 1)
+                    #     if nodeID:
+                    #         Found = True
+                    # else:
+                    relationid = FeatureOntology.GetFeatureID(relation)
+                    for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
+                        #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
+                        if edge[2] == nodeID:
+                            if relationid == edge[3]: # or relationid in FeatureOntology.SearchFeatureOntology(edge[3]):
+                                nodeID = edge[0]
+                                Found = True
+                                if logging.root.isEnabledFor(logging.DEBUG):
+                                    logging.debug("   Found!")
+                                break
+                            else:
+                                edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
+                                if edgerelationnode and relationid in edgerelationnode.ancestors:
                                     nodeID = edge[0]
                                     Found = True
                                     if logging.root.isEnabledFor(logging.DEBUG):
-                                        logging.debug("   Found!")
+                                        logging.debug("   Found ontology ancesstor relation!")
                                     break
-                                else:
-                                    edgerelationnode = FeatureOntology.SearchFeatureOntology(edge[3])
-                                    if edgerelationnode and relationid in edgerelationnode.ancestors:
-                                        nodeID = edge[0]
-                                        Found = True
-                                        if logging.root.isEnabledFor(logging.DEBUG):
-                                            logging.debug("   Found ontology ancesstor relation!")
-                                        break
 
                     if not Found:
                         if not Negation:
@@ -627,16 +636,15 @@ class DependencyTree:
         #
         for AndCondition in SubtreePointer.split("+"):
             if ">" in AndCondition or "<" in AndCondition:
-                if self.MatchProximity(AndCondition, OpenNodeID, rule, node):
-                    continue
-                else:
+                if not self.MatchProximity(AndCondition, OpenNodeID, rule, node):
                     return False
-            
+                AndCondition = AndCondition.split(">", 1)[0]
+                AndCondition = AndCondition.split("<", 1)[0]
+
             Negation = False
 
-            #logging.warning("AndCondition:{}".format(AndCondition))
             if AndCondition[0] == "!":
-                #logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
+                logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
@@ -663,9 +671,7 @@ class DependencyTree:
 
                 else:
                     pointer = "^" + pointer
-                    #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
                     for nodeid in sorted(self.nodes):
-                        #logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(node.TempPointer, pointer))
                         if self.nodes[nodeid].TempPointer == pointer:
                             start_nodeID = nodeid
                             break
@@ -679,7 +685,7 @@ class DependencyTree:
                 relationlist = relations.split(".")
                 if len(relationlist) == 1:
                     if relations in ("LINKNUM1", "LINKNUM2", "LINKNUM3"):
-                        linkcount = len([e for e in self.graph if e[0] == nodeID and e[2] == start_nodeID])
+                        linkcount = len([e for e in self.graph if e[0] == nodeID and e[2] == start_nodeID and e[1] != "LEFT" and e[1] != "RIGHT"])
                         logging.debug("\tLink count from parent {} to node {} is {}".format(self.nodes[start_nodeID], self.nodes[nodeID], linkcount))
                         if relations == "LINKNUM1":
                             Satisfied = linkcount == 1

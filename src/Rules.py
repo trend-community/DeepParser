@@ -1927,7 +1927,7 @@ def _ExpandOrToken(OneList):
             if token.SubtreePointer.find("|") > 0:
                 SubtreePointer = token.SubtreePointer
                 SubtreePointerExtra = ''
-                ExtraMatch = re.match("(^.*?)([<>].*)", SubtreePointer)
+                ExtraMatch = re.match("(^.*?)([<>+].*)", SubtreePointer)
                 if ExtraMatch:
                     SubtreePointer = ExtraMatch.group(1)
                     SubtreePointerExtra = ExtraMatch.group(2)
