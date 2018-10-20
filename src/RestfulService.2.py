@@ -40,9 +40,6 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
                 self.LexicalAnalyze(queries)
 
-
-            elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
-                self.feed_file(link.path[1:])
             else:
                 logging.error("Wrong link.")
                 self.send_error(404)
@@ -76,20 +73,6 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_header('Content-type', "text/plain; charset=utf-8")
         self.end_headers()
         self.wfile.write("".encode("utf-8"))
-
-    def feed_file(self, filepath):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), filepath)) as f:
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html; charset=utf-8')
-            self.send_header('Cache-Control', 'public, max-age=31536000')
-            self.end_headers()
-            filecontent = f.read()
-            if len(filepath)>4 and filepath[-4:] == ".txt":
-                reply = "<pre>" + filecontent + "</pre>"
-                self.wfile.write(reply.encode("utf-8") )
-            else:
-                self.wfile.write(filecontent.encode("utf-8"))
-
 
 
 def init():
