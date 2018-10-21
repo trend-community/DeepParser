@@ -55,6 +55,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         if queries:
             try:
                 output_text = "{'output':'example'}"
+
                 self.send_response(200)
                 self.send_header("Content-type", "Application/json; charset=utf-8")
                 self.end_headers()
@@ -76,10 +77,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 
 
 def init():
-
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+
 
 if __name__ == "__main__":
     init()
