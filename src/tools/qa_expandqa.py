@@ -6,20 +6,39 @@ Shops = {"美的": {"ID":1000001452, "profession": "大家电行业：空调"},
          }
 
 
-fieldnames = ["ID", "question", "keyword,tag", "shopid", "brand", "cid3", "sku", "answer", "cat1",
+fieldnames = ["question", "keyword,tag", "shopid", "brand", "cid3", "sku", "answer", "cat1",
               "cat2", "profession", "source"]
 
 Data = []
 Answers = {}
+
 
 def WriteBrandFAQ(location):
     with open(location, 'w', encoding="utf-8") as csvfile2:
         csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
         csvwriter.writeheader()
         for row in Data:
-            del row['\ufeffID']
-            del row['AnswerID']
-            csvwriter.writerow(dict(row))
+            temprow = {}
+            for key in row:
+                if key in fieldnames:
+                    temprow[key] = row[key]
+
+            csvwriter.writerow(temprow)
+
+
+def WriteBrandFAQ_Extra(location):
+    with open(location, 'w', encoding="utf-8") as csvfile2:
+        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
+        csvwriter.writeheader()
+        for row in Data:
+            if row["ID"] > 400000:
+                return
+            temprow = {}
+            for key in row:
+                if key in fieldnames:
+                    temprow[key] = row[key]
+
+            csvwriter.writerow(temprow)
 
 
 def GetOriginRow(answer):
@@ -158,4 +177,5 @@ if __name__ == "__main__":
     ExpandBrandFAQ()
 
     WriteBrandFAQ(sys.argv[4])
+    WriteBrandFAQ_Extra(sys.argv[4] + ".new.csv")
 
