@@ -35,13 +35,17 @@ class DependencyTree:
         self._subgraphs = []     #this is only used when constructing from nodelist.
         self.graph = set()
         self.root = -1
-        self.fullstring = ""
+        self.fulltext = ""
+        self.fullnorm = ""
+        self.fullatom = ""
 
 
     def transform(self, nodelist):    #Transform from SentenceLinkedList to Depen
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Start to transform:\n {}".format(jsonpickle.dumps(nodelist)))
-        self.fullstring = nodelist.root().atom
+        self.fulltext = nodelist.root().text
+        self.fullnorm = nodelist.root().norm
+        self.fullatom = nodelist.root().atom
         root = nodelist.head
         if root.text == '' and utils.FeatureID_JS in root.features:
             root = root.next        #ignore the first empty (virtual) JS node
@@ -134,8 +138,13 @@ class DependencyTree:
                             break
                 self._AddEdge(relation[0], relation[1], subgraph.headID)
         index = 0
+        prevnode = None
         for node in sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")):
             node.Index = index
+            if prevnode:
+                self._AddEdge(node.ID, "RIGHT", prevnode.ID)
+                self._AddEdge(prevnode.ID, "LEFT", node.ID)
+            prevnode = node
             index +=  1
 
         self._MarkNext()
@@ -205,15 +214,17 @@ class DependencyTree:
         output = ""
         if Type == 'simplegraph' :
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
-                output += """{}{{{}->{}}}; """.format(edge[1],
-                                self.nodes[edge[2]].text,
-                                self.nodes[edge[0]].text   )
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
+                    output += """{}{{{}->{}}}; """.format(edge[1],
+                                    self.nodes[edge[2]].text,
+                                    self.nodes[edge[0]].text   )
         elif Type == 'simple2':
             for nodeid in sorted(self.nodes, key=operator.attrgetter("Index")):
                 output += """{}"{}" """.format(nodeid, self.nodes[nodeid].text)
             output += "{"
             for edge in sorted(self.graph, key= lambda e: e[2]):
-                output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
+                    output += """{}->{} [{}]; """.format(edge[2], edge[0], edge[1])
             output += "}"
         elif Type == 'graphjson':
             output += '{  "nodes": ['
@@ -228,11 +239,12 @@ class DependencyTree:
             output += '],  "edges": ['
             first = True
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
-                if first:
-                    first = False
-                else:
-                    output += ", "
-                output += '{{ "from":{}, "to":{}, "relation":"{}" }}'.format(edge[2], edge[0], edge[1])
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
+                    if first:
+                        first = False
+                    else:
+                        output += ", "
+                    output += '{{ "from":{}, "to":{}, "relation":"{}" }}'.format(edge[2], edge[0], edge[1])
 
             output += "]}"
 
@@ -257,6 +269,7 @@ class DependencyTree:
                 output += "];\n"
             output += "//edges:\n"
             for edge in sorted(self.graph, key= operator.itemgetter(2, 0, 1)):
+                if edge[1] != "LEFT" and edge[1] != "RIGHT":
                     output += "\t{}->{} [label=\"{}\"];\n".format(edge[2], edge[0], edge[1])
 
             output += "}"
@@ -321,16 +334,21 @@ class DependencyTree:
         return False
 
 
+    # def LinearNodeOffset(self, nodeid, offset):
+    #     startpoint = self.nodes[nodeid].Index
+    #     targetindex = startpoint + offset
+    #
+    #     for n in  sorted(self.nodes.values(), key=operator.attrgetter("Index")):
+    #         if n.Index == targetindex:
+    #             return n.ID
+    #     return None
+
     #because the "|" sign in SubtreePointer is expanded during compilation(_ExpandOrToken(OneList))
     #it is not longer process here.
     FindPointerNode_Cache = {}
-    def FindPointerNode(self, openID, SubtreePointer, rule):
+    def FindPointerNode(self, openID, SubtreePointer, rule, CurrentNodeID):
         if logging.root.isEnabledFor(logging.DEBUG):
             logging.debug("Dag.FindPointerNode for {}".format(SubtreePointer))
-            # if not SubtreePointer:
-            #     #actually it is looking for the open id.
-            #     pass
-            #     #logging.warning("\tEmpty SubtreePointer for rule {}".format(rule))
         if (openID, SubtreePointer, rule.ID) in self.FindPointerNode_Cache:
             #logging.debug("FindPointerNode_Cache: hit!")
             return self.FindPointerNode_Cache[(openID, SubtreePointer, rule.ID)]
@@ -339,6 +357,8 @@ class DependencyTree:
             SubtreePointer = SubtreePointer[1:]
 
         nodeID = None
+        if "+" in SubtreePointer:
+            logging.warning("There is + sign in SubtreePointer of FindPointerNode(): {} ".format(rule))
         for AndCondition in SubtreePointer.split("+"):
             Negation = False
             if len(AndCondition) > 1 and AndCondition[0] == "!":
@@ -358,6 +378,9 @@ class DependencyTree:
             nodeID = None
             if pointer == '':
                 nodeID = openID
+            elif pointer == '~':
+                #logging.warning("THIS POINTER in {}".format(rule))
+                nodeID = CurrentNodeID
             else:
                 if pointer.isdigit():
                     pointer_num = int(pointer)
@@ -386,8 +409,17 @@ class DependencyTree:
                 #logging.warning("after looping over the nodes, nodeID={}".format(nodeID))
             if nodeID and relations:
                 for relation in relations.split("."):
-                    relationid = FeatureOntology.GetFeatureID(relation)
                     Found = False
+                    # if relation == "LEFT":
+                    #     nodeID = self.LinearNodeOffset(nodeID, -1)
+                    #     if nodeID:
+                    #         Found = True
+                    # elif relation == "RIGHT":
+                    #     nodeID = self.LinearNodeOffset(nodeID, 1)
+                    #     if nodeID:
+                    #         Found = True
+                    # else:
+                    relationid = FeatureOntology.GetFeatureID(relation)
                     for edge in sorted(self.graph, key= operator.itemgetter(2, 1, 0)):
                         #logging.debug("Evaluating edge{} with relation {}, node {}".format(edge, relation, nodeID))
                         if edge[2] == nodeID:
@@ -427,6 +459,16 @@ class DependencyTree:
             self.nodes[nodeid].visited = False
 
 
+    def ClearHITFeatures(self):
+        for nodeid in self.nodes:
+            node = self.nodes[nodeid]
+            if FeatureID_HIT in node.features:
+                node.features.remove(FeatureID_HIT)
+            if FeatureID_HIT2 in node.features:
+                node.features.remove(FeatureID_HIT2)
+            if FeatureID_HIT3 in node.features:
+                node.features.remove(FeatureID_HIT3)
+
     # Unification: <['^V-' ] [不] ^V[V|V0|v]> // Test: 学不学习； 侃不侃大山
     # In rule, start from RulePosition, seach for pointer:
     #   Start from left side, if not found, seach right side.
@@ -461,7 +503,7 @@ class DependencyTree:
             P = "^" + Pointer[1:]  # should be ^N
             PointerType = 0
 
-        StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule)]
+        StrPointerToken = self.nodes[self.FindPointerNode(openID, P, rule, nodeID)]
         if not StrPointerToken:
             return False
 
@@ -513,6 +555,33 @@ class DependencyTree:
         return index_max-index_min+1
 
 
+    def MatchProximity(self, Condition, OpenNodeID, rule, node):
+        if ">>" in Condition:
+            _, ReferenceNodePointer = Condition.split(">>", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
+                return False
+        elif "<<" in Condition:
+            _, ReferenceNodePointer = Condition.split("<<", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
+                return False
+        elif ">" in Condition:     #on the left side of the other pointer
+            _, ReferenceNodePointer = Condition.split(">", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
+                return False
+        elif "<" in Condition:
+            _, ReferenceNodePointer = Condition.split("<", 1)
+            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule, node.ID)
+            if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
+                return False
+        else:
+            logging.error("MatchAproximity: There should be either > or < in the Condition. \nrule:{}".format(rule))
+
+        return True
+
+
     def TokenMatch(self, nodeID, ruletoken, OpenNodeID, rule):
         if ruletoken.AndText and "^" in ruletoken.AndText:
             # This is a pointer! unification comparison.
@@ -521,7 +590,31 @@ class DependencyTree:
                 return False
         node = self.nodes[nodeID]
 
-        logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken)
+        if ruletoken.AndTextMatchtype == "fuzzy":
+            PrevText = "".join([n.text.lower()  for n in  sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")) if n.StartOffset<=node.StartOffset])
+            PrevNorm = "".join([n.norm.lower()  for n in  sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")) if n.StartOffset<=node.StartOffset])
+            PrevAtom = "".join([n.atom.lower()  for n in  sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")) if n.StartOffset<=node.StartOffset])
+        else:
+            PrevText = ''
+            PrevNorm = ''
+            PrevAtom = ''
+
+        try:
+            logicmatch = LogicOperation.LogicMatch_notpointer(node, ruletoken, PrevText, PrevNorm, PrevAtom)
+        except RuntimeError as e:
+            logging.error("Error in TokenMatch rule:" + str(rule))
+            logging.error("Using " + ruletoken.word + " to match:" + node.text)
+            logging.error(e)
+            raise
+        except Exception as e:
+            logging.error("Using " + ruletoken.word + " to match:" + node.text)
+            logging.error(e)
+            raise
+        except IndexError as e:
+            logging.error("Using " + ruletoken.word + " to match:" + node.text)
+            logging.error(e)
+            raise
+
         if not logicmatch:
             return False
         #might need open node for pointer
@@ -537,36 +630,21 @@ class DependencyTree:
         #     ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
         #     if abs(node.Index - self.nodes[ReferenceNodeID].Index ) > len(self.nodes)/3:
         #         return False
-        if ">>" in SubtreePointer:
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">>", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index + 1 :
-                return False
-        elif "<<" in SubtreePointer:
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<<", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if not ReferenceNodeID  or node.Index != self.nodes[ReferenceNodeID].Index - 1 :
-                return False
-        elif ">" in SubtreePointer:     #on the left side of the other pointer
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split(">", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if not ReferenceNodeID  or node.Index < self.nodes[ReferenceNodeID].Index :
-                return False
-        elif "<" in SubtreePointer:
-            SubtreePointer, ReferenceNodePointer = SubtreePointer.split("<", 1)
-            ReferenceNodeID = self.FindPointerNode(OpenNodeID, ReferenceNodePointer, rule)
-            if not ReferenceNodeID  or node.Index > self.nodes[ReferenceNodeID].Index :
-                return False
 
         # if not SubtreePointer:  #Apparently after comparing index with referencenode, the subtreepointer is not empty
         #     return True         # so the condition was like ^<
         #
         for AndCondition in SubtreePointer.split("+"):
+            if ">" in AndCondition or "<" in AndCondition:
+                if not self.MatchProximity(AndCondition, OpenNodeID, rule, node):
+                    return False
+                AndCondition = AndCondition.split(">", 1)[0]
+                AndCondition = AndCondition.split("<", 1)[0]
+
             Negation = False
 
-            #logging.warning("AndCondition:{}".format(AndCondition))
             if AndCondition[0] == "!":
-                #logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
+                logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
@@ -593,9 +671,7 @@ class DependencyTree:
 
                 else:
                     pointer = "^" + pointer
-                    #logging.info("DAG.TokenMatch(): Looking for pointer node {} from TempPointer".format(pointer[0]))
                     for nodeid in sorted(self.nodes):
-                        #logging.debug("DAG.TokenMatch: evaluating temppointer {} with pointer {}".format(node.TempPointer, pointer))
                         if self.nodes[nodeid].TempPointer == pointer:
                             start_nodeID = nodeid
                             break
@@ -609,7 +685,7 @@ class DependencyTree:
                 relationlist = relations.split(".")
                 if len(relationlist) == 1:
                     if relations in ("LINKNUM1", "LINKNUM2", "LINKNUM3"):
-                        linkcount = len([e for e in self.graph if e[0] == nodeID and e[2] == start_nodeID])
+                        linkcount = len([e for e in self.graph if e[0] == nodeID and e[2] == start_nodeID and e[1] != "LEFT" and e[1] != "RIGHT"])
                         logging.debug("\tLink count from parent {} to node {} is {}".format(self.nodes[start_nodeID], self.nodes[nodeID], linkcount))
                         if relations == "LINKNUM1":
                             Satisfied = linkcount == 1
@@ -672,38 +748,80 @@ class DependencyTree:
     def ApplyDagActions_IEPair(self, OpenNode, node, rule, ieaction):
         ieaction = ieaction.strip("#")
         if "=" not in ieaction:
-            node.iepair = "{}={}".format(ieaction, node.atom)
+            node.iepair = "{}={}".format(ieaction, node.norm)
             return
 
         iekey, ievalue = ieaction.split("=", 1)
         if "^" not in ievalue:
             node.iepair = "{}={}".format(iekey, ievalue)
             return
+        else:
 
-        if ievalue.endswith(".TREE"):
-            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
-            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
-            if not parentnodeid:
-                return
-            sonlist = self.CollectSonList(parentnodeid)
-            value = ""
-            for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
-                logging.warning("node {}.atom={}".format(n.text, n.atom))
-                value += n.atom
+            if ievalue.endswith(".TREE"):
+                ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
+                if not parentnodeid:
+                    return
+                sonlist = self.CollectSonList(parentnodeid)
+                value = ""
+                for n in  sorted(sonlist, key=operator.attrgetter("StartOffset")):
+                    #logging.warning("node {}.norm={}".format(n.text, n.norm))
+                    value += n.norm
 
-            node.iepair = "{}={}".format(iekey, value)
-            return
-
-        if ievalue.endswith(".REST"):
-            ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
-            parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
-            if not parentnodeid:
+                node.iepair = "{}={}".format(iekey, value)
                 return
 
-            node.iepair = "{}={}".format(iekey, self.fullstring[self.nodes[parentnodeid].StartOffset:])
-            return
+            if ievalue.endswith(".REST"):
+                ParentPointer = ievalue[:ievalue.rfind('.')]  # find pointer up the the last dot "."
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
+                if not parentnodeid:
+                    return
 
-        raise Exception("Todo: more ^A.S ^A ^A.O ie value")
+                node.iepair = "{}={}".format(iekey, self.fullnorm[self.nodes[parentnodeid].StartOffset:])
+                return
+            else:
+                pointernodeid =  self.FindPointerNode(OpenNode.ID, ievalue, rule, node.ID)
+                if pointernodeid:
+                    node.iepair = "{}={}".format(iekey, self.nodes[pointernodeid].norm)
+                else:
+                    logging.warning("Can't find this pointer {} in this node {}".format(ievalue, node.text))
+#        raise Exception("Todo: more ^A.S ^A ^A.O ie value: {}".format(ieaction))
+
+
+    def LastNodeInFuzzyString(self, MatchString):
+        if MatchString in self.fulltext:
+            MatchMethod = "text"
+        elif MatchString in self.fullnorm:
+            MatchMethod = "norm"
+        elif MatchString in self.fullatom:
+            MatchMethod = "atom"
+        else:
+            logging.error("Not matched Fuzzy String. Should not get to LastNodeInFuzzyString()")
+            raise RuntimeError("Wrong logic to LastNodeInFuzzyString()")
+
+        nodestring = ""
+        for node in sorted(self.nodes.values(), key=operator.attrgetter("StartOffset")):
+            if MatchMethod == "text":
+                nodetext = node.text
+            elif MatchMethod == "norm":
+                nodetext = node.norm
+            else:
+                nodetext = node.atom
+
+            if nodestring:
+                nodestring += nodetext
+                if nodestring not in MatchString:
+                    nodestring = ""     #reset to blank.
+
+            if not nodestring and MatchString.startswith(nodetext):
+                nodestring = nodetext
+
+            if nodestring == MatchString:
+                return node
+
+        logging.error("Failed to get LastNodeInFuzzyString()")
+        raise RuntimeError("Failed to get LastNodeInFuzzyString()")
+
 
     def ApplyDagActions(self, OpenNode, node, actinstring, rule):
         iepairmatch = re.search("(#.*#)", actinstring)
@@ -717,7 +835,7 @@ class DependencyTree:
         for Action in copy.copy(Actions):
             if "---" in Action:
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
-                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
                 if not parentnodeid:
                     return
 
@@ -732,7 +850,7 @@ class DependencyTree:
         for Action in sorted(Actions, key=lambda d:(d[-1])):
             if Action[0] == '^':
                 ParentPointer = Action[:Action.rfind('.')]  #find pointer up the the last dot "."
-                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule)
+                parentnodeid = self.FindPointerNode(OpenNode.ID, ParentPointer, rule, node.ID)
                 if not parentnodeid:
                     return
 

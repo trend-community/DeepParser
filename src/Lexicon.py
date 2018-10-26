@@ -223,7 +223,7 @@ def LoadSegmentLexicon():
                     and word not in _LexiconLookupSet[utils.LexiconLookupSource.External]\
                     and word not in _LexiconLookupSet[utils.LexiconLookupSource.Compound]:
                 _LexiconSegmentDict[word] = 1.2
-    else:
+    else:       #this part is for other usage, not real application.
         lexiconLocation = XLocation + 'AllLexicon.txt'
         with open(lexiconLocation, encoding='utf-8') as dictionary:
             for line in dictionary:

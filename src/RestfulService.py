@@ -37,6 +37,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             if link.path == '/LexicalAnalyze':
                 try:
                     query = urllib.parse.unquote(link.query)
+                    # there might be & sign in the quotes. need to include in Sentence before the query is split("&").
                     SentenceMatch = re.search("[\"“”](.*)[\"“”]", query)
                     if SentenceMatch:
                         Sentence = SentenceMatch.group(1)
@@ -382,9 +383,23 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
 def init():
     global charttemplate, KeyWhiteList
     global MAXQUERYSENTENCELENGTH
+    MAXQUERYSENTENCELENGTH = 100
+    if utils.ParserConfig.has_option("website", "maxquerysentencelength"):
+        MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
+
+    LogLevel = ""
+    if utils.ParserConfig.has_option("website", "LogLevel") :
+        LogLevel = utils.ParserConfig.get("website", "LogLevel").lower()
+    if LogLevel == "debug":
+        loglevel = logging.DEBUG
+    elif LogLevel == "warning":
+        loglevel = logging.WARNING
+    else:
+        loglevel = logging.INFO
+
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=loglevel, format='%(asctime)s [%(levelname)s] %(message)s')
     
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "chart.template.html")) as templatefile:
@@ -392,10 +407,6 @@ def init():
 
     ProcessSentence.LoadCommon()
     #FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt') # for debug purpose
-    try:
-        MAXQUERYSENTENCELENGTH = int(utils.ParserConfig.get("website", "maxquerysentencelength"))
-    except (KeyError, NoOptionError):
-        MAXQUERYSENTENCELENGTH = 100
 
     KeyWhiteList = [x.split("#", 1)[0].strip() for x in utils.ParserConfig.get("main", "keylist").splitlines() if x]
 

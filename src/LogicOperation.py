@@ -10,7 +10,7 @@ from utils import *
 # so CheckPrefix() is being called from LogicMatch()
 from functools import lru_cache
 # return -1 if failed. Should throw error?
-@lru_cache(200000)
+@lru_cache(100000)
 def CheckPrefix(word):
     matchtype = "unknown"
     if len(word) < 2:
@@ -36,6 +36,10 @@ def CheckPrefix(word):
     elif word[0] == "/" and word.find("/", 1) == lastlocation :
         word = word.strip("/")
         matchtype = "atom"      # case insensitive
+#    elif word[0] == "." and word.find(".", 1) == lastlocation :
+    elif word[0] == "." and word[-1] == ".":
+        word = word.strip(".")
+        matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
 
     return prefix+word, matchtype
 
@@ -181,13 +185,17 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Subtree
 
     pointer = "^" + pointer
 
+    if pointer == "^~":     #THIS pointer
+        StrPointerRootToken = StrTokenList.get(StrPosition)
+    else:
     #rootPointer = "^" + tree[0]
-    x = StrTokenList.head
-    while x:
-        if x.TempPointer == pointer:
-            StrPointerRootToken = x
-            break
-        x = x.next
+        x = StrTokenList.head
+        while x:
+            if x.TempPointer == pointer:
+                StrPointerRootToken = x
+                break
+            x = x.next
+
     if not StrPointerRootToken:
         logging.error("FindPointerNode Can't find specified pointer " + pointer + " in rule:")
         logging.error(" ".join([str(r) for r in RuleTokens]))
@@ -219,16 +227,16 @@ def _FindSubtree(root, pointers):
     return None
 
 
-LogicMatch_notpointer_Cache = {}
-hitcount = 0
-def LogicMatch_notpointer(StrToken, RuleToken):
-    global hitcount
-    # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
-    if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
-        hitcount += 1
-        return LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)]
-
-    LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = False
+# = {}
+#hitcount = 0
+def LogicMatch_notpointer(StrToken, RuleToken, PrevText, PrevNorm, PrevAtom):
+    # global hitcount
+    # # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
+    # if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
+    #     hitcount += 1
+    #     return LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)]
+    #
+    # LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = False
     if RuleToken.AndFeatures:
         for f in RuleToken.AndFeatures:
             if f not in StrToken.features:
@@ -240,15 +248,27 @@ def LogicMatch_notpointer(StrToken, RuleToken):
         else:
             if StrToken.Head0Text and not RuleToken.FullString:
                 word = StrToken.Head0Text
+                if not LogicMatchText(RuleToken.AndText, word):
+                    return False
             else:
                 if RuleToken.AndTextMatchtype == "text":
-                    word = StrToken.text
+                    if not LogicMatchText(RuleToken.AndText, StrToken.text):
+                        return False
                 elif RuleToken.AndTextMatchtype == "norm":
-                    word = StrToken.norm
+                    if not LogicMatchText(RuleToken.AndText, StrToken.norm):
+                        return False
+                elif RuleToken.AndTextMatchtype == "atom":
+                    if not LogicMatchText(RuleToken.AndText, StrToken.atom):
+                        return False
+                elif RuleToken.AndTextMatchtype == "fuzzy":
+                    if not( PrevText.endswith(RuleToken.AndText)
+                            or PrevNorm.endswith(RuleToken.AndText)
+                            or PrevAtom.endswith(RuleToken.AndText)  ):
+                        return False
                 else:
-                    word = StrToken.atom
-            if not LogicMatchText(RuleToken.AndText, word):
-                return False
+                    logging.error("AndTextMatchtype is {} , please check the rule".format(RuleToken.AndTextMatchtype))
+                    raise RuntimeError("Unknown TextMatch type")
+                    #return False
 
     for OrFeatureGroup in RuleToken.OrFeatureGroups:
         CommonOrFeatures = OrFeatureGroup.intersection(StrToken.features)
@@ -267,19 +287,22 @@ def LogicMatch_notpointer(StrToken, RuleToken):
                 word = StrToken.text
             elif RuleToken.NotTextMatchtype == "norm":
                 word = StrToken.norm
-            else:
+            elif RuleToken.AndTextMatchtype == "atom":
                 word = StrToken.atom
+            else:
+                logging.debug("Not ready to use FUZZY comparison in NotText.")
+                word = StrToken.norm    #backward compatible only
         for NotText in RuleToken.NotTexts:
             if LogicMatchText(NotText, word):
                 return False
 
-    LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = True
+    #LogicMatch_notpointer_Cache[(StrToken.ID, RuleToken.ID)] = True
     return True
 
 
 #Being called after each rule applying (assume the StrToken is modified)
-def Clear_LogicMatch_notpointer_Cache():
-    LogicMatch_notpointer_Cache.clear()
+# def Clear_LogicMatch_notpointer_Cache():
+#     LogicMatch_notpointer_Cache.clear()
 
 
 def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
@@ -314,10 +337,19 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
                 return False
 
     RuleToken.MatchedNodeID = strToken.ID
-    return LogicMatch_notpointer(strToken, RuleToken)
+
+    if RuleToken.AndTextMatchtype == "fuzzy":
+        PrevText = "".join([StrTokenList.get(i).text.lower() for i in range(StrPosition)])
+        PrevNorm = "".join([StrTokenList.get(i).norm.lower() for i in range(StrPosition)])
+        PrevAtom = "".join([StrTokenList.get(i).atom.lower() for i in range(StrPosition)])
+    else:
+        PrevText = ''
+        PrevNorm = ''
+        PrevAtom = ''
+    return LogicMatch_notpointer(strToken, RuleToken, PrevText, PrevNorm, PrevAtom)
 
 
-@lru_cache(1000000)
+@lru_cache(100000)
 def LogicMatchText(ruletext, stringtext):
     # if (ruletext, stringtext) in LogicMatchText_Cache:
     #     return LogicMatchText_Cache[(ruletext, stringtext)]

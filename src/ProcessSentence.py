@@ -3,7 +3,7 @@ import traceback
 import Tokenization,  Lexicon
 import Rules, Cache
 #from threading import Thread
-from LogicOperation import LogicMatch, Clear_LogicMatch_notpointer_Cache
+from LogicOperation import LogicMatch #, Clear_LogicMatch_notpointer_Cache
 import DependencyTree
 from utils import *
 import utils
@@ -100,7 +100,7 @@ def RemoveTempPointer(StrList):
 
 # Apply the features, and other actions.
 def ApplyWinningRule(strtokens, rule, StartPosition):
-    Clear_LogicMatch_notpointer_Cache()
+    #Clear_LogicMatch_notpointer_Cache()
 
     if not strtokens:
         logging.error("The strtokens to ApplyWinningRule is blank!")
@@ -142,7 +142,7 @@ def ApplyWinningRule(strtokens, rule, StartPosition):
 
 # Apply the features, and other actions.
 def ApplyWinningDagRule(Dag, rule, OpenNode):
-    Clear_LogicMatch_notpointer_Cache()
+    #Clear_LogicMatch_notpointer_Cache()
 
     for i in range(rule.TokenLength):
         if rule.Tokens[i].action:
@@ -187,23 +187,23 @@ def ListMatch(list1, list2):
 
 #Note: the _UsingCache version is slower: 25 seconds instead of 16 seconds, for 100 sentences.
 # for 4503026 calls, it took 12 seconds, comparing to 4 seconds.
-ListMatchCache = {}
-def ListMatch_UsingCache(list1, list2):
-    l_hash = str(list1+list2)
-    if l_hash in ListMatchCache:
-        return ListMatchCache[l_hash]
-    if len(list1) != len(list2):
-        logging.error("Coding error. The size should be the same in ListMatch")
-        return False
-    for i in range(len(list1)):
-        if list2[i] is None or list1[i] == list2[i]:
-            pass
-        else:
-            ListMatchCache[l_hash] = False
-            return False
-
-    ListMatchCache[l_hash] = True
-    return True
+# ListMatchCache = {}
+# def ListMatch_UsingCache(list1, list2):
+#     l_hash = str(list1+list2)
+#     if l_hash in ListMatchCache:
+#         return ListMatchCache[l_hash]
+#     if len(list1) != len(list2):
+#         logging.error("Coding error. The size should be the same in ListMatch")
+#         return False
+#     for i in range(len(list1)):
+#         if list2[i] is None or list1[i] == list2[i]:
+#             pass
+#         else:
+#             ListMatchCache[l_hash] = False
+#             return False
+#
+#     ListMatchCache[l_hash] = True
+#     return True
 
 #
 # def ConstructNorms(strtokenlist, start):
@@ -294,6 +294,8 @@ def MatchAndApplyRuleFile(strtokenlist, RuleFileName):
                 #raise
         i += 1
         strtoken = strtoken.next
+
+    strtokenlist.ClearHITFeatures()
     return WinningRules
 
 
@@ -317,7 +319,7 @@ def DAGMatch(Dag, Rule, level, OpenNodeID = None):
 
         DAGMatch.DagSuccessRoutes.add(routeSignature)
         if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("Dag.TokenMatch(): Matched all tokens.")
+            logging.debug("Dag.DAGMatch(): Matched all tokens.")
         return Dag.nodes[OpenNodeID]
 
     if level < 0:
@@ -361,12 +363,13 @@ class RouteSignature(object):
     def __str__(self):
         return "RuleID:{}\tRoute:{}".format(self.RuleID, self.Route)
 
+
 def GetRouteSignature(rule):
     RouteSet = frozenset([token.MatchedNodeID for token in rule.Tokens if token.MatchedNodeID is not None])
     return RouteSignature(rule.FileName, rule.ID, RouteSet)
 
 
-def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
+def MatchAndApplyDagRuleFile(Dag, RuleFileName):
     WinningRules = {}
     rulegroup = Rules.RuleGroupDict[RuleFileName]
 
@@ -387,9 +390,9 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
             rule_sequence += 1
             logging.debug("This sentence is too long to try this rule:{}".format(rule.Origin))
             continue
-
-        # if logging.root.isEnabledFor(logging.DEBUG):
-        #     logging.debug("DAG: Start checking rule {}".format( rule))
+        #
+        # # if logging.root.isEnabledFor(logging.DEBUG):
+        # #     logging.debug("DAG: Start checking rule {}".format( rule))
         node = DAGMatch(Dag,  rule, 0)
         if node:
             if rule.WindowLimit == 0 or rule.WindowLimit >= Dag.MaxDistanceOfMatchNodes( rule):
@@ -424,6 +427,7 @@ def MatchAndApplyDagRuleFile(Dag, RuleFileName, fuzzy=False):
 
         rule_sequence += 1
 
+    Dag.ClearHITFeatures()
     return WinningRules
 
 
@@ -494,7 +498,7 @@ def DynamicPipeline(NodeList, schema):
                     logging.error("Failed to transfer the NodeList to Dag due to:\n{}".format(e))
                     return NodeList, Dag, WinningRules
             Rulefile = action[10:].strip()
-            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile, fuzzy=True))#fuzzy
+            WinningRules.update(MatchAndApplyDagRuleFile(Dag, Rulefile))
 
     return NodeList, Dag, WinningRules
 

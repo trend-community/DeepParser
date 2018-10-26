@@ -1,6 +1,22 @@
 #>/export/App/neo4j-community-3.3.2/bin/cypher-shell -a bolt://localhost:22087 "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs) and p.item_valid_flag='1' and p.sku_valid_flag='1' RETURN p.item_sku_id, o limit 1000000" > dajiadianattr1m.txt
 #>/export/App/neo4j-community-3.3.2/bin/cypher-shell -a bolt://localhost:22087 "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs) and p.item_valid_flag='1' and p.sku_valid_flag='1' RETURN p.item_sku_id, o skip 1000000 limit 1000000" > dajiadianattr1m.2.txt
 #>/export/App/neo4j-community-3.3.2/bin/cypher-shell -a bolt://localhost:22087 "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs) and p.item_valid_flag='1' and p.sku_valid_flag='1' RETURN p.item_sku_id, o skip 2000000 limit 1000000" > dajiadianattr1m.3.txt
+#!/bin/python
+
+"""
+#!/bin/bash
+head=0
+gap=100000
+readonly gap
+while(( $head < 1563099 ))
+do
+    cypher-shell -a bolt://172.18.189.202:1688 -u neo4j -p work  "MATCH (p:大家电)-[r]->(o) where (o:ExAttrs OR o:ProdAttrs)  RETURN p.item_sku_id, o SKIP ${head} LIMIT ${gap}" | tail -n +2 1>> $1.properties.txt
+    head=`expr ${head} + ${gap} `
+done
+
+grep -v TITLE $1.properties.txt > $1.properties.notitle.txt
+python3 property.py $1.properties.notitle.txt > $1.triplets.txt
+"""
 
 import logging, argparse, re
 propertypair = set()
