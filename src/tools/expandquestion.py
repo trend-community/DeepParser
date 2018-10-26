@@ -56,9 +56,11 @@ def Combine(termfile, templatefile, outputfile):
                 templatelist.append(temp.strip())
 
     with open(outputfile, 'w', encoding="utf-8") as outputf:
+        termid = 0
         for term1 in termlist:
+            termid += 1
             for template1 in templatelist:
-                outputf.write(template1.replace("{}", term1) + "\n")
+                outputf.write("{}\t{}\n".format(termid, template1.replace("{}", term1)))
 
 
 #expandquestion is created as:
