@@ -98,23 +98,21 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
     Data = RetrieveFromES()
 
-    BackupFileLocation = sys.argv[1]+".temp"
-    if os.path.isfile(sys.argv[1]):
-        shutil.move(sys.argv[1], BackupFileLocation)
+    TempFileLocation = sys.argv[1]+".temp"
 
-    WriteBrandFAQ(Data, sys.argv[1])
-    if os.path.isfile(sys.argv[1]):
-        if filecmp.cmp(sys.argv[1], BackupFileLocation, shallow=False):
-            os.remove(BackupFileLocation)
-            logging.info("Same file, nothing to do.")
-        else:
-            logging.info("Different file, moving to backup.")
-            maxnum = 5
-            currentfile = "{}.{}".format(sys.argv[1], maxnum)
-            if os.path.isfile(currentfile):
-                os.remove(currentfile)
-            for i in reversed(range(maxnum)):
-                if os.path.isfile("{}.{}".format(sys.argv[1], i)):
-                    shutil.move("{}.{}".format(sys.argv[1], i), "{}.{}".format(sys.argv[1], i+1))
-            shutil.move(BackupFileLocation, "{}.{}".format(sys.argv[1], 0))
+    WriteBrandFAQ(Data, TempFileLocation)
+    if os.path.isfile(sys.argv[1]) and filecmp.cmp(sys.argv[1], TempFileLocation, shallow=False):
+        os.remove(TempFileLocation)
+        logging.info("Same file, remove the temp file.")
+    else:
+        logging.info("Different file, moving to backup.")
+        maxnum = 5
+        if os.path.isfile("{}.{}".format(sys.argv[1], maxnum)):
+            os.remove("{}.{}".format(sys.argv[1], maxnum))
+        for i in reversed(range(maxnum)):
+            if os.path.isfile("{}.{}".format(sys.argv[1], i)):
+                shutil.move("{}.{}".format(sys.argv[1], i), "{}.{}".format(sys.argv[1], i+1))
+        shutil.move(sys.argv[1], "{}.{}".format(sys.argv[1], 0))
+        shutil.move(TempFileLocation, sys.argv[1])
+
 
