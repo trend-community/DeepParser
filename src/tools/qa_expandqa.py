@@ -6,7 +6,7 @@ Shops = {"美的": {"ID":1000001452, "profession": "大家电行业：空调"},
          }
 
 
-fieldnames = ["question", "keyword,tag", "shopid", "brand", "cid3", "sku", "answer", "cat1",
+fieldnames = ["question", "tag", "shopid", "brand", "cid3", "sku", "answer", "cat1",
               "cat2", "profession", "source"]
 
 Data = []
@@ -31,14 +31,13 @@ def WriteBrandFAQ_Extra(location):
         csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
         csvwriter.writeheader()
         for row in Data:
-            if row["ID"] > 400000:
-                return
-            temprow = {}
-            for key in row:
-                if key in fieldnames:
-                    temprow[key] = row[key]
+            if row["ID"] < 400000:
+                temprow = {}
+                for key in row:
+                    if key in fieldnames:
+                        temprow[key] = row[key]
 
-            csvwriter.writerow(temprow)
+                csvwriter.writerow(temprow)
 
 
 def GetOriginRow(answer):
@@ -61,7 +60,7 @@ def ExpandBrandFAQ():
         if originRow:
             row = copy.copy(originRow)
             row["question"] = q.question
-            row["ID"] = ID
+            row["ID"] = 0
             ID += 1
             Data.append(row)
 
@@ -83,7 +82,7 @@ def ReadBrandFAQ(location):
             # row["ID"] = rowid
             # rowid += 1
             if "\ufeffID" in row:
-                row["ID"] = row["\ufeffID"]
+                row["ID"] = int(row["\ufeffID"])
 
             if row["answer"] not in Answers:
                 newanswer = ANSWER(row["answer"])
@@ -165,8 +164,9 @@ def ReadExpandList(location):
 if __name__ == "__main__":
 
     if len(sys.argv) < 4:
-        print(
-            "Usage: python3 qa_expandqa.py  [inputqa] [qseedlist] [seed_expand] [outputqa] ")
+        print("""Usage: python3 qa_expandqa.py  [inputqa] [qseedlist] [seed_expand] [outputqa] 
+                 Example: src/tools/qa_expandqa.py ../../temp/brand.csv ../../temp/w1.txt ../../temp/what.txt ../../temp/brand.result.csv
+""")
         exit(1)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
