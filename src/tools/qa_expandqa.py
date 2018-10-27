@@ -12,10 +12,13 @@ fieldnames = ["question", "tag", "shopid", "brand", "cid3", "sku", "answer", "ca
 Data = []
 Answers = {}
 
+def FilterTab(inputstr):
+    return inputstr.replace("\t", "    ").replace("\n", "|@@|").replace("\r", "|@@|")
+
 
 def WriteBrandFAQ(location):
     with open(location, 'w', encoding="utf-8") as csvfile2:
-        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
+        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames, delimiter="\t")
         csvwriter.writeheader()
         for row in Data:
             temprow = {}
@@ -28,15 +31,14 @@ def WriteBrandFAQ(location):
 
 def WriteBrandFAQ_Extra(location):
     with open(location, 'w', encoding="utf-8") as csvfile2:
-        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
+        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames, delimiter="\t")
         csvwriter.writeheader()
         for row in Data:
             if row["ID"] < 400000:
                 temprow = {}
                 for key in row:
                     if key in fieldnames:
-                        temprow[key] = row[key]
-
+                        temprow[key] = FilterTab(row[key])
                 csvwriter.writerow(temprow)
 
 

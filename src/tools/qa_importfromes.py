@@ -1,4 +1,4 @@
-import jsonpickle, requests, sys, logging
+import jsonpickle, requests, sys, logging, configparser
 import csv, shutil, os.path, filecmp
 from datetime import datetime
 
@@ -6,19 +6,28 @@ fieldnames = [ "question", "tag", "shopid", "brand", "cid3", "sku", "answer", "c
               "cat2", "profession", "source"]
 
 
+def FilterTab(inputstr):
+    return inputstr.replace("\t", "    ").replace("\n", "|@@|").replace("\r", "|@@|")
+
+
 def WriteBrandFAQ(data, location):
     with open(location, 'w', encoding="utf-8") as csvfile2:
-        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames)
+        csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames, delimiter='\t')
         csvwriter.writeheader()
         for row in sorted(data, key=lambda k: (k['updateTime'],k['id'])):
             #fields not in fieldnames: 'pos', 'isExpires', 'shopId', 'userPin', 'cid2', 'id', 'ner', 'cid1', 'visiable', 'groupTypeSub', 'assistType', 'expiresRange', 'words', 'professionType', 'confirmed', 'tag', 'questionNormalized', 'groupType', 'updateTime', 'version'
             temprow = {}
             for key in row:
                 if key in fieldnames:
-                    temprow[key] = row[key]
                     if key == "answer":
                         answers = jsonpickle.decode(row[key])
-                        temprow[key] = answers[0]["answer"] #only get the first answer.
+                        temprow["answer"] = FilterTab(answers[0]["answer"]) #only get the first answer.
+
+                        if temprow["answer"] != answers[0]["answer"]:
+                            logging.warning("\tModified answer: {} ".format(answers[0]["answer"]))
+                    else:
+                        temprow[key] = FilterTab(row[key])
+
             temprow["source"] = "silicon_valley"
 
             if temprow["brand"] == "美的" and temprow["cid3"] == "空调":
@@ -29,6 +38,7 @@ def WriteBrandFAQ(data, location):
                 temprow["shopid"] = 1000001782
             else:
                 logging.warning("Unknown brand/cid3:{}".format(row))
+
             csvwriter.writerow(temprow)
 
 
@@ -82,21 +92,84 @@ def RetrieveFromES():
         else:
             break
 
-    print("Last entry:{}\n".format(lastentry))
-    print("LastUpdated(utc):{}\n(local):{}\n(timestamp):{}".format(datetime.utcfromtimestamp(lastupdateTime/1000).strftime('%Y-%m-%d %H:%M:%S'),
+    updateinfo = "Last entry:{}\n".format(lastentry)
+    updateinfo += "LastUpdated(utc):{}\n(local):{}\n(timestamp):{}\n".format(datetime.utcfromtimestamp(lastupdateTime/1000).strftime('%Y-%m-%d %H:%M:%S'),
                                                                    datetime.fromtimestamp(lastupdateTime / 1000).strftime('%Y-%m-%d %H:%M:%S'),
-                                                                   lastupdateTime))
-    return data
+                                                                   lastupdateTime)
+    return data, updateinfo
+
+
+
+def runSimpleSubprocess(aCommand):
+    import subprocess
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    p = subprocess.Popen(aCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error_output = p.communicate()
+    sys.stdout.flush()
+    sys.stderr.flush()
+    if p.returncode != 0:
+        logging.error('ERROR: command failed with status %d' % p.returncode)
+        logging.error('    Command: \n' + aCommand)
+        logging.error('    Output: \n' + str(output))
+        logging.error('    ErrorOutput: \n' + str(error_output))
+        return p.returncode, error_output
+    else:
+        return p.returncode, output
+
+
+def DoExtra():
+    try:
+        Config = configparser.RawConfigParser()
+        Config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'importfromes.ini'))
+        ExtraCommand = Config.get("main", "extracommand")
+        logging.info("Start to execute:\n{}".format(ExtraCommand))
+        _, output = runSimpleSubprocess(ExtraCommand)
+        logging.info("\tDone. Output:\n{}".format(output))
+
+    except RuntimeError as e:
+        logging.error("Failed to read Config: {}".format(e))
+
+
+def CheckESUpdate(DatetimeFileLocation):
+    ESURL = "http://11.3.112.226:9200/"
+    QueryData = """{"aggs" : {"max_update":{"max":{"field":"updateTime"}}}}"""
+
+    Link = ESURL + "sale_exact_content_new/_search"
+    logging.info("Requesting:{}".format(Link))
+    ret = requests.post(Link, data=QueryData)
+    aggreinfo = jsonpickle.decode(ret.text)
+    maxupdatevalue = aggreinfo["aggregations"]["max_update"]["value"]
+    maxupdatevalueasstring = aggreinfo["aggregations"]["max_update"]["value_as_string"]
+    logging.info("maxupdatevalue={}, maxupdatevalueasstring={}".format(maxupdatevalue, maxupdatevalueasstring))
+    if not os.path.isfile(DatetimeFileLocation):
+        return True, maxupdatevalueasstring
+
+    with open(DatetimeFileLocation, 'r') as DatetimeF:
+        firstline = DatetimeF.readline()
+        _, lastupdatevalue = firstline.split(":", 1)
+        if lastupdatevalue.strip() == maxupdatevalueasstring.strip():
+            return False, maxupdatevalueasstring
+        else:
+            return True, maxupdatevalueasstring
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print(
-            "Usage: python3 qa_importfromes.py  [outputfile] ")
+            "Usage: python3 qa_importfromes.py  [outputfile] [datetimefile] ")
         exit(1)
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-    Data = RetrieveFromES()
+    Updated, MaxUpdateTime =  CheckESUpdate(sys.argv[2])
+    if not Updated:
+        exit(0)
+
+    Data, updateinfo = RetrieveFromES()
+    with open(sys.argv[2], 'w') as DatetimeFile:
+        DatetimeFile.write("DBUpdateInfo:{}\n".format(MaxUpdateTime))
+        DatetimeFile.write(updateinfo)
 
     TempFileLocation = sys.argv[1]+".temp"
 
@@ -112,7 +185,9 @@ if __name__ == "__main__":
         for i in reversed(range(maxnum)):
             if os.path.isfile("{}.{}".format(sys.argv[1], i)):
                 shutil.move("{}.{}".format(sys.argv[1], i), "{}.{}".format(sys.argv[1], i+1))
-        shutil.move(sys.argv[1], "{}.{}".format(sys.argv[1], 0))
+        if os.path.isfile(sys.argv[1]):
+            shutil.move(sys.argv[1], "{}.{}".format(sys.argv[1], 0))
         shutil.move(TempFileLocation, sys.argv[1])
 
+        DoExtra()
 
