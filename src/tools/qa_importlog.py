@@ -103,14 +103,12 @@ def ExportQAFiles():
 
 def normalization(inputstr):
     if not hasattr( normalization, "fulllength"):
-        normalization.fulllength="ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｇｋｌｍ
-ｎｏｐｑｒｓｔｕｖｗｘｙｚ１２３４５６７８９０：-"
+        normalization.fulllength="ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｇｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ１２３４５６７８９０：-"
         normalization.halflength="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:-"
         normalization.dict_fh = {}
         for i in range(len(normalization.fulllength)):
             normalization.dict_fh[normalization.fulllength[i]] = normalization.halflength[i]
-        normalization.signtoremove="！？｡＂＃＄％＆＇（）＊＋，／；＜＝＞＠。［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「
-」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…﹏" \
+        normalization.signtoremove="！？｡＂＃＄％＆＇（）＊＋，／；＜＝＞＠。［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…﹏" \
                         + "!\"#$%&\'()*+,/;<=>?@[\\]^_`{|}~"
 
         normalization.stopwordtags={"赞成": "JDSTOPYES", "拒绝":"JDSTOPNO", "无意义":"JDSTOPHELLO", "敏感词": ""}
