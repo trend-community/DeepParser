@@ -128,7 +128,7 @@ def normalization(inputstr):
                             normalization.dict_stopwords[tag].append(word)
 
     temp = re.sub("(https?|ftp)://\S+", " JDHTTP ", inputstr)
-    temp = re.sub("\S+@\S+", " JDHTTP ", temp)
+    temp = re.sub("\S+@\S+", " JDEMAIL ", temp)
     temp = re.sub("#E-s\d+", " ", temp)
     afterfilter = ""
     for c in temp:

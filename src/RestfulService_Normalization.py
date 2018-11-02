@@ -24,7 +24,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path.startswith('/Normalize/'):
-                self.Normalize(urllib.parse.unquote(link.path[16:]))
+                logging.info("[START] ")
+                starttime = current_milli_time()
+                self.Normalize(urllib.parse.unquote(link.path[11:]))
+                logging.info("[TIME] {}".format(current_milli_time() - starttime))
             elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
                 self.feed_file(link.path[1:])
             else:
@@ -44,12 +47,26 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_header('Content-type', "text/html; charset=utf-8")
         self.send_header('Cache-Control', 'public, max-age=31536000')
         self.end_headers()
-        self.wfile.write(normalization(Sentence))
+        self.wfile.write(normalization(Sentence).encode("utf-8"))
 
+
+    def feed_file(self, filepath):
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), filepath)) as f:
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.send_header('Cache-Control', 'public, max-age=31536000')
+            self.end_headers()
+            filecontent = f.read()
+            if len(filepath)>4 and filepath[-4:] == ".txt":
+                reply = "<pre>" + filecontent + "</pre>"
+                self.wfile.write(reply.encode("utf-8") )
+            else:
+                self.wfile.write(filecontent.encode("utf-8"))
 
 
 def  normalization( inputstr):
     if not hasattr(normalization, "fulllength"):
+        #initialize
         normalization.fulllength = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｇｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ１２３４５６７８９０：-"
         normalization.halflength = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:-"
         normalization.dict_fh = {}
@@ -58,24 +75,17 @@ def  normalization( inputstr):
         normalization.signtoremove = "！？｡＂＃＄％＆＇（）＊＋，／；＜＝＞＠。［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…﹏" \
                                      + "!\"#$%&\'()*+,/;<=>?@[\\]^_`{|}~"
 
-        normalization.stopwordtags = {"赞成": "JDSTOPYES", "拒绝": "JDSTOPNO", "无意义": "JDSTOPHELLO", "敏感词": ""}
-        normalization.dict_stopwords = {"敏感词": ["亲", "亲亲", "亲爱的", "宝贝", "宝宝"]}
-        with open(sys.argv[2], encoding="utf-8") as stopwords:
+        normalization.stopwords = set()
+        with open(args.stowords, encoding="utf-8") as stopwords:
             for stopword in stopwords:
                 if stopword.startswith("word,"):
                     continue  # opening line
                 if "," in stopword:
-                    word, tag = stopword.split(",")
-                    tag = tag.strip()
-                    word = word.strip()
-                    if tag in normalization.stopwordtags:
-                        if tag not in normalization.dict_stopwords:
-                            normalization.dict_stopwords[tag] = [word]
-                        else:
-                            normalization.dict_stopwords[tag].append(word)
+                    word, _ = stopword.split(",")
+                    normalization.stopwords.add(word.strip())
 
     temp = re.sub("(https?|ftp)://\S+", " JDHTTP ", inputstr)
-    temp = re.sub("\S+@\S+", " JDHTTP ", temp)
+    temp = re.sub("\S+@\S+", " JDEMAIL ", temp)
     temp = re.sub("#E-s\d+", " ", temp)
     afterfilter = ""
     for c in temp:
@@ -90,27 +100,21 @@ def  normalization( inputstr):
             continue
         afterfilter += c
 
-    afterreplacestopwords = []
-    for word in afterfilter.split():
-        replaced = False
-        for stopwordtag in normalization.dict_stopwords:
-            if word in normalization.dict_stopwords[stopwordtag]:
-                afterreplacestopwords.append(normalization.stopwordtags[stopwordtag])
-                replaced = True
-                break
-        if not replaced:
-            afterreplacestopwords.append(word)
-
-    return " ".join(afterreplacestopwords)
-
-
-
+    return " ".join([x for x in afterfilter.split() if x not in normalization.stopwords])
+    # afterreplacestopwords = []
+    # for word in afterfilter.split():
+    #     if word not in normalization.stopwords:
+    #         afterreplacestopwords.append(word)
+    #
+    # return " ".join(afterreplacestopwords)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--port")
+    parser.add_argument("stowords")
     args = parser.parse_args()
     if args.port:
         startport = int(args.port)
