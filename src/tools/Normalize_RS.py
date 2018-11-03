@@ -18,15 +18,20 @@ if __name__ == "__main__":
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.info("Start.")
 
     DBCon = sqlite3.connect(sys.argv[1])
     cur = DBCon.cursor()
-    for tablename in ['shortcut', 'shortcut_es', 'checked_es', 'origin_es', 'origin', 'es']:
+    for tablename in ['checked1_es', 'origin_es', 'origin', 'shortcut_es', 'origin', 'es']:
         cur.execute("select distinct question from {} ".format(tablename))
         rows = cur.fetchall()
         for row in rows:
             question_n = NTask(row[0])
-            cur.execute("update {} set question_n='{}' where question='{}'".format(tablename, question_n, row[0]))
+            sql = "update {} set question_n='{}' where question='{}'".format(tablename, question_n, row[0])
+            try:
+                cur.execute(sql)
+            except sqlite3.OperationalError as e:
+                logging.error("{}:\n{}".format(e, sql))
         logging.info("Finished normalizing {}".format(tablename))
         DBCon.commit()
 

@@ -1,9 +1,9 @@
 
 import urllib, logging, os, re, sys
-
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import time, argparse, traceback
+import time, argparse, traceback, jsonpickle
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -12,6 +12,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         host, _ = self.client_address[:2]
         # old and slow way: return socket.getfqdn(host)
         return host
+
 
     def do_GET(self):
         # if hasattr(self.server, "active_children") and self.server.active_children:
@@ -28,6 +29,13 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 starttime = current_milli_time()
                 self.Normalize(urllib.parse.unquote(link.path[11:]))
                 logging.info("[TIME] {}".format(current_milli_time() - starttime))
+            elif link.path.startswith('/blacklistDetector'):
+                logging.info("[START] ")
+                starttime = current_milli_time()
+                self.BlackList(urllib.parse.unquote(link.query[10:]))
+                logging.info("[TIME] {}".format(current_milli_time() - starttime))
+            elif link.path.startswith('/Reload/'):
+                self.Reload()
             elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
                 self.feed_file(link.path[1:])
             else:
@@ -50,6 +58,27 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.wfile.write(normalization(Sentence).encode("utf-8"))
 
 
+    def BlackList(self, questionobjectstr):
+        self.send_response(200)
+        self.send_header('Content-type', "text/html; charset=utf-8")
+        self.send_header('Cache-Control', 'public, max-age=31536000')
+        self.end_headers()
+        questionobject = jsonpickle.decode(questionobjectstr)
+        if isBlack(questionobject["question"]):
+            self.wfile.write('{"isBlack": true}'.encode("utf-8"))
+        else:
+            self.wfile.write('{"isBlack": false}'.encode("utf-8"))
+
+
+    def Reload(self):
+        self.send_response(200)
+        self.send_header('Content-type', "text/html; charset=utf-8")
+        self.end_headers()
+        reload()
+        Reply = "Reloaded blacklist at " + str(datetime.now())
+        self.wfile.write( Reply.encode("utf-8"))
+
+
     def feed_file(self, filepath):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), filepath)) as f:
             self.send_response(200)
@@ -62,6 +91,10 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.wfile.write(reply.encode("utf-8") )
             else:
                 self.wfile.write(filecontent.encode("utf-8"))
+
+
+def reload():
+    loadblacklist()
 
 
 def  normalization( inputstr):
@@ -109,12 +142,29 @@ def  normalization( inputstr):
     # return " ".join(afterreplacestopwords)
 
 
+def loadblacklist():
+    isBlack.blacklist = set()
+    with open(args.blacklist, encoding="utf-8") as blacklist:
+        for word in blacklist:
+                isBlack.blacklist.add(word.strip())
+
+
+def isBlack(inputstr):
+    if not hasattr(isBlack, "blacklist"):
+        loadblacklist()
+    if inputstr in isBlack.blacklist:
+        return True
+    else:
+        return False
+
+
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.WARNING, format='%(asctime)s [%(levelname)s] %(message)s')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--port")
     parser.add_argument("stowords")
+    parser.add_argument("blacklist")
     args = parser.parse_args()
     if args.port:
         startport = int(args.port)
