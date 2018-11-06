@@ -22,12 +22,13 @@ if __name__ == "__main__":
 
     DBCon = sqlite3.connect(sys.argv[1])
     cur = DBCon.cursor()
-    for tablename in ['checked1_es', 'origin_es', 'origin', 'shortcut_es', 'origin', 'es']:
+    for tablename in ['shortcut_es', 'es']:
+#    for tablename in ['checked1', 'shortcut', 'origin3']:
         cur.execute("select distinct question from {} ".format(tablename))
         rows = cur.fetchall()
         for row in rows:
             question_n = NTask(row[0])
-            sql = "update {} set question_n='{}' where question='{}'".format(tablename, question_n, row[0])
+            sql = """update {} set question_n=\"{}\" where question=\"{}\"""".format(tablename, question_n, row[0])
             try:
                 cur.execute(sql)
             except sqlite3.OperationalError as e:

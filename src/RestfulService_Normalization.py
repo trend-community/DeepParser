@@ -74,7 +74,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', "text/html; charset=utf-8")
         self.end_headers()
-        reload()
+        loadlist()
         Reply = "Reloaded blacklist at " + str(datetime.now())
         self.wfile.write( Reply.encode("utf-8"))
 
@@ -93,30 +93,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.wfile.write(filecontent.encode("utf-8"))
 
 
-def reload():
-    loadblacklist()
-
 
 def  normalization( inputstr):
-    if not hasattr(normalization, "fulllength"):
-        #initialize
-        normalization.fulllength = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｇｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ１２３４５６７８９０：-"
-        normalization.halflength = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:-"
-        normalization.dict_fh = {}
-        for i in range(len(normalization.fulllength)):
-            normalization.dict_fh[normalization.fulllength[i]] = normalization.halflength[i]
-        normalization.signtoremove = "！？｡＂＃＄％＆＇（）＊＋，／；＜＝＞＠。［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…﹏" \
-                                     + "!\"#$%&\'()*+,/;<=>?@[\\]^_`{|}~"
-
-        normalization.stopwords = set()
-        with open(args.stowords, encoding="utf-8") as stopwords:
-            for stopword in stopwords:
-                if stopword.startswith("word,"):
-                    continue  # opening line
-                if "," in stopword:
-                    word, _ = stopword.split(",")
-                    normalization.stopwords.add(word.strip())
-
     temp = re.sub("(https?|ftp)://\S+", " JDHTTP ", inputstr)
     temp = re.sub("\S+@\S+", " JDEMAIL ", temp)
     temp = re.sub("#E-s\d+", " ", temp)
@@ -142,16 +120,30 @@ def  normalization( inputstr):
     # return " ".join(afterreplacestopwords)
 
 
-def loadblacklist():
+def loadlist():
     isBlack.blacklist = set()
     with open(args.blacklist, encoding="utf-8") as blacklist:
         for word in blacklist:
                 isBlack.blacklist.add(word.strip())
 
+    normalization.fulllength = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｇｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ１２３４５６７８９０：-"
+    normalization.halflength = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:-"
+    normalization.dict_fh = {}
+    for i in range(len(normalization.fulllength)):
+        normalization.dict_fh[normalization.fulllength[i]] = normalization.halflength[i]
+    normalization.signtoremove = "！？｡＂＃＄％＆＇（）＊＋，／；＜＝＞＠。［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…﹏" \
+                                 + "!\"#$%&\'()*+,/;<=>?@[\\]^_`{|}~"
+
+    normalization.stopwords = set()
+    with open(args.stowords, encoding="utf-8") as stopwords:
+        for stopword in stopwords:
+            if stopword.startswith("word,"):
+                continue  # opening line
+            if "," in stopword:
+                word, _ = stopword.split(",")
+                normalization.stopwords.add(word.strip())
 
 def isBlack(inputstr):
-    if not hasattr(isBlack, "blacklist"):
-        loadblacklist()
     if inputstr in isBlack.blacklist:
         return True
     else:
@@ -159,7 +151,7 @@ def isBlack(inputstr):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING, format='%(asctime)s [%(levelname)s] %(message)s')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--port")
@@ -173,6 +165,7 @@ if __name__ == "__main__":
 
     print("Running Normalization in port {}".format(startport))
     logging.warning("Running Normalization in port {}".format(startport))
+    loadlist()
 
     httpd = HTTPServer( ('0.0.0.0', startport), ProcessSentence_Handler)
 

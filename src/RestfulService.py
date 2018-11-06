@@ -36,20 +36,18 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         try:
             if link.path == '/LexicalAnalyze':
                 try:
-                    query = urllib.parse.unquote(link.query)
-                    # there might be & sign in the quotes. need to include in Sentence before the query is split("&").
-                    SentenceMatch = re.search("[\"“”](.*)[\"“”]", query)
-                    if SentenceMatch:
-                        Sentence = SentenceMatch.group(1)
-                        query = query.replace(Sentence, "")
-                    else:
-                        Sentence = ""
-                    q = query.split("&")
-                    queries = dict(qc.split("=") for qc in q)
-                    if Sentence:    #backward compatible
-                        queries["Sentence"] = Sentence
-                except ValueError :
-                    logging.error("Input query is not correct: " + link.query)
+                    q = link.query.split("&")
+                    queries = {}
+                    for qc in q:
+                        key, quotedvalue = qc.split("=",1)
+                        queries[key] = urllib.parse.unquote(quotedvalue)
+
+                    if "Sentence" in queries:
+                        if queries["Sentence"][0] in "[\"“”]" and queries["Sentence"][-1] in "[\"“”]":
+                            queries["Sentence"] = queries["Sentence"][1:-1]
+
+                except ValueError as e:
+                    logging.error("Input query is not correct: {}\n{}".format( link.query, e))
                     self.send_error(500, "Link input error.")
                     return
 
