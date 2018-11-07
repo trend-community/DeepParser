@@ -1,9 +1,9 @@
 
-import urllib, logging, os, re, sys
+import urllib, logging, os, re
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import time, argparse, traceback, jsonpickle
+import time, argparse, traceback, jsonpickle, json
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -64,10 +64,9 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'public, max-age=31536000')
         self.end_headers()
         questionobject = jsonpickle.decode(questionobjectstr)
-        if isBlack(questionobject["question"]):
-            self.wfile.write('{"isBlack": true}'.encode("utf-8"))
-        else:
-            self.wfile.write('{"isBlack": false}'.encode("utf-8"))
+        returnvalue = {'isBlack': isBlack(questionobject["question"]),
+                  'containBlack': containBlack(questionobject["question"])}
+        self.wfile.write(json.dumps(returnvalue, ensure_ascii=False).encode("utf-8"))
 
 
     def Reload(self):
@@ -124,7 +123,14 @@ def loadlist():
     isBlack.blacklist = set()
     with open(args.blacklist, encoding="utf-8") as blacklist:
         for word in blacklist:
+            if word.strip():
                 isBlack.blacklist.add(word.strip())
+
+    containBlack.blacklist = set()
+    with open(args.containblacklist, encoding="utf-8") as blacklist:
+        for word in blacklist:
+            if word.strip():
+                containBlack.blacklist.add(word.strip())
 
     normalization.fulllength = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｇｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ１２３４５６７８９０：-"
     normalization.halflength = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:-"
@@ -143,11 +149,20 @@ def loadlist():
                 word, _ = stopword.split(",")
                 normalization.stopwords.add(word.strip())
 
+
 def isBlack(inputstr):
     if inputstr in isBlack.blacklist:
         return True
     else:
         return False
+
+
+def containBlack(inputstr):
+    for x in containBlack.blacklist:
+        if x in inputstr:
+            return True
+
+    return False
 
 
 if __name__ == "__main__":
@@ -157,6 +172,7 @@ if __name__ == "__main__":
     parser.add_argument("--port")
     parser.add_argument("stowords")
     parser.add_argument("blacklist")
+    parser.add_argument("containblacklist")
     args = parser.parse_args()
     if args.port:
         startport = int(args.port)
