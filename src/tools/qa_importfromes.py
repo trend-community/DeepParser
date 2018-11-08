@@ -1,45 +1,84 @@
 import jsonpickle, requests, sys, logging, configparser
-import csv, shutil, os.path, filecmp
+import csv, shutil, os.path, filecmp, urllib
 from datetime import datetime
 
 fieldnames = [ "question", "tag", "shopid", "brand", "cid3", "sku", "answer", "cat1",
               "cat2", "profession", "source"]
 
 
+LexicalAnalyzeURL = "http://localhost:4001/Normalize/"
+def NTask(Sentence):
+    url = LexicalAnalyzeURL+  urllib.parse.quote(Sentence)
+    #logging.debug("Start: " + url)
+    ret = requests.get(url)
+    return ret.text
+
+
 def FilterTab(inputstr):
     return inputstr.replace("\t", "    ").replace("\n", "|@@|").replace("\r", "|@@|")
 
 
+def ProcessRow(row):
+    temprow = {}
+    for key in row:
+        # fields not in fieldnames: 'pos', 'isExpires', 'shopId', 'userPin', 'cid2', 'id', 'ner', 'cid1', 'visiable', 'groupTypeSub', 'assistType', 'expiresRange', 'words', 'professionType', 'confirmed', 'tag', 'questionNormalized', 'groupType', 'updateTime', 'version'
+        if key in fieldnames:
+            if key == "answer":
+                answers = jsonpickle.decode(row[key])
+                temprow["answer"] = FilterTab(answers[0]["answer"])  # only get the first answer.
+
+                if temprow["answer"] != answers[0]["answer"]:
+                    logging.warning("\tModified answer: {} ".format(answers[0]["answer"]))
+            else:
+                temprow[key] = FilterTab(row[key])
+
+    temprow["source"] = "2"  # "2" as request from guangtao "silicon_valley"
+
+    if temprow["brand"] == "美的" and temprow["cid3"] == "空调":
+        temprow["shopid"] = 1000001452
+    elif temprow["brand"] == "西门子" and temprow["cid3"] == "洗衣机":
+        temprow["shopid"] = 1000001421
+    elif temprow["brand"] == "海尔" and temprow["cid3"] == "洗衣机":
+        temprow["shopid"] = 1000001782
+    else:
+        logging.warning("Unknown brand/cid3:{}".format(row))
+
+    temprow["question"] = NTask(temprow["question"])
+
+    return temprow
+
+
 def WriteBrandFAQ(data, location):
+    ProcessedData = []
+    brandlist = set()
     with open(location, 'w', encoding="utf-8") as csvfile2:
         csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames, delimiter='\t')
         csvwriter.writeheader()
         for row in sorted(data, key=lambda k: (k['updateTime'],k['id'])):
-            #fields not in fieldnames: 'pos', 'isExpires', 'shopId', 'userPin', 'cid2', 'id', 'ner', 'cid1', 'visiable', 'groupTypeSub', 'assistType', 'expiresRange', 'words', 'professionType', 'confirmed', 'tag', 'questionNormalized', 'groupType', 'updateTime', 'version'
-            temprow = {}
-            for key in row:
-                if key in fieldnames:
-                    if key == "answer":
-                        answers = jsonpickle.decode(row[key])
-                        temprow["answer"] = FilterTab(answers[0]["answer"]) #only get the first answer.
-
-                        if temprow["answer"] != answers[0]["answer"]:
-                            logging.warning("\tModified answer: {} ".format(answers[0]["answer"]))
-                    else:
-                        temprow[key] = FilterTab(row[key])
-
-            temprow["source"] = "silicon_valley"
-
-            if temprow["brand"] == "美的" and temprow["cid3"] == "空调":
-                temprow["shopid"] = 1000001452
-            elif temprow["brand"] == "西门子" and temprow["cid3"] == "洗衣机":
-                temprow["shopid"] = 1000001421
-            elif temprow["brand"] == "海尔" and temprow["cid3"] == "洗衣机":
-                temprow["shopid"] = 1000001782
-            else:
-                logging.warning("Unknown brand/cid3:{}".format(row))
-
+            temprow = ProcessRow(row)
+            brandlist.add(temprow["brand"])
+            ProcessedData.append(temprow)
             csvwriter.writerow(temprow)
+
+    with open(sys.argv[3], 'r', encoding="utf-8") as whatisfile:
+        Data_Read = csv.DictReader(whatisfile, delimiter="\t")
+        # rowid = 0
+        for row in Data_Read:
+            row["source"] = "2"
+            #row["question"] = NTask(row["question"])   #don't need this if the file is whatis_n.txt (normalized)
+            ProcessedData.append(row)
+
+    basepath = os.path.dirname(location)
+    for brand in brandlist:
+        with open(os.path.join(basepath, brand + ".txt"), 'w', encoding="utf-8") as csvfile2:
+            csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames, delimiter='\t')
+            csvwriter.writeheader()
+            for row in ProcessedData:
+                if row["brand"] == brand:
+                    if row["question"] == "":
+                        logging.warning("Question is empty for:{}".format(row))
+                    else:
+                        csvwriter.writerow(row)
 
 
 def RetrieveFromES():
@@ -92,83 +131,23 @@ def RetrieveFromES():
         else:
             break
 
-    updateinfo = "Last entry:{}\n".format(lastentry)
-    updateinfo += "LastUpdated(utc):{}\n(local):{}\n(timestamp):{}\n".format(datetime.utcfromtimestamp(lastupdateTime/1000).strftime('%Y-%m-%d %H:%M:%S'),
+    updateinfo1 = "Last entry:{}\n".format(lastentry)
+    updateinfo1 += "LastUpdated(utc):{}\n(local):{}\n(timestamp):{}\n".format(datetime.utcfromtimestamp(lastupdateTime/1000).strftime('%Y-%m-%d %H:%M:%S'),
                                                                    datetime.fromtimestamp(lastupdateTime / 1000).strftime('%Y-%m-%d %H:%M:%S'),
                                                                    lastupdateTime)
-    return data, updateinfo
-
-
-
-def runSimpleSubprocess(aCommand):
-    import subprocess
-    sys.stdout.flush()
-    sys.stderr.flush()
-
-    p = subprocess.Popen(aCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, error_output = p.communicate()
-    sys.stdout.flush()
-    sys.stderr.flush()
-    if p.returncode != 0:
-        logging.error('ERROR: command failed with status %d' % p.returncode)
-        logging.error('    Command: \n' + aCommand)
-        logging.error('    Output: \n' + str(output))
-        logging.error('    ErrorOutput: \n' + str(error_output))
-        return p.returncode, error_output
-    else:
-        return p.returncode, output
-
-
-def DoExtra():
-    try:
-        Config = configparser.RawConfigParser()
-        Config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'importfromes.ini'))
-        ExtraCommand = Config.get("main", "extracommand")
-        logging.info("Start to execute:\n{}".format(ExtraCommand))
-        _, output = runSimpleSubprocess(ExtraCommand)
-        logging.info("\tDone. Output:\n{}".format(output))
-
-    except RuntimeError as e:
-        logging.error("Failed to read Config: {}".format(e))
-
-
-def CheckESUpdate(DatetimeFileLocation):
-    ESURL = "http://11.3.112.226:9200/"
-    QueryData = """{"aggs" : {"max_update":{"max":{"field":"updateTime"}}}}"""
-
-    Link = ESURL + "sale_exact_content_new/_search"
-    logging.info("Requesting:{}".format(Link))
-    ret = requests.post(Link, data=QueryData)
-    aggreinfo = jsonpickle.decode(ret.text)
-    maxupdatevalue = aggreinfo["aggregations"]["max_update"]["value"]
-    maxupdatevalueasstring = aggreinfo["aggregations"]["max_update"]["value_as_string"]
-    logging.info("maxupdatevalue={}, maxupdatevalueasstring={}".format(maxupdatevalue, maxupdatevalueasstring))
-    if not os.path.isfile(DatetimeFileLocation):
-        return True, maxupdatevalueasstring
-
-    with open(DatetimeFileLocation, 'r') as DatetimeF:
-        firstline = DatetimeF.readline()
-        _, lastupdatevalue = firstline.split(":", 1)
-        if lastupdatevalue.strip() == maxupdatevalueasstring.strip():
-            return False, maxupdatevalueasstring
-        else:
-            return True, maxupdatevalueasstring
+    return data, updateinfo1
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) != 4:
         print(
-            "Usage: python3 qa_importfromes.py  [outputfile] [datetimefile] ")
+            "Usage: python3 qa_importfromes.py  [outputfile] [datetimefile] [whatisfile] ")
         exit(1)
 
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-    Updated, MaxUpdateTime =  CheckESUpdate(sys.argv[2])
-    if not Updated:
-        exit(0)
 
     Data, updateinfo = RetrieveFromES()
     with open(sys.argv[2], 'w') as DatetimeFile:
-        DatetimeFile.write("DBUpdateInfo:{}\n".format(MaxUpdateTime))
         DatetimeFile.write(updateinfo)
 
     TempFileLocation = sys.argv[1]+".temp"
@@ -188,6 +167,4 @@ if __name__ == "__main__":
         if os.path.isfile(sys.argv[1]):
             shutil.move(sys.argv[1], "{}.{}".format(sys.argv[1], 0))
         shutil.move(TempFileLocation, sys.argv[1])
-
-        DoExtra()
 

@@ -38,15 +38,13 @@ def NormalizeFile(location):
             print(normalization(line.strip()))
 
 
-def NormalizeFile_SecondColumn(location):
+def NormalizeFile_SpecificColumn(location, columnindex):
     with open(location, encoding="utf-8") as RuleFile:
         for line in RuleFile:
             if line.strip():
                 columns = line.strip().split("\t")
-                columns[1] = normalization(columns[1])
+                columns[columnindex] = normalization(columns[columnindex])
                 print("\t".join(columns))
-
-
 
 
 def  normalization( inputstr):
@@ -67,12 +65,6 @@ def  normalization( inputstr):
         afterfilter += c
 
     return " ".join([x for x in afterfilter.split() if x not in normalization.stopwords])
-    # afterreplacestopwords = []
-    # for word in afterfilter.split():
-    #     if word not in normalization.stopwords:
-    #         afterreplacestopwords.append(word)
-    #
-    # return " ".join(afterreplacestopwords)
 
 
 def loadlist():
@@ -97,8 +89,8 @@ def loadlist():
 
 
 if __name__ == "__main__":
-    # if len(sys.argv) != 2:
-    #     print("Usage: python3 Normalize_RS.py [databasefilename]")
+    # if len(sys.argv) != 3:
+    #     print("Usage: python3 Normalize_RS.py [stopwords] [databasefilename]")
 
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
@@ -108,6 +100,6 @@ if __name__ == "__main__":
     #NormalizeDatabase(sys.argv[1])
     #NormalizeFile(sys.argv[1])
     loadlist()
-    NormalizeFile_SecondColumn(sys.argv[2])
+    NormalizeFile_SpecificColumn(sys.argv[2], 0)
 
     logging.info("Done")
