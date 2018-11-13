@@ -118,7 +118,7 @@ Questions = []
 def ReadMyList(location):
     with open(location, 'r', encoding="utf-8") as mylist:
         for line in mylist:
-            if line:
+            if line.strip():
                 qid, q = line.split("\t", 1)
                 q = q.strip()
                 Questions.append(NewQuestion(qid.strip(), q.strip() ))
@@ -126,6 +126,8 @@ def ReadMyList(location):
     for q in Questions:
         for a in Answers.values():
             if q.question in a.questions:
+                # if a.answer.startswith("是一种开发较早的重要可塑性高分子材料"):
+                #     logging.info("是一种开发较早的重要可塑性高分子材料")
                 for allq in Questions:
                     if allq.questionid == q.questionid:
                         allq.answerid = a.ID
@@ -167,7 +169,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 4:
         print("""Usage: python3 qa_expandqa.py  [inputqa] [qseedlist] [seed_expand] [outputqa] 
-                 Example: src/tools/qa_expandqa.py ../../temp/brand.csv ../../temp/w1.txt ../../temp/what.txt ../../temp/brand.result.csv
+                 Example: python3 qa_expandqa.py ../../temp/brand.csv ../../temp/w1.txt ../../temp/what.txt ../../temp/brand.result.csv
 """)
         exit(1)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
