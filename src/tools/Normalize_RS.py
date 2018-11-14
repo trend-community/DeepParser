@@ -48,6 +48,8 @@ def NormalizeFile_SpecificColumn(location, columnindex):
 
 
 def  normalization( inputstr):
+    if not hasattr(normalization, "fulllength"):
+        loadlist()
     temp = re.sub("(https?|ftp)://\S+", " JDHTTP ", inputstr)
     temp = re.sub("\S+@\S+", " JDEMAIL ", temp)
     temp = re.sub("#E-s\d+", " ", temp)

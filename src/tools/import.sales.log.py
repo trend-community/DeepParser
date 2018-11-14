@@ -67,7 +67,7 @@ def StoreAIAnswers(row):
             cur.execute(InsertAIQuery, [row[0], row[1], sequenceid, row[2], row[3], answer['answer '].strip(), str(answer['sourceList ']),
                     answer['score '], answer['confidenceScore '], str(answer['optional ']),
                     answer['xgboostScore '], answer['sku '].strip() if 'sku ' in answer else '',
-                    answer['question '], row[5], row[6], row[7]
+                    answer['question '], '', row[6], row[7]     #row[5] is additional info
                                   ])
         except (RuntimeError,KeyError) as e:
             logging.error(e)

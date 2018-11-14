@@ -26,9 +26,11 @@ def WriteBrandFAQ(location):
                 if key in fieldnames:
                     temprow[key] = row[key]
 
+            temprow["source"] = 2
             csvwriter.writerow(temprow)
 
 
+#only get the new generated QA's. exclude the origin QA.
 def WriteBrandFAQ_Extra(location):
     with open(location, 'w', encoding="utf-8") as csvfile2:
         csvwriter = csv.DictWriter(csvfile2, fieldnames=fieldnames, delimiter="\t")
@@ -39,6 +41,8 @@ def WriteBrandFAQ_Extra(location):
                 for key in row:
                     if key in fieldnames:
                         temprow[key] = FilterTab(row[key])
+
+                temprow["source"] = 2
                 csvwriter.writerow(temprow)
 
 
