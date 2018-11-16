@@ -60,9 +60,10 @@ def StoreAIAnswers(row):
         try:
             answer = jsonpickle.decode(answer_text)
         except json.decoder.JSONDecodeError as e:
-            logging.warning("this answer_text failed to decode: {} in row:{}\nReason:{}".format(answer_text, str(row), e))
+            #logging.warning("this answer_text failed to decode: {} in row:{}\nReason:{}".format(answer_text, str(row), e))
+            logging.warning("One line failed to decode due to: {}".format(e))
             continue
-        #print(answer)
+
         try:
             cur.execute(InsertAIQuery, [row[0], row[1], sequenceid, row[2], row[3], answer['answer '].strip(), str(answer['sourceList ']),
                     answer['score '], answer['confidenceScore '], str(answer['optional ']),
@@ -71,7 +72,7 @@ def StoreAIAnswers(row):
                                   ])
         except (RuntimeError,KeyError) as e:
             logging.error(e)
-            logging.error("\tanswer_text: " + answer_text)
+            logging.error("Failed in cur.execute\tanswer_text: " + answer_text)
             logging.error("\tline:" + str(row))
         sequenceid += 1
 
