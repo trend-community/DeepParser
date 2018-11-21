@@ -4,6 +4,8 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import time, argparse, traceback, jsonpickle, json
+from functools import lru_cache
+
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -92,7 +94,7 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                 self.wfile.write(filecontent.encode("utf-8"))
 
 
-
+@lru_cache(maxsize=100000)
 def  normalization( inputstr):
     temp = re.sub("(https?|ftp)://\S+", " JDHTTP ", inputstr)
     temp = re.sub("\S+@\S+", " JDEMAIL ", temp)
@@ -157,6 +159,7 @@ def isBlack(inputstr):
         return False
 
 
+@lru_cache(maxsize=100000)
 def containBlack(inputstr):
     for x in containBlack.blacklist:
         if x in inputstr:
