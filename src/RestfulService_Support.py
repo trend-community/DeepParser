@@ -1,5 +1,5 @@
 
-import urllib, logging, os, re
+import urllib, logging, os, re, sys
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -33,7 +33,11 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             elif link.path.startswith('/blacklistDetector'):
                 self.BlackList(urllib.parse.unquote(link.query[10:]))
             elif link.path.startswith('/removeID'):
-                self.BlacklistID(urllib.parse.unquote(link.query[3:]))
+                try:
+                    _, value = link.query.split("=",1)
+                    self.BlacklistID(urllib.parse.unquote(value))
+                except:
+                    self.send_error(500, "Wrong qaid parameter.")
             elif link.path.startswith('/Reload/'):
                 self.Reload()
             elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
@@ -60,20 +64,23 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.wfile.write(normalization(Sentence).encode("utf-8"))
 
 
-    def BlacklistID(self, ID):
-        if ID in idBlack.blacklist:
-            Reply = "ID {} is already in blacklist".format(ID)
+    def BlacklistID(self, qaid):
+        if qaid in idBlack.blacklist:
+            Reply = "qaid {} is already in blacklist".format(qaid)
         else:
             timestamp = str(datetime.now())
-            idBlack.blacklist.add(ID)
+            idBlack.blacklist.add(qaid)
             with open(args.idblacklist, "a", encoding="utf-8") as blacklist:
-                blacklist.write("{}\t{}\n".format(ID, timestamp))
-            Reply = "ID {} is recorded.".format(ID)
+                blacklist.write("{}\t{}\n".format(qaid, timestamp))
+            Reply = "qaid {} is recorded.".format(qaid)
 
         self.send_response(200)
         self.send_header('Content-type', "text/html; charset=utf-8")
         self.end_headers()
         self.wfile.write( Reply.encode("utf-8"))
+        if args.externalcommand:
+            logging.warning("Executing {}".format(args.externalcommand))
+            runSimpleSubprocess(args.externalcommand)   #remove old ngix cache
 
 
     def BlackList(self, questionobjectstr):
@@ -143,6 +150,24 @@ def  normalization( inputstr):
     # return " ".join(afterreplacestopwords)
 
 
+def runSimpleSubprocess(aCommand):
+    import subprocess
+
+    subprocess.Popen(aCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #don't wait for return.
+    # output, error_output = p.communicate()
+    # sys.stdout.flush()
+    # sys.stderr.flush()
+    # if p.returncode != 0:
+    #     logging.error('ERROR: command failed with status %d' % p.returncode)
+    #     logging.error('    Command: \n' + aCommand)
+    #     logging.error('    Output: \n' + str(output))
+    #     logging.error('    ErrorOutput: \n' + str(error_output))
+    #     return p.returncode, error_output
+    # else:
+    #     return p.returncode, output
+
+
 def loadlist():
     isBlack.blacklist = set()
     with open(args.blacklist, encoding="utf-8") as blacklist:
@@ -179,10 +204,10 @@ def loadlist():
             for word in blacklist:
                 if word.strip():
                     if "\t" in word:
-                        ID, timestamp = word.strip().split("\t", 1)
+                        qaid, timestamp = word.strip().split("\t", 1)
                     else:
-                        ID = word.strip()
-                    idBlack.blacklist.add(ID)
+                        qaid = word.strip()
+                    idBlack.blacklist.add(qaid)
     except FileNotFoundError:
         pass
 
@@ -194,8 +219,8 @@ def isBlack(inputstr):
         return False
 
 
-def idBlack(ID):
-    if ID in idBlack.blacklist:
+def idBlack(qaid):
+    if qaid in idBlack.blacklist:
         return True
     else:
         return False
@@ -219,6 +244,7 @@ if __name__ == "__main__":
     parser.add_argument("blacklist")
     parser.add_argument("containblacklist")
     parser.add_argument("idblacklist")
+    parser.add_argument("--externalcommand")
     args = parser.parse_args()
     if args.port:
         startport = int(args.port)
