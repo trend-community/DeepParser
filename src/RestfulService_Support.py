@@ -25,17 +25,15 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         #         #self.ReturnBlank()
         #         return
         link = urllib.parse.urlparse(self.path)
+        logging.info("[START] ")
+        starttime = current_milli_time()
         try:
             if link.path.startswith('/Normalize/'):
-                logging.info("[START] ")
-                starttime = current_milli_time()
                 self.Normalize(urllib.parse.unquote(link.path[11:]))
-                logging.info("[TIME] {}".format(current_milli_time() - starttime))
             elif link.path.startswith('/blacklistDetector'):
-                logging.info("[START] ")
-                starttime = current_milli_time()
                 self.BlackList(urllib.parse.unquote(link.query[10:]))
-                logging.info("[TIME] {}".format(current_milli_time() - starttime))
+            elif link.path.startswith('/removeID'):
+                self.BlacklistID(urllib.parse.unquote(link.query[3:]))
             elif link.path.startswith('/Reload/'):
                 self.Reload()
             elif link.path in ['/gchart_loader.js', '/favicon.ico', '/Readme.txt']:
@@ -43,6 +41,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
             else:
                 logging.error("Wrong link.")
                 self.send_error(404)
+
+            logging.info("[TIME] {}".format(current_milli_time() - starttime))
         except Exception as e:
             logging.error("Unknown exception in do_GET")
             logging.error(str(e))
@@ -60,14 +60,36 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.wfile.write(normalization(Sentence).encode("utf-8"))
 
 
+    def BlacklistID(self, ID):
+        if ID in idBlack.blacklist:
+            Reply = "ID {} is already in blacklist".format(ID)
+        else:
+            timestamp = str(datetime.now())
+            idBlack.blacklist.add(ID)
+            with open(args.idblacklist, "a", encoding="utf-8") as blacklist:
+                blacklist.write("{}\t{}\n".format(ID, timestamp))
+            Reply = "ID {} is recorded.".format(ID)
+
+        self.send_response(200)
+        self.send_header('Content-type', "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write( Reply.encode("utf-8"))
+
+
     def BlackList(self, questionobjectstr):
         self.send_response(200)
         self.send_header('Content-type', "text/html; charset=utf-8")
         self.send_header('Cache-Control', 'public, max-age=31536000')
         self.end_headers()
         questionobject = jsonpickle.decode(questionobjectstr)
+        if "qaid" not in questionobject:
+            questionobject["qaid"] = -1   #not in list.
+        if "question" not in questionobject:
+            questionobject["question"] = "not in list"
+
         returnvalue = {'isBlack': isBlack(questionobject["question"]),
-                  'containBlack': containBlack(questionobject["question"])}
+                  'containBlack': containBlack(questionobject["question"]),
+                       'idBlack': idBlack(questionobject["qaid"])}
         self.wfile.write(json.dumps(returnvalue, ensure_ascii=False).encode("utf-8"))
 
 
@@ -129,7 +151,7 @@ def loadlist():
                 isBlack.blacklist.add(word.strip())
 
     containBlack.blacklist = set()
-    with open(args.containblacklist, encoding="utf-8") as blacklist:
+    with open(args.containblacklist, "r", encoding="utf-8") as blacklist:
         for word in blacklist:
             if word.strip():
                 containBlack.blacklist.add(word.strip())
@@ -151,9 +173,29 @@ def loadlist():
                 word, _ = stopword.split(",")
                 normalization.stopwords.add(word.strip())
 
+    idBlack.blacklist = set()
+    try:
+        with open(args.idblacklist, encoding="utf-8") as blacklist:
+            for word in blacklist:
+                if word.strip():
+                    if "\t" in word:
+                        ID, timestamp = word.strip().split("\t", 1)
+                    else:
+                        ID = word.strip()
+                    idBlack.blacklist.add(ID)
+    except FileNotFoundError:
+        pass
+
 
 def isBlack(inputstr):
     if inputstr in isBlack.blacklist:
+        return True
+    else:
+        return False
+
+
+def idBlack(ID):
+    if ID in idBlack.blacklist:
         return True
     else:
         return False
@@ -176,6 +218,7 @@ if __name__ == "__main__":
     parser.add_argument("stowords")
     parser.add_argument("blacklist")
     parser.add_argument("containblacklist")
+    parser.add_argument("idblacklist")
     args = parser.parse_args()
     if args.port:
         startport = int(args.port)
