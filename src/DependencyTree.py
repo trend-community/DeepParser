@@ -362,7 +362,7 @@ class DependencyTree:
         for AndCondition in SubtreePointer.split("+"):
             Negation = False
             if len(AndCondition) > 1 and AndCondition[0] == "!":
-                logging.warning("FindPointerNode: Negation! {}".format(SubtreePointer))
+                #logging.warning("FindPointerNode: Negation! {}".format(SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
@@ -644,7 +644,7 @@ class DependencyTree:
             Negation = False
 
             if AndCondition[0] == "!":
-                logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
+                #logging.warning("FindPointerNode: Negation! {}".format(ruletoken.SubtreePointer))
                 Negation = True
                 AndCondition = AndCondition[1:]
 
