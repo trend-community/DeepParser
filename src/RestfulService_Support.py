@@ -89,14 +89,14 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'public, max-age=31536000')
         self.end_headers()
         questionobject = jsonpickle.decode(questionobjectstr)
-        if "qaid" not in questionobject:
-            questionobject["qaid"] = -1   #not in list.
+        if "qaID" not in questionobject:
+            questionobject["qaID"] = -1   #not in list.
         if "question" not in questionobject:
             questionobject["question"] = "not in list"
 
         returnvalue = {'isBlack': isBlack(questionobject["question"]),
                   'containBlack': containBlack(questionobject["question"]),
-                       'idBlack': idBlack(questionobject["qaid"])}
+                       'idBlack': idBlack(questionobject["qaID"])}
         self.wfile.write(json.dumps(returnvalue, ensure_ascii=False).encode("utf-8"))
 
 
