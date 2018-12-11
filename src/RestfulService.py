@@ -432,7 +432,7 @@ if __name__ == "__main__":
         processid = psid.decode('ascii').strip()
         logging.warning("Killing process {} because it is using the same port of {}".format(processid, startport))
         utils.runSimpleSubprocess("kill -9 {}".format(processid))
-        time.sleep(0.1) #wait 100ms for the former process to exit cleanly.
+        time.sleep(0.5) #wait 500ms for the former process to exit cleanly.
 
     print("Running in port {}".format(startport))
     logging.warning("Running in port {}".format(startport))
