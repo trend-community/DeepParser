@@ -12,10 +12,13 @@ hive -e "select * from fdm.fdm_hbase_crius_c_alpha_sales_answer_alpha_sales_info
 python3 import.sales.log.py alllog.$1.log extrainfo.$1.log log.$1.db
 
 
+create table qapair as select q.pair_id2, q.ts, q.customer, q.question, q.sku_id, a.adopted, a.response, a.confidence, a.source, a.answer_top_1 from alllog q join alllog a on a.pair_id2=q.pair_id2 and q.log_type="1" and a.log_type="3" ;
+create table adopted as  select distinct q.pair_id2, q.ts, q.customer, q.question, q.sku_id, q.adopted, q.response, q.confidence, q.source, q.answer_top_1 from alllog q join alllog a on a.pair_id2=q.pair_id2 and q.log_type="1" and a.log_type="2" and a.a_state="1" ;
+
 """
 def PreProcess():
     try:
-        cur.execute("""CREATE TABLE alllog ( pair_id text, pair_id2 text, sid text, ts text, staff text, customer text, 
+        cur.execute("""CREATE TABLE alllog ( rowkey text, pair_id text, sid text, ts text, staff text, customer text, 
             question text, adopted text, response text, r_state text, a_state text,
             position text, plugin_state text, sku_id text, brand text, cate text, 
             shop_id text, intent_1 text, intent_2 text, confidence text, source text,
@@ -24,7 +27,7 @@ def PreProcess():
     except sqlite3.OperationalError:
         logging.warning("Table existed!")
     try:
-        cur.execute("""CREATE TABLE answer ( pair_id text, pair_id2 text,sequenceid int, sid int, question text, answer text, sourcelist text,
+        cur.execute("""CREATE TABLE answer ( rowkey text, pair_id text,sequenceid int, sid int, question text, answer text, sourcelist text,
              score float, confidencescore float, optional text, xgboostscore float, sku text,
              ai_question text, additional_info text, create_date text, dt text);""")
     except sqlite3.OperationalError:
@@ -40,6 +43,20 @@ def PreProcess():
         cur.execute("""create index a_i on answer (answer, question, pair_id, sid);""")
         cur.execute("""create index aq_i on answer (question, answer, score, pair_id, sid);""")
         cur.execute("""create index a_id on answer (pair_id, sid, answer, question);""")
+
+        cur.execute("""CREATE TABLE qapair(
+              pair_id TEXT,
+              ts TEXT,
+              customer TEXT,
+              question TEXT,
+              sku_id TEXT,
+              adopted TEXT,
+              response TEXT,
+              confidence TEXT,
+              source TEXT,
+              answer_top_1 TEXT
+            );
+            """)
     except sqlite3.OperationalError:
         logging.warning("Index existed!")
 
@@ -111,6 +128,13 @@ if __name__ == "__main__":
             #         columns[17] = addition_info["sku"]
 
             cur.execute(InsertQuery, columns)
+
+        cur.execute("""insert into qapair 
+                qapair as select q.pair_id, q.ts, q.customer, q.question, q.sku_id, 
+                a.adopted, a.response, a.confidence, a.source, a.answer_top_1 
+                from alllog q join alllog a on a.pair_id=q.pair_id 
+                    and q.log_type="1" and a.log_type="3" ;
+            """)
         DBCon.commit()
 
     logging.info("Done with {}. Start importing from {}".format(sys.argv[1], sys.argv[2]))

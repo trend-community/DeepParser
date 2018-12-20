@@ -32,6 +32,8 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
         #         self.send_error(504, "Server Busy")
         #         #self.ReturnBlank()
         #         return
+        #   test case 1: http://localhost:5001/LexicalAnalyze?Type=parsetree&Debug=true&Key=Lsdif238fj&Sentence=%22%E4%BA%AC%E4%B8%9C%E5%BE%88%E6%96%B9%E4%BE%BF&hellip;%E8%B4%A8%E9%87%8F%E5%BE%88%E5%A5%BD&hellip%22
+        #   test case 2:
         link = urllib.parse.urlparse(self.path)
         try:
             if link.path == '/LexicalAnalyze':
@@ -39,12 +41,20 @@ class ProcessSentence_Handler(BaseHTTPRequestHandler):
                     q = link.query.split("&")
                     queries = {}
                     for qc in q:
-                        key, quotedvalue = qc.split("=",1)
+                        try:
+                            key, quotedvalue = qc.split("=",1)
+                        except ValueError as e:
+                            logging.info("Input query: somehow the & and = sign are not paired. may be part of the sentence.")
+                            continue
                         queries[key] = urllib.parse.unquote(quotedvalue)
 
-                    if "Sentence" in queries:
-                        if queries["Sentence"][0] in "[\"“”]" and queries["Sentence"][-1] in "[\"“”]":
-                            queries["Sentence"] = queries["Sentence"][1:-1]
+                    if "Sentence" in queries:   #get the Sentence from original link.query to avoid "&/=" sign
+                        query = urllib.parse.unquote(link.query)
+                        StartLocation = query.find("Sentence=") + len("Sentence=")
+                        if query[StartLocation] in "[\"“”]":
+                            EndLocation = query.find(query[StartLocation], StartLocation + 1)
+                            if EndLocation > 0:
+                                queries["Sentence"] = query[StartLocation + 1:EndLocation]
 
                 except ValueError as e:
                     logging.error("Input query is not correct: {}\n{}".format( link.query, e))
