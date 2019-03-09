@@ -1,6 +1,7 @@
 import argparse, logging, os, sys, re
 import requests, urllib, sqlite3
 
+#https://cf.jd.com/pages/viewpage.action?pageId=138092074
 
 # LexicalAnalyzeURL = "http://localhost:4001/Normalize/"
 #

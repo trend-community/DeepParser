@@ -130,7 +130,7 @@ if __name__ == "__main__":
             cur.execute(InsertQuery, columns)
 
         cur.execute("""insert into qapair 
-                qapair as select q.pair_id, q.ts, q.customer, q.question, q.sku_id, 
+                 as select q.pair_id, q.ts, q.customer, q.question, q.sku_id, 
                 a.adopted, a.response, a.confidence, a.source, a.answer_top_1 
                 from alllog q join alllog a on a.pair_id=q.pair_id 
                     and q.log_type="1" and a.log_type="3" ;
