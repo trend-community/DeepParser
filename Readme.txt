@@ -1,5 +1,5 @@
 #Folder location: git/parser/src
-#Author: Ben Lin tianbing.lin@jd.com
+#Author: Ben Lin BEN@FADSHOP.NET
 #Date: 20170928
 
 #Major update on 20180309:
@@ -18,8 +18,8 @@ Folder structure:
 	create an empty folder. For example "git".
 	
 	cd git
-	git clone http://git.jd.com/ynlp/fsa 
-	git clone http://git.jd.com/ynlp/parser 
+	git clone https://github.com/BenLin0/fsa
+	git clone https://github.com/BenLin0/deepparser
 
     The fsa folder should be in
         git/fsa
