@@ -107,7 +107,7 @@ def ProcessFile(FileName):
                 logging.warning('%r Failed at second try: \n %s' % (s, exc))
             else:
                 ExtractTags(intentdict[s], data)
-        logging.info("Done of retrieving data")
+        logging.info("Done of retrieving assets")
 
 
     PromotionTags=[["能否优惠"], ["近期活动咨询"], ["促销形式"], ["评价晒单返券和赠品"], ["赠品领取更换"],

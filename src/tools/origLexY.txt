@@ -13121,7 +13121,7 @@ driping: N nc positioning
 dripping: N abstract artifact nc 
 dripping-pan: N count nc 
 drippings: N artifact nc 
-drive: N0 VB component length tWord 
+drive: N0 VB component road tWord
 drive-in: N count nc 
 drivel: N abstract component nc vi 
 driveline: N count nc 

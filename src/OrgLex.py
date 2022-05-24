@@ -818,8 +818,11 @@ if __name__ == "__main__":
     paraLex = dir_path + '/../../fsa/X/LexX.txt'
     paraLexTemp = dir_path + '/../../temp/X/LexX_copy.txt'
 
-    paraLexc2c3 = dir_path + '/../../fsa/X/LexXc2c3.txt'
-    paraLexc2c3Temp = dir_path + '/../../temp/X/LexXc2c3_copy.txt'
+    paraLexc2 = dir_path + '/../../fsa/X/LexXc2.txt'
+    paraLexc2Temp = dir_path + '/../../temp/X/LexXc2_copy.txt'
+
+    paraLexc3 = dir_path + '/../../fsa/X/LexXc3.txt'
+    paraLexc3Temp = dir_path + '/../../temp/X/LexXc3_copy.txt'
 
     paraDef = dir_path + '/../../fsa/X/defLexX.txt'
     paraDefTemp = dir_path + '/../../temp/X/defLexX_copy.txt'

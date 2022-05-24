@@ -1,4 +1,4 @@
-## This is for analyzing feature/keywords of sales data.
+## This is for analyzing feature/keywords of sales assets.
 ## input file format: sentence\tsalesnum
 ## output: 2 files: KeywordSales.txt, FeatureSales.txt
 

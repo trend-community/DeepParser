@@ -10,13 +10,16 @@ import utils
 #from utils import *
 
 
-_FeatureSet = set()
-_FeatureList = []   #this is populated from FeatureSet. to have featureID.
-_FeatureDict = {}   #this is populated from FeatureSet. for better searching
+#_FeatureSet = set()
+#_FeatureList = []   #this is populated from FeatureSet. to have featureID.
+#_FeatureDict = {}   #this is populated from FeatureSet. for better searching
+
 _AliasDict = {}
 _FeatureOntologyDict = {}
-NotCopyList = []
-NotShowList = []
+_AppendixLists = {}     # Group the NotCopyList, NotShowList, CoreGlobalList, Blocklists together
+# NotCopyList = []
+# NotShowList = []
+# CoreGlobalList = []     # for Lexicon.AddDocumentTempLexicon()
 BarTags=[   ['N', 'V', 'A', 'P', 'RB', 'DT', 'MD', 'UH', 'PRP', 'CD', 'RB', 'SC', 'CC', 'DT', 'SYM', 'Punc', 'EX'],
             ['NE', 'DE', 'NG', 'RP'],
             ['AP','VG'],
@@ -37,9 +40,31 @@ SentimentTags = ['repent', 'sent', 'fear', 'nC', 'cherish', 'apologize', 'mental
                 'full', 'vWell', 'lucky', 'succeed', 'prosper', 'surpass', 'win', 'famous', 'good', 'bad', 'happy', 'annoy', 'hate', 'love', 'frighten', 'mkWorried', 'irritate', 'offend', 'tease',
                 'please', 'soothe', 'enLive', 'surprise', 'shy','Pro', 'Con', 'PosEmo', 'NegEmo','PosType', 'NegType','transP','transN']
 SentimentTagIDSet = set()
+StemFeatureIDSet = set()        # this set is populated in Lexicon.LoadPrefixSuffix(), used in Lookup StemCompound
+
 #_CreateFeatureList = False
 _MissingFeatureSet = set()
 
+
+class AutoincrementValue(dict):
+    counter = 0
+    def add(self, key):
+        if key not in self:
+            dict.__setitem__(self, key, self.counter)
+            self.counter += 1
+            return self.counter-1   #return the value.
+        else:
+            return self[key]
+
+_FeatureDict = AutoincrementValue()
+_FeatureIDDict = {} # reverse of _FeatureDict
+
+class OntologyFeature:
+    counter = 0
+    def __init__(self, name):
+        self.ID = self.counter
+        self.counter += 1
+        self.name = name
 
 class OntologyNode:
     def __init__(self):
@@ -113,13 +138,18 @@ class OntologyNode:
         features = [x.strip() for x in re.split("[,; ]", code) if x]    # the first feature is the last alias.
         lastalias = features[0]
         for alias in blocks[1:-1] + [lastalias]:
-            aliasnode = SearchFeatureOntology(GetFeatureID(alias))
             aliasId = GetFeatureID(alias)
+            if aliasId == realfeatureId:    # example: lookFor=lookFor,tryToKnow,ge
+                #logging.debug("Feature {} has the same feature Id as the open word".format(alias))
+                continue    # ignore, don't add as an alias.
+            aliasnode = SearchFeatureOntology(aliasId)
+
             if aliasnode:
                 realnode.ancestors.update(aliasnode.ancestors)
                 aliasnode.ancestors.clear()
-                if alias in _FeatureSet:
-                    _FeatureSet.remove(alias)
+                if alias in _FeatureDict:
+                    _FeatureDict.pop(alias)
+                del _FeatureOntologyDict[aliasId]
 
             # find all feature ontology nodes that have alias as ancestor
             #   replace that using the realfeatureId
@@ -127,6 +157,12 @@ class OntologyNode:
                 if aliasId in node.ancestors:
                     node.ancestors.remove(aliasId)
                     node.ancestors.add(realfeatureId)
+
+            # for the existing alias that points to this alias, need to redirect to real id.
+            for _aliasname, _aliasid in _AliasDict.items():
+                if _aliasid == aliasId:
+                    logging.debug("Changeing old alias {} -> {}, now -> {}".format(_aliasname, alias, realfeature))
+                    _AliasDict[_aliasname] = realfeatureId
 
             _AliasDict[alias] = realfeatureId
 
@@ -139,8 +175,8 @@ class OntologyNode:
 
 #Used to extract features from feature.txt, to create full feature list.
 def LoadFeatureSet(featureOncologyLocation):
-    global _FeatureList, _FeatureDict, _FeatureSet
-    _FeatureSet.clear()
+    global _FeatureIDDict, _FeatureDict
+    #_FeatureSet.clear()
 
     with open(featureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
@@ -150,14 +186,13 @@ def LoadFeatureSet(featureOncologyLocation):
             for feature in features:
                 if re.match('^\'.*\'$', feature) or re.match('^/.*/$', feature):
                     continue
-                _FeatureSet.add(feature)
-    _FeatureList = list(sorted(_FeatureSet))
-    _FeatureDict = {f: ID for ID, f in enumerate(_FeatureList)}
+                _FeatureDict.add(feature)
+    _FeatureIDDict =  {v: k for k, v in _FeatureDict.items()}
 
 
 def OutputFeatureSet():
     output = "// ***Feature Set***" + "\n"
-    for feature in sorted(_FeatureSet):
+    for feature in sorted(_FeatureDict):
         output += feature
     output += "// ***Alias***" + "\n"
     for key in sorted(_AliasDict):
@@ -174,16 +209,16 @@ def OutputMissingFeatureSet():
 
 def OutputFeatureOntology():
     output = "//***Ontology***" + "\n"
-    for OpenWord in sorted(_FeatureOntologyDict.keys()):
-        if _FeatureOntologyDict[OpenWord].ancestors:
-            output += str(_FeatureOntologyDict[OpenWord]) + "\n"
+    for OpenWordID in sorted(_FeatureOntologyDict, key=lambda x:_FeatureOntologyDict[x].openWord):
+        if _FeatureOntologyDict[OpenWordID].ancestors:
+            output += str(_FeatureOntologyDict[OpenWordID]) + "\n"
     output += "//***Ontology* * single nodes**" + "\n"
-    for OpenWord in sorted(_FeatureOntologyDict.keys()):
-        if not _FeatureOntologyDict[OpenWord].ancestors:
-            output += str(_FeatureOntologyDict[OpenWord]) + "\n"
+    for OpenWordID in sorted(_FeatureOntologyDict, key=lambda x:_FeatureOntologyDict[x].openWord):
+        if not _FeatureOntologyDict[OpenWordID].ancestors:
+            output += str(_FeatureOntologyDict[OpenWordID]) + "\n"
     output += "//***Alias***" + "\n"
     for key in sorted(_AliasDict, key=lambda x:GetFeatureName(_AliasDict[x])):
-        output += _FeatureList[_AliasDict[key]] + "=" + key  + "\n"
+        output += _FeatureIDDict[_AliasDict[key]] + "=" + key  + "\n"
     return output
 
 def OutputFeatureOntologyFile(FolderLocation):
@@ -194,6 +229,43 @@ def OutputFeatureOntologyFile(FolderLocation):
     with open(FileLocation, "w", encoding="utf-8") as writer:
         writer.write(OutputFeatureOntology())
 
+
+def  LoadOntologyFile(filelocation, outbound, inbound, nodeset, graph):
+    with open(filelocation, encoding="utf-8") as dictionary:
+        for line in dictionary:
+            code, comment = utils.SeparateComment(line)
+            if "," not in code:
+                continue  # no edge. ignore
+
+            OpenWord, ancestors = code.split(",", 1)
+            OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  # remove the alias.
+            if OpenWordID == -1:
+                logging.warning("OutputFeatureOntologyGraph: wrong word ID for line {}.".format(line))
+                logging.warning("   The OpenWord is {} and the word that is trying to get featureID is {}".format(OpenWord,
+                                 OpenWord.split( "=", 1)[0].strip()))
+                continue
+            firstpath = True    #first is the "real path"
+            for path in ancestors.split(";"):
+                prev = OpenWordID
+                for node in path.split(","):
+                    if node.strip():
+                        parentid = GetFeatureID(node.strip())
+                        if parentid == -1:
+                            logging.warning("OutputFeatureOntologyGraph: wrong parentid for node {}".format(node))
+                            continue
+                        if (prev, parentid) not in graph:
+                            graph[(prev, parentid)] = firstpath
+                            outbound[prev] += 1
+                            inbound[parentid] += 1
+                            nodeset.add(prev)
+                            nodeset.add(parentid)
+                        else:
+                            graph[(prev, parentid)] = graph[(prev, parentid)] or firstpath
+
+                        prev = GetFeatureID(node.strip())
+                firstpath = False
+
+# reload the file, because previous the ontology was loaded without disctinction of ";" and ",".
 def OutputFeatureOntologyGraph():
     #output = "//***Ontology***" + "\n"
     if not hasattr(OutputFeatureOntologyGraph, "graph"):
@@ -202,81 +274,138 @@ def OutputFeatureOntologyGraph():
         OutputFeatureOntologyGraph.inbound = defaultdict(int)
         OutputFeatureOntologyGraph.nodeset = set()
 
-        OutputFeatureOntologyGraph.graph = set()
+        OutputFeatureOntologyGraph.graph = {}
         PipeLineLocation = utils.ParserConfig.get("main", "Pipelinefile")
-        XLocation = os.path.dirname(PipeLineLocation)
-        with open(XLocation + '/../Y/feature.txt', encoding="utf-8") as dictionary:
-            for line in dictionary:
-                code, comment = utils.SeparateComment(line)
-                if "," not in code:
-                    continue    #no edge. ignore
+        XLocation, _ = os.path.split(PipeLineLocation)
 
-                OpenWord, ancestors = code.split(",", 1)
-                OpenWordID = GetFeatureID(OpenWord.split("=", 1)[0].strip())  #remove the alias.
-                if OpenWordID == -1:
-                    logging.warning("OutputFeatureOntologyGraph: wrong word ID for line {}.".format(code))
-                    continue
-                for path in ancestors.split(";"):
-                    prev = OpenWordID
-                    for node in path.split(","):
-                        if node.strip():
-                            parentid = GetFeatureID(node.strip())
-                            if parentid == -1:
-                                logging.warning("OutputFeatureOntologyGraph: wrong parentid for node {}".format(node))
-                                continue
-                            if (prev, parentid) not in OutputFeatureOntologyGraph.graph:
-                                OutputFeatureOntologyGraph.graph.add((prev, parentid))
-                                OutputFeatureOntologyGraph.outbound[prev] += 1
-                                OutputFeatureOntologyGraph.inbound[parentid] += 1
-                                OutputFeatureOntologyGraph.nodeset.add(prev)
-                                OutputFeatureOntologyGraph.nodeset.add(parentid)
+        LoadOntologyFile(os.path.join(XLocation, '../ontology/feature.txt'), OutputFeatureOntologyGraph.outbound, OutputFeatureOntologyGraph.inbound,
+                         OutputFeatureOntologyGraph.nodeset, OutputFeatureOntologyGraph.graph)
+        logging.info("After loading from common ontology, there are {} edges, for {} nodes.".format(len(OutputFeatureOntologyGraph.graph), len(OutputFeatureOntologyGraph.nodeset)))
 
-                            prev = GetFeatureID(node.strip())
+        LoadOntologyFile(os.path.join(XLocation, 'feature.txt'), OutputFeatureOntologyGraph.outbound, OutputFeatureOntologyGraph.inbound,
+                         OutputFeatureOntologyGraph.nodeset, OutputFeatureOntologyGraph.graph)
+        logging.info("After loading from local ontology, there are {} edges, for {} nodes.".format(len(OutputFeatureOntologyGraph.graph),
+                                                                            len(OutputFeatureOntologyGraph.nodeset)))
 
-    output = "{\n"
+    RemoveAbundantEdge(OutputFeatureOntologyGraph.graph)
+    logging.info("After RemoveAbundantEdge, there are {} edges, for {} nodes.".format(
+        len(OutputFeatureOntologyGraph.graph),
+        len(OutputFeatureOntologyGraph.nodeset)))
+
+    output = "digraph {\n"
     for node in sorted(OutputFeatureOntologyGraph.nodeset):
-        output += "{} [label=\"{}\" tooltip=\"Inbound:{} Outbound:{} \" ];\n".format(node, GetFeatureName(node), OutputFeatureOntologyGraph.inbound[node], OutputFeatureOntologyGraph.outbound[node])
+        output += "d{} [label=\"{}\" tooltip=\"Inbound:{} Outbound:{} \" ];\n".format(node, GetFeatureName(node), OutputFeatureOntologyGraph.inbound[node], OutputFeatureOntologyGraph.outbound[node])
     for edge in sorted(OutputFeatureOntologyGraph.graph, key=operator.itemgetter(0, 1)):
         #output += GetFeatureName(edge[0]) + "->" + GetFeatureName(edge[1]) + "\n"
-        output += "\t{}->{} ;\n".format(edge[0], edge[1])
+        output += "\td{}->d{} {};\n".format(edge[0], edge[1], "[color=blue]" if OutputFeatureOntologyGraph.graph[edge] else "")
     output += "}\n"
 
-    logging.info("In Feature ontology, There are {} edges, for {} nodes.".format(len(OutputFeatureOntologyGraph.graph), len(OutputFeatureOntologyGraph.nodeset)))
+    logging.debug("OutputFeatureOntologyGraph() done!")
     return output
 
-def LoadFeatureOntology(featureOncologyLocation):
-    if featureOncologyLocation.startswith("."):
-        featureOncologyLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  featureOncologyLocation)
 
-    LoadFeatureSet(featureOncologyLocation) #get feature id for each feature first.
-    with open(featureOncologyLocation, encoding="utf-8") as dictionary:
+def RemoveAbundantEdge(graph):
+    """
+    If a parent is already in grandparent/great-grandparent list, then remove this son-parent link.
+    :param graph:
+    :return:
+    """
+    for (sonid, parentid) in sorted(graph, key=operator.itemgetter(0, 1)):
+        if sonid in _FeatureOntologyDict:
+            for ancestor in _FeatureOntologyDict[sonid].ancestors:
+                if ancestor in _FeatureOntologyDict and parentid in _FeatureOntologyDict[ancestor].ancestors:
+                    del graph[(sonid, parentid)]
+                    break   # only break the loop of ancestor.
+
+
+def LoadFeatureOntology(localfeatureOncologyLocation):
+    global _FeatureIDDict, _FeatureDict
+    if localfeatureOncologyLocation.startswith("."):
+        localfeatureOncologyLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  localfeatureOncologyLocation)
+
+    Folder = os.path.dirname(localfeatureOncologyLocation)
+    commonfeatureOncologyLocation = os.path.join(Folder, "../ontology/feature.txt")
+
+    LoadFeatureSet(commonfeatureOncologyLocation) #get feature id for each feature first.
+    with open(commonfeatureOncologyLocation, encoding="utf-8") as dictionary:
         for line in dictionary:
             node = OntologyNode()
             node.SetAncestors(line)
             if node.openWordID != -1:
                 _FeatureOntologyDict[node.openWordID] = node
+    for f in _AliasDict:
+        if f in _FeatureDict:
+            if _FeatureDict[f] in _FeatureOntologyDict:
+                logging.warning("   Alias {}  _FeatureDict[f] in _FeatureOntologyDict ".format(f))
+            _FeatureDict.pop(f)
 
-    LoadAppendixList(featureOncologyLocation)
+    LoadFeatureSet(localfeatureOncologyLocation) #get feature id for each feature first.
+    with open(localfeatureOncologyLocation, encoding="utf-8") as dictionary:
+        for line in dictionary:
+            node = OntologyNode()
+            node.SetAncestors(line)
+            if node.openWordID != -1:
+                _FeatureOntologyDict[node.openWordID] = node
+    for f in _AliasDict:
+        if f in _FeatureDict:
+            if _FeatureDict[f] in _FeatureOntologyDict:
+                logging.warning("   Alias {}  _FeatureDict[f] in _FeatureOntologyDict ".format(f))
+            _FeatureDict.pop(f)
+
+    LoadAppendixList(localfeatureOncologyLocation)
     utils.InitGlobalFeatureID()
+    utils.initiated = True  # the featureID, featureName are set.
+
+
+def CreateTempFeature(middlename):
+    FeatureName = "Temp{}_{}".format(middlename, _FeatureDict.counter)
+    _FeatureDict.add(FeatureName)
+
+    FeatureID = _FeatureDict[FeatureName]
+    _FeatureIDDict[FeatureID] = FeatureName
+
+    return FeatureName, FeatureID
 
 
 def LoadAppendixList(featureOncologyLocation):
     Folder = os.path.dirname(featureOncologyLocation)
-    NoShowFileLocation = os.path.join(Folder, "featureNotShow.txt")
+    NoShowFileLocation = os.path.join(Folder, "../ontology/featureNotShow.txt")
     with open(NoShowFileLocation, encoding="utf-8") as dictionary:
+        _AppendixLists['NotShowList'] = set()
         for line in dictionary:
             word, _ = utils.SeparateComment(line)
             if not word:
                 continue
-            NotShowList.append(GetFeatureID(word))
+            _AppendixLists['NotShowList'].add(GetFeatureID(word))
 
-    NoCopyFileLocation = os.path.join(Folder, "featureNotCopy.Parser.txt")
+    NoCopyFileLocation = os.path.join(Folder, "../ontology/featureNotCopy.Parser.txt")
     with open(NoCopyFileLocation, encoding="utf-8") as dictionary:
+        _AppendixLists['NotCopyList'] = set()
         for line in dictionary:
             word, _ = utils.SeparateComment(line)
             if not word:
                 continue
-            NotCopyList.append(GetFeatureID(word))
+            _AppendixLists['NotCopyList'].add(GetFeatureID(word))
+
+
+    CoreGlobalFileLocation = os.path.join(Folder, "featureCoreGlobal.txt")
+    with open(CoreGlobalFileLocation, encoding="utf-8") as dictionary:
+        _AppendixLists['CoreGlobalList'] = set()
+        for line in dictionary:
+            word, _ = utils.SeparateComment(line)
+            if not word:
+                continue
+            _AppendixLists['CoreGlobalList'].add(GetFeatureID(word))
+
+    for f in ['a', 'n', 'v']:
+        BlockFileLocation = os.path.join(Folder, "../ontology/" + f + "Blocklist.txt")
+        with open(BlockFileLocation, encoding="utf-8") as dictionary:
+            _AppendixLists[f+'Blocklist'] = set()
+            for line in dictionary:
+                word, _ = utils.SeparateComment(line)
+                if not word:
+                    continue
+                _AppendixLists[f+'Blocklist'].add(GetFeatureID(word))
 
 
 def SearchFeatureOntology(featureID):
@@ -286,8 +415,24 @@ def SearchFeatureOntology(featureID):
     return None
 
 
+def ApplyFeature(oneset, featureID):
+    if featureID == utils.FeatureID_NEW:
+        oneset.clear()  # removed all existing feature if there is "NEW"
+        return
+    
+    oneset.add(featureID)
+    ontologynode = SearchFeatureOntology(featureID)
+    if ontologynode:
+        if ontologynode.ancestors:
+            oneset.update(ontologynode.ancestors)
+
+
+GetFeatureID_Cache = {}
 def GetFeatureID(feature):
-    if not _FeatureList:    #for some clients that the _FeatureList is not load locally.
+    if feature in GetFeatureID_Cache:
+        return GetFeatureID_Cache[feature]
+
+    if not _FeatureIDDict:    #for some clients that the _FeatureList is not load locally.
         try:
             GetFeatureIDURL = utils.ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureID/"
             ret = requests.get(GetFeatureIDURL + feature)
@@ -296,20 +441,33 @@ def GetFeatureID(feature):
         return int(ret.text)
 
     if feature in _AliasDict:
+        if utils.initiated:
+            GetFeatureID_Cache[feature] = _AliasDict[feature]
         return _AliasDict[feature]
+
     if feature in _FeatureDict:
+        if utils.initiated:
+            GetFeatureID_Cache[feature] = _FeatureDict[feature]
         return _FeatureDict[feature]
 
-    if utils.ChinesePattern.search(feature):
+    if utils.ChinesePattern.fullmatch(feature):
+        if utils.initiated:
+            GetFeatureID_Cache[feature] = -1
         return -1   # Chinese is not a feature.
 
     logging.warning("GetFeatureID: Searching for " + feature + " but it is not in featurefulllist (feature.txt).")
     _MissingFeatureSet.add(feature)
+    if utils.initiated:
+        GetFeatureID_Cache[feature] = -1
     return -1    # -1? 0?
 
 
+GetFeatureName_Cache = {}
 def GetFeatureName(featureID):
-    if len(_FeatureList) == 0:
+    if featureID in GetFeatureName_Cache:
+        return GetFeatureName_Cache[featureID]
+
+    if len(_FeatureIDDict) == 0:
         logging.warning("GettingFeatureName using URL")
         GetFeatureNameURL = utils.ParserConfig.get("client", "url_larestfulservice") + "/GetFeatureName/"
         try:
@@ -321,10 +479,14 @@ def GetFeatureName(featureID):
             return ""
         return ret.text
 
-    if 0 <= featureID < len(_FeatureList):
-        return _FeatureList[featureID]
+    if featureID in _FeatureIDDict:
+        if utils.initiated:
+            GetFeatureName_Cache[featureID] = _FeatureIDDict[featureID]
+        return _FeatureIDDict[featureID]
     else:
-        logging.warning("GetFeatureName: Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureList)=" + str(len(_FeatureList)))
+        if utils.initiated:
+            GetFeatureName_Cache[featureID] = ""
+        logging.warning("GetFeatureName: Wrong to get Feature Name: Searching for ID[" + str(featureID) + "] but it is not right. len(_FeatureIDDict)=" + str(len(_FeatureIDDict)))
         # raise(Exception("error"))
         return ""
 
@@ -335,7 +497,7 @@ def ProcessBarTags(featureset):
     for f in featureset:
         if f not in BarTagIDSet:
             continue
-        taglevel, _ = utils.IndexIn2DArray(f, BarTagIDs)
+        taglevel = utils.IndexXIn2DArray(f, BarTagIDs)
         if taglevel > -1:
             if MaxBarTagLevel < taglevel:
                 MaxBarTagLevel = taglevel
@@ -343,10 +505,11 @@ def ProcessBarTags(featureset):
     featureset_copy = featureset.copy()
     if MaxBarTagLevel > -1:
         for f in featureset_copy:
-            taglevel, _ = utils.IndexIn2DArray(f, BarTagIDs)
+            taglevel = utils.IndexXIn2DArray(f, BarTagIDs)
             if taglevel > -1:
                 if taglevel != MaxBarTagLevel:
                     featureset.remove(f)
+
 
 def ProcessSentimentTags(featureset):
     featureset_copy = featureset.copy()
@@ -355,7 +518,6 @@ def ProcessSentimentTags(featureset):
             continue
         else:
             featureset.remove(f)
-
 
 
 if __name__ == "__main__":

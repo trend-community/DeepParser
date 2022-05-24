@@ -1,19 +1,32 @@
 import logging, re, json, jsonpickle, configparser, os, sys
-import sqlite3
+import sqlite3, time
 from functools import lru_cache
-import operator
+import operator, glob, copy
 import FeatureOntology
 
+ConfigfileLocation = os.path.join(os.path.dirname(__file__),'config.ini')
+if not os.path.exists(ConfigfileLocation):
+    logging.error("There is no {}. Please copy the appropriate .ini file as config.ini (depend on different project)".format(ConfigfileLocation))
+    exit(1)
+
+initiated = False
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 ParserConfig = configparser.ConfigParser()
-ParserConfig.read(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.ini'))
+ParserConfig.read(ConfigfileLocation)
 maxcachesize = int(ParserConfig.get("main", "maxcachesize"))
 runtype = ParserConfig.get("main", "runtype").lower()
+ProjectName = re.search("/(\w+?)/\w+\.\w+$", ParserConfig.get("main", "Pipelinefile")).group(1)
 DisableDB = False
 if ParserConfig.has_option("main", "disabledb") and ParserConfig.get("main", "disabledb").lower() == "true":
     DisableDB = True
 
-ChinesePattern = re.compile(u'[\u4e00-\u9fff]')
+if not ParserConfig.has_option("main", "languagetype"):
+    LanguageType = "asian"   #Asian as default language
+else:
+    LanguageType = ParserConfig.get("main", "languagetype").lower()
+
+ChinesePattern = re.compile(u'[\u4e00-\u9fff|]*')
 jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
 FeatureID_JS = None
@@ -51,8 +64,17 @@ FeatureID_HIT2 = None
 FeatureID_HIT3 = None
 
 FeatureID_comPair = None
+
+FeatureID_GLOBAL = None
+FeatureID_GONE = None
+FeatureID_Done = None
+FeatureID_Done2 = None
+
 whQlist = ["whNQ", "whatQ", "whenQ", "whereQ", "whoQ", "whBrand", "whProd", "whyQ", "howQ", "howDoQ","whatHappenQ", "whatForQ", "howAQ","orQ"]
 
+GlobalVariables = {}        # this list can be updated from the rule action,
+                            # also, from webservice, you can modify the 3 Global Variables:
+                                    # DocumentClass, ParagraphClass, SentenceClass
 
 IMPOSSIBLESTRING = "@#$%@impossible@"
 IMPOSSIBLESTRINGLP = "@#$%@leftparenthesis@"
@@ -76,12 +98,16 @@ SYM_PARENTHESIS = { # key is embeddig depth, starting from 0
 
 from enum import Enum
 class LexiconLookupSource(Enum):
-    Exclude = 0
-    defLex = 1
-    External = 2
-    oQcQ = 3
-    stemming = 4
-    Compound = 5
+    EXCLUDE = 0     # all "normal lexicons". Including Lookup Lex, Customer
+    DEFLEX = 1      # for combining tokens (without space)
+    EXTERNAL = 2    # not quite trusted, lower weight.
+    #oQcQ = 3
+    STEMMING = 4    # for stem checking
+    COMPOUND = 5    # western word with space (for combining tokens)
+    DOCUMENT = 6    # related to one document only. "GLOBAL"
+    COMPOUND_SENSITIVE = 7
+    STEMCOMPOUND = 8   # stem with space.
+    #Lookup Main and Lookup Segmentation are only in the _LexiconSegmentDict, not for lookup.
 
 
 def InitGlobalFeatureID():
@@ -91,7 +117,8 @@ def InitGlobalFeatureID():
     global FeatureID_VB, FeatureID_Ved, FeatureID_Ving
     global FeatureID_H, FeatureID_Subj, FeatureID_Obj, FeatureID_Pred
     global FeatureID_AC, FeatureID_NC, FeatureID_VC, FeatureID_comPair
-    global FeatureID_HIT, FeatureID_HIT2, FeatureID_HIT3
+    global FeatureID_HIT, FeatureID_HIT2, FeatureID_HIT3, FeatureID_GLOBAL, FeatureID_GONE
+    global FeatureID_Done, FeatureID_Done2
     if not FeatureID_JS2:
         import FeatureOntology
         FeatureID_JS = FeatureOntology.GetFeatureID("JS")
@@ -129,11 +156,61 @@ def InitGlobalFeatureID():
 
         FeatureID_comPair = FeatureOntology.GetFeatureID("comPair")
 
+        FeatureID_GLOBAL = FeatureOntology.GetFeatureID("GLOBAL")
+        FeatureID_GONE = FeatureOntology.GetFeatureID("GONE")
+        FeatureID_Done = FeatureOntology.GetFeatureID("Done")
+        FeatureID_Done2 = FeatureOntology.GetFeatureID("Done2")
+
         FeatureOntology.BarTagIDs = [[FeatureOntology.GetFeatureID(t) for t in row] for row in FeatureOntology.BarTags]
         for IDList in FeatureOntology.BarTagIDs:
             FeatureOntology.BarTagIDSet.update(set(IDList))
         FeatureOntology.SentimentTagIDSet = [FeatureOntology.GetFeatureID(t) for t in FeatureOntology.SentimentTags]
         FeatureOntology.SentimentTagIDSet = set(FeatureOntology.SentimentTagIDSet)
+
+
+def ResetGlobalVariables():
+    global GlobalVariables
+
+    GlobalVariables = {}
+
+    import Lexicon
+    Lexicon.ResetDocumentTempLexicon()
+
+
+# For variables that has the name of SENT_*, the life cycle is for one sentence only.
+def ResetGlobalVariables_Sentence(dag):
+    """
+    For variables that has the name of SENT_*, the life cycle is for one sentence only.
+    For variables that has the name of temp_SVO*, combine the list of nodes to SVO*
+    :param dag: use for getting SVO
+    :return:
+    """
+    global GlobalVariables
+
+    for key in [variablename for variablename in GlobalVariables if variablename.startswith("SENT_")]: del GlobalVariables[key]
+
+    for key in [variablename for variablename in GlobalVariables if variablename.startswith("temp_SVO")]:
+        realkeyname = key[5:]   # remove the "temp_" prefix
+        if isinstance(GlobalVariables[key], str):
+            logging.error(f"Wrong to have {key} as string. Need to be list of nodes ")
+
+        nodes = [n for n in dag.nodes.values() if n.ID in GlobalVariables[key] ]
+        #nodelist = dag[GlobalVariables[key]]
+        value = ""
+        for n in sorted(nodes, key=lambda n:n.StartIndex):
+            value += n.text
+        if LanguageType == "asian":
+            value += "。"
+        else:
+            value += " "
+
+        if GlobalVariables[realkeyname]:
+            GlobalVariables[realkeyname] += value
+        else:
+            GlobalVariables[realkeyname] = value
+
+        del GlobalVariables[key]
+
 
 # return -1 if failed. Should throw error?
 @lru_cache(100000)
@@ -187,6 +264,28 @@ def SeparateComment(multiline):
     return content.strip(), comment.strip()
 
 
+def splitkeep(s, delimiter):
+    # segments = re.split(f"({delimiter})", s)
+    # newstrings =  [segments[i] + segments[i+1] for i in range(len(segments)-1) if i%2 ==0 ]
+    #
+    segments = s.split(delimiter)
+    newstrings = [substr + delimiter for substr in segments[:-1]]
+    if segments[-1]:
+        newstrings +=  [segments[-1]]
+    return newstrings
+
+
+def split_keep_multidelimiters(s, delimiters):
+    result = [s]
+    for d in delimiters:
+        result_copy = copy.copy(result)
+        result = []
+        for everystring in result_copy:
+            result += splitkeep(everystring, d)
+            #result += everystring.split(d, includeSeparators=True)
+    return result
+
+
 @lru_cache(100000)
 #Can be expand for more scenario.
 # unicode numbers (or English "one", "two"...) should be in lexicon to have "CD" feature.
@@ -232,15 +331,15 @@ def IsAlphaLetter(Sentence):
 
 @lru_cache(50000)
 def RemoveExcessiveSpace(Content):
+    if not hasattr(RemoveExcessiveSpace, "respace"):
+        RemoveExcessiveSpace.respace = re.compile("\s*\|\s*", re.MULTILINE)
+        RemoveExcessiveSpace.respace2 = re.compile("<\s*", re.MULTILINE)
+        RemoveExcessiveSpace.respace3 = re.compile("\s*>", re.MULTILINE)
     #Remove any whitespace around | sign, so it is made as a word.
-    r = re.compile("\s*\|\s*", re.MULTILINE)
-    Content = r.sub("|", Content)
 
-    r = re.compile("<\s*", re.MULTILINE)
-    Content = r.sub("<", Content)
-
-    r = re.compile("\s*>", re.MULTILINE)
-    Content = r.sub(">", Content)
+    Content = RemoveExcessiveSpace.respace.sub("|", Content)
+    Content = RemoveExcessiveSpace.respace2.sub("<", Content)
+    Content = RemoveExcessiveSpace.respace3.sub(">", Content)
 
     Content = Content.strip(";")    # ";" sign at the end of rule is not useful.
 
@@ -253,6 +352,7 @@ Pairs = ['[]', '()', '""', '\'\'', '//']
 # The previous step already search up to the close tag.
 #   Now the task is to search after the close tag up the the end of this token,
 #   close at a space, or starting of next token.
+#   "^" is consider as starting of new token.   20201026
 @lru_cache(100000)
 def SearchToEnd(string, Reverse=False):
     if not string:      # if it is empty
@@ -283,7 +383,7 @@ def SearchToEnd(string, Reverse=False):
                         #return -1   # error. stop the searching immediately.
         if string[i] in SignsToIgnore:
             return i-direction
-        if string[i].isspace():
+        if string[i].isspace() or string[i] == "^":
             return i-direction
 
         # if string[i] in "[(":   #start of next token
@@ -392,14 +492,9 @@ def OutputStringTokens_onelinerSA_ben(dag):
                     Existed = True
                     break
             if not Existed:
-                sentimentnode = {}
-                sentimentnode["keyid"] = -1
-                sentimentnode["key"] = "_Emo"
-                sentimentnode["keyfeatures"] = []
-                sentimentnode["valueid"] = node.ID
-                sentimentnode["value"] = node.text
-                sentimentnode["valuefeatures"] = [FeatureOntology.GetFeatureName(f) for f in node.features if
-                                                  f in sentimentfeatureids]
+                sentimentnode = {"keyid": -1, "key": "_Emo", "keyfeatures": [], "valueid": node.ID, "value": node.text,
+                                 "valuefeatures": [FeatureOntology.GetFeatureName(f) for f in node.features if
+                                                   f in sentimentfeatureids]}
                 outputdict.append(sentimentnode)
 
     return json.dumps(outputdict, default=lambda o: o.__dict__,
@@ -424,7 +519,7 @@ def OutputStringTokens_onelinerSA(dag):
         text = node.text
         sentence += text
         features = sorted(
-            [FeatureOntology.GetFeatureName(f) for f in node.features if f not in FeatureOntology.NotShowList])
+            [FeatureOntology.GetFeatureName(f) for f in node.features if f not in FeatureOntology._AppendixLists['NotShowList']])
         filteredfeatures = []
         for f in features:
             if f in sentimentfeature:
@@ -443,12 +538,12 @@ def OutputStringTokens_onelinerSA(dag):
         nID = edge[2]
         n = nodes.get(nID)
         feats = sorted(
-            [FeatureOntology.GetFeatureName(f) for f in n.features if f not in FeatureOntology.NotShowList])
+            [FeatureOntology.GetFeatureName(f) for f in n.features if f not in FeatureOntology._AppendixLists['NotShowList']])
         if "Key" in feats:
             valueID = edge[0]
             valuenode = nodes.get(valueID)
             valuefeats = sorted(
-                [FeatureOntology.GetFeatureName(f) for f in valuenode.features if f not in FeatureOntology.NotShowList])
+                [FeatureOntology.GetFeatureName(f) for f in valuenode.features if f not in FeatureOntology._AppendixLists['NotShowList']])
             if "Value" in valuefeats:
                 if not str(edge[2])+"\t" + str(edge[0]) in keyvalueset:
                     if not havekeyvalue:
@@ -462,7 +557,7 @@ def OutputStringTokens_onelinerSA(dag):
             keyID = edge[0]
             keynode = nodes.get(keyID)
             keyfeats = sorted(
-                [FeatureOntology.GetFeatureName(f) for f in keynode.features if f not in FeatureOntology.NotShowList])
+                [FeatureOntology.GetFeatureName(f) for f in keynode.features if f not in FeatureOntology._AppendixLists['NotShowList']])
             if "Key" in keyfeats:
                 if not str(edge[0])+"\t" + str(edge[2]) in keyvalueset:
                     if not havekeyvalue:
@@ -627,16 +722,16 @@ def OutputStringTokens_oneliner_ex(strTokenList):
     # ugly resolution for SPACE format
     output = re.sub('(\(\S*?) +', r'\1  ', output)
     output = re.sub('(\[\S*?) +', r'\1   ', output)
-    output = re.sub('(\{\S*?) +', r'\1    ', output)
+    output = re.sub('({\S*?) +', r'\1    ', output)
 
     output = re.sub('(\S*?)(\)\)|\))', r'\1  \2', output)
-    output = re.sub('(\S*?)(\]\]|\])', r'\1   \2', output)
-    output = re.sub('(\S*?)(\}\}|\})', r'\1    \2', output)
+    output = re.sub('(\S*?)(]]|])', r'\1   \2', output)
+    output = re.sub('(\S*?)(}}|})', r'\1    \2', output)
 
-    output = re.sub('\> +\<', '> <', output)
+    output = re.sub('> +<', '> <', output)
     output = re.sub('\) +\(', ')  (', output)
-    output = re.sub('\] +\[', ']   [', output)
-    output = re.sub('\} +\{', '}    {', output)
+    output = re.sub('] +\[', ']   [', output)
+    output = re.sub('} +{', '}    {', output)
     return output
 
 
@@ -648,12 +743,14 @@ def OutputStringTokens_oneliner_ex(strTokenList):
 #     return Sentence
 
 
-def IndexIn2DArray(x, array):
+def IndexXIn2DArray(x, array):
     for i in range(len(array)):
-        for j in range(len(array[i])):
-            if x == array[i][j]:
-                return i, j
-    return -1, -1
+        if x in array[i]:
+            return i
+        # for j in range(len(array[i])):
+        #     if x == array[i][j]:
+        #         return i, j
+    return -1
 
 
 def LastItemIn2DArray(xlist, array):
@@ -673,7 +770,7 @@ def InitDB():
     try:
         PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../data/parser.db')
         DBCon = sqlite3.connect(PATH)
-        #DBCon = sqlite3.connect('../data/parser.db')
+        #DBCon = sqlite3.connect('../assets/parser.db')
         #DBCon.setLockingEnabled(False);
         cur = DBCon.cursor()
         cur.execute("PRAGMA read_uncommitted = true;")
@@ -697,7 +794,7 @@ def CloseDB(tempDB):
     except sqlite3.ProgrammingError:
         logging.info("DBCon is closed.")
     except AttributeError:
-        logging.warning("DBCon is not initialized.")
+        logging.info("DBCon is not initialized. ")
 # try:
 #     if not DBCon:
 #         InitDB()    #initialize this
@@ -719,12 +816,12 @@ def DBInsertOrGetID(DBConnection, tablename, tablefields, values):
         resultid = resultrecord[0]
     else:
         try:
-            strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for field in tablefields) + ")"
+            strsql = "INSERT into " + tablename + " (" + ",".join(tablefields) + ") VALUES(" + ",".join("?" for _ in tablefields) + ")"
             logging.info(strsql)
             cur.execute(strsql, values)
             resultid = cur.lastrowid
         except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
-            logging.warning("data writting error. ignore")
+            logging.warning("assets writting error. ignore")
             logging.warning(str(e))
             resultid = -1
         DBConnection.commit()
@@ -748,7 +845,7 @@ def DBInsertOrUpdate(DBConnection, tablename, keyfield, keyvalue, tablefields, v
             cur.execute(strsql, values.extend([resultid]))
             resultid = cur.lastrowid
         except (sqlite3.OperationalError, sqlite3.DatabaseError) as e:
-            logging.warning("data writting error. ignore")
+            logging.warning("assets writting error. ignore")
             logging.warning(str(e))
             resultid = -1
         DBConnection.commit()
@@ -760,7 +857,7 @@ def DBInsertOrUpdate(DBConnection, tablename, keyfield, keyvalue, tablefields, v
             cur.execute(strsql, values)
             resultid = cur.lastrowid
         except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
-            logging.warning("data writting error. ignore")
+            logging.warning("assets writting error. ignore")
             logging.warning(str(e))
             resultid = -1
         DBConnection.commit()
@@ -783,7 +880,7 @@ def DBInsertOrIgnore(DBConnection, tablename, keyfield, keyvalue, tablefields, v
             cur.execute(strsql, values)
             resultid = cur.lastrowid
         except (sqlite3.OperationalError,sqlite3.DatabaseError) as e:
-            logging.warning("data writting error. ignore")
+            logging.warning("assets writting error. ignore")
             logging.warning(str(e))
             resultid = -1
         DBConnection.commit()
@@ -814,10 +911,30 @@ class JsonClass(object):
 
 
 def print_var(global_dict, filename):
-    with open(filename, 'w') as writer:
+    with open(filename, 'w', encoding="utf-8") as writer:
         for (k,v) in global_dict.items():
             writer.write("Type:{} \tSize:{}\tSample:{}\n".format(k, sys.getsizeof(v), str(v)[:50]))
 
+
+def verify_filename(name):
+    """
+    Confirm the file name is actually correct.
+    In some OS the filename is not casesensitive, so the wrong file name is actually working;
+    but when the program is deployed to another OS which is casesensitive, the program fail.
+    :param name: file name
+    :return: None. If it is not correct, then throw RuntimeError.
+    """
+    geneticname = "%s[%s]" % (name[:-1], name[-1])
+    try:
+        realname = glob.glob(geneticname)[0]
+        # need to be compatible with / and \ signs:
+        if realname.replace("/", "_").replace("\\", "_") != name.replace("/", "_").replace("\\", "_"):
+            logging.error(f"The location of {name} is miss-spelled (CASE SENSTIVE), and it should be {realname}. Please correct.")
+            raise RuntimeError("Wrong file name")
+        return
+    except IndexError:
+        logging.error("File {} does'nt exist.".format(name))
+        raise(RuntimeError("File doesn't exist"))
 
 
 def runSimpleSubprocess(aCommand):

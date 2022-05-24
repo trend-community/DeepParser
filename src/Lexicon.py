@@ -2,26 +2,33 @@
 # read in the lookup dictionary. It is mainly used for segmentation (combining multiple tokens into one word/token)
 # defLexX.txt sample: 也就: EX advJJ preXV pv rightB /就/
 
-import string
+import string, copy
 
 from FeatureOntology import *
-# (O.O)
-import ProcessSentence, Tokenization
+from FeatureOntology import _AppendixLists
 
 _LexiconDict = {}
+_LexiconSensitiveDict = {}
+_StemDict = {}  # not all stems are lexicon.
 _LexiconLookupSet = dict()
-_LexiconLookupSet[utils.LexiconLookupSource.Exclude] = set()
-_LexiconLookupSet[utils.LexiconLookupSource.defLex] = set()
-_LexiconLookupSet[utils.LexiconLookupSource.External] = set()
-_LexiconLookupSet[utils.LexiconLookupSource.oQcQ] = set()
-_LexiconLookupSet[utils.LexiconLookupSource.Compound] = set()
+for source in utils.LexiconLookupSource:
+    _LexiconLookupSet[source] = set()
+    # _LexiconLookupSet[utils.LexiconLookupSource.DEFLEX] = set()
+    # _LexiconLookupSet[utils.LexiconLookupSource.EXTERNAL] = set()
+    # _LexiconLookupSet[utils.LexiconLookupSource.COMPOUND] = set()
+    # _LexiconLookupSet[utils.LexiconLookupSource.COMPOUND_SENSITIVE] = set()
+    # _LexiconLookupSet[utils.LexiconLookupSource.STEMMING] = set()
+    # _LexiconLookupSet[utils.LexiconLookupSource.DOCUMENT] = set()
 _LexiconSegmentDict = {}  # from main2017. used for segmentation only. there is no feature.
 _LexiconSegmentSlashDict = {}  #
-_LexiconCuobieziDict = {}
-_LexiconFantiDict = {}
+_LexiconSpellingDict = {}
+_LexiconlinkDisplay = {}
+#_LexiconFantiDict = {}
 
-CompositeKG  = []
-CompositeKGSetADict = {}
+# CompositeKG  = []
+# CompositeKGSetADict = {}
+
+# DocumentLexicon = {}        # this lexicon is updated from the ruel GLOBAL action, and reset from webservice ResetGlobalValue.
 
 # _LexiconLookupDict = {}     # extra dictionary for lookup purpose.
 # the same node is also saved in _LexiconDict
@@ -31,9 +38,13 @@ _CommentDict = {}
 C1ID = None
 
 #(O.O)
-_StemDict = {}
+# _StemDict = {}
+# _SuffixList = []
+# _InfFile = ""
+_SuffixDict = {}
+_PrefixDict = {}
 _SuffixList = []
-_InfFile = ""
+_PrefixList = []
 
 
 class LexiconNode(object):
@@ -45,6 +56,7 @@ class LexiconNode(object):
         self.missingfeature = ""
         self.origFeatures = set()
         self.stemFeatures = set()
+        self.headid = -1    # used in Stem Compound
         # self.forLookup = False
 
     def __str__(self):
@@ -80,18 +92,18 @@ class LexiconNode(object):
 
 
 def CopyFeatureLeaves(features):
-    copy = features.copy()
+    _copy = features.copy()
     # remove redundant ancestors.
     for feature in features:
         nodes = SearchFeatureOntology(feature)
         if nodes:
             ancestors = nodes.ancestors
             if ancestors:
-                c = ancestors.intersection(copy)
+                c = ancestors.intersection(_copy)
                 if c:
                     for a in c:
-                        copy.remove(a)
-    return copy
+                        _copy.remove(a)
+    return _copy
 
 
 def SplitFeatures(FeatureString):
@@ -160,8 +172,8 @@ def OutputLexicon(EnglishFlag=False):
 
 
 def OutputLexiconFile(FolderLocation):
-    if FolderLocation.startswith("."):
-        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), FolderLocation)
+    # if FolderLocation.startswith("."):
+    #     FolderLocation = os.path.join(os.path.dirname(__file__), FolderLocation)
     FileLocation = os.path.join(FolderLocation, "lexicon.txt")
 
     with open(FileLocation, "w", encoding="utf-8") as writer:
@@ -170,7 +182,7 @@ def OutputLexiconFile(FolderLocation):
 
 # def LoadLexiconBlacklist(BlacklistLocation):
 #     if BlacklistLocation.startswith("."):
-#         BlacklistLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)),  BlacklistLocation)
+#         BlacklistLocation = os.path.join(os.path.dirname(__file__),  BlacklistLocation)
 #     with open(BlacklistLocation, encoding="utf-8") as dictionary:
 #         for line in dictionary:
 #             pattern, _ = SeparateComment(line)
@@ -185,13 +197,19 @@ def LoadMainLexicon(lexiconLocation):
         for line in dictionary:
             word, _ = utils.SeparateComment(line)
             if word:
-                word = word.replace("/", "").lower()
-                _LexiconSegmentDict[word] = 0.9
-    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
+                if "/" in word:
+                    combinedword = word.replace("/", "")
+                    _LexiconSegmentSlashDict[combinedword] = word
+                    if combinedword not in _LexiconSegmentDict:
+                        _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
+                else:
+                    word = word.lower()
+                    _LexiconSegmentDict[word] = 0.9
+    logging.info("Finish loading main lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
     # logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
 
-def LoadSegmentSlash(lexiconLocation):
+def LoadSegmentSlash_ORIGIN(lexiconLocation):
     global _LexiconSegmentDict
     with open(lexiconLocation, encoding='utf-8') as dictionary:
         for line in dictionary:
@@ -201,13 +219,46 @@ def LoadSegmentSlash(lexiconLocation):
                 _LexiconSegmentSlashDict[combinedword] = word
                 if combinedword not in _LexiconSegmentDict:
                     _LexiconSegmentDict[combinedword] = 1.2  # these words from main2017 and 60ngramMain.txt also join segmentation.
-    logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
+    logging.info("Finish loading segmentslash lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconSegmentDict)))
 
 
+
+def LoadSegmentSlash():
+    """
+    Get the segmentslash info from:
+        1, slash in main2017.txt;   #already done in LoadMainLexicon()
+        2, 5ngramKG.txt, 6ngramMain.txt
+    :return:
+    """
+    global _LexiconSegmentDict
+    import Rules
+    for rulefiles in Rules.RuleGroupDict:
+        if rulefiles.endswith("5ngramKG.txt") or rulefiles.endswith("6ngramMain.txt") :
+            rulegroup = Rules.RuleGroupDict[rulefiles]
+            for rule in rulegroup.RuleList:
+                slashword = "/".join([n for n in rule.norms if n])
+                combinedword = slashword.replace("/", "")
+                _LexiconSegmentSlashDict[combinedword] = slashword
+                if combinedword not in _LexiconSegmentDict:
+                    _LexiconSegmentDict[combinedword] = 1.2  # these words  also join segmentation.
+
+
+def ApplyStemFeatures():
+    global _SuffixList, _PrefixList
+
+    for x in _LexiconDict:
+        if x != _LexiconDict[x].atom:
+            _LexiconDict[x].features.update(StemFeatures(_LexiconDict[x].atom))
+
+    _SuffixList = sorted(_SuffixDict.keys(), key=lambda ss: len(ss), reverse=True)
+    _PrefixList = sorted(_PrefixDict.keys(), key=lambda ss: len(ss), reverse=True)
+
+
+# this function is called after all lexicons are loaded from files.
+# this function is to rearrange the _LexiconSegmentDict for segmentation.
 def LoadSegmentLexicon():
     global _LexiconSegmentDict
 
-    XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
     # lexiconLocation = XLocation + 'main2017.txt'
     # with open(lexiconLocation, encoding='utf-8') as dictionary:
     #     for line in dictionary:
@@ -216,14 +267,23 @@ def LoadSegmentLexicon():
     #             word = word.replace("/", "").lower()
     #             _LexiconSegmentDict[word] = 0.9
     # logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
+    LoadSegmentSlash()  # new one.
 
     if _LexiconDict:
         for word in _LexiconDict:
-            if word not in _LexiconLookupSet[utils.LexiconLookupSource.defLex] \
-                    and word not in _LexiconLookupSet[utils.LexiconLookupSource.External]\
-                    and word not in _LexiconLookupSet[utils.LexiconLookupSource.Compound]:
+            if word not in _LexiconLookupSet[utils.LexiconLookupSource.DEFLEX] \
+                    and word not in _LexiconLookupSet[utils.LexiconLookupSource.EXTERNAL]\
+                    and word not in _LexiconLookupSet[utils.LexiconLookupSource.COMPOUND]:
                 _LexiconSegmentDict[word] = 1.2
+
+            # 20201024: If SegmentSlashDict word is already in _LexiconDict, then remove it from SegmentSlashDict.
+            # if the word is from DefLex, don't remove it. Slash it so that the other steps before Lookup DefLex still has the chance to perform.
+            if word in _LexiconSegmentSlashDict:
+                if word not in _LexiconLookupSet[utils.LexiconLookupSource.DEFLEX]:
+                    del _LexiconSegmentSlashDict[word]
     else:       #this part is for other usage, not real application.
+        XLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../fsa/X/')
+
         lexiconLocation = XLocation + 'AllLexicon.txt'
         with open(lexiconLocation, encoding='utf-8') as dictionary:
             for line in dictionary:
@@ -232,9 +292,8 @@ def LoadSegmentLexicon():
                     word = code.split(":")[0]
                     word = word.replace("/", "")
                     _LexiconSegmentDict[word] = 1.2
-    logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
 
-    for word in _LexiconLookupSet[utils.LexiconLookupSource.External]:
+    for word in _LexiconLookupSet[utils.LexiconLookupSource.EXTERNAL]:
         _LexiconSegmentDict[word] = 1
     #    _LexiconSegmentDict.update(_LexiconLookupSet[utils.LexiconLookupSource.External])
     logging.info("Size of SegmentLexicon: " + str(len(_LexiconSegmentDict)))
@@ -251,7 +310,7 @@ def LoadSegmentLexicon():
 
     for word in list(_LexiconSegmentDict):
         if utils.IsAlphaLetter(word):
-            del _LexiconSegmentDict[word] #remove English words. They should be separate natually by space or numbers or punc.
+            del _LexiconSegmentDict[word] #remove English words for segment. They should be separate natually by space or numbers or punc.
             continue
         if word.lower() != word:
             _LexiconSegmentDict[word.lower()] = _LexiconSegmentDict[word]
@@ -269,98 +328,81 @@ def LoadExtraReference(lexiconLocation, thedict):
         for line in dictionary:
             code, _ = utils.SeparateComment(line)
             if "：" in code:
-                code = code.replace("：", ":")
+                #code = code.replace("：", ":")
+                logging.warning(f"This line has \：{line}")
             if code and ":" in code:
                 goodword, badwords = code.split(":", 1)
+                goodword = goodword.strip().replace("\\SPACE", " ")
                 for badword in badwords.split():
+                    badword = badword.replace("\\SPACE", " ")
                     thedict[badword] = goodword
+    thedict = sorted(thedict, key=len, reverse=True)    # for longest principle
     logging.info("Size of thedict: " + str(len(thedict)))
 
 
-def ApplyCompositeKG(NodeList):
-    TextSet = set()
-    node = NodeList.head
-    nodestack = set()
-    #Collect all the text into a TextSet.
-    while node:
-        TextSet.add(node.text.lower())
 
-        if node.sons:
-            if node.next:
-                nodestack.add(node.next)
-            node = node.sons[0]
-        else:
-            node = node.next
-            if node is None and nodestack:
-                node = nodestack.pop()
+#20200821: Add regex in this function.
+#def ReplaceCuobieziAndFanti(sentence):
+def SpellingCheckingAsian(sentence):
+    """
+    Can be used for spelling checking, or Tradition/Simplified Chinese conversion
+    Can use regex for spelling checking.
+    For Western: need to verify it is the whole word, not just character replacement. can't be done here.
+    :param sentence:
+    :return: replaced string
+    """
+    if not hasattr(SpellingCheckingAsian, "regexdict"):
+        SpellingCheckingAsian.regexdict = {}
+        for k, v in _LexiconSpellingDict.items():
+            if v.startswith("#"):
+                SpellingCheckingAsian.regexdict[k] = v[1:]
 
-    node = NodeList.head
-    while node:
-        if node.text.lower() in CompositeKGSetADict:
-            for ID in CompositeKGSetADict[node.text.lower()]:
-                if len(CompositeKG[ID][1]) == 1:
-                    logging.info("CompositeKG Winner! Only has one composite set. ")
-                    node.pnorm = CompositeKG[ID][0]
-                    node.ApplyFeature(utils.FeatureID_comPair)
-                    break
-                PassAllSets = True
-                for Set in CompositeKG[ID][1][1:]:
-                    if not TextSet.intersection(Set):
-                        #logging.debug("Do not have any of Set in TextSet. This condition failed")
-                        PassAllSets = False
-                        break
-                if PassAllSets:
-                    node.pnorm = CompositeKG[ID][0]
-                    node.ApplyFeature(utils.FeatureID_comPair)
-                    logging.info("CompositeKG Winner after trying  " + str(len(CompositeKG[ID][1])) + " conditions.:" + CompositeKG[ID][0])
-                    #logging.info("The CompositeKG:{}".format(CompositeKG[ID]))
-                    break
-        if node.sons:
-            if node.next:
-                nodestack.add(node.next)
-            node = node.sons[0]
-        else:
-            node = node.next
-            if node is None and nodestack:
-                node = nodestack.pop()
+    if utils.LanguageType == "asian":
+        for k in _LexiconSpellingDict:
+            if k in sentence:     #non-regex way
+                sentence = sentence.replace(k, _LexiconSpellingDict[k])
+    else:
+        pass # I don't find a good way to replace in this level. The words has to be tokenized before replacing.
+        # will do it after tokenization.
+        # for sign in " .,\"":
+        #     tokens = sentence.split(sign)
+        #     for i in range(len(tokens)):
+        #         for k in _LexiconSpellingDict:
+        #             if tokens[i] == k:  # non-regex way
+        #                 tokens[i] = _LexiconSpellingDict[k]
+        #                 break   # no longer checking this tokens[i].
+        #     sentence = sign.join(tokens) # get back.
+
+    for k, v in SpellingCheckingAsian.regexdict.items():
+        sentence = re.sub(k, v, sentence)
+
+    return sentence
 
 
-def LoadCompositeKG(lexiconLocation):
-    CompositeKG.clear()
-    CompositeKGSetADict.clear()
-    with open(lexiconLocation, encoding='utf-8') as dictionary:
-        for line in dictionary:
-            code, _ = utils.SeparateComment(line)
-            if code and "=" in code:
-                try:
-                    KGKey, Sets = code.split("=")
-                    CompositeConditions = []
-                    if "：" in Sets:
-                        Sets = Sets.replace("：", ":")
+def SpellingCheckingWestern(strTokens):
+    if not hasattr(SpellingCheckingWestern, "regexdict"):
+        SpellingCheckingWestern.regexdict = {}
+        for k, v in _LexiconSpellingDict.items():
+            if v.startswith("#"):
+                SpellingCheckingWestern.regexdict[k] = v[1:]
 
-                    for Set in Sets.split(":"):
-                        CompositeConditions.append([x.strip().lower() for x in Set.split("|")])
-                    CompositeKG.append((KGKey, CompositeConditions))
-                    for A in [x for x in CompositeConditions[0]]:
-                        if A not in CompositeKGSetADict:
-                            CompositeKGSetADict[A] = [len(CompositeKG)-1]
-                        else:
-                            CompositeKGSetADict[A].append(len(CompositeKG)-1)
-                except ValueError:
-                    logging.warning("This line is not correctly format to have 2 colons:" + code)
-                    continue
+    p = strTokens.head
+    while p:
+        for k, v in SpellingCheckingWestern.regexdict.items():
+            p.text = re.sub(k, v, p.text)
 
-    logging.info("Size of the CompositeKG: " + str(len(CompositeKG)))
-    # for i in range(len(CompositeKG)):
-    #     print("[" + str(i) + "]" + CompositeKG[i][0] + " = " + str(CompositeKG[i][1]) )
-    # for key in CompositeKGSetADict:
-    #     print(" Set A:" + key + " as in CompositeKG: " + str(CompositeKGSetADict[key]))
+        for k in _LexiconSpellingDict:
+            if p.text == k:  # non-regex way
+                p.text = _LexiconSpellingDict[k]
+                break
+        p = p.next
 
-def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.Exclude):
-    global _LexiconDict, _LexiconLookupSet, _StemDict
+
+ # ExtraInfo should be from "Lookup Customer 应急预案.txt  NEW yingjiyuan N nc"
+def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.EXCLUDE, ExtraInfo = '', Sensitive=False):
     global _CommentDict
-    if lexiconLocation.startswith("."):
-        lexiconLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), lexiconLocation)
+    # if lexiconLocation.startswith("."):
+    #     lexiconLocation = os.path.join(os.path.dirname(__file__), lexiconLocation)
 
     logging.debug("Start Loading Lexicon " + os.path.basename(lexiconLocation))
 
@@ -379,7 +421,8 @@ def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.Exclude)
 
             # convert Chinese colon to English colon
             if "ChinesePunctuate" not in lexiconLocation and "：" in code:
-                code = code.replace("：", ":")
+                logging.warning(f"This line has \：{line}")
+                #code = code.replace("：", ":")
             if  ":::" in code:
                 code = code.replace(":::", ":")
             if "::" in code :
@@ -392,39 +435,53 @@ def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.Exclude)
             if not blocks:
                 continue
             newNode = False
-            word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":").lower()
+            word = blocks[0].replace(utils.IMPOSSIBLESTRING, ":")
+            if not Sensitive:
+                word = word.lower()
             # Dictionary is case insensitive: make the words lowercase.
             word = word.replace(" ", "")
             if "Punctuate" not in lexiconLocation:
                 word = word.replace("/", "")
                 word = word.replace("~", "")
 
+            if "^" in word:
+                headid = word.split('^', 1)[0].count('_')  # How Many _ before `
+                word = word.replace("^", "")
+            else:
+                headid = -1
+
             # if InLexiconBlacklist(word):
             #    continue
             ### This checking is only for external dictionary.
             ### So let's apply it to them when generating (offline)
-            node = SearchLexicon(word, 'origin')
-
-            # for stemming feature
-            newStemNode = False
-            if lookupSource == utils.LexiconLookupSource.stemming:
-                node = SearchStem(word)
-                if not node:
-                    newStemNode = True
-                    node = LexiconNode(word)
-                    if comment:
-                        node.comment = comment
-
+            if lookupSource == utils.LexiconLookupSource.STEMMING:
+                if word in _StemDict:
+                    node = _StemDict[word]
+                else:
+                    node = None
+            else:
+                node = SearchLexicon(word, 'origin')
 
             # node = None
             if not node:
                 newNode = True
-                node = LexiconNode(word) 
+                node = LexiconNode(word)
+                node.headid = headid    # if there is ` sign, then headid != -1
                 if comment:
                     node.comment = comment
+
+            if ExtraInfo:
+                if len(blocks) == 2:
+                    blocks[1] += " " + ExtraInfo
+                else:
+                    blocks.append(ExtraInfo)
+
             if len(blocks) == 2:
                 # there should be no "\:" on the right side.
                 features = SplitFeatures(blocks[1].replace(utils.IMPOSSIBLESTRING, ":"))  # blocks[1].split()
+                if "NEW" in features:
+                    node.features.clear()   #remove existing features from the node.
+                    features.remove("NEW")
                 for feature in features:
                     if re.match('^\'.*\'$', feature):
                         node.norm = feature[1:-1]
@@ -438,69 +495,107 @@ def LoadLexicon(lexiconLocation, lookupSource=utils.LexiconLookupSource.Exclude)
                                 logging.warning("This punctuate is not listed:" + node.norm + " for: " + node.text)
                     elif re.match('^/.*/$', feature):
                         node.atom = feature.strip('/')
-                    elif utils.ChinesePattern.search(feature):  # Chinese
+                    elif utils.ChinesePattern.fullmatch(feature):  # Chinese
                         node.norm = feature
+                        # if not node.atom:     # 20200729: feel like this should be enabled.
+                        #     node.atom = node.norm
                     else:
                         featureID = GetFeatureID(feature)
                         if featureID == -1:
-                            logging.debug("Missing Feature: " + feature)
+                            logging.info("Missing Feature: {} in line {}".format(feature, line))
                             node.missingfeature += "\\" + feature
                         else:
-                            node.features.add(featureID)
-                            ontologynode = SearchFeatureOntology(featureID)
-                            if ontologynode:
-                                ancestors = ontologynode.ancestors
-                                if ancestors:
-                                    node.features.update(ancestors)
+                            ApplyFeature(node.features, featureID)
+                            # node.features.add(featureID)
+                            # ontologynode = SearchFeatureOntology(featureID)
+                            # if ontologynode:
+                            #     ancestors = ontologynode.ancestors
+                            #     if ancestors:
+                            #         node.features.update(ancestors)
+            #
+            if Sensitive:
+                if newNode:
+                    _LexiconSensitiveDict.update({node.text: node})
+                    if "_" in node.text:
+                        _LexiconLookupSet[utils.LexiconLookupSource.COMPOUND_SENSITIVE].add(node.text)
 
-            if newStemNode:
-                _StemDict.update({node.text: node})
-            if newNode:
-                if lookupSource != utils.LexiconLookupSource.oQcQ:
-                    _LexiconDict.update({node.text: node})
-                if lookupSource != utils.LexiconLookupSource.Exclude:
-                    _LexiconLookupSet[lookupSource].add(node.text)
-                elif "_" in node.text:
-                    _LexiconLookupSet[utils.LexiconLookupSource.defLex].add(node.text)
+            else:
+                if lookupSource == utils.LexiconLookupSource.STEMMING:
+                    _StemDict.update({node.text: node})
+                    if "_" in node.text:
+                        _LexiconLookupSet[utils.LexiconLookupSource.STEMCOMPOUND].add(node.text)
+                else:
+                    if lookupSource != utils.LexiconLookupSource.EXCLUDE:
+                        _LexiconLookupSet[lookupSource].add(node.text)
+
+                    SignNeedToLookupInDefLex = ".-/&"
+                    if newNode:
+                        _LexiconDict.update({node.text: node})
+                        if "_" in node.text:
+                            _LexiconLookupSet[utils.LexiconLookupSource.COMPOUND].add(node.text)
+                        elif  True in [c in node.text for c in SignNeedToLookupInDefLex]:
+                            _LexiconLookupSet[utils.LexiconLookupSource.DEFLEX].add(node.text)
 
             oldWord = blocks[0]
 
+
     # Apply the features of stem/norm into it's variants.
-    #   Only use "stem" to apply. Not norm.
-    logging.debug("Start applying features for variants")
-    for lexicon in _LexiconDict:
-        node = _LexiconDict[lexicon]
-        # _ApplyWordStem(node, node) (o.o)
+    #   Only use /stem/ to apply. Not norm.
+    # logging.debug("Start applying features for variants")
+    # for lexicon in _LexiconDict:
+    #     node = _LexiconDict[lexicon]
+    #     # _ApplyWordStem(node, node) (o.o)
 
     logging.info("Finish loading lexicon file " + lexiconLocation + "\n\t Total Size:" + str(len(_LexiconDict)))
 
 
-def _ApplyWordStem(NewNode, lexiconnode):
-    if NewNode.text != lexiconnode.norm and lexiconnode.norm in _LexiconDict:
-        normnode = _LexiconDict[lexiconnode.norm]
-        #NewNode.features.update(normnode.features)
-        #not comfortable to copy the feature blindly. Use an "F" to do that in orgLex.py offline.
-        #   only do that for punctuate signs in the function of LoadLexicon()
-        if utils.FeatureID_VB in NewNode.features:
-            if NewNode.text == normnode.text + "ed" or NewNode.text == normnode.text + "d":
-                NewNode.features.remove(utils.FeatureID_VB)
-                NewNode.features.add(utils.FeatureID_Ved)
-            if NewNode.text == normnode.text + "ing":
-                NewNode.features.remove(utils.FeatureID_VB)
-                NewNode.features.add(utils.FeatureID_Ving)
+def AddDocumentTempLexicon(text, features):
+    node = LexiconNode(text)
+    corefeatures = features.intersection(_AppendixLists['CoreGlobalList'])    # only copy the ontology core feature into the node
+    #corefeatures = features
+    node.features.update(corefeatures)
+    ExistedInDocumentLexicon = False
+    for n in _LexiconLookupSet[utils.LexiconLookupSource.DOCUMENT]:
+        if n.text == node.text:
+            ExistedInDocumentLexicon = True
+            n.features.update(corefeatures)     # update the feature of the existing node in DocumentLexicon
+            break
+    if not ExistedInDocumentLexicon:
+        _LexiconLookupSet[utils.LexiconLookupSource.DOCUMENT].add(node)
+    if node.text in _LexiconDict:
+        _LexiconDict[node.text].features.update(corefeatures)
+    else:
+        _LexiconDict[node.text] = copy.deepcopy(node)
+    _LexiconSegmentDict[node.text] = 1.2
+
+
+def ResetDocumentTempLexicon():
+    for n in _LexiconLookupSet[utils.LexiconLookupSource.DOCUMENT]:
+        for f in n.features:
+            _LexiconDict[n.text].features.remove(f)
+
+        # if the left feature is empty, then this word was not existed before it was added in this document. Remove it.
+        if len(_LexiconDict[n.text].features) == 0:
+            del _LexiconDict[n.text]
+            del _LexiconSegmentDict[n.text]
+
+    _LexiconLookupSet[utils.LexiconLookupSource.DOCUMENT] = set()
 
 
 #   If the SearchType is not flexible, then search the origin word only.
 # Otherwise, after failed for the origin word, search for case-insensitive, _ed _ing _s...
 def SearchLexicon(word, SearchType='flexible'):
     # word = word.lower()
+    if word in _LexiconSensitiveDict:
+        return _LexiconSensitiveDict[word]
+
     if word in _LexiconDict:
         return _LexiconDict[word]
 
     if SearchType != 'flexible':
         return None
 
-    if utils.ChinesePattern.search(word):
+    if utils.ChinesePattern.fullmatch(word):
         return None
 
     word = word.lower()
@@ -527,11 +622,18 @@ def SearchLexicon(word, SearchType='flexible'):
 
     return None
 
-def SearchStem(word):
-    if word in _StemDict:
-        return _StemDict[word]
-    return None
 
+
+#   If the SearchType is not flexible, then search the origin word only.
+# Otherwise, after failed for the origin word, search for case-insensitive, _ed _ing _s...
+def SearchOrCreateLexicon(word, SearchType='flexible'):
+    # word = word.lower()
+    node = SearchLexicon(word, SearchType)
+    if not node:
+        node = LexiconNode(word)
+        _LexiconDict.update({node.text: node})
+
+    return node
 
 
 def SearchFeatures(word):
@@ -553,228 +655,285 @@ def ApplyLexiconToNodes(NodeList):
 def ResetAllLexicons():
     _LexiconDict.clear()
     _LexiconLookupSet.clear()
-    _LexiconLookupSet[utils.LexiconLookupSource.Exclude] = set()
-    _LexiconLookupSet[utils.LexiconLookupSource.defLex] = set()
-    _LexiconLookupSet[utils.LexiconLookupSource.External] = set()
-    _LexiconLookupSet[utils.LexiconLookupSource.oQcQ] = set()
-    _LexiconLookupSet[utils.LexiconLookupSource.Compound] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.EXCLUDE] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.DEFLEX] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.EXTERNAL] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.STEMMING] = None
+    _LexiconLookupSet[utils.LexiconLookupSource.COMPOUND] = set()
+    _LexiconLookupSet[utils.LexiconLookupSource.DOCUMENT] = set()
     _LexiconSegmentDict.clear() # from main2017. used for segmentation only. there is no feature.
     _LexiconSegmentSlashDict.clear() #
-    _LexiconCuobieziDict.clear()
-    _LexiconFantiDict.clear()
-    CompositeKG.clear()
-    CompositeKGSetADict.clear()
+    _LexiconSpellingDict.clear()
     _CommentDict.clear()
 
 
 def InitLengthSet():
-    global C1ID, C2ID, C3ID, C4ID, C4plusID
-    global C5ID, C5plusID, C6ID, C6plusID, C7ID, C7plusID, C8ID, C8plusID
-    global D1ID, D2ID, D3ID, D4ID, D4plusID
-    global L1ID, L2ID, L3ID, L4ID, L4plusID
+        _LengthFeatures=['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd4plus', 'd5plus', 'd6plus',
+                        'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c4plus', 'c5plus', 'c6plus', 'c7plus', 'c8plus',
+                        'l1', 'l2', 'l3', 'l4', 'l4plus']
+        _LengthDict = {}
+        for f in _LengthFeatures:
+            _LengthDict[f] = GetFeatureID(f)
 
-    global LengthSet
-    if not C1ID:
-        C1ID = GetFeatureID('c1')
-        C2ID = GetFeatureID('c2')
-        C3ID = GetFeatureID('c3')
-        C4ID = GetFeatureID('c4')
-        C4plusID = GetFeatureID('c4plus')
-        C5ID = GetFeatureID('c5')
-        C5plusID = GetFeatureID('c5plus')
-        C6ID = GetFeatureID('c6')
-        C6plusID = GetFeatureID('c6plus')
-        C7ID = GetFeatureID('c7')
-        C7plusID = GetFeatureID('c7plus')
-        C8ID = GetFeatureID('c8')
-        C8plusID = GetFeatureID('c8plus')
-
-        D1ID = GetFeatureID('d1')
-        D2ID = GetFeatureID('d2')
-        D3ID = GetFeatureID('d3')
-        D4ID = GetFeatureID('d4')
-        D4plusID = GetFeatureID('d4plus')
-
-        L1ID = GetFeatureID('l1')
-        L2ID = GetFeatureID('l2')
-        L3ID = GetFeatureID('l3')
-        L4ID = GetFeatureID('l4')
-        L4plusID = GetFeatureID('l4plus')
-
-        LengthSet = {
-            C1ID, C2ID, C3ID, C4ID, C4plusID,
-            C5ID, C5plusID, C6ID, C6plusID, C7ID, C7plusID, C8ID, C8plusID,
-            D1ID, D2ID, D3ID, D4ID, D4plusID,
-            L1ID, L2ID, L3ID, L4ID, L4plusID
-        }
+        return _LengthDict
 
 def ApplyWordLengthFeature(node):
-    if not C1ID:
-        InitLengthSet()
+    if not hasattr(ApplyWordLengthFeature, "LengthDict"):
+        ApplyWordLengthFeature.LengthDict = InitLengthSet()
+        ApplyWordLengthFeature.LengthSet = set(ApplyWordLengthFeature.LengthDict.values())
     # Below is for None-English only:
-    interset = LengthSet.intersection(node.features)
-    node.features -= interset
+    interset = ApplyWordLengthFeature.LengthSet.intersection(node.features)
+    node.features -= interset   # First, remove existing length features from the node
 
     wordlength = len(node.text)
     if wordlength < 1:
         pass
     elif wordlength == 1:
         if node.text.isnumeric():
-            node.ApplyFeature(D1ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d1'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L1ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l1'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C1ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c1'])
     elif wordlength == 2:
         if node.text.isnumeric():
-            node.ApplyFeature(D2ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d2'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L2ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l2'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C2ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c2'])
     elif wordlength == 3:
         if node.text.isnumeric():
-            node.ApplyFeature(D3ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d3'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L3ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l3'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C3ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c3'])
     elif wordlength == 4:
         if node.text.isnumeric():
-            node.ApplyFeature(D4ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d4'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L4ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l4'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C4ID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c4'])
     elif wordlength == 5:
         if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d5'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l4plus'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C5ID)
-            node.ApplyFeature(C4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c5'])
     elif wordlength == 6:
         if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d6'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l4plus'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C6ID)
-            node.ApplyFeature(C4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c6'])
     elif wordlength == 7:
         if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d6plus'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l4plus'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C7ID)
-            node.ApplyFeature(C4plusID)
-            node.ApplyFeature(C6plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c7'])
     elif wordlength == 8:
         if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d6plus'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l4plus'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C8ID)
-            node.ApplyFeature(C4plusID)
-            node.ApplyFeature(C6plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c8'])
     else:
         if node.text.isnumeric():
-            node.ApplyFeature(D4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['d6plus'])
         if utils.IsAlphaLetter(node.text):
-            node.ApplyFeature(L4plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['l4plus'])
         if not utils.IsAscii(node.text):
-            node.ApplyFeature(C4plusID)
-            node.ApplyFeature(C6plusID)
-            node.ApplyFeature(C8plusID)
+            node.ApplyFeature(ApplyWordLengthFeature.LengthDict['c8plus'])
     return
 
-#stemming_version can be "stem" or "suffix", this determines which side gets the longest-rule
-def ApplyLexicon(node, lex=None, stemming_version="stem"):
-    global _SuffixList
 
-    if not C1ID:
-        InitLengthSet()
+def StemFeatures(stem):
+    # for western, check the stem dict for features. Otherwise, check the lex dict for features.
+    if utils.LanguageType == 'western':
+        if stem in _StemDict:
+            return _StemDict[stem].features
+        else:
+            return []
+    else:
+        atomlex = SearchLexicon(stem)
+        if atomlex:
+            return atomlex.features
+        else:
+            return []
+
+
+def Stemming(word):
+    lex, features = Stemming_stem(word)
+    if not lex:
+        return Stemming_longest_surfixprefix(word)
+    else:
+        return lex, features
+
+
+# if stem is found: the longest stem win.
+# if no stem is found: the longest suffix/prefix win.
+# if in first level, the action must be "endingM"
+def Stemming_stem(word, firstlevel = True):
+    import Tokenization, LogicOperation
+    longest_stem = None
+    longest_features = []
+    longest_num = 0
+
+    for suffix in _SuffixList:
+        if word.endswith(suffix):
+            #logging.info("stemming: {} has suffix of {}".format(word, suffix))
+            rules = _SuffixDict[suffix]
+            tempstem = word[:-len(suffix)]
+            wordtoken = Tokenization.SentenceNode(tempstem)
+            wordtoken.features.update(StemFeatures(tempstem))
+            for rule in rules:
+                if firstlevel:
+                    if utils.ProjectName == "E":
+                        if "endingM" not in rule.Tokens[0].action:
+                            continue    # bypass this rule for not having endingM.
+
+                if LogicOperation.LogicMatch_notpointer(wordtoken, rule.Tokens[0]) and \
+                    tempstem in _StemDict:
+                    wordtoken.ApplyActions(rule.Tokens[0].action, None)
+                    if len(tempstem) > longest_num:
+                        longest_num = len(tempstem)
+                        longest_stem = wordtoken
+                        longest_features = copy.copy(wordtoken.features)
+
+                else:
+                    lex, features = Stemming_stem(tempstem, firstlevel=False)
+                    if lex:
+                        temptoken = Tokenization.SentenceNode(lex.text) # a temp token to check if it fit the rules.
+                        temptoken.features.update(features)
+                        temptoken.features.update(wordtoken.features)
+                        if LogicOperation.LogicMatch_notpointer(temptoken, rule.Tokens[0]):
+                            temptoken.ApplyActions(rule.Tokens[0].action, None)
+                            if len(lex.text) > longest_num:
+                                longest_num = len(lex.text)
+                                longest_stem = lex
+                                longest_features = copy.copy(temptoken.features)
+                                #logging.debug("\tsuffix word is {}, len={}, rule={} ".format(word, longest_num, rule))
+
+    for prefix in _PrefixList:
+        if word.startswith(prefix):
+            #logging.info("stemming: {} has suffix of {}".format(word, suffix))
+            rules = _PrefixDict[prefix]
+            tempstem = word[len(prefix):]
+            wordtoken = Tokenization.SentenceNode(tempstem)
+            wordtoken.features.update(StemFeatures(tempstem))
+            for rule in rules:
+                if LogicOperation.LogicMatch_notpointer(wordtoken, rule.Tokens[0]) and \
+                    tempstem in _StemDict:
+                    wordtoken.ApplyActions(rule.Tokens[0].action, None)
+                    if len(tempstem) > longest_num:
+                        longest_num = len(tempstem)
+                        longest_stem = wordtoken
+                        longest_features = copy.copy(wordtoken.features)
+
+                else:
+                    lex, features = Stemming_stem(tempstem, firstlevel=False)
+                    if lex:
+                        temptoken = Tokenization.SentenceNode(tempstem) # a temp token to check if it fit the rules.
+                        temptoken.features.update(features)
+                        temptoken.features.update(wordtoken.features)
+                        if LogicOperation.LogicMatch_notpointer(temptoken, rule.Tokens[0]):
+                            temptoken.ApplyActions(rule.Tokens[0].action, None)
+                            if len(lex.text) > longest_num:
+                                longest_num = len(lex.text)
+                                longest_stem = lex
+                                longest_features = temptoken.features
+                                #logging.info("\tprefix word is {}, len={}, rule={} ".format(word, longest_num, rule))
+
+    return longest_stem, longest_features
+
+
+# lex, stemming_features = Stemming(word)
+# below is a good one for seaching for longest suffix. but not good for longest stem. need revise.
+def Stemming_longest_surfixprefix(word, firstlevel=True):
+    import Tokenization, LogicOperation
+    for suffix in _SuffixList:
+        if word.endswith(suffix):
+            #logging.info("stemming: {} has suffix of {}".format(word, suffix))
+            rules = _SuffixDict[suffix]
+            tempstem = word[:-len(suffix)]
+            wordtoken = Tokenization.SentenceNode(tempstem)
+            wordtoken.features.update(StemFeatures(tempstem))
+            for rule in rules:
+                if firstlevel:
+                    if utils.ProjectName == "E":
+                        if "endingM" not in rule.Tokens[0].action:
+                            continue    # bypass this rule for not having endingM.
+                if LogicOperation.LogicMatch_notpointer(wordtoken, rule.Tokens[0]):
+                    wordtoken.ApplyActions(rule.Tokens[0].action, None)
+                    return wordtoken, wordtoken.features
+                else:
+                    lex, features = Stemming_longest_surfixprefix(tempstem, firstlevel=False)
+                    if features:
+                        temptoken = Tokenization.SentenceNode(tempstem)
+                        temptoken.features.update(features)
+                        temptoken.features.update(wordtoken.features)
+                        if LogicOperation.LogicMatch_notpointer(temptoken, rule.Tokens[0]):
+                            temptoken.ApplyActions(rule.Tokens[0].action, None)
+                            return lex, temptoken.features
+
+    for prefix in _PrefixList:
+        if word.startswith(prefix):
+            #logging.info("stemming: {} has suffix of {}".format(word, suffix))
+            rules = _PrefixDict[prefix]
+            tempstem = word[len(prefix):]
+            wordtoken = Tokenization.SentenceNode(tempstem)
+            wordtoken.features.update(StemFeatures(tempstem))
+            for rule in rules:
+                if LogicOperation.LogicMatch_notpointer(wordtoken, rule.Tokens[0]):
+                    wordtoken.ApplyActions(rule.Tokens[0].action, None)
+                    return wordtoken, wordtoken.features
+                else:
+                    lex, features = Stemming_longest_surfixprefix(tempstem, firstlevel=False)
+                    if features:
+                        temptoken = Tokenization.SentenceNode(tempstem)
+                        temptoken.features.update(features)
+                        temptoken.features.update(wordtoken.features)
+                        if LogicOperation.LogicMatch_notpointer(temptoken, rule.Tokens[0]):
+                            temptoken.ApplyActions(rule.Tokens[0].action, None)
+                            return lex, temptoken.features
+    return None, []
+
+
+#stemming_version can be "stem" or "suffix", this determines which side gets the longest-rule
+def ApplyLexicon(node):
+    global _SuffixDict
+
+    if not hasattr(ApplyWordLengthFeature, "LengthDict"):
+        ApplyWordLengthFeature.LengthDict = InitLengthSet()
+        ApplyWordLengthFeature.LengthSet = set(ApplyWordLengthFeature.LengthDict.values())
 
     OOVFeatureSet = {utils.FeatureID_JM, utils.FeatureID_JM2, utils.FeatureID_JS, utils.FeatureID_JS2 }
-    OOVFeatureSet |= LengthSet
+    OOVFeatureSet |= ApplyWordLengthFeature.LengthSet
 
-    if not lex:
-        lex = SearchLexicon(node.text)
+    lex = SearchLexicon(node.text)
     # if not node.lexicon:    # If lexicon is assigned before, then don't do the search
     #                         #  because the node.word is not as reliable as stem.
     #     node.lexicon = SearchLexicon(node.word)
 
-
     #attempt stemming if lexicon fails (O.O)
     word = node.text.lower()
     if lex is None and len(word) >= 4:
-        if stemming_version == "stem":
-            start = len(word) - 1
-            stop = 2
-            step = -1
-        else:
-            start = 3
-            stop = len(word)
-            step = 1
+        lex, stemming_features = Stemming(word)
+        if lex:
+            logging.info("From word {}, found stem {}".format(word, lex))
 
-        for stem_length in range(start, stop, step):
-            stem_word = word[:stem_length]
+        # not to use this one, because we don't need to get parents of these features.
+        # for f in stemming_features:
+        #       node.ApplyFeature(f)
 
-            lex_copy = SearchStem(stem_word)
-
-            suffix = word[stem_length:].lower()
-
-            if lex_copy is not None and suffix in _SuffixList: # both the stem_word exists and the suffix exists
-                lex = LexiconNode(word)
-                lex.atom = lex_copy.atom
-                lex.norm = lex_copy.norm
-                lex.features.update(lex_copy.features)
-                
-                # set the node essentially equal to lex, so it technically sends lex into MatchAndApplyRuleFile
-                o_norm = node.norm
-                o_atom = node.atom
-                o_text = node.text
-
-                node.norm = lex.norm
-                node.atom = lex.atom
-                node.text = suffix
-                if utils.FeatureID_NEW in lex.features:
-                    node.features = set()
-                    node.features.update(lex.features)
-                    node.features.remove(utils.FeatureID_NEW)
-                else:
-                    node.features.update(lex.features)
-
-                orig_feature = len(node.features)
-
-                SingleNodeList = Tokenization.SentenceLinkedList()
-                SingleNodeList.append(node)
-                ProcessSentence.MatchAndApplyRuleFile(SingleNodeList, _InfFile)
-
-                node = SingleNodeList.head
-
-                # all we want is the updated features
-                lex.features = set()
-                lex.features.update(node.features)
-                new_feature = len(node.features)
-
-                node.norm = o_norm
-                node.atom = o_atom
-                node.text = o_text
-                node.features = set()
-
-                # if features don't change, it didn't match, thus stemming failed
-                if orig_feature != new_feature:
-                    break
-                else:
-                    lex = None
-                    if stemming_version == "stem":  # failing from small suffixes could still work for longer ones
-                        continue
-                    else:  # starting for longer suffixes, if matching failed it would fail everything
-                        break
+        node.features.update(stemming_features)
 
     if lex is None:
         if utils.IsCD(node.text):
@@ -791,10 +950,6 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
         node.norm = lex.norm
 
         #to have correct stem, e.g. carries -> carrie -> carry
-        if lex.norm in _StemDict:
-            stem_lex = SearchStem(lex.norm)
-            if stem_lex.norm:
-                node.norm = stem_lex.norm
 
         node.atom = lex.atom
         if utils.FeatureID_NEW in lex.features:
@@ -814,50 +969,55 @@ def ApplyLexicon(node, lex=None, stemming_version="stem"):
     node.ApplyFeature(utils.FeatureID_0)
     return node
 
-# (O.O)
-def LoadSuffix(inf_location, inf_name):
-    global _SuffixList, _InfFile
-    suffix_set = set()
-    _InfFile = inf_name
-    inf = open(inf_location, 'r')
 
-    f = inf.readlines()
-    try:
-        for line in f:
-            if line.startswith("//"):
-                pass
+from enum import Enum
+class FoundSuffixPrefix(Enum):
+    NotFound = 0     # all "normal lexicons". Including Lookup Lex, Customer
+    Suffix = 1      # for combining tokens (without space)
+    Prefix = 2    # not quite trusted, lower weight.
+
+def LoadPrefixSuffix(inf_location):
+    global _SuffixDict, _PrefixDict
+    import Rules
+    suffix = ''
+    prefix = ''
+    for rule in Rules.RuleGroupDict[inf_location].RuleList:
+        Found = FoundSuffixPrefix.NotFound
+        for token in rule.Tokens:
+            if token.AndText:
+                if token.AndText.startswith("-"):
+                    suffix = token.AndText.lstrip("-")
+                    token.AndText = ""
+                    Found = FoundSuffixPrefix.Suffix
+                elif token.AndText.endswith("-"):
+                    prefix = token.AndText.rstrip("-")
+                    token.AndText = ""
+                    Found = FoundSuffixPrefix.Prefix
+
+            for action in token.action.split():
+                StemFeatureIDSet.add(GetFeatureID(action))
+
+        if Found == FoundSuffixPrefix.Suffix:
+            if suffix in _SuffixDict:
+                _SuffixDict[suffix].append(rule)
             else:
-                double = True  # determines whether the rule is in double quotes or single quotes
-                index = line.find('"')
-                if index == -1:
-                    double = False
-                    index = line.find("'")
-                if index == -1:
-                    pass
-                else:
-                    if double:
-                        index2 = line.find('"', index + 1)
-                    else:
-                        index2 = line.find("'", index + 1)
-                    phrase = line[index + 2: index2]  # get rid of initial -
-                    if phrase.startswith("\\"): # get rid of \ if it exists at beginning
-                        phrase = phrase[1:]
-                    suffix_set.add(phrase)
+                _SuffixDict[suffix] = [rule]  #   a list
+        elif Found == FoundSuffixPrefix.Prefix:
+            if prefix in _PrefixDict:
+                _PrefixDict[prefix].append(rule)
+            else:
+                _PrefixDict[prefix] = [rule]  # a list
 
-        for suffix in suffix_set:
-            _SuffixList.append(suffix)
-    finally:
-        inf.close()
 
-def ApplyCasesToNodes(NodeList):
+def ApplyCaseFeatureToNodes(NodeList):
     node = NodeList.head
     while node:
-        ApplyCases(node)
+        ApplyCaseFeature(node)
         node = node.next
+    return
 
-    return NodeList
 
-def ApplyCases(node):
+def ApplyCaseFeature(node):
     word = node.text
     case = "caseaB"
     if word.islower():
@@ -868,14 +1028,29 @@ def ApplyCases(node):
         if word[0].isupper():
             case = "caseAb"
     node.features.add(GetFeatureID(case))
-    return node
+    return
 
 
 # Lookup will be used right after segmentation.
 # Dynamic programming?
 def LexiconLookup(strTokens, lookupsource):
-    if lookupsource == utils.LexiconLookupSource.oQcQ:
-        return _LexiconoQoCLookup(strTokens)
+    if lookupsource == utils.LexiconLookupSource.STEMCOMPOUND:
+        LexiconLookupStemCompound(strTokens)
+        return
+
+    if not hasattr(LexiconLookup, "MaxCompoundLength"):
+        LexiconLookup.MaxCompoundLength = {}
+    if lookupsource not in LexiconLookup.MaxCompoundLength:
+        LexiconLookup.MaxCompoundLength[lookupsource] = 0
+        for c in _LexiconLookupSet[lookupsource]:
+            if lookupsource in [utils.LexiconLookupSource.COMPOUND, utils.LexiconLookupSource.COMPOUND_SENSITIVE]:
+                compoundlength = c.count("_")
+            else:
+                compoundlength = len(c)
+            if compoundlength > LexiconLookup.MaxCompoundLength[lookupsource]:
+                LexiconLookup.MaxCompoundLength[lookupsource] = compoundlength
+
+        logging.info("LexiconLookup.MaxCompoundLength[{}] = {}".format(lookupsource, LexiconLookup.MaxCompoundLength[lookupsource]))
 
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth + 1)]
@@ -884,84 +1059,158 @@ def LexiconLookup(strTokens, lookupsource):
 
     pi = strTokens.head
     while pi.next:
-        i += 1
-        j = i
-        pi = pi.next
-        pj = pi
-        combinedText = pi.text.lower()
-        combinedCount = 1
-        while pj.next:
-            j += 1
-            pj = pj.next
-            if not pj.text:
-                continue
-            if lookupsource == utils.LexiconLookupSource.Compound:
-                combinedText += "_"
-            combinedText += pj.text.lower()
-            combinedCount += 1
-            if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
-                logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
-                bestScore[j] = combinedCount
+        if pi.text == '':
+            pi = pi.next
+            i += 1
+            continue
 
+        j = i
+        #pi = pi.next
+        pj = pi.next
+        if lookupsource == utils.LexiconLookupSource.COMPOUND_SENSITIVE:
+            combinedText = pi.text
+        else:
+            combinedText = pi.text.lower()
+        combinedCount = 1
+        while pj:
+            j += 1
+            if j > i+LexiconLookup.MaxCompoundLength[lookupsource]:
+                break   # no need to add more.
+            if not pj.text:
+                break
+            if lookupsource in [utils.LexiconLookupSource.COMPOUND , utils.LexiconLookupSource.COMPOUND_SENSITIVE]:
+                combinedText += "_"
+
+            if lookupsource == utils.LexiconLookupSource.COMPOUND_SENSITIVE:
+                combinedText += pj.text
+            else:
+                combinedText += pj.text.lower()
+            combinedCount += 1
+
+            if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
+                logging.debug("LexiconLookup() combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
+                bestScore[j] = combinedCount
+            pj = pj.next
+
+        pi = pi.next
+        i += 1
     #logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
 
     i = strTokens.size - 1
     while i > 0:
         if bestScore[i] > 1:
             compound = False
-            if lookupsource == utils.LexiconLookupSource.Compound:
+            if lookupsource in [utils.LexiconLookupSource.COMPOUND , utils.LexiconLookupSource.COMPOUND_SENSITIVE]:
                 compound = True
             NewNode = strTokens.combine(i - bestScore[i] + 1, bestScore[i], -1, compound)
             i = i - bestScore[i]
             ApplyLexicon(NewNode)
-            if lookupsource == utils.LexiconLookupSource.External:
+            #strTokens._setnorms()
+            if lookupsource == utils.LexiconLookupSource.EXTERNAL:
                 NewNode.ApplyFeature(utils.FeatureID_External)
             NewNode.sons = []  # For lookup, eliminate the sons
             #logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1
 
+# For the longstring can be 'brulajho+N_efik+N'
+# the output is [brulajho_efik, brulajho+N_efik, brulajho_efik+N, brulajho+N_efik+N]
+def WithOrWithoutPlus(longstring):
+    output = ['']
+    for word in longstring.split("_"):
+        if "+" not in word:
+            output = [(s + "_" + word).strip("_") for s in output]
+        else:
+            originword, _ = word.split("+", 1)
+            output2 = [(s + "_" + originword).strip("_") for s in output]
+            output2 += [(s + "_" + word).strip("_") for s in output]
+            output = output2
 
-def _LexiconoQoCLookup(strTokens, lookupsource=utils.LexiconLookupSource.oQcQ):
-    if lookupsource!=utils.LexiconLookupSource.oQcQ:
-        logging.error("This is only for oQcQ source.")
+    return output
+
+
+# Lookup will be used right after segmentation.
+# Dynamic programming?
+def LexiconLookupStemCompound(strTokens):
+    if not hasattr(LexiconLookupStemCompound, "MaxStemCompoundLength"):
+        LexiconLookupStemCompound.MaxStemCompoundLength = 0
+        for c in _LexiconLookupSet[utils.LexiconLookupSource.STEMCOMPOUND]:
+            compoundlength = c.count("_")
+            if compoundlength > LexiconLookupStemCompound.MaxStemCompoundLength:
+                LexiconLookupStemCompound.MaxStemCompoundLength = compoundlength
+
+        logging.info("At maximum there are {} words in one stem (MaxStemCompoundLength)".format(LexiconLookupStemCompound.MaxStemCompoundLength))
+
     sentenceLenth = strTokens.size
     bestScore = [1 for _ in range(sentenceLenth + 1)]
 
     i = 0
 
+
     pi = strTokens.head
     while pi.next:
-        i += 1
+        if pi.atom == '':
+            pi = pi.next
+            i += 1
+            continue
         j = i
-        pi = pi.next
-        pj = pi
-        combinedText = pi.text.lower()
+        pj = pi.next
+        combinedText = pi.atom
+
+
         combinedCount = 1
-        while pj.next:
+        while pj:
             j += 1
-            pj = pj.next
-            if not pj.text:
-                continue
-            combinedText += pj.text.lower()
+            if j > i+LexiconLookupStemCompound.MaxStemCompoundLength:
+                break   # no need to add more.
+            if not pj.atom:
+                break   # we don't do things across an empty token.
+            combinedText += "_"
+            combinedText += pj.atom
             combinedCount += 1
-            if bestScore[j] < combinedCount and combinedText in _LexiconLookupSet[lookupsource]:
-                logging.debug(" combinedCount = " + str(combinedCount) + " combinedText=" + combinedText + " in dict.")
-                bestScore[j] = combinedCount
 
-    #logging.debug("After one iteration, the bestScore list is:" + str(bestScore))
+            if bestScore[j] < combinedCount:
+                posiblecombinations = WithOrWithoutPlus(combinedText)   # Check all combinations
+                for c in posiblecombinations:
+                    if c in _LexiconLookupSet[utils.LexiconLookupSource.STEMCOMPOUND]:
+                        logging.info("LexiconLookupStemCompound() combinedCount = {} combinedText={} in dict.".format(combinedCount, c))
+                        bestScore[j] = combinedCount
+                        break
+            pj = pj.next
+        pi = pi.next
+        i += 1
 
+    stemcompoundnode = None
     i = strTokens.size - 1
     while i > 0:
         if bestScore[i] > 1:
-            FirstNodeID = i - bestScore[i] + 1
-            LastNodeID = i
-            strTokens.get(FirstNodeID-1).ApplyFeature(GetFeatureID("oBR"))
-            strTokens.get(FirstNodeID).ApplyFeature(GetFeatureID("oQ"))
-            strTokens.get(LastNodeID).ApplyFeature(GetFeatureID("cQ"))
-            strTokens.get(LastNodeID+1).ApplyFeature(GetFeatureID("cBR"))
+            tempnewnode, _, _ = strTokens.newnode(i - bestScore[i] + 1, bestScore[i], compound=True)
+            logging.info("After stemcompound, the atom is:{}".format(tempnewnode.atom))
+            posiblecombinations = WithOrWithoutPlus(tempnewnode.atom)  # Check all combinations
 
+            for c in posiblecombinations:
+                if c in _LexiconLookupSet[utils.LexiconLookupSource.STEMCOMPOUND]:
+                    stemcompoundnode = _StemDict[c]
+                    break
+            if stemcompoundnode.headid == -1:    # default, last one
+                headnode = strTokens.get(i - bestScore[i] + 1 + bestScore[i] +stemcompoundnode.headid)
+            else:
+                headnode = strTokens.get(i - bestScore[i] + 1+stemcompoundnode.headid)
+
+            NewNode = strTokens.combine(i - bestScore[i] + 1, bestScore[i], -1, compound=True)
             i = i - bestScore[i]
+
+            NewNode.features.update(stemcompoundnode.features)
+            NewNode.features.update(headnode.features)
+
+            # for f in stemcompoundnode.features:
+            #     NewNode.ApplyFeature(f)
+            # for f in headnode.features:
+            #     if f in StemFeatureIDSet:
+            #         NewNode.ApplyFeature(f)
+
+            NewNode.sons = []  # For lookup, eliminate the sons
+            # logging.debug("NewNodeAfterLexiconLookup:" + str(strTokens.get(i)))
         else:
             i = i - 1
 
@@ -979,14 +1228,14 @@ if __name__ == "__main__":
     # LoadLexicon('../../fsa/X/locX.txt')
     # LoadLexicon('../../fsa/X/perX.txt')
     # LoadLexicon('../../fsa/X/defPlus.txt')
-    LoadLexicon('../../fsa/X/defPlus.txt', lookupSource=utils.LexiconLookupSource.defLex)
+    LoadLexicon('../../fsa/X/defPlus.txt', lookupSource=utils.LexiconLookupSource.DefLex)
     # LoadLexicon('../../fsa/X/perX.txt', lookupSource=utils.LexiconLookupSource.External)
     #
     #
     # para = dir_path + '/../../fsa/X/perX.txt'
     # LoadLexicon(para)
     # para = dir_path + '/../../fsa/X/defLexX.txt'
-    # LoadLexicon(para, lookupSource=utils.LexiconLookupSource.defLex)
+    # LoadLexicon(para, lookupSource=utils.LexiconLookupSource.DefLex)
     # if "/fsa/X" in para:
     #     Englishflag = False
     # else:

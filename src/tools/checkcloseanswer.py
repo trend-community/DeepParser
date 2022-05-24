@@ -61,7 +61,7 @@ if __name__ == "__main__":
                     except Exception as exc:
                         logging.debug('%r generated an exception: \n %s' % (s, exc))
 
-                logging.info("Done of retrieving data")
+                logging.info("Done of retrieving assets")
 
                 sortedresult = sorted(Result.items(), key=operator.itemgetter(1), reverse=True)
                 print(answer)

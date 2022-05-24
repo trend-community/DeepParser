@@ -11,8 +11,14 @@ SentenceCache = {}
 #     t.start()
 
 
-def WriteSentenceDB(Sentence, NodeList):
-    NodePickle = pickle.dumps(NodeList)
+# The Info is modified from "ResultNodeList" to " (ResultNodeList, Dag)"
+def WriteSentenceDB(Sentence, Info):
+    try:
+        NodePickle = pickle.dumps(Info)
+    except RecursionError as e:
+        logging.error(e)
+        return
+
     try:
         DBConnection = InitDB_T()
         cur = DBConnection.cursor()

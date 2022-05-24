@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#Usage for query data:
+#Usage for query assets:
 # Step 1, Generate wordlist.txt by removing special characters and the frequency
 # : (Ust Ctrl-V-H to input ^H
 #sed - e "s/^H\|^F\|^A.*//g" g0.raw.txt > wordlist.txt

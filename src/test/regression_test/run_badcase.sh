@@ -5,7 +5,7 @@ date=`date +%Y%m%d`
 
 cd ../..  # go to 'src' dir
 
-#  get data
+#  get assets
 dbPath=~/git/fsa/test/input/badcase/badcase.db
 sqlite3 ${dbPath} "SELECT query FROM badcase WHERE is_fixed=0" >  badcase.all.${date}
 

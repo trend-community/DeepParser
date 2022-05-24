@@ -1,4 +1,4 @@
-import copy, traceback
+
 from datetime import datetime
 from utils import *
 import utils
@@ -10,9 +10,12 @@ import utils
 from LogicOperation import CheckPrefix as LogicOperation_CheckPrefix
 from LogicOperation import SeparateOrBlocks as LogicOperation_SeparateOrBlocks
 import FeatureOntology
+import pickle
+from Lexicon import SearchOrCreateLexicon
 
 RuleGroupDict = {}
 _GlobalMacroDict = {}
+_GlobalMacroLikeDict = {}   # Micro-like feature list and word list
 
 
 # RuleIdenticalNetwork = {}   #(ID, index):set(ruleID)
@@ -28,14 +31,36 @@ class RuleGroup(object):
         self.MacroDict = {}
         if _GlobalMacroDict:
             self.MacroDict.update(_GlobalMacroDict)
+        self.MacroLikeDict = {}
+        if _GlobalMacroLikeDict:
+            self.MacroLikeDict.update(_GlobalMacroLikeDict)
         self.UnitTest = []
         self.LoadedFromDB = False
+        self.TimeStamp = 0
         self.HashRules = {}
         self.NoHashRules = []
+        self.isDagRule = False
         # self.NormHash = {}  # write to norm.
 
     def __lt__(self, other):
         return self.ID < other.ID
+
+    def DBSave(self):
+        cur = utils.DBCon.cursor()
+        strsql = "delete from rulefiles where filelocation=?  or ID=?"
+        cur.execute(strsql, [self.FileName, self.ID])
+
+        strsql = "insert into rulefiles (ID, filelocation, bodydump, createtime) values(?, ?, ?, DATETIME('now'))"
+        cur.execute(strsql, [self.ID, self.FileName, pickle.dumps(self)])
+
+        # below store extra rule info for SimplifyRulefile.py:
+        strsql = "delete from ruleinfo where rulefileid=? "
+        cur.execute(strsql, [self.ID])
+        for rule in self.RuleList:
+            strsql = "REPLACE  into ruleinfo(ID, rulefileid, bodydump, createtime) values(?, ?, ?, DATETIME('now'))"
+            cur.execute(strsql, [rule.ID, self.ID, pickle.dumps(rule)])
+
+        cur.close()
 
 
 class UnitTestNode(object):
@@ -52,6 +77,7 @@ class UnitTestNode(object):
 def ResetRules(rg):
     del rg.RuleList[:]
     rg.MacroDict = {}  # not sure which one to use yet
+    rg.MacroLikeDict = {}
 
 
 def ResetAllRules():
@@ -60,6 +86,7 @@ def ResetAllRules():
         del RuleGroupDict[rulefile].RuleList[:]
     RuleGroupDict.clear()
     _GlobalMacroDict.clear()
+    _GlobalMacroLikeDict.clear()
     # RuleIdenticalNetwork = {}
 
 
@@ -113,10 +140,11 @@ class RuleToken(object):
             self.repeat = [1, 1]
             self.word = ''
             self.RestartPoint = False
-            self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom 4:pnorm (as in Aug 2018, not being used for matching)
+            #self.MatchType = -1  # -1:unknown/mixed 0: feature 1:text 2:norm 3:atom 4:pnorm (as in Aug 2018, not being used for matching)
             self.pointer = ''
             self.action = ''
             self.SubtreePointer = ''
+            self.PointerCondition = ''
             self.AndFeatures = set()
             self.OrFeatureGroups = []
             self.NotFeatures = set()
@@ -125,6 +153,7 @@ class RuleToken(object):
             self.NotTexts = set()
             self.NotTextMatchtype = ''
             self.FullString = False
+            self.MatchedNodeID = None
         else:
             self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = RuleToken.idCounter
@@ -147,8 +176,11 @@ class RuleToken(object):
             t = "[^" + self.SubtreePointer + "=" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
         else:
             t = "[" + self.word.strip("[|]").replace("<", "\<").replace(">", "\>") + "]"
+        if self.PointerCondition:
+            t += "^" + self.PointerCondition
+
         if self.action:
-            t = t.replace("]", ":action:" + self.action + "]")
+            t = t.replace("]", "(ACTION)" + self.action + "]")
         output += t
         if self.repeat != [1, 1]:
             output += "*" + str(self.repeat[1])
@@ -188,22 +220,30 @@ class Rule:
             self.Priority = 0   #default is 0. (Top) is 1. (Bottom) is -1.
             self.WindowLimit = 0     #default 0 means none.  Only used for graph.
             self.LengthLimit = 0    #default 0 means none. Only used for graph.(for now, as Sept 1, 2018)
+            self.GlobalVariables = {}    #global variables
+            self.GlobalVariablesNegation = {}   # global variable negation
+            self.RestartPosition = 1
+            self.RightFirst = False
         else:
             self.__dict__ = copy.deepcopy(orig.__dict__)
         self.ID = Rule.idCounter
 
-    def SetStrTokenLength(self):
+    def SetStrTokenLengthAndRestartPosition(self):
         VirtualTokenNum = 0  # Those "^V=xxx" is virtual token that does not apply to real string token
-        for t in self.Tokens:
-            if t.SubtreePointer:
+        for i in range(len(self.Tokens)):
+            t = self.Tokens[i]
+            if t.SubtreePointer and "." in t.SubtreePointer:
                 VirtualTokenNum += 1
+            if t.RestartPoint:
+                self.RestartPosition = i - VirtualTokenNum
+
         self.TokenLength = len(self.Tokens)
         self.StrTokenLength = self.TokenLength - VirtualTokenNum
 
     def __lt__(self, other):
         return (self.FileName, self.Origin, self.ID) < (other.FileName, other.Origin, other.ID)
 
-    def SetRule(self, ruleString, MacroDict=None, ID=1):
+    def SetRule(self, ruleString, MacroDict=None, MacroLikeDict=None, ID=1):
         self.Origin = ruleString.strip()
         code, comment = SeparateComment(ruleString)
         if not code:
@@ -229,7 +269,7 @@ class Rule:
         self.RuleName = RuleBlocks.group(1).strip()
         if self.RuleName.startswith("@") or self.RuleName.startswith("#"):
             RuleContent = ProcessMacro(codeblocks[1],
-                                       MacroDict)  # Process the whole code, not to worry about comment and unit test
+                                       MacroDict, MacroLikeDict)  # Process the whole code, not to worry about comment and unit test
             if code.endswith(";"):
                 RuleContent = RuleContent[:-1]
             self.RuleContent = RuleContent
@@ -263,21 +303,37 @@ class Rule:
                         remaining = self.comment
                 return remaining  # stop processing if the RuleCode is null
 
-            self.RuleContent = RemoveExcessiveSpace(ProcessMacro(RuleCode, MacroDict))
+            self.RuleContent = RemoveExcessiveSpace(ProcessMacro(RuleCode, MacroDict, MacroLikeDict))
             # PriorityMatch = re.match("(/d*) (.*)", self.RuleContent)  #comment out on Sept 1: leave the priority in RuleName part as in the spec.
             # if PriorityMatch:
             #     self.Priority = int(PriorityMatch.group(1))
             #     self.RuleContent = PriorityMatch.group(2)
 
-            WindowMatch = re.match("win=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
-            if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
-                self.WindowLimit = int(WindowMatch.group(1))
-                self.RuleContent = WindowMatch.group(2).strip()
+            if self.RuleContent.endswith("<<<"):
+                self.RightFirst = True      #only for DAG, search nodes from right to left
+                self.RuleContent = self.RuleContent[:-3]
 
-            LengthMatch = re.match("len=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
+            WindowLimitTemp = -1
+            WindowMatch = re.match("win=\+(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
+            if WindowMatch:     #win=15, or win=cl (CL, clause) fow window size.
+                WindowLimitTemp = int(WindowMatch.group(1))
+                self.RuleContent = WindowMatch.group(2).strip()
+            else:
+                WindowMatch = re.match("win=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
+                if WindowMatch:  # win=15, or win=cl (CL, clause) fow window size.
+                    self.WindowLimit = int(WindowMatch.group(1))
+                    self.RuleContent = WindowMatch.group(2).strip()
+
+            LengthLimitTemp = -1
+            LengthMatch = re.match("len=\+(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
             if LengthMatch:     #len=5  # the sentence length must be small or equal to 5.
-                self.LengthLimit = int(LengthMatch.group(1))
+                LengthLimitTemp = int(LengthMatch.group(1))
                 self.RuleContent = LengthMatch.group(2).strip()
+            else:
+                LengthMatch = re.match("len=(.*?) (.*)$", self.RuleContent, re.IGNORECASE)
+                if LengthMatch:  # len=5  # the sentence length must be small or equal to 5.
+                    self.LengthLimit = int(LengthMatch.group(1))
+                    self.RuleContent = LengthMatch.group(2).strip()
 
             self.Tokens = Tokenize(self.RuleContent)
         except Exception as e:
@@ -299,8 +355,15 @@ class Rule:
             UniversalToken.word = '[]'  # make it universal
             self.Tokens = [UniversalToken] + self.Tokens
 
-        self.SetStrTokenLength()
+        self.SetStrTokenLengthAndRestartPosition()
+        if WindowLimitTemp >= 0:
+            #self.WindowLimit = WindowLimitTemp + self.StrTokenLength
+            self.WindowLimit = WindowLimitTemp + len(self.Tokens)
+        if LengthLimitTemp >= 0:
+            #self.LengthLimit = LengthLimitTemp + self.StrTokenLength
+            self.LengthLimit = LengthLimitTemp + len(self.Tokens)
         return remaining
+
 
     def __str__(self):
         return self.output("details")
@@ -327,8 +390,15 @@ class Rule:
                 output += self.RuleContent
         else:
             output += "[RuleName]=" + self.RuleName + '\n'
-            output += "\t[Origin Content]=\n" + self.RuleContent + '\n'
+            output += "\t[Origin Content]=\n" + self.Origin + '\n'
             output += "\t[Compiled Content]=\n{"
+
+        if self.WindowLimit:
+            output += "win={} ".format(self.WindowLimit)
+
+        if self.LengthLimit:
+            output += "len={} ".format(self.LengthLimit)
+
         for token in self.Tokens:
             output += str(token)
         output += "};"
@@ -343,83 +413,17 @@ class Rule:
         output += '\n'
         return output
 
-    # body is the part that being used to identify this specific rule. It is also that part to match the rule.
-    def body(self):
-        return "/".join(t.word + t.SubtreePointer for t in self.Tokens)
+    # # body is the part that being used to identify this specific rule. It is also that part to match the rule.
+    # def body(self):
+    #     return "/".join(t.word + t.SubtreePointer for t in self.Tokens)
 
-    # if there is same body of rule in db (for the same rulefileid), then use the same rule id, remove the existing rulenodes and rulechunks for it. create new ones;
-    #    update the verifytime, and status.
-    # if there is no same body, create everything.
-    def DBSave(self, rulefileid):
-        cur = utils.DBCon.cursor()
-        strsql = "SELECT ID from ruleinfo where rulefileid=? AND body=?  limit 1"
-        cur.execute(strsql, [rulefileid, self.body()])
-        resultrecord = cur.fetchone()
-        if resultrecord:
-            self.ID = resultrecord[0]
-            strsql = "UPDATE ruleinfo set status=1, verifytime=DATETIME('now') where ID=?"
-            cur.execute(strsql, [self.ID, ])
-            strsql = "DELETE from rulenode_features where rulenodeid in (SELECT ID from rulenodes where ruleid=?)"
-            cur.execute(strsql, [self.ID, ])
-            strsql = "DELETE from rulenode_orfeatures where rulenodeid in (SELECT ID from rulenodes where ruleid=?)"
-            cur.execute(strsql, [self.ID, ])
-            strsql = "DELETE from rulenodes where ruleid=?"
-            cur.execute(strsql, [self.ID, ])
-            strsql = "DELETE from rulechunks where ruleid=?"
-            cur.execute(strsql, [self.ID, ])
-            strsql = "DELETE from ruleinfo where id=?"
-            cur.execute(strsql, [self.ID, ])
-
-        strsql = "INSERT into ruleinfo (rulefileid, name, body, strtokenlength, tokenlength, status, " \
-                 "priority, windowlimit, lengthlimit, " \
-                 "norms, origin, comment, createtime, verifytime) " \
-                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DATETIME('now'), DATETIME('now'))"
-        cur.execute(strsql, [rulefileid, self.RuleName, self.body(), self.StrTokenLength, self.TokenLength, 1,
-                             self.Priority, self.WindowLimit, self.LengthLimit,
-                             '/'.join([x.replace("/", IMPOSSIBLESTRINGSLASH) if x else '' for x in self.norms]),
-                             self.Origin, self.comment])
-        self.ID = cur.lastrowid
-
-        strsql_node = "INSERT into rulenodes (ruleid, sequence, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype) values(?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        strsql_node_feature = "INSERT into rulenode_features (rulenodeid, featureid, type) values(?,?,?)"
-        strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
-        strsql_node_orfeature = "INSERT into rulenode_orfeatures (rulenodeid, featureid, groupid) values(?,?,?)"
-        try:
-            for i in range(self.TokenLength):
-                cur.execute(strsql_node, [self.ID, i, self.Tokens[i].word, self.Tokens[i].action, self.Tokens[i].pointer,
-                                          self.Tokens[i].SubtreePointer,
-                                          self.Tokens[i].AndText, self.Tokens[i].AndTextMatchtype,
-                                          self.Tokens[i].NotTextMatchtype])
-                nodeid = cur.lastrowid
-                for fid in self.Tokens[i].AndFeatures:
-                    cur.execute(strsql_node_feature, [nodeid, fid, 1])
-                for gid in range(len(self.Tokens[i].OrFeatureGroups)):
-                    for fid in self.Tokens[i].OrFeatureGroups[gid]:
-                        cur.execute(strsql_node_orfeature, [nodeid, fid, gid])
-                for fid in self.Tokens[i].NotFeatures:
-                    cur.execute(strsql_node_feature, [nodeid, fid, 3])
-                for NotText in self.Tokens[i].NotTexts:
-                    cur.execute(strsql_node_text, [nodeid, NotText, 2])
-        except sqlite3.Error as e:
-            logging.error(e)
-            logging.error(traceback.format_exc())
-            logging.info("DBSeve: {}".format(self))
-        strsql_chunk = "INSERT into rulechunks (ruleid, chunklevel, startoffset, length, stringchunklength, headoffset, action) values(?, ?, ?, ?, ?, ?, ?)"
-        for i in range(len(self.Chunks)):
-            cur.execute(strsql_chunk, [self.ID, self.Chunks[i].ChunkLevel, self.Chunks[i].StartOffset,
-                                       self.Chunks[i].Length, self.Chunks[i].StringChunkLength,
-                                       self.Chunks[i].HeadOffset, self.Chunks[i].Action
-                                       ])
-        cur.close()
 
     # For head (son) node, only apply negative action, and
     #   features after "NEW".
     # update on Feb 4: Only "X++" is for new node. The rest is for Son
+    # updated 2020/06/13: "X++", "^^.xxx", "GLOBAL", "intent=xxx" are for new node (Parent).
     @staticmethod
     def ExtractParentSonActions(actinstring):
-
-        # if "+++" in actinstring:    # if there is +++, then all are parentaction.
-        #     return actinstring, ""    #May 2nd, not to apply this rule.
         ieaction = ''
         iepairmatch = re.search("(#.*#)", actinstring)
         if iepairmatch:
@@ -428,13 +432,20 @@ class Rule:
 
         actions = set(actinstring.split())
 
-        # SonActionString = " ".join([a for a in actions if a[-2:] != "++"   or a == '+++' ])
         ParentActions = [a for a in actions if a[-2:] == "++"]
         ParentActions.extend([a for a in actions if a[0:2] == "^^"])
+        if "+++" in ParentActions:  # the norm and atom are to be in parent node if there is +++
+            ParentActions.extend([a for a in actions if (a[0] == "\'" and a[-1] == "\'")])
+            ParentActions.extend([a for a in actions if (a[0] == "/" and a[-1] == "/")])
+            ParentActions.extend([a for a in actions if "=" in a])
+
+        if 'GLOBAL' in actions:
+            ParentActions.append('GLOBAL')
 
         SonActions = list(actions - set(ParentActions))
 
         return " ".join(sorted(ParentActions)), " ".join(sorted(SonActions)) + ieaction
+
 
     def CompileChunk(self):
         rulebody = ''
@@ -688,7 +699,8 @@ class Rule:
             self.Chunks.append(c)
 
         else:
-            logging.debug("There is no chunk in this rule.")
+            #logging.debug("There is no chunk in this rule.")
+            pass
 
         # sort backward for applying
         self.Chunks.sort(key=lambda x: x.StartOffset, reverse=True)
@@ -704,7 +716,9 @@ class Rule:
         #         # else:
         #             token.action += " ^.X"
 
-        for chunk in self.Chunks:
+        _ChunkCopy = copy.copy(self.Chunks)
+        for i in reversed(range(len(_ChunkCopy))):
+            chunk = _ChunkCopy[i]
             if chunk.StringChunkLength == 1:  # remove single node chunk. remove "H" in this single node.
                 headtoken = self.Tokens[chunk.StartOffset + chunk.HeadOffset]
                 headaction = headtoken.action.split()
@@ -712,11 +726,12 @@ class Rule:
                     headaction.pop(headaction.index("H"))
                 while "^.H" in headaction:
                     headaction.pop(headaction.index("^.H"))
-                headaction += chunk.Action.split()
+
+                headaction += chunk.Action.split()      # the action of the single chunk is left for this token.
 
                 headtoken.action = " ".join(headaction)
 
-                self.Chunks.pop(self.Chunks.index(chunk))
+                self.Chunks.pop(i)
 
 
     def CheckTokensForVirtualToken(self, StartOffset, Length):
@@ -816,7 +831,7 @@ def Tokenize(RuleContent):
     StartToken = False
 
     #RuleContent = RemoveExcessiveSpace(RuleContent)
-
+    StartPosition = -1
     while i < len(RuleContent):
         if RuleContent[i] in SignsToIgnore:
             i += 1
@@ -860,6 +875,26 @@ def Tokenize(RuleContent):
         node = RuleToken()
         node.word = RuleContent[StartPosition:EndOfToken]
         TokenList.append(node)
+    # proximity checking:
+
+    NewCondition = ''
+    for i in range(len(TokenList)):
+        node = TokenList[i]
+        if NewCondition:    # apply to the next token
+            try:
+                beforebracket, afterbracket = node.word.split('[', 1)
+            except ValueError as e:
+                logging.error(" Error {} when processing {}".format(str(e), RuleContent))
+                raise RuntimeError("Must has [] for the tokens with ++, ~~")
+            node.word = "{}[{} {}".format(beforebracket, NewCondition, afterbracket)
+
+        NewCondition = ""
+        if node.word[-1] == "+" and node.word[-2] == "+":    # Wi++Wj 要求词与词之间按照左右顺序紧挨着
+            NewCondition = "^>>Q"
+            node.word = node.word.rstrip("+")
+        if node.word[-1] == "~" and node.word[-2] == "~":   #  Wi~~Wj 是顺序限制（list），要求Wj出现在Wj的右边，但不必紧挨着；
+            NewCondition = "^>Q"
+            node.word = node.word.rstrip("~")
 
     return TokenList
 
@@ -869,6 +904,11 @@ def ProcessTokens(Tokens):
         node.word = node.word.replace("\\(", IMPOSSIBLESTRINGLP).replace("\\)", IMPOSSIBLESTRINGRP).replace("\\'",
                                       IMPOSSIBLESTRINGSQ).replace("\\:", IMPOSSIBLESTRINGCOLN).replace("\\=", IMPOSSIBLESTRINGEQUAL)
         # logging.info("\tnode word:" + node.word)
+
+        if node.word.startswith("`"):
+            node.word = node.word.lstrip("`")
+            node.RestartPoint = True
+
         while node.word.startswith("<"):
             node.word = node.word[1:]
             node.StartChunk += 1
@@ -877,10 +917,6 @@ def ProcessTokens(Tokens):
             node.word = node.word[:-1]
             node.EndChunk += 1
 
-        if node.word.startswith("`"):
-            node.word = node.word.lstrip("`")
-            node.RestartPoint = True
-
         if node.word.endswith("?"):
             node.word = node.word.rstrip("?")
             node.repeat = [0, 1]
@@ -888,14 +924,14 @@ def ProcessTokens(Tokens):
             node.word = node.word.rstrip("*")
             node.repeat = [0, 3]
 
-        repeatMatch = re.match("(.*[\]\"')])(\d+)\*(\d+)$", node.word, re.DOTALL)
+        repeatMatch = re.match("(.*[]\"')])(\d+)\*(\d+)$", node.word, re.DOTALL)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             node.repeat = [int(repeatMatch.group(2)), int(repeatMatch.group(3))]
 
         repeatMatch = re.match("(.+)\*(\d*)$", node.word, re.DOTALL)
         if not repeatMatch:
-            repeatMatch = re.match("(.*[\])\"'])(\d+)$", node.word, re.DOTALL)
+            repeatMatch = re.match("(.*[])\"'])(\d+)$", node.word, re.DOTALL)
         if repeatMatch:
             node.word = repeatMatch.group(1)
             repeatMax = 3  # default as 3
@@ -905,7 +941,8 @@ def ProcessTokens(Tokens):
 
         ActionPosition = node.word.find(":")
         if ActionPosition > 0:
-            if ")" not in node.word[ActionPosition:] and "[" not in node.word[ActionPosition:]:
+            TokenEndPosition = node.word.find("]")
+            if ")" not in node.word[TokenEndPosition:] and "[" not in node.word[ActionPosition:]:
                 node.action = node.word[ActionPosition + 1:].rstrip("]")
                 node.word = node.word[:ActionPosition] + "]"
 
@@ -914,19 +951,19 @@ def ProcessTokens(Tokens):
                 if len(orblocks) > 1:
                     node.word = "(" + ")|([".join(orblocks) + ")"  # will be tokenize later.
                 else:
-                    orblocks = re.split("\]\|", node.word)
+                    orblocks = re.split("]\|", node.word)
                     if len(orblocks) > 1:
                         node.word = "(" + "])|(".join(orblocks) + ")"  # will be tokenize later.
                     else:  # no "()" sign, and no "|" sign
                         # using (.*):, not (.+): , because the word can be blank (means matching everything)
-                        actionMatch = re.match("\[(.*):(.+)\]$", node.word, re.DOTALL)
+                        actionMatch = re.match("\[(.*):(.+)]$", node.word, re.DOTALL)
                         if actionMatch:
                             node.word = "[" + actionMatch.group(1) + "]"
                             node.action = actionMatch.group(2)
 
         # Note: unification would be quoted, such as <['^V-' ] [不] ^V[V|V0|v]>
         # so it won't be pointer or subtree pointer.
-        pointerMatch = re.match("(\^\w*)\[(.*)\]$", node.word, re.DOTALL)
+        pointerMatch = re.match("(\^\w*)\[(.*)]$", node.word, re.DOTALL)
         if pointerMatch:
             node.word = "[" + pointerMatch.group(2) + "]"
             node.pointer = pointerMatch.group(1)
@@ -938,25 +975,54 @@ def ProcessTokens(Tokens):
             node.word = "[" + pointerMatch.group(1) + "]"
             node.pointer = '^'
 
-        pointerSubtreeMatch = re.search("\[(\^(.+)=)", node.word, re.DOTALL)  # Subtree Pattern
-        if pointerSubtreeMatch:
-            node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
-            node.SubtreePointer = pointerSubtreeMatch.group(2)
+        # pointerSubtreeMatch = re.search("\[(\^(.+)=)", node.word, re.DOTALL)  # Subtree Pattern
+        # if pointerSubtreeMatch:
+        #     node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
+        #     node.SubtreePointer = pointerSubtreeMatch.group(2)
 
         pointerSubtreeMatch = re.search("\[(\^(.+?) )", node.word, re.DOTALL)  # Subtree Pattern
-        if pointerSubtreeMatch:
+        while pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
-            node.SubtreePointer = pointerSubtreeMatch.group(2)
+            node.SubtreePointer += pointerSubtreeMatch.group(2) + "+"
+            pointerSubtreeMatch = re.search("\[(\^(.+?) )", node.word, re.DOTALL)  # multiple Subtree Pattern
 
-        pointerSubtreeMatch = re.search("\[(\^(\S+))\]", node.word, re.DOTALL)  # Subtree Pattern
+        pointerSubtreeMatch = re.search("\[(\^(\S+))]", node.word, re.DOTALL)  # Subtree Pattern
         if pointerSubtreeMatch:
             node.word = node.word.replace(pointerSubtreeMatch.group(1), "")
-            node.SubtreePointer = pointerSubtreeMatch.group(2)
+            node.SubtreePointer += pointerSubtreeMatch.group(2)
 
         if node.SubtreePointer:  # remove all the "^" sign inside the SubtreePointer
-            node.SubtreePointer = node.SubtreePointer.replace("^", "")
+            node.SubtreePointer = node.SubtreePointer.replace("^", "").strip()
+            pointers = [x for x in re.split('[+ ]', node.SubtreePointer) if x]
+            for p in pointers:
+                pointercompare = re.search("(^.+)([<>].*)", node.word, re.DOTALL)
+                if pointercompare:
+                    pointers.remove(p)
+                    pointers.append(pointercompare.group(1))
+                    pointers.append(pointercompare.group(2))
+                    logging.debug("compare pointer {} is separated as 2 conditions:{}+{}".format(p,
+                                        pointercompare.group(1), pointercompare.group(2)))
 
-        orQuoteMatch = re.search("(['\"/])(\S*\|\S*?)\\1", node.word, re.DOTALL)
+            SubtreePointerIndex = -1
+
+            PointerConditionIndexes = []
+            for i in range(len(pointers)):
+                if "." in pointers[i] and "<" not in pointers[i] and ">" not in pointers[i] and SubtreePointerIndex<0:
+                    SubtreePointerIndex = i
+                if i != SubtreePointerIndex:
+
+                    PointerConditionIndexes.append(i)
+
+            if SubtreePointerIndex > -1:
+                node.SubtreePointer = pointers[SubtreePointerIndex]
+            else:
+                node.SubtreePointer = ""
+
+            node.PointerCondition = "+".join([pointers[x] for x in PointerConditionIndexes])
+            if node.PointerCondition:
+                logging.debug("node.PointerCondition: {}".format(node.PointerCondition))
+
+        orQuoteMatch = re.search("(['\"./])(\S*\|\S*?)\\1", node.word, re.DOTALL)
         if orQuoteMatch:
             expandedQuotes = ExpandQuotedOrs(orQuoteMatch.group(2), orQuoteMatch.group(1))
             node.word = node.word.replace(orQuoteMatch.group(2), expandedQuotes)
@@ -985,9 +1051,9 @@ def ProcessTokens(Tokens):
                 expandAnd = ExpandNotOrToAndNot(match)
                 node.word = node.word.replace("(" + match + ")", expandAnd)
 
-        if node.word and len(node.word) > 1 and node.word[0] == '[' and ChinesePattern.match(node.word[1]):
-            node.word = '[FULLSTRING ' + node.word[
-                                         1:]  # If Chinese character is not surrounded by quote, then add feature 0.
+        if node.word and len(node.word) > 1 and node.word[0] == '[' and ChinesePattern.fullmatch(node.word[1]):
+            # If Chinese character is not surrounded by quote, then add feature 0.
+            node.word = '[FULLSTRING ' + node.word[1:]
 
         node.word = node.word.replace(IMPOSSIBLESTRINGLP, "(").replace(IMPOSSIBLESTRINGRP, ")").replace(
             IMPOSSIBLESTRINGSQ, "'").replace(IMPOSSIBLESTRINGCOLN, ":").replace(IMPOSSIBLESTRINGEQUAL, "=").replace(
@@ -1076,7 +1142,7 @@ def _SearchToEnd_OrBlock(string, Reverse=False):
     return i
 
 
-def ProcessMacro(ruleContent, MacroDict):
+def ProcessMacro(ruleContent, MacroDict, MacroLikeDict):
     macros_with_parameters = re.findall("#\w*\(.+\)", ruleContent)
     for macro in macros_with_parameters:
         macroName = re.match("^(#.*)\(", macro).group(0)
@@ -1096,8 +1162,29 @@ def ProcessMacro(ruleContent, MacroDict):
                 ruleContent = ruleContent.replace(macro, macroContent)
     # return ruleContent
 
+    # // Macro-like word list. It behaves like Macro, but has more strict rules:
+    # // 1, |(or) sign is the only one that is allowed here. there can be no other signs, such as ! (not), space (and)
+    # // 2， !(not) sign can be used outside of this Macro when being used in the rule, such as: !@@FOR
+    # // 3, only stem (marked with single quote sign) is allowed.
+    # @@FOR == ('给|为|替')
+    #
+    # // Macro-like feature list. It behaves like Macro, but has more strict rules:
+    # // 1, |(or) sign is the only one that is allowed here. there can be no other signs, such as ! (not), space (and)
+    # // 2， !(not) sign can be used outside of this Macro when being used in the rule, such as: !@@VC
+    # @@VC == (V|VG|VP)
+    macrolist = re.findall("@@\w*", ruleContent)
+    for macro in sorted(macrolist, key=lambda x: len(x), reverse=True):
+        if len(macro) == 2:
+            continue    #this is a single "@@" sign, not a macro.
+        if macro in MacroLikeDict:
+            ruleContent = ruleContent.replace(macro, MacroLikeDict[macro])
+        else:
+            logging.warning("This macro " + macro + " does not exist.")
+
     macros = re.findall("@\w*", ruleContent)
     for macro in sorted(macros, key=lambda x: len(x), reverse=True):
+        if len(macro) == 1:
+            continue    #this is a single "@" sign, not a macro.
         if macro in MacroDict:
             ruleContent = ruleContent.replace(macro, MacroDict[macro].RuleContent)
         else:
@@ -1113,17 +1200,25 @@ def LoadGlobalMacro(RuleLocation):
     try:
         with open(RuleLocation, encoding="utf-8") as RuleFile:
             for line in RuleFile:
-                line = line.strip().replace("：", ":")
+                #line = line.strip().replace("：", ":")
+
                 if not line:
                     continue
 
                 code, _ = SeparateComment(line)
+                if "：" in code:
+                    # code = code.replace("：", ":")
+                    logging.warning(f"This code has \：{code}")
                 if code.find("::") >= 0 or code.find("==") >= 0:
                     if rule:
                         node = Rule()
-                        node.SetRule(rule, _GlobalMacroDict)
+                        node.SetRule(rule, _GlobalMacroDict, _GlobalMacroLikeDict)
                         if node.RuleContent:
-                            if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
+                            if node.RuleName.startswith("@@"):
+                                featurename = CreateTempFeatureForMacroList(node)
+                                _GlobalMacroLikeDict.update({node.RuleName: featurename})
+
+                            elif node.RuleName.startswith("@") or node.RuleName.startswith("#"):
                                 if node.RuleName in _GlobalMacroDict:
                                     logging.warning(
                                         "This macro name " + node.RuleName + " is already used for Macro " + str(
@@ -1141,7 +1236,11 @@ def LoadGlobalMacro(RuleLocation):
                 node = Rule()
                 node.SetRule(rule, _GlobalMacroDict)
                 if node.RuleContent:
-                    if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
+                    if node.RuleName.startswith("@@"):
+                        featurename = CreateTempFeatureForMacroList(node)
+                        _GlobalMacroLikeDict.update({node.RuleName: featurename})
+
+                    elif node.RuleName.startswith("@") or node.RuleName.startswith("#"):
                         if node.RuleName in _GlobalMacroDict:
                             logging.warning(
                                 "This macro name " + node.RuleName + " is already used for Macro " + str(
@@ -1155,6 +1254,17 @@ def LoadGlobalMacro(RuleLocation):
     except UnicodeError:
         logging.error("Error when processing Global Macro file " + RuleLocation)
         logging.error("Currently rule=" + rule)
+
+
+# Remove the rules that has more token than window size (after expanding wild card)
+def _ExerciseWindowLimit(OneList):
+    counter = 0
+    for i in reversed(range(len(OneList))):
+        rule = OneList[i]
+        if 0 < rule.WindowLimit < len(rule.Tokens):
+            OneList.pop(i)
+            counter += 1
+    logging.info("Removed {} rules in _ExerciseWindowLimit()".format(counter))
 
 
 # a rule is not necessary in one line.
@@ -1171,34 +1281,45 @@ def LoadGlobalMacro(RuleLocation):
 # -Sept, change to : until the next "==" or "::" is found, give the whole block to "InsetRuleInList"
 #   The rule.SetRule() will judge whether it is one whole rule (base on {}), or several rules (or condition),
 #       when it will process current rule, and give the rest as "remaining" for next round.
-def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB, fuzzy=False):
+def LoadRules(RuleLocation, fuzzy=False, isDagRule = False):
     # global UnitTest, RuleFileList
     global RuleGroupDict
 
-    RuleLocation = os.path.join(RuleFolder, RuleFileName)
-    if RuleLocation.startswith("."):
-        RuleLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), RuleLocation)
+    # if RuleLocation.startswith("."):
+    #     RuleLocation = os.path.join(os.path.dirname(__file__), RuleLocation)
+
+    _RuleFileName = os.path.basename(RuleLocation)
+
+    if RuleLocation in RuleGroupDict:
+        ExistingRuleTimestamp = RuleGroupDict[RuleLocation].TimeStamp
+        FileDiskTime = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
+        if ExistingRuleTimestamp >= FileDiskTime:
+            logging.info("No need to reload {}. Rules: {}".format(_RuleFileName, str(len(RuleGroupDict[RuleLocation].RuleList))))
+            return
 
     logging.info("Start Loading Rule " + RuleLocation)
-    rulegroup = RuleGroup(RuleFileName)
+    rulegroup = RuleGroup(RuleLocation)
+    rulegroup.isDagRule = isDagRule
 
     # check if feature.txt and global macro is changed before load rules from DB
 
-    if systemfileolderthanDB and RuleFileOlderThanDB(RuleLocation):
+    if RuleFileOlderThanDB(RuleLocation):
+        rulegroup = LoadRulesFromDB(RuleLocation)
         rulegroup.LoadedFromDB = True
-        LoadRulesFromDB(rulegroup)
-
     else:
         rulegroup.LoadedFromDB = False
         rule = ""
         try:
             with open(RuleLocation, encoding="utf-8") as RuleFile:
                 for line in RuleFile:
-                    line = line.strip().replace("：", ":")
+                    #line = line.strip().replace("：", ":")
+
                     if not line:
                         continue
 
                     code, _ = SeparateComment(line)
+                    if "：" in code:
+                        logging.warning(f"This code has \：{code}")
                     if code.find("::") >= 0 or code.find("==") >= 0:
                         if rule:
                             InsertRuleInList(rule, rulegroup)
@@ -1208,7 +1329,7 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB, fuzzy=False):
                 if rule:
                     InsertRuleInList(rule, rulegroup)
         except UnicodeError:
-            logging.error("Error when processing " + RuleFileName)
+            logging.error("Error when processing " + _RuleFileName)
             logging.error("Currently rule=" + rule)
         # UnitTestFileName = os.path.splitext(RuleLocation)[0] + ".unittest"
         # if os.path.exists(UnitTestFileName):
@@ -1221,22 +1342,23 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB, fuzzy=False):
         #             rulegroup.UnitTest.append(unittest)
 
         RuleNum_BeforeExpand = len(rulegroup.RuleList)
-        while _ExpandRuleWildCard_List(rulegroup.RuleList):
-            pass
 
         Modified = True
         while Modified:
+            while _ExpandRuleWildCard_List(rulegroup.RuleList):
+                pass
             Modified = _ExpandParenthesis(rulegroup.RuleList)
             Modified = _ExpandOrBlock(rulegroup.RuleList) or Modified
+            Modified = _ExpandRuleWildCard_List(rulegroup.RuleList) or Modified
 
-        while _ExpandRuleWildCard_List(rulegroup.RuleList):
-            pass
+        # _ExerciseWindowLimit(rulegroup.RuleList)     #Remove the rules that has more token than window size (after expanding wild card)
 
         _PreProcess_CheckFeaturesAndCompileChunk(rulegroup.RuleList, fuzzy)
-        _PreProcess_CompileHash(rulegroup)
+        _PreProcess_CompileToken(rulegroup)
         rulegroup.RuleList = sorted(rulegroup.RuleList, key=lambda x: (x.Priority, x.TokenLength, x.RuleName), reverse=True)
         if not utils.DisableDB:
-            _OutputRuleDB(rulegroup)
+            rulegroup.DBSave()
+            #_OutputRuleDB(rulegroup)
         for r in rulegroup.RuleList:
             if r.norms:
                 norms = "".join(r.norms)
@@ -1245,18 +1367,37 @@ def LoadRules(RuleFolder, RuleFileName,systemfileolderthanDB, fuzzy=False):
                 rulegroup.NoHashRules.append(r)
         RuleNum_AfterExpand = len(rulegroup.RuleList)
         logging.info("Rules from file:" + str(RuleNum_BeforeExpand) + " \t After expanded:" + str(RuleNum_AfterExpand))
+        ShowMostVariations(rulegroup.RuleList)   #for debug purpose
+    rulegroup.TimeStamp = datetime.utcfromtimestamp(os.path.getmtime(RuleLocation)).strftime('%Y-%m-%d %H:%M:%S')
 
     # BuildIdenticalNetwork(rulegroup)
 
     RuleGroupDict.update({rulegroup.FileName: rulegroup})
 
-    logging.info("Finished Loading Rule " + RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB))
+    logging.info("Finished Loading Rule " + _RuleFileName + " LoadedFromDB:" + str(rulegroup.LoadedFromDB))
     logging.info("\t Rule Size:" + str(len(rulegroup.RuleList)))
 
     return
 
 
-# def BuildIdenticalNetwork(rg):
+# no return, just show the rule that has most variations in logging.info
+def ShowMostVariations( rulelist):
+    OriginContentDict = {}
+    MaxRule = 'All rules do not have variant.'
+    Max = 0
+    for rule in rulelist:
+        if rule.Origin in OriginContentDict:
+            OriginContentDict[rule.Origin] += 1
+            if OriginContentDict[rule.Origin] > Max:
+                Max = OriginContentDict[rule.Origin]
+                MaxRule = rule.Origin
+        else:
+            OriginContentDict[rule.Origin] = 1
+
+    logging.info("This rule has the most variations ({})\n\t\t{}".format(Max, MaxRule))
+
+
+        # def BuildIdenticalNetwork(rg):
 #     for rule in rg.RuleList:
 #         for i in range( rule.TokenLength-1):
 #             if rule.Tokens[i].word == "[]" or rule.Tokens[i].word == "":
@@ -1287,11 +1428,8 @@ def RuleFileOlderThanDB(RuleLocation):
         return False
 
     cur = utils.DBCon.cursor()
-    RuleFileName = os.path.basename(RuleLocation)
-    if RuleFileName == "5ngramKG9_top1k.txt":
-        RuleFileName = "Q/rule/5ngramKG9_top1k.txt"
-    strsql = "select ID, verifytime from rulefiles where filelocation=?"
-    cur.execute(strsql, [RuleFileName, ])
+    strsql = "select ID, createtime from rulefiles where filelocation=?"
+    cur.execute(strsql, [RuleLocation, ])
     resultrecord = cur.fetchone()
     cur.close()
 
@@ -1305,8 +1443,132 @@ def RuleFileOlderThanDB(RuleLocation):
     return FileDiskTime < FileDBTime
 
 
+def LoadOneRuleFromDB(ruleid, FileName="", alternativecur=None):
+    if alternativecur:
+        cur = alternativecur
+    else:
+        cur = utils.DBCon.cursor()
 
-def LoadRulesFromDB(rulegroup):
+    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment,
+                    priority, windowlimit, lengthlimit
+                    from ruleinfo r   where id=? limit 1"""
+    # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
+    #                 from ruleinfo r    where rulefileid=?
+    #                     order by tokenlength desc"""
+    strsql_node = """SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"""
+    #strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
+    strsql_node_orfeature = "select featureid from rulenode_orfeatures where rulenodeid=? and groupid=?"
+    strsql_countorfeatures = "select count(DISTINCT groupid) from rulenode_orfeatures where rulenodeid=?"
+    strsql_node_text = "select text from rulenode_texts where rulenodeid=? and type=?"
+    #    strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
+    strsql_chunk = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
+
+    rule = Rule()
+    cur.execute(strsql_rule, [ruleid, ])
+    row = cur.fetchone()
+    if not row:
+        logging.error("Trying to load rules from DB for :" + FileName)
+        return None
+    rule.FileName = FileName
+    rule.ID = int(row[0])
+    rule.RuleName = row[1]
+    rule.StrTokenLength = int(row[2])
+    rule.TokenLength = int(row[3])
+    if row[4]:
+        rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") for x in row[4].split("/")]
+    else:
+        rule.norms = []
+    rule.Origin = row[5]
+    rule.comment = row[6]
+    rule.Priority = row[7]
+    rule.WindowLimit = row[8]
+    rule.LengthLimit = row[9]
+
+    cur.execute(strsql_node, [rule.ID, ])
+    noderows = cur.fetchall()
+    for noderow in noderows:
+        token = RuleToken()
+        nodeid = int(noderow[0])
+        token.word = noderow[1]
+        if "FULLSTRING" in token.word:
+            token.FullString = True
+        token.action = noderow[2]
+        token.pointer = noderow[3]
+        token.SubtreePointer = noderow[4]
+        token.AndText = noderow[5]
+        token.AndTextMatchtype = noderow[6]
+        token.NotTextMatchtype = noderow[7]
+
+        cur.execute(strsql_countorfeatures, [nodeid])
+        countrows = cur.fetchall()
+        sizefeaturegroup = countrows[0][0]
+        # sizefeaturegroup = int(cur.execute(strsql_countorfeatures,[nodeid]))
+        for groupid in range(0, sizefeaturegroup):
+            cur.execute(strsql_node_orfeature, [nodeid, groupid])
+            featurerows = cur.fetchall()
+            orfeaturegroup = set()
+            for featurerow in featurerows:
+                orfeaturegroup.add(int(featurerow[0]))
+            token.OrFeatureGroups.append(orfeaturegroup)
+
+        # cur.execute(strsql_node_feature, [nodeid, 1])
+        # featurerows = cur.fetchall()
+        # for featurerow in featurerows:
+        #     token.AndFeatures.add(int(featurerow[0]))
+        # cur.execute(strsql_node_feature, [nodeid, 3])
+        # featurerows = cur.fetchall()
+        # for featurerow in featurerows:
+        #     token.NotFeatures.add(int(featurerow[0]))
+        #
+        cur.execute("select featureid, type from rulenode_features where rulenodeid=?", [nodeid])
+        featurerows = cur.fetchall()
+        for featurerow in featurerows:
+            if featurerow[1] == 1:
+                token.AndFeatures.add(featurerow[0])
+            elif featurerow[1] == 3:
+                token.NotFeatures.add(featurerow[0])
+            else:
+                logging.warning("There is other feature type in: {} for this rule {}".format(featurerow, rule))
+
+        cur.execute(strsql_node_text, [nodeid, 2])
+        featurerows = cur.fetchall()
+        for featurerow in featurerows:
+            token.NotTexts.add(featurerow[0])
+
+        rule.Tokens.append(token)
+
+    cur.execute(strsql_chunk, [rule.ID, ])
+    chunkrows = cur.fetchall()
+    for chunkrow in chunkrows:
+        chunk = RuleChunk()
+        chunk.ChunkLevel = int(chunkrow[0])
+        chunk.StartOffset = int(chunkrow[1])
+        chunk.Length = int(chunkrow[2])
+        chunk.StringChunkLength = int(chunkrow[3])
+        chunk.HeadOffset = int(chunkrow[4])
+        chunk.Action = chunkrow[5]
+        rule.Chunks.append(chunk)
+
+    return rule
+
+
+
+def LoadRulesFromDB(ruleFileName):
+
+    cur = utils.DBCon.cursor()
+    strsql = "select ID, bodydump, createtime from rulefiles where filelocation=? "
+    cur.execute(strsql, [ruleFileName])
+    resultrecord = cur.fetchone()
+    if resultrecord:
+        rulegroup = pickle.loads(resultrecord[1])
+    else:
+        rulegroup = None
+    cur.close()
+
+    return rulegroup
+
+
+def LoadRulesFromDB_clearformat(rulegroup):
     if utils.DisableDB:
         logging.error("In the config.ini, DisableDB is true, so it is not supposed to LoadrulesFromDB!")
         return False
@@ -1321,121 +1583,62 @@ def LoadRulesFromDB(rulegroup):
 
     # order by tokenlength desc, and by hits desc.
     # note: order using hit can have less than 1% benefit. not worth the trouble.
-    strsql_rule = """SELECT id, name, strtokenlength, tokenlength, norms, origin, comment,
-                    priority, windowlimit, lengthlimit
-                    from ruleinfo r  left join rulehits h on r.id=h.ruleid   where rulefileid=? and status=1 group by r.id
-                        order by tokenlength desc, count(h.ruleid ) desc """
-    # strsql_rule = """SELECT id, name, strtokenlength, norms, origin, comment
-    #                 from ruleinfo r    where rulefileid=?
-    #                     order by tokenlength desc"""
-    strsql_node = """SELECT ID, matchbody, action, pointer, subtreepointer, andtext, andtextmatchtype, nottextmatchtype from rulenodes where ruleid=? order by sequence"""
-    #strsql_node_feature = "select featureid from rulenode_features where rulenodeid=? and type=?"
-    strsql_node_orfeature = "select featureid from rulenode_orfeatures where rulenodeid=? and groupid=?"
-    strsql_countorfeatures = "select count(DISTINCT groupid) from rulenode_orfeatures where rulenodeid=?"
-    strsql_node_text = "select text from rulenode_texts where rulenodeid=? and type=?"
-    #    strsql_node_text = "INSERT into rulenode_texts (rulenodeid, text, type) values(?,?,?)"
-    strsql_chunk = "SELECT chunklevel, startoffset, length, stringchunklength, headoffset, action from rulechunks where ruleid=? "
 
-    cur.execute(strsql_rule, [rulefileid, ])
+    cur.execute("select id from ruleinfo where rulefileid=? and status=1 order by tokenlength desc", [rulefileid, ])
     rows = cur.fetchall()
     for row in rows:
-        rule = Rule()
-        rule.FileName = rulegroup.FileName
-        rule.ID = int(row[0])
-        rule.RuleName = row[1]
-        rule.StrTokenLength = int(row[2])
-        rule.TokenLength = int(row[3])
-        if row[4]:
-            rule.norms = [x.replace(IMPOSSIBLESTRINGSLASH, "/") for x in row[4].split("/")]
-        else:
-            rule.norms = []
-        rule.Origin = row[5]
-        rule.comment = row[6]
-        rule.Priority = row[7]
-        rule.WindowLimit = row[8]
-        rule.LengthLimit = row[9]
-
-        cur.execute(strsql_node, [rule.ID, ])
-        noderows = cur.fetchall()
-        for noderow in noderows:
-            token = RuleToken()
-            nodeid = int(noderow[0])
-            token.word = noderow[1]
-            if "FULLSTRING" in token.word:
-                token.FullString = True
-            token.action = noderow[2]
-            token.pointer = noderow[3]
-            token.SubtreePointer = noderow[4]
-            token.AndText = noderow[5]
-            token.AndTextMatchtype = noderow[6]
-            token.NotTextMatchtype = noderow[7]
-
-
-            cur.execute(strsql_countorfeatures,[nodeid])
-            countrows = cur.fetchall()
-            sizefeaturegroup = countrows[0][0]
-            # sizefeaturegroup = int(cur.execute(strsql_countorfeatures,[nodeid]))
-            for groupid in range(0, sizefeaturegroup):
-                cur.execute(strsql_node_orfeature,[nodeid,groupid])
-                featurerows = cur.fetchall()
-                orfeaturegroup = set()
-                for featurerow in featurerows:
-                    orfeaturegroup.add(int(featurerow[0]))
-                token.OrFeatureGroups.append(orfeaturegroup)
-
-            # cur.execute(strsql_node_feature, [nodeid, 1])
-            # featurerows = cur.fetchall()
-            # for featurerow in featurerows:
-            #     token.AndFeatures.add(int(featurerow[0]))
-            # cur.execute(strsql_node_feature, [nodeid, 3])
-            # featurerows = cur.fetchall()
-            # for featurerow in featurerows:
-            #     token.NotFeatures.add(int(featurerow[0]))
-            #
-            cur.execute("select featureid, type from rulenode_features where rulenodeid=?", [nodeid])
-            featurerows = cur.fetchall()
-            for featurerow in featurerows:
-                if featurerow[1] == 1:
-                    token.AndFeatures.add(featurerow[0])
-                elif featurerow[1] == 3:
-                    token.NotFeatures.add(featurerow[0])
-                else:
-                    logging.warning("There is other feature type in: {} for this rule {}".format(featurerow, rule))
-
-            cur.execute(strsql_node_text, [nodeid, 2])
-            featurerows = cur.fetchall()
-            for featurerow in featurerows:
-                token.NotTexts.add(featurerow[0])
-
-            rule.Tokens.append(token)
-
-        cur.execute(strsql_chunk, [rule.ID, ])
-        chunkrows = cur.fetchall()
-        for chunkrow in chunkrows:
-            chunk = RuleChunk()
-            chunk.ChunkLevel = int(chunkrow[0])
-            chunk.StartOffset = int(chunkrow[1])
-            chunk.Length = int(chunkrow[2])
-            chunk.StringChunkLength = int(chunkrow[3])
-            chunk.HeadOffset = int(chunkrow[4])
-            chunk.Action = chunkrow[5]
-            rule.Chunks.append(chunk)
+        rule = LoadOneRuleFromDB(row[0], rulegroup.FileName)
 
         rulegroup.RuleList.append(rule)
 
     strsql = "update rulefiles set verifytime=DATETIME('now') where filelocation=?"
     cur.execute(strsql, [rulegroup.FileName, ])
     rulegroup.LoadedFromDB = True
+    rulegroup.TimeStamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     cur.close()
     return True
 
 
+def CreateTempFeatureForMacroList(rulenode):
+    body = rulenode.RuleContent
+    if body.startswith("(") and body.endswith(")"):
+        body = body[1:-1]
+
+    TempFeatureName, TempFeatureID = FeatureOntology.CreateTempFeature(rulenode.RuleName[2:])
+    if body.startswith("'") and body.endswith("'"): # so this is a list of words
+        words = body[1:-1].split("|")
+        for word in words:
+            lexnode = SearchOrCreateLexicon(word, 'origin')
+            lexnode.features.add(TempFeatureID)
+    else:   # this is a list of features
+        features = body.split("|")
+        for feature in features:
+
+            openWordID = FeatureOntology.GetFeatureID(feature)
+
+            TryOldNode = FeatureOntology.SearchFeatureOntology(openWordID)
+            if TryOldNode:
+                TryOldNode.ancestors.add(TempFeatureID)
+            else:
+                featurenode = FeatureOntology.OntologyNode()
+                featurenode.openWord = feature
+                featurenode.openWordID = openWordID
+                featurenode.ancestors.add(TempFeatureID)
+
+    return TempFeatureName
+
 def InsertRuleInList(string, rulegroup):
+    if not hasattr(InsertRuleInList, "UnitTestMatch"):
+        InsertRuleInList.UnitTestMatch = re.compile('test:(.+?)//', re.IGNORECASE | re.MULTILINE)
     node = Rule()
     node.FileName = rulegroup.FileName  # used in keeping record of the winning rules.
-    remaining = node.SetRule(string, rulegroup.MacroDict)
+    remaining = node.SetRule(string, rulegroup.MacroDict, rulegroup.MacroLikeDict)
     if node.RuleContent:
-        if node.RuleName.startswith("@") or node.RuleName.startswith("#"):
+        if node.RuleName.startswith("@@"):  # Macro-like feature list or word list.
+            featurename = CreateTempFeatureForMacroList(node)
+            rulegroup.MacroLikeDict.update({node.RuleName: featurename})
+
+        elif node.RuleName.startswith("@") or node.RuleName.startswith("#"):
             if node.RuleName in rulegroup.MacroDict:
                 logging.warning("This macro name " + node.RuleName + " is already used for Macro " + str(
                     rulegroup.MacroDict[node.RuleName]) \
@@ -1476,18 +1679,9 @@ def InsertRuleInList(string, rulegroup):
                     logging.error(str(e))
                     raise
 
-    SearchMatch = re.compile('test:(.+?)//', re.IGNORECASE | re.MULTILINE)
-    # s = SearchMatch.findall(node.comment+"//")
-    for TestSentence in SearchMatch.findall(node.comment + "//"):
+    for TestSentence in InsertRuleInList.UnitTestMatch.findall(node.comment + "//"):
         unittest = UnitTestNode(node.RuleName, TestSentence)
-        rulegroup.UnitTest.append(unittest)
-        # testLocation = node.comment.find("test:")
-        # if testLocation < 0:
-        #     testLocation = node.comment.find("TEST:")
-        # if testLocation >= 0:
-        #     TestSentence = node.comment[testLocation + 5:].strip()
-        #     if TestSentence != "":
-        #         UnitTest.update({node.RuleName: TestSentence})
+        rulegroup.UnitTest.append(unittest)     # FSAUnitTest.py to use this rulegroup.UnitTest
 
 
 def _ExpandRuleWildCard_List(OneList):
@@ -1541,7 +1735,7 @@ def _ExpandRuleWildCard_List(OneList):
                             #     logging.error("Some operation of the NextIsPointer:{}".format(rule))
                         newrule.Tokens.append(new_node)
 
-                    newrule.SetStrTokenLength()
+                    newrule.SetStrTokenLengthAndRestartPosition()
                     OneList.append(newrule)
                     Expand = True
             if Expand:
@@ -1591,7 +1785,7 @@ def _RemoveExcessiveParenthesis(token):
         return False  # not excessive, if ]: in parenthesis.
 
     if (StartParenthesesPosition == 0 or token.word[StartParenthesesPosition - 1] not in "|!") \
-            and (EndParenthesesPosition == len(token.word) or token.word[EndParenthesesPosition + 1] != "|"):
+            and (EndParenthesesPosition+1 == len(token.word) or token.word[EndParenthesesPosition + 1] != "|"):
         if StartParenthesesPosition > 0:
             before = token.word[:StartParenthesesPosition]
         else:
@@ -1601,8 +1795,8 @@ def _RemoveExcessiveParenthesis(token):
         else:
             after = ""
 
-        if logging.root.isEnabledFor(logging.DEBUG):
-            logging.debug("Removing excessive parenthesis in: " + token.word)
+        # if logging.root.isEnabledFor(logging.DEBUG):
+        #     logging.debug("Removing excessive parenthesis in: " + token.word)
         token.word = before + token.word[StartParenthesesPosition + 1:EndParenthesesPosition] + after
         # logging.info("\t\t as: " + token.word)
         return True
@@ -1649,7 +1843,7 @@ def _ExpandParenthesis(OneList):
                     newrule.Tokens.append(subtoken)
                 for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                     newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
-                newrule.SetStrTokenLength()
+                newrule.SetStrTokenLengthAndRestartPosition()
                 OneList.append(newrule)
                 Expand = True
                 # logging.warning("\tExpand Parentheses is true, because of " + rule.RuleName)
@@ -1785,7 +1979,7 @@ def _ExpandOrBlock(OneList):
 
             for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
-            newrule.SetStrTokenLength()
+            newrule.SetStrTokenLengthAndRestartPosition()
             OneList.append(newrule)
 
             # right of |:
@@ -1821,7 +2015,7 @@ def _ExpandOrBlock(OneList):
 
             for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                 newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
-            newrule.SetStrTokenLength()
+            newrule.SetStrTokenLengthAndRestartPosition()
             OneList.append(newrule)
 
             Expand = True
@@ -1841,7 +2035,7 @@ def _ProcessOrToken(word):
     spaceseparated = word.split()
     i = 0
     for i in range(len(spaceseparated)):
-        if spaceseparated[i].find("'|") > 0 or spaceseparated[i].find("/|") > 0 or spaceseparated[i].find("\"|") > 0 \
+        if spaceseparated[i].find("'|") > 0 or spaceseparated[i].find("/|") > 0 or spaceseparated[i].find(".|") > 0 or spaceseparated[i].find("\"|") > 0 \
                 or spaceseparated[i].find("|'") > 0 or spaceseparated[i].find("|/") > 0 or spaceseparated[i].find(
             "|\"") > 0:
             # this is the piece we need to separate
@@ -1891,7 +2085,7 @@ def _ExpandOrToken(OneList):
             if NotAnd:
                 orlist, leftBlock, rightBlock = _ProcessOrToken_NotAnd(token.word, NotAnd)
 
-            elif token.word.find("'|") > 0 or token.word.find("/|") > 0 or token.word.find("\"|") > 0 \
+            elif token.word.find("'|") > 0 or token.word.find("/|") > 0 or token.word.find(".|") > 0 or token.word.find("\"|") > 0 \
                     or token.word.find("|'") > 0 or token.word.find("|/") > 0 or token.word.find("|\"") > 0:
                 # only expand the Text .
                 orlist, leftBlock, rightBlock = _ProcessOrToken(token.word)
@@ -1916,7 +2110,7 @@ def _ExpandOrToken(OneList):
                     # right of the token:
                     for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
-                    newrule.SetStrTokenLength()
+                    newrule.SetStrTokenLengthAndRestartPosition()
                     newrule.Chunks = copy.deepcopy(rule.Chunks)
                     OneList.append(newrule)
 
@@ -1949,7 +2143,7 @@ def _ExpandOrToken(OneList):
                     # right of the token:
                     for tokenindex_post in range(tokenindex + 1, rule.TokenLength):
                         newrule.Tokens.append(RuleToken(rule.Tokens[tokenindex_post]))
-                    newrule.SetStrTokenLength()
+                    newrule.SetStrTokenLengthAndRestartPosition()
                     newrule.Chunks = copy.deepcopy(rule.Chunks)
                     OneList.append(newrule)
 
@@ -2043,7 +2237,7 @@ def _ExpandOrToken_Unification(OneList):
                         newtoken.word = newtoken.word.replace("%F", orpiece)
                         newrule.Tokens.append(newtoken)
 
-                    newrule.SetStrTokenLength()
+                    newrule.SetStrTokenLengthAndRestartPosition()
                     newrule.Chunks = copy.deepcopy(rule.Chunks)
                     OneList.append(newrule)
 
@@ -2070,15 +2264,65 @@ def _PreProcess_CheckFeaturesAndCompileChunk(OneList, fuzzy):
     _ExpandOrToken(OneList)
 
 
-def _PreProcess_CompileHash(rulegroup):
+def AndOrNotFeatures(rulecontent):
+    """
+    Simplified AndOrNot rule, used in ^*(feature1 feature2)
+    :param rulecontent:
+    :return:
+    """
+    _AndFeatures = set()
+    _OrFeatureGroups = []
+    _NotFeatures = set()
+
+    Features = rulecontent.split()
+    for f in Features:
+        if f[0] == "!":
+            _NotFeatures.add(FeatureOntology.GetFeatureID((f[1:])))
+        else:
+            if "|" in f:
+                OrFeatureGroup = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
+                _OrFeatureGroups.append(OrFeatureGroup)
+            else:
+                _AndFeatures.add(FeatureOntology.GetFeatureID(f))
+
+    return _AndFeatures, _OrFeatureGroups, _NotFeatures
+
+
+def SatisfiedFeatures(featurelist, _AndFeatures, _OrFeatureGroups, _NotFeatures):
+    Satisfied = True
+    for f in _AndFeatures:
+        if f not in featurelist:
+            Satisfied = False
+            break
+
+    for f in _NotFeatures:
+        if f in featurelist:
+            Satisfied = False
+            break
+
+    for group in _OrFeatureGroups:
+        groupsatisfied = False
+        for f in group:
+            if f in featurelist:
+                groupsatisfied = True
+        if not groupsatisfied:
+            Satisfied = False
+            break
+
+    return Satisfied
+
+
+def _PreProcess_CompileToken(rulegroup):
     for rule in rulegroup.RuleList:
-        for token in rule.Tokens:  # remove extra [] in match body.
-            token.word = token.word.strip("[|]").strip()
+        i = 0
+        while i < len(rule.Tokens):
+            token = rule.Tokens[i]
+            token.word = token.word.strip("[|]").strip()    # remove extra [] in match body.
 
             Features = token.word.split()
             for f in Features:
                 if f[0] == "!":
-                    if "\"" in f or "'" in f or "/" in f :
+                    if "\"" in f or "'" in f or "/" in f or "%" in f :
                         NotText, token.NotTextMatchtype = LogicOperation_CheckPrefix(f[1:])
                         token.NotTexts.add(NotText)
                     else:
@@ -2087,17 +2331,73 @@ def _PreProcess_CompileHash(rulegroup):
                     if "|" in f:
                         OrFeatureGroup = set(FeatureOntology.GetFeatureID(x) for x in f.split("|"))
                         token.OrFeatureGroups.append(OrFeatureGroup)
-                    elif "\"" in f or "'" in f or "/" in f or "." in f:
+                    elif "!=" in f:
+                        variable_k, variable_v = f.split("!=")
+                        rule.GlobalVariablesNegation[variable_k] = variable_v  # add as a global variable matching requirement.
+                    elif "=" in f:
+                        variable_k, variable_v = f.split("=")
+                        rule.GlobalVariables[variable_k] = variable_v    #add as a global variable matching requirement.
+                    elif "\"" in f or "'" in f or "/" in f or "." in f or "%" in f:
                         if token.AndText:
                             logging.error("There should be only one text in one token:" + str(rule))
                         token.AndText, token.AndTextMatchtype = LogicOperation_CheckPrefix(f)
                     else:
                         token.AndFeatures.add(FeatureOntology.GetFeatureID(f))
 
+
+
             if utils.FeatureID_FULLSTRING in token.AndFeatures:
                 token.AndFeatures.remove(utils.FeatureID_FULLSTRING)
                 token.FullString = True
 
+            # compile ^Q
+            if token.SubtreePointer.startswith("Q."):
+                token.SubtreePointer.replace("Q.", "{}.".format(i-1))
+
+            i += 1
+
+            if token.AndTextMatchtype == "fuzzy":
+                logging.info(f"Start compiling this text: {token.AndText} in previous rule files. ")
+                import ProcessSentence
+                if not hasattr(_PreProcess_CompileToken, "loadedlexicon"):
+                    import Lexicon
+                    Lexicon.LoadSegmentLexicon()
+                    Lexicon.ApplyStemFeatures()
+                    _PreProcess_CompileToken.loadedlexicon = True   # only need to load one time
+                NodeList, dag, _ = ProcessSentence.LexicalAnalyzeTask(token.AndText, schema="segonly")  # might use schema="segonly"
+                words = []
+                if rulegroup.isDagRule:
+                    words = [x.text for x in sorted(dag.nodes.values(), key=operator.attrgetter("StartOffset"))]
+                else:
+                    node = NodeList.head
+                    while node:
+                        if node.text:
+                            words.append(node.text)
+                        node = node.next
+                logging.info("Fuzzy compare: .{}. is separated as {}".format(token.AndText, words))
+
+                for word in reversed(words):    # reversed to add to fixed position i.
+                    newtoken = copy.deepcopy(token)
+                    newtoken.AndText = word
+                    newtoken.word = word
+                    newtoken.AndTextMatchtype = "text"
+                    if rulegroup.isDagRule:
+                        if newtoken.PointerCondition:
+                            newtoken.PointerCondition += "+"
+                        newtoken.PointerCondition += ">>Q"
+                    rule.Tokens.insert(i, newtoken)
+
+                rule.Tokens.remove(token)
+                if rulegroup.isDagRule:     #remove "+>>Q" of the first one
+                    if len(rule.Tokens[i-1].PointerCondition) == 3:
+                        rule.Tokens[i-1].PointerCondition = ""
+                    else:
+                        rule.Tokens[i-1].PointerCondition = rule.Tokens[i-1].PointerCondition[:-4]
+
+                i += len(words)-1
+                # i = 0   # just reset to do it again.
+
+        rule.SetStrTokenLengthAndRestartPosition()
         # rule.norms = [token.word.split("'")[1] if token.word.count("'") == 2 and token.word.split("'")[0][-1] != "!"
         #                                           and "^" not in token.word.split("'")[1] and "-" not in token.word.split("'")[1] else ''
         #               for token in rule.Tokens if not token.SubtreePointer ]
@@ -2174,14 +2474,19 @@ def _CheckFeature_returnword(word, fuzzy):
 
     elif matchtype == 'unknown':
         if not re.search('[| !]', word):
-            if FeatureOntology.GetFeatureID(word) == -1:
-                # logging.warning("Will treat this word as a stem:" + word)
-                if fuzzy:
-                    word = ".{}.".format(word)
-                    # logging.error("Because of the fuzzy status in DAGFSA_APP, the word is:{}".format(word))
-                else:
-                    word = "'{}'".format(word)  #use stem for non quoted word.
-                    #logging.error("\tNormal fuzzy status. the word is {}".format(word))
+            if "=" in word:
+                #not to modify word
+                pass
+                #variable_k, variable_v = word.split("=")
+            else:
+                if FeatureOntology.GetFeatureID(word) == -1:
+                    # logging.warning("Will treat this word as a stem:" + word)
+                    if fuzzy:
+                        word = ".{}.".format(word)
+                        # logging.error("Because of the fuzzy status in DAGFSA_APP, the word is:{}".format(word))
+                    else:
+                        word = "'{}'".format(word)  #use stem for non quoted word.
+                        #logging.error("\tNormal fuzzy status. the word is {}".format(word))
         elif "|" in word and " " not in word and "[" not in word and "(" not in word:
             # be aware of ['and|or|of|that|which'|PP|CM]
             try:
@@ -2225,18 +2530,24 @@ def OutputRules(rulegroup, style="details"):
     for rule in rulegroup.MacroDict.values():
         output += rule.output(style) + "\n"
 
+    output += "// ****Macro-Like lists****\n"
+    for rulename in rulegroup.MacroLikeDict:
+        output += "{} = {}\n".format(rulename, rulegroup.MacroLikeDict[rulename])
+
     output += "// End of Rules/Expert Lexicons/Macros\n"
     return output
 
 
 def OutputRuleFiles(FolderLocation):
-    if FolderLocation.startswith("."):
-        FolderLocation = os.path.join(os.path.dirname(os.path.realpath(__file__)), FolderLocation)
+    # if FolderLocation.startswith("."):
+    #     FolderLocation = os.path.join(os.path.dirname(__file__), FolderLocation)
 
-    for RuleFile in RuleGroupDict:
-        rg = RuleGroupDict[RuleFile]
+    for RuleLocation in RuleGroupDict:
+        rg = RuleGroupDict[RuleLocation]
         output = OutputRules(rg, "concise")
-        FileLocation = os.path.join(FolderLocation, rg.FileName)
+
+        FileLocation = os.path.join(FolderLocation, os.path.basename(rg.FileName))
+        # in some situation part of the path has ../.. so it is safe to create directory if not existed.
         DirectoryLocation = os.path.dirname(FileLocation)
         if not os.path.exists(DirectoryLocation):
             os.makedirs(DirectoryLocation)
@@ -2247,7 +2558,7 @@ def OutputRuleFiles(FolderLocation):
         utoutput = ""
         for unittestnode in rg.UnitTest:
             utoutput += unittestnode.RuleName + "\t// " + unittestnode.TestSentence + "\n"
-        utFileLocation = os.path.join(FolderLocation, rg.FileName + ".unittest")
+        utFileLocation = os.path.join(FolderLocation, os.path.basename(rg.FileName) + ".unittest")
         with open(utFileLocation, "w", encoding="utf-8") as writer:
             writer.write(utoutput)
 
@@ -2278,6 +2589,7 @@ def _OutputRuleDB(rulegroup):
         # if there is no same body, create everything.
         # Aftter one iteration, find the rule that the verifytime is old, change status to disable them.
 
+    # Mark the old rules as outdated (-1)
     strsql = "UPDATE ruleinfo set status=-1 where rulefileid=? and verifytime<?"
     cur.execute(strsql, [rulefileid, startdatetime])
     cur.close()
@@ -2300,6 +2612,20 @@ CREATE TABLE rulenode_orfeatures (rulenodeid INT, featureid INT, groupid INT, CO
 CREATE TABLE rulenode_features (rulenodeid INT, featureid INT, type INT, CONSTRAINT unique_type UNIQUE(rulenodeid,type,featureid));
 
 """
+
+"""
+As of 20200618, change from the clear format to dump format:
+
+CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE rulehits     (sentenceid INT, ruleid INT, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_hit UNIQUE(sentenceid, ruleid));
+CREATE TABLE sentences (ID INTEGER PRIMARY KEY AUTOINCREMENT, sentence TEXT, result BLOB, createtime DATETIME, verifytime DATETIME, CONSTRAINT unique_sentence UNIQUE(sentence) );
+CREATE TABLE rulefiles    (ID INTEGER PRIMARY KEY, filelocation TEXT, bodydump text, createtime DATETIME);
+CREATE TABLE ruleinfo     (ID INTEGER PRIMARY KEY, rulefileid INT, bodydump text, createtime DATETIME );
+CREATE INDEX idx_fileid ON ruleinfo(rulefileid);
+
+"""
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
@@ -2316,7 +2642,7 @@ if __name__ == "__main__":
     # LoadRules("../../fsa/X/0defLexX.txt")
     if utils.DBCon is None:
         utils.InitDB()
-    LoadRules('../../fsa/X/', '0test.txt', False)
+    LoadRules('../../fsa/X/0test.txt', False)
 
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_3_list.txt")
     # LoadRules("../../fsa/X/Q/rule/CleanRule_gram_4_list.txt")

@@ -2,7 +2,7 @@
 import os, sys, logging
 import sqlite3, re
 from functools import lru_cache
-
+cf
 def FilterTab(inputstr):
     return inputstr.replace("\t", "    ").replace("\n", "|@@|").replace("\r", "|@@|")
 

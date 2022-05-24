@@ -1,8 +1,8 @@
 <html>
   <head>
-    <script src="http://d3js.org/d3.v4.min.js"></script>
-    <script src="http://viz-js.com/bower_components/viz.js/viz-lite.js"></script>
-    <script src="https://github.com/magjac/d3-graphviz/releases/download/v0.0.4/d3-graphviz.min.js"></script>
+    <script src="d3.v4.min.js"></script>
+    <script src="viz-lite.js"></script>
+    <script src="d3-graphviz.min.js"></script>
     <script type="text/javascript" src="gchart_loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {packages:["orgchart"]});
@@ -27,18 +27,29 @@
     <style>
         em {background-color: yellow;}
         li.indent {list-style-type: circle; padding-left:50px; padding-bottom:0.5cm;}
+        div.pnorm { border-style: solid;display:inline-block;}
+        .google-visualization-orgchart-table tr td.google-visualization-orgchart-node div{
+            min-width: 100px;
+        }
     </style>
   </head>
   <body>
-    <div id="chart_div"></div>
+      <div id="pnorm_div" class="pnorm" ><pre><strong><!-- PNORM --><!-- GLOBALINFO --></strong></pre></div>
+      <div id="chart_div"></div>
 
-    <div id="graph" style="text-align: center;"></div>
-      <script>
-        var a = `digraph
-            [[[DIGDATA]]] `;
-        d3.select("#graph").graphviz().zoom(false).renderDot(a);
-      </script>
+      <div id="graph" style="text-align: center;"></div>
+        <script>
+          var a = `digraph
+              [[[DIGDATA]]] `;
+          d3.select("#graph").graphviz(useWorker=false)
+            //.totalMemory(Math.pow(2, 26))
+            .zoom(false)
+            .fade(false)
+            .tweenPaths(false)
+            .tweenShapes(false)
+            .renderDot(a);
+        </script>
 
-    <div id="extra_div"><pre><!-- EXTRA --></pre></div>
+      <div id="extra_div"><pre><!-- EXTRA --></pre></div>
   </body>
 </html>

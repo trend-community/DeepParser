@@ -51,8 +51,8 @@ if __name__ == "__main__":
     if len(sys.argv) != 6:
         print("""
             Usage:   python3 qa_applyid_initialize.py [stopwords] [qafile] [outputfile] [starting number] [source]
-            Example: python3 qa_applyid_initialize.py ../../data/stopwords.csv ../../temp/whatis_plus100_n.txt ../../temp/wa.output.txt 10000000 "silicon valley"
-                     python3 qa_applyid_initialize.py ../../data/stopwords.csv ../../temp/KGSKUQA3.csv ../../temp/wk.output.txt 50000000 knowledge
+            Example: python3 qa_applyid_initialize.py ../../assets/stopwords.csv ../../temp/whatis_plus100_n.txt ../../temp/wa.output.txt 10000000 "silicon valley"
+                     python3 qa_applyid_initialize.py ../../assets/stopwords.csv ../../temp/KGSKUQA3.csv ../../temp/wk.output.txt 50000000 knowledge
 
             """)
         exit(1)
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             if row["question"] == "question":
                 continue    #duplication of header.
             row["question"] = normalization(row["question"])
-            if str(row) in uniquedata:   #exclude repeat data.
+            if str(row) in uniquedata:   #exclude repeat assets.
                 continue
             uniquedata.add(str(row))
 

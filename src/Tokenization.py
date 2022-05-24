@@ -2,7 +2,7 @@
 #Process Sentence tokens.
 
 import string
-import FeatureOntology, Lexicon
+import Lexicon
 import utils    #for the Feature_...
 from utils import *
 
@@ -12,9 +12,9 @@ class SentenceLinkedList:
         self.head = None
         self.tail = None
         self.size = 0
-        self.norms = []
+        #self.norms = []
         self.get_cache = {} # this cache is reset at each _setnorms().
-        self.isPureAscii = True     # set at append() and insert().
+        #self.isPureAscii = True     # set at append() and insert().    Being replaced by utils.LanguageType
 
     def append(self, node):    #Add to the tail
         if not self.head:
@@ -26,11 +26,9 @@ class SentenceLinkedList:
             self.tail.next = node
             self.tail = node
         self.size += 1
-        self._setnorms()
-        if self.isPureAscii and IsAscii(node.text):
-            self.isPureAscii = True
-        else:
-            self.isPureAscii = False
+        self.get_cache.clear()
+        #self._setnorms()
+
 
     def appendnodelist(self, nodelist):    #Add to the tail
         if not self.head:
@@ -42,9 +40,11 @@ class SentenceLinkedList:
             self.tail.next = nodelist.head
             self.tail = nodelist.tail
         self.size += nodelist.size
-        self._setnorms()
+        self.get_cache.clear()
+        #self._setnorms()
         # if self.isPureAscii and IsAscii(node.text):
         #     self.isPureAscii = False
+
 
     def insert(self, node, position):    #Add to the specific position
         if position == 0:
@@ -68,11 +68,9 @@ class SentenceLinkedList:
             x.prev = node
 
         self.size += 1
-        self._setnorms()
-        if self.isPureAscii and IsAscii(node.text):
-            self.isPureAscii = True
-        else:
-            self.isPureAscii = False
+        self.get_cache.clear()
+        #self._setnorms()
+
 
     def remove(self, node):
         if node == self.head:
@@ -86,7 +84,9 @@ class SentenceLinkedList:
             node.next.prev = node.prev
 
         self.size -= 1
-        self._setnorms()
+        self.get_cache.clear()
+        #self._setnorms()
+
 
     def searchID(self, ID):
         p = self.head
@@ -127,6 +127,7 @@ class SentenceLinkedList:
                 p = p.next
                 if p is None and nodestack:
                     p = nodestack.pop()
+        self.get_cache.clear()
 
 
     def get(self, index):
@@ -140,19 +141,24 @@ class SentenceLinkedList:
             raise RuntimeError("Can't get " + str(index) + " from the sentence!")
             #return None
 
-        if index <= self.size/2:
-            p = self.head
-            for i in range(index):
-                p = p.next
-        else:   # for
-            p = self.tail
-            for i in range(self.size - index -1):
-                p = p.prev
+        p = self.head
+        for i in range(index):
+            p = p.next
+
+        # if index <= self.size/2:
+        #     p = self.head
+        #     for i in range(index):
+        #         p = p.next
+        # else:   # for
+        #     p = self.tail
+        #     for i in range(self.size - index -1):
+        #         p = p.prev
 
         self.get_cache[index] = p
         return p
         # logging.error(self.__str__())
         # raise RuntimeError("SentenceLinkedList.get(" + str(index) + ") should not get to here.")
+
 
     def __str__(self):
         output = "[" + str(self.size) + "]"
@@ -163,13 +169,14 @@ class SentenceLinkedList:
         output += str(p)
         return output
 
-    def _setnorms(self):
-        self.norms = []
-        p = self.head
-        while p:
-            self.norms += [(p.norm.lower(), p.Head0Text.lower())]
-            p = p.next
-        self.get_cache.clear()
+
+    # def _setnorms(self):
+    #     self.norms = []
+    #     p = self.head
+    #     while p:
+    #         self.norms += [(p.norm.lower(), p.Head0Text.lower())]
+    #         p = p.next
+    #     self.get_cache.clear()
 
     #
     # def signature(self, start, limit):
@@ -184,6 +191,7 @@ class SentenceLinkedList:
     #         p = p.next
     #
     #     return sig
+
 
     def newnode(self, start, count, compound=False):
         #logging.info("new node: start=" + str(start) + " count=" + str(count))
@@ -225,11 +233,19 @@ class SentenceLinkedList:
         NewNode.sons = sons
         NewNode.StartOffset = startnode.StartOffset
         NewNode.EndOffset = endnode.EndOffset
+
+        NewNode.StartIndex = startnode.StartIndex
+        NewNode.EndIndex = endnode.EndIndex
+
         Lexicon.ApplyWordLengthFeature(NewNode)
         for haverelation in hasUpperRelations:
             NewNode.ApplyFeature(haverelation)
+
+        self.get_cache.clear()
         return NewNode, startnode, endnode
 
+
+    # compound means for western language, add space between words.
     def combine(self, start, count, headindex=0, compound=False):
         if count == 1:
             return self.get(start+headindex) #we don't actually want to just wrap one word as one chunk
@@ -237,7 +253,9 @@ class SentenceLinkedList:
 
         if headindex >= 0:  # in lex lookup, the headindex=-1 means the feature of the combined word has nothing to do with the sons.
             HeadNode = self.get(start+headindex)
-            NewNode.features.update([f for f in HeadNode.features if f not in FeatureOntology.NotCopyList] )
+            HeadNode.ApplyFeature(FeatureOntology.GetFeatureID(HeadNode.UpperRelationship))
+            NewNode.features.update(HeadNode.features - FeatureOntology._AppendixLists['NotCopyList'] )
+            NewNode.pnorm = HeadNode.pnorm
             if utils.FeatureID_0 in HeadNode.features:
                 NewNode.Head0Text = HeadNode.norm
             else:
@@ -249,6 +267,23 @@ class SentenceLinkedList:
             NewNode.ApplyFeature(utils.FeatureID_JM2)
         if utils.FeatureID_JM in endnode.features:
             NewNode.ApplyFeature(utils.FeatureID_JM)
+
+        # SpaceQ, SpaceQian, SpaceH, SpaceHou are added into DoNotCopy.Parser.txt. evaluated separatly
+        if FeatureOntology.GetFeatureID("spaceQ") in startnode.features:
+            NewNode.ApplyFeature(FeatureOntology.GetFeatureID("spaceQ"))
+        if FeatureOntology.GetFeatureID("spaceQian") in startnode.features:
+            NewNode.ApplyFeature(FeatureOntology.GetFeatureID("spaceQian"))
+
+        if FeatureOntology.GetFeatureID("spaceH") in endnode.features:
+            NewNode.ApplyFeature(FeatureOntology.GetFeatureID("spaceH"))
+        if FeatureOntology.GetFeatureID("spaceHou") in endnode.features:
+            NewNode.ApplyFeature(FeatureOntology.GetFeatureID("spaceHou"))
+
+        # # noSpaceQian, noSpaceHou are added into DoNotCopy.Parser.txt. evaluated separatly
+        # if FeatureOntology.GetFeatureID("noSpaceQian") in startnode.features:
+        #     NewNode.ApplyFeature(FeatureOntology.GetFeatureID("noSpaceQian"))
+        # if FeatureOntology.GetFeatureID("noSpaceHou") in endnode.features:
+        #     NewNode.ApplyFeature(FeatureOntology.GetFeatureID("noSpaceHou"))
 
         NewNode.prev = startnode.prev
         if startnode != self.head:
@@ -263,11 +298,13 @@ class SentenceLinkedList:
         endnode.next = None
 
         self.size = self.size - count + 1
-        self._setnorms()
+        self.get_cache.clear()
+        #self._setnorms()
 
         #logging.debug("NewNode.text: " + NewNode.text + " features:" + str(NewNode.features))
         #logging.debug("combined as:" + str(NewNode))
         return NewNode
+
 
     def root(self, KeepOrigin=False):
 
@@ -302,8 +339,12 @@ class SentenceNode(object):
         self.atom = word.lower()
         self.features = set()
 
-        self.StartOffset = 0
+        self.StartOffset = 0    # offset of character level
         self.EndOffset = 0
+
+        self.StartIndex = 0     # index of the origin tokenized tokens.
+        self.EndIndex = 0
+
         self.next = None
         self.prev = None
         self.sons = []
@@ -333,6 +374,7 @@ class SentenceNode(object):
     #     self.UpperRelationship = ''
     #     self.Head0Text = ''
 
+
     def __str__(self):
         output = "[" + self.text + "] "
         featureString = self.GetFeatures()
@@ -340,9 +382,11 @@ class SentenceNode(object):
             output += ":" + featureString
         return output
 
+    def __prep__(self):
+        return "({})[{}]".format(self.ID, self.text)
 
     def get_chunk_label(self):
-        feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        feature_names = [FeatureOntology.GetFeatureName(f) for f in self.features - FeatureOntology._AppendixLists['NotShowList']]
         BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
         if BarFeature:
             if self.UpperRelationship == SYM_PAIR_HEAD[0]:
@@ -359,7 +403,7 @@ class SentenceNode(object):
             return ''
         ret = ''
         feature_names = [FeatureOntology.GetFeatureName(f) \
-                for f in self.features if f not in FeatureOntology.NotShowList]
+                for f in self.features - FeatureOntology._AppendixLists['NotShowList']]
         BarFeature = utils.LastItemIn2DArray(feature_names, FeatureOntology.BarTags)
         if not self.UpperRelationship and BarFeature:                       # syntactic role is empty
             ret = BarFeature  + "/" 
@@ -419,6 +463,7 @@ class SentenceNode(object):
                 output += ":" + featureString + ";"
         return output.strip()
 
+
     def onelinerSegment(self):
         """
             basic oneliner function
@@ -433,7 +478,6 @@ class SentenceNode(object):
             if self.text:
                 output = self.text+"/"
         return output.strip()
-
 
 
     def oneliner_merge(self, layer_counter):
@@ -485,14 +529,11 @@ class SentenceNode(object):
 
 
     def ApplyFeature(self, featureID):
-        self.features.add(featureID)
-        FeatureNode = FeatureOntology.SearchFeatureOntology(featureID)
-        if FeatureNode and FeatureNode.ancestors:
-            self.features.update(FeatureNode.ancestors)
-        #self.signature=pickle.dumps({"w":self.text, "f": self.features})
+        FeatureOntology.ApplyFeature(self.features, featureID)
 
 
-    def ApplyActions(self, actinstring):
+    # strtokens are added into parameter on 2020/07/03, for discontinuous concatenation
+    def ApplyActions(self, actinstring, strtokens):
         #self.FailedRuleTokens.clear()
         Actions = actinstring.split()
         #logging.debug("Word:" + self.text)
@@ -503,11 +544,37 @@ class SentenceNode(object):
             FeatureOntology.ProcessSentimentTags(self.features)
 
         HasBartagAction = False
+        _ToAddIntoGlobalTempLexicon = False
         for Action in Actions:
             # if Action == "NEW":
             #     continue  # already process before.
             # if Action == "NEUTRAL":
             #     continue  # already process before.
+
+            if "=" in Action:
+                variable_k, variable_v = Action.split("=")
+                oldvalue = None
+                if variable_k.endswith("+"):  # when the equation is "abc+=THIS", keep the oldvalue.
+                    variable_k = variable_k[:-1]
+                    if variable_k in utils.GlobalVariables:
+                        oldvalue = utils.GlobalVariables[variable_k]
+
+                if variable_v == """THIS""" or variable_v == """'THIS'""":
+                    utils.GlobalVariables[variable_k] = self.norm
+                elif variable_v == """\"THIS\"""":
+                    utils.GlobalVariables[variable_k] = self.text
+                elif variable_v == """/THIS/""":
+                    utils.GlobalVariables[variable_k] = self.atom
+                else:
+                    # TODO: abc="句子中心:"+^1+"..."+^2.obj+"..."+^6 (20210111)
+                    utils.GlobalVariables[variable_k] = variable_v
+
+                if oldvalue:
+                    if utils.LanguageType == "WESTERN":
+                        utils.GlobalVariables[variable_k] = oldvalue + " " + utils.GlobalVariables[variable_k]
+                    else:
+                        utils.GlobalVariables[variable_k] = oldvalue + utils.GlobalVariables[variable_k]
+                continue    #
 
             if Action[-1] == "-":
                 if Action[0] == "^":    #Remove UpperRelationship
@@ -550,6 +617,14 @@ class SentenceNode(object):
 
                     FeatureID = FeatureOntology.GetFeatureID(Action.strip("+"))
                     self.ApplyFeature(FeatureID)
+
+                    avn = Action.strip("+").lower()
+                    if avn in ['a', 'v', 'n']:
+                        Blocklist = avn + "Blocklist"
+                        for f in FeatureOntology._AppendixLists[Blocklist]:
+                            if f in self.features:
+                                self.features.remove(f)
+
                 continue
 
             if Action[0] == "^":
@@ -557,7 +632,7 @@ class SentenceNode(object):
                     self.UpperRelationship = Action.split(".")[-1]
                     RelationActionID = FeatureOntology.GetFeatureID(self.UpperRelationship)
                     if RelationActionID != -1:
-                        self.ApplyFeature(RelationActionID)
+                        self.ApplyFeature(RelationActionID) #set the son node to have the Relation feature.
                     else:
                         logging.warning("Wrong Relation Action to apply:" + self.UpperRelationship + " in action string: " + actinstring)
                     # apply this "has" to the parent (new) node (chunk)
@@ -580,30 +655,53 @@ class SentenceNode(object):
             if Action[0] == '%':
                 #Make the pnorm of the token to this key
                 self.pnorm = Action[1:-1]
+                logging.info(f" pnorm:{Action}")
                 continue
             if Action[0] == '/':
                 #Make the atom of the token to this key
-                self.atom = Action[1:-1]
+                if Action[1] == "+":
+                    self.atom = self.atom + Action[1:-1]
+                else:
+                    self.atom = Action[1:-1]
+                self.features.update(Lexicon.StemFeatures(self.atom))
+                continue
+            if Action[0] == '+': # discontinuous concatenation
+                TargetPointer = Action.strip("+")
+                TargetToken = None
+                _token = strtokens.head
+                while _token:
+                    if _token.TempPointer == TargetPointer:
+                        TargetToken = _token
+                        break
+                    _token = _token.next
+                if TargetToken:
+                    self.atom += TargetToken.atom
+                    self.norm += TargetToken.norm
+                else:
+                    logging.warning("Can't find {} in this rule.".format(Action))
                 continue
             ActionID = FeatureOntology.GetFeatureID(Action)
-            if ActionID != -1:
-                self.ApplyFeature(ActionID)
+            if ActionID == utils.FeatureID_GLOBAL:
+                _ToAddIntoGlobalTempLexicon = True      # apply this action after all feature are applied.
             else:
-                logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
-
+                if ActionID != -1:
+                    self.ApplyFeature(ActionID)
+                else:
+                    logging.warning("Wrong Action to apply:" + Action +  " in action string: " + actinstring)
 
                 # strtokens[StartPosition + i + GoneInStrTokens].features.add(ActionID)
         if HasBartagAction:     #only process bartags if there is new bar tag, or trunking (in the combine() function)
             FeatureOntology.ProcessBarTags(self.features)
+
+        if _ToAddIntoGlobalTempLexicon:
+            Lexicon.AddDocumentTempLexicon(self.text, self.features)
 
         #self.signature = pickle.dumps({"w": self.text, "f": self.features})
 
 
     def GetFeatures(self):
         featureList = []
-        for feature in self.features:
-            if feature in FeatureOntology.NotShowList:
-                continue
+        for feature in self.features - FeatureOntology._AppendixLists['NotShowList']:
             f = FeatureOntology.GetFeatureName(feature)
             if f:
                 featureList.append(f)
@@ -611,19 +709,25 @@ class SentenceNode(object):
                 logging.warning("Can't get feature name of " + self.text + " for id " + str(feature))
         return ",".join(sorted(featureList))
 
+
     def CleanOutput(self, KeepOriginFeature=False):
+        if self.text == "":
+            return JsonClass()
         a = JsonClass()
         a.ID = self.ID
-        a.text = self.text
+        if hasattr(self, "combinedtext"):
+            a.text = self.combinedtext
+        else:
+            a.text = self.text
         if self.norm != self.text:
             a.norm = self.norm
         if self.pnorm:
             a.pnorm = self.pnorm
-        if self.iepair:
-            a.iepair = self.iepair
+        # if self.iepair:
+        #     a.iepair = self.iepair
         if self.atom != self.text:
             a.atom = self.atom
-        a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList])
+        a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features - FeatureOntology._AppendixLists['NotShowList']])
 
         if KeepOriginFeature:
             a.features = sorted([FeatureOntology.GetFeatureName(f) for f in self.features ])
@@ -641,6 +745,7 @@ class SentenceNode(object):
 
         return a
 
+
     def CleanOutput_Propagate(self, propogate_features=None):
         Features_ToPropogate = {utils.FeatureID_Subj, utils.FeatureID_Obj, utils.FeatureID_Pred}
         propogate_f = Features_ToPropogate.intersection(self.features)
@@ -655,7 +760,7 @@ class SentenceNode(object):
             a.iepair = self.iepair
         if self.atom != self.text:
             a.atom = self.atom
-        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features if f not in FeatureOntology.NotShowList]
+        a.features = [FeatureOntology.GetFeatureName(f) for f in self.features - FeatureOntology._AppendixLists['NotShowList']]
 
         if utils.FeatureID_H in self.features and propogate_features:
             #logging.info("\t\tApplying " + str(propogate_features) + " to " + str(self))
@@ -673,6 +778,7 @@ class SentenceNode(object):
 
         return a
 
+
     def CleanOutput_FeatureLeave(self):
         a = JsonClass()
         a.text = self.text
@@ -684,8 +790,7 @@ class SentenceNode(object):
             a.iepair = self.iepair
         if self.atom != self.text:
             a.atom = self.atom
-        features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features)
-                        if f not in FeatureOntology.NotShowList]
+        features = [FeatureOntology.GetFeatureName(f) for f in Lexicon.CopyFeatureLeaves(self.features) - FeatureOntology._AppendixLists['NotShowList']]
         for f in features:
             # if isinstance(f, int):
             #     f = "L" + str(f)
@@ -702,25 +807,23 @@ class SentenceNode(object):
         return a
 
 
-
-
 #2018030: Make space as one token. Will be removed and add spaceH/spaceQ for adjacent token in the next step.
-def _Tokenize_Space(sentence):
+def _Tokenize_SpaceOrSign(sentence):
     segments = []
     attribute_prev = True     #will be overwritten immediately when i==0
     substart = 0
     for i in range(len(sentence)):
-        isdigit = sentence[i].isdigit()
-        isalpha = sentence[i].isalpha()
+        isdigitoralpah = sentence[i].isdigit() or sentence[i].isalpha()     # s3msdfsf as one word.
+        #isalpha = sentence[i].isalpha()
         isspace = sentence[i].isspace()
         if i == 0:
-            attribute_prev = [isdigit, isalpha, isspace]
+            attribute_prev = [isdigitoralpah, isspace]
             continue
-        if  [isdigit, isalpha, isspace] != attribute_prev \
+        if  [isdigitoralpah, isspace] != attribute_prev \
                 or sentence[i] in string.punctuation or sentence[i-1] in string.punctuation:   #always make punctuation a single token
             segments += [sentence[substart:i]]
             substart = i
-            attribute_prev = [isdigit, isalpha, isspace]
+            attribute_prev = [isdigitoralpah, isspace]
     if substart < len(sentence):
         segments += [sentence[substart:]]
     return segments
@@ -728,9 +831,27 @@ def _Tokenize_Space(sentence):
 
 # for the mix of Chinese/Ascii. Should be called for all sentences.
 def Tokenize_CnEnMix(sentence):
-    sentence = ReplaceCuobieziAndFanti(sentence)
+    """
+    Tokenize the sentence into list of words, then convert to SentenceLinkedList.
+    1,查词典
+    2，对于空格，如果是在汉字当中，就保留，并在前后token加上 SpaceQ, SpaceH；如果是在西文当作，就省略；
+    3，对于零散的字符，如果是相同的就连在一起，比如 234mq 变成 234/mq ；汉字、标点除外
+    :param sentence: sentence to tokenize
+    :return: SentenceLinkedList
+    """
+    sentence = Lexicon.SpellingCheckingAsian(sentence)
 
-    segmentedlist = _Tokenize_Lexicon_minseg(sentence)
+    PuncSet = {"，", "：","（", "）","／","＜","＞","？","；","“","”","【","】"
+        ,"｛","｝","｜","～","！","＠","＃","＄","％","＆","＊","－","＝","＿","＋"
+        ,"。。。","。。。。","。。。。。","。。。。。。","．","《","》","。","、","•","丶","￥","@@","——","————"}
+
+    #if utils.IsAscii(sentence):     #European language, with space as separator:
+    if utils.LanguageType == "western":
+        segmentedlist = list(sentence)
+        #segmentedlist = _Tokenize_SpaceOrSign(sentence)     #todo: use dictionary to join tokenization, for Mr.
+        #testlist = _Tokenize_Lexicon_minseg(sentence)
+    else:
+        segmentedlist = _Tokenize_Lexicon_minseg(sentence)
 
     TokenList = SentenceLinkedList()
     start = 0
@@ -738,6 +859,7 @@ def Tokenize_CnEnMix(sentence):
     HanziQ = False
     spacetoken = None
     attribute_prev = None
+
     for t in segmentedlist:
         isspace = t[0].isspace()
         if isspace: #
@@ -754,14 +876,18 @@ def Tokenize_CnEnMix(sentence):
                     spacetoken.StartOffset = start
                     spacetoken.EndOffset = start + len(t)
                     spacetoken.ApplyFeature(utils.FeatureID_CM)
+                    if spacetoken.text == "\n":
+                        spacetoken.ApplyFeature(FeatureOntology.GetFeatureID("newLINE"))
+                    spacetoken.features.update(Lexicon.SearchLexicon('\\SPACE').features)
                     HanziQ = False
                     #TokenList.append(spacetoken)
                 SpaceQ = True
             start = start + len(t)
             continue
 
-        isHanzi = not IsAscii(t)
-        ispunctuate = t[0] in string.punctuation
+        #isHanzi = not IsAscii(t)
+        isHanzi = ChinesePattern.fullmatch(t) is not None
+        ispunctuate = t[0] in string.punctuation or t[0] in PuncSet
         if ispunctuate or isHanzi:# or len(t) > 1:         #when len(t)>1, that is a word.
             attribute_prev = None
             token = SentenceNode(t)
@@ -772,7 +898,7 @@ def Tokenize_CnEnMix(sentence):
             if SpaceQ:
                 token.ApplyFeature(utils.FeatureID_SpaceQ)
                 SpaceQ = False
-                if HanziQ and not IsAscii(TokenList.tail.norm):
+                if HanziQ and spacetoken and not IsAscii(TokenList.tail.norm):
                     #if the previous is space, the last one in TokenList is Hanzi, and current one is Hanzi
                     # then add space token with the CM feature.
                     TokenList.append(spacetoken)
@@ -804,104 +930,31 @@ def Tokenize_CnEnMix(sentence):
             start += len(t)
 
 #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-    PuncSet = {"，", "：","（", "）","／","＜","＞","？","；","“","”","【","】"
-        ,"｛","｝","｜","～","！","＠","＃","＄","％","＆","＊","－","＝","＿","＋"
-        ,"。。。","。。。。","。。。。。","。。。。。。","．","《","》","。","、","•","丶","￥","@@","——","————"}
+
     p = TokenList.head
     while p:
         if p.text.isspace():
             if p.prev and p.prev.text in PuncSet:
                 TokenList.remove(p)
         p = p.next
-    # print (TokenList)
+    #print (TokenList)
 
+    tokenCounter = 0
+    p = TokenList.head
+    while p:
+        p.StartIndex = tokenCounter
+        p.EndIndex = tokenCounter
+        tokenCounter += 1
+        p = p.next
+
+    if TokenList and TokenList.head and utils.LanguageType == "western":
+        Lexicon.SpellingCheckingWestern(TokenList)
+        Lexicon.LexiconLookup(TokenList, LexiconLookupSource.DEFLEX)
+        Lexicon.LexiconLookup(TokenList, LexiconLookupSource.COMPOUND)
+        # can't do STEMCOMPOUND in this step, because the tokens are not applylexicon yet, don't know their stem yet.
+        # Lexicon.LexiconLookup(TokenList, LexiconLookupSource.STEMCOMPOUND)
     return TokenList
 
-#
-# # for the mix of Chinese/Ascii. Should be called for all sentences.
-# def Tokenize_CnEnMix_origin(sentence):
-#     subsentence = []
-#     subsentence_isascii = []
-#     isascii = True
-#     isdigit = True
-#     isascii_prev = True     #will be overwritten immediately when i==0
-#     substart = 0
-#     sentence = ReplaceCuobieziAndFanti(sentence)
-#
-#     for i in range(len(sentence)):
-#         isascii = IsAscii(sentence[i])
-#         if i == 0:
-#             isascii_prev = isascii
-#             continue
-#         if isascii != isascii_prev:
-#             subsentence += [ sentence[substart:i]]
-#             substart = i
-#             subsentence_isascii.append( isascii_prev)
-#             isascii_prev = isascii
-#
-#     #last part
-#     if substart < len(sentence):
-#         subsentence += [sentence[substart:]]
-#     subsentence_isascii.append(isascii)
-#
-#     segmentedlist = []
-#     for i in range(len(subsentence)):
-#         if subsentence_isascii[i]:
-#             segmentedlist += _Tokenize_Space(subsentence[i])
-#         else:
-#             segmentedlist += _Tokenize_Lexicon_minseg(subsentence[i])
-#
-#     TokenList = SentenceLinkedList()
-#     start = 0
-#     SpaceQ = False
-#     HanziQ = False
-#     spacetoken = None
-#     for t in segmentedlist:
-#         if t[0] == " ": #
-#             TokenList.tail.ApplyFeature(utils.FeatureID_SpaceH)
-#             if HanziQ:  #if the previous token is Hanzi, and next token is Hanzi, then have a "space" token.
-#                 spacetoken = SentenceNode(t)
-#                 spacetoken.norm = ' '   # no matter how many spaces in text, the norm has only 1 space
-#                 spacetoken.atom = ' '
-#                 spacetoken.StartOffset = start
-#                 spacetoken.EndOffset = start + len(t)
-#                 spacetoken.ApplyFeature(utils.FeatureID_CM)
-#                 HanziQ = False
-#                 #TokenList.append(spacetoken)
-#             SpaceQ = True
-#             start = start + len(t)
-#             continue
-#         token = SentenceNode(t)
-#         token.StartOffset = start
-#         token.EndOffset = start + len(t)
-#         HanziQ = not IsAscii(t)
-#
-#         if SpaceQ:
-#             token.ApplyFeature(utils.FeatureID_SpaceQ)
-#             SpaceQ = False
-#             if HanziQ and not IsAscii(TokenList.tail.norm):
-#                 #if the previous is space, the last one in TokenList is Hanzi, and current one is Hanzi
-#                 # then add space token with the CM feature.
-#                 TokenList.append(spacetoken)
-#
-#         TokenList.append(token)
-#         start = start + len(t)
-#
-# #    logging.debug(TokenList.root(True).CleanOutput(KeepOriginFeature=True).toJSON())
-#     return TokenList
-
-
-def ReplaceCuobieziAndFanti(sentence):
-    if not hasattr(ReplaceCuobieziAndFanti, "combinedlist"):
-        ReplaceCuobieziAndFanti.combineddict = Lexicon._LexiconCuobieziDict
-        ReplaceCuobieziAndFanti.combineddict.update(Lexicon._LexiconFantiDict)
-        ReplaceCuobieziAndFanti.combinedlist = sorted(ReplaceCuobieziAndFanti.combineddict, key=len, reverse=True)
-
-    for k in ReplaceCuobieziAndFanti.combinedlist:
-        if k in sentence:
-            sentence = sentence.replace(k, ReplaceCuobieziAndFanti.combineddict[k])
-
-    return sentence
 
 
 def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
@@ -959,6 +1012,13 @@ def _Tokenize_Lexicon_maxweight(sentence, lexicononly=False):
 
 
 def _Tokenize_Lexicon_minseg(sentence, lexicononly=False):
+    """
+    Tokenize the sentence
+    :param sentence:
+    :param lexicononly: for the first round, this parameter should be False to include the all lexicons;
+                        for the second round, this shoudl be True to include the lex (value>=1.2) only.
+    :return: tokenized sentence.
+    """
 #    TokenList = SentenceLinkedList()
     segments = []
 
@@ -1021,6 +1081,7 @@ def TrySlash(seg):
 def Tokenize(Sentence):
     return Tokenize_CnEnMix(Sentence.strip())
 
+
 def LoopTest1(n):
     for _ in range(n):
         Tokenize('響著錄中文规则很长 very long , 为啥是不？')
@@ -1040,8 +1101,6 @@ if __name__ == "__main__":
     FeatureOntology.LoadFeatureOntology('../../fsa/Y/feature.txt')
     Lexicon.LoadSegmentLexicon()
     XLocation = '../../fsa/X/'
-    Lexicon.LoadExtraReference(XLocation + 'CuobieziX.txt', Lexicon._LexiconCuobieziDict)
-    Lexicon.LoadExtraReference(XLocation + 'Fanti.txt', Lexicon._LexiconFantiDict)
 
     main_x = Tokenize('科普：。，？带你看懂蜀绣冰壶比赛')
     #old_Tokenize_cn('很少有科普：3 minutes 三分钟带你看懂蜀绣冰壶比赛')
@@ -1051,7 +1110,4 @@ if __name__ == "__main__":
     cProfile.run("LoopTest1(100)", 'restatslex')
     pstat = pstats.Stats('restatslex')
     pstat.sort_stats('time').print_stats(10)
-
-
-
 

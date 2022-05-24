@@ -1,5 +1,5 @@
 #!/bin/bash
-#Usage for query data:
+#Usage for query assets:
 # Step 1, Generate wordlist.txt by removing special characters and the frequency
 # : (Ust Ctrl-V-H to input ^H
 #sed - e "s/^H\|^F\|^A.*//g" g0.raw.txt > wordlist.txt
@@ -16,7 +16,7 @@
 # new steps, Oct 30.
 #Usage:
 #bash g1.processrawquery.sh rawfilelocation dictfilelocation rulefilefolder lexiconfilefolder tempfolder systemlexiconfilelocation
-#  nohup sh g1.processrawquery.sh /nlpengine/queries/data/g0.raw.txt ../data/g0.P /nlpengine/fsa/X/Q /nlpengine/fsa/X/ &
+#  nohup sh g1.processrawquery.sh /nlpengine/queries/assets/g0.raw.txt ../assets/g0.P /nlpengine/fsa/X/Q /nlpengine/fsa/X/ &
 
 set -x
 mkdir -p $3/temp

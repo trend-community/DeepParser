@@ -5,8 +5,8 @@ import singleton
 me = singleton.SingleInstance()
 
 def ProcessFile(FileName):
-    if FileName.startswith("."):
-        FileName = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FileName)
+    # if FileName.startswith("."):
+    #     FileName = os.path.join(os.path.dirname(os.path.realpath(__file__)),  FileName)
     UnitTest = []
     if not os.path.exists(FileName):
         print("Unit Test file " + FileName + " does not exist.")
@@ -27,29 +27,26 @@ def ProcessFile(FileName):
         if not nodes:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
-        if len(dag.nodes) == 0:
-            dag.transform(nodes)
         if args.type == 'json':
             output = nodes.root().CleanOutput().toJSON()
         elif  args.type == 'simple':
             output = utils.OutputStringTokens_oneliner(nodes, NoFeature=True)
         elif args.type == "sentiment":
-            if len(dag.nodes) == 0:
-                dag.transform(nodes)
-            # print (OutputStringTokens_onelinerSA(dag))
             output = utils.OutputStringTokens_onelinerSA(dag)
         elif args.type == 'graph':
             output = dag.digraph(args.type)
         elif args.type == 'simplegraph':
             output = dag.digraph(args.type)
+        elif args.type == 'pnorm':
+            output = dag.pnorm()
         else:   #simpleEx
             output = utils.OutputStringTokens_oneliner_ex(nodes)
 
         if args.keeporigin:
             output += '\t' + TestSentence
         print(output)
-    if args.winningrules:
-        print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
+    # if args.winningrules:
+    #     print("Winning rules:\n" + ProcessSentence.OutputWinningRules())
 
 
 if __name__ == "__main__":
@@ -58,10 +55,10 @@ if __name__ == "__main__":
     parser.add_argument("--debug", action='store_true')
     parser.add_argument("--winningrules", action='store_true')
     parser.add_argument("--keeporigin",  action='store_true')
-    parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph/graphjson",
+    parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph/graphjson/pnorm",
                         default='simplegraph')
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
-                        default=0)
+                        default=0)  #default 0 means the whole sentence.
     parser.add_argument("--delimiter", default="\t")
     parser.add_argument("--schema", help="full(default)/segonly/shallowcomplete",
                         default="full")

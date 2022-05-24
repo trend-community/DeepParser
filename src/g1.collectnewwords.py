@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #==============================================================
 # command line
-# python3 g1.collectnewwords.py ../data/product_title1.txt ../../fsa/X/AllLexicon.txt ../../fsa/X/AllLexicon_Extra.txt
+# python3 g1.collectnewwords.py ../assets/product_title1.txt ../../fsa/X/AllLexicon.txt ../../fsa/X/AllLexicon_Extra.txt
 
 #==============================================================
 import sys, logging, re, argparse

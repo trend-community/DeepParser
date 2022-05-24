@@ -1,4 +1,4 @@
-## This is for analyzing feature/keywords of sales data.
+## This is for analyzing feature/keywords of sales assets.
 ## input file format: sentence\tsalesnum
 ## output: 2 files: KeywordSales.txt, FeatureSales.txt
 # cut -d ',' -f 5,8 '1627被子20171111_20171212171010[10756].csv'

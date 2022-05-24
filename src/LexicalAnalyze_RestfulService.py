@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("--debug")
     parser.add_argument("--schema", help="full[default]/segonly/shallowcomplete")
     parser.add_argument("--action", help="none[default]/headdown")
-    parser.add_argument("--type", help="segmentation/json/simple/simpleEx/graph/graphjson/simplegraph[default]",
+    parser.add_argument("--type", help="segmentation/json/simple/simpleEx/graph/graphjson/simplegraph[default]/pnorm",
                         default='simplegraph')
     parser.add_argument("--keeporigin")
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     import concurrent.futures
 
-    with open(args.inputfile, encoding="utf-8") as RuleFile:
+    with open(args.inputfile, encoding="GBK", errors='ignore') as RuleFile:
         for line in RuleFile:
             if line.strip():
                 if int(args.sentencecolumn) == 0:
@@ -73,6 +73,8 @@ if __name__ == "__main__":
                     columns = line.split(args.delimiter)
                     if len(columns) >= int(args.sentencecolumn):
                         UnitTest.append(columns[int(args.sentencecolumn)-1].strip())
+            else:
+                UnitTest.append('')
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(ParserConfig.get("client", "thread_num"))) as executor:
         Result = {}
@@ -102,7 +104,7 @@ if __name__ == "__main__":
                 logging.warning('%r Failed at second try: \n %s' % (s, exc))
             else:
                 Result[s] = data
-        logging.info("Done of retrieving data")
+        logging.info("Done of retrieving assets")
 
     for sentence in UnitTest:
         if sentence in Result:

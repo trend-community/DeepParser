@@ -118,7 +118,7 @@ zrmParser = lambda path: tablesParser(path, 'Ziranma.txt.in')
 def phraseParser(path):
     """ Read phrase_lib.txt and parse it. """
     global SCIM_PINYIN_VER
-    src = 'scim-pinyin-%s/data/phrase_lib.txt' % SCIM_PINYIN_VER
+    src = 'scim-pinyin-%s/assets/phrase_lib.txt' % SCIM_PINYIN_VER
     fp = untargz(path, src, 'U8')
     return parserCore(fp, 0)
 
@@ -413,7 +413,7 @@ def main():
 /**
  * Simplified / Traditional Chinese conversion tables
  *
- * Automatically generated using code and data in maintenance/language/zhtable/
+ * Automatically generated using code and assets in maintenance/language/zhtable/
  * Do not modify directly!
  *
  * @file
@@ -435,9 +435,9 @@ public static $zh2Hant = [\n'''
         + '\n];\n}\n'
 
     if pyversion[:1] in ['2']:
-        f = open(os.path.join('..', '..', '..', 'languages', 'data', 'ZhConversion.php'), 'wb', encoding='utf8')
+        f = open(os.path.join('..', '..', '..', 'languages', 'assets', 'ZhConversion.php'), 'wb', encoding='utf8')
     else:
-        f = open(os.path.join('..', '..', '..', 'languages', 'data', 'ZhConversion.php'), 'w', buffering=4096, encoding='utf8')
+        f = open(os.path.join('..', '..', '..', 'languages', 'assets', 'ZhConversion.php'), 'w', buffering=4096, encoding='utf8')
     print ('Writing ZhConversion.php ... ')
     f.write(php)
     f.close()

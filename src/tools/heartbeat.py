@@ -50,7 +50,7 @@ if __name__ == "__main__":
             except Exception as exc:
                 logging.debug('%r generated an exception: \n %s' % (s, exc))
 
-        logging.info("Done of retrieving data")
+        logging.info("Done of retrieving assets")
 
     for server in servers:
         if server in Result:

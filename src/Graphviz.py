@@ -1,5 +1,4 @@
-import json
-import utils, FeatureOntology  # using the BarTags.
+import utils  # using the BarTags.
 import Lexicon
 from utils import *
 
@@ -9,11 +8,14 @@ class Node(object):
         self.text = text
         self.sons = []
         self.upperRelation = None
-        self.id = Node.counter
+        self.ID = Node.counter
         Node.counter += 1
 
 
 def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
+    if 'text' not in inputnode:
+        return
+
     if 'norm' in inputnode and Debug :
         norm = inputnode['norm']
     else:
@@ -28,6 +30,8 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
         node.norm = inputnode['norm']
     if 'atom' in inputnode:
         node.atom = inputnode['atom']
+    if 'pnorm' in inputnode:
+        node.pnorm = inputnode['pnorm']
 
     # if not hasattr(CreateFlatTree, "nodeid"):
     #     CreateFlatTree.nodeid = 1
@@ -43,23 +47,20 @@ def CreateFlatTree(inputnode, nodelist, Debug, parentid=0):
     if 'sons' in inputnode.keys() and  "0" not in node.features:
         #if this node is 0, don't show the sons. April 30, 2018. Ben
         for son in inputnode['sons']:
-            CreateFlatTree(son, nodelist, Debug, node.id)
+            CreateFlatTree(son, nodelist, Debug, node.ID)
 
     return
 
 
 def GetSourceLexicon(text):
     source = None
-    # print (len(Lexicon._LexiconLookupSet[LexiconLookupSource.Exclude]))
 
-    if text in Lexicon._LexiconDict and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.defLex]) and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.External]) and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.oQcQ]):
-        source = "exclude"
-    if text in Lexicon._LexiconLookupSet[LexiconLookupSource.defLex]:
-        source = "defLex"
-    elif text in Lexicon._LexiconLookupSet[LexiconLookupSource.External]:
-        source = "external"
-    elif text in Lexicon._LexiconLookupSet[LexiconLookupSource.oQcQ]:
-        source = "oQcQ"
+    if text in Lexicon._LexiconDict and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.DEFLEX]) and (text not in Lexicon._LexiconLookupSet[LexiconLookupSource.EXTERNAL]) :
+        source = "Exclude"
+    if text in Lexicon._LexiconLookupSet[LexiconLookupSource.DEFLEX]:
+        source = "DefLex"
+    elif text in Lexicon._LexiconLookupSet[LexiconLookupSource.EXTERNAL]:
+        source = "External"
     return source
 
 def orgChart(json_input, Debug):
@@ -69,13 +70,15 @@ def orgChart(json_input, Debug):
     CreateFlatTree(decoded, nodelist, Debug)
     dataRows = []
     for node in nodelist:
-        v = str(node.id)
+        v = str(node.ID)
         if node.parentid:
             manager = str(node.parentid)
         else:
             manager = ''    # root. parentid is zero
 
         tooltip = ' {}\n StartOffset: {} EndOffset: {}'.format(node.features, node.startOffset, node.endOffset)
+        if hasattr(node, "pnorm"):
+            tooltip += " pnorm:{}".format(node.pnorm)
 
         source = GetSourceLexicon(node.text)
         if source:
@@ -102,11 +105,11 @@ def orgChart(json_input, Debug):
     return dataRows
 
 
-def digraph(nodes):
-    import DependencyTree
-    x = DependencyTree.DependencyTree()
-    x.transform(nodes)
-    return x.digraph()
+# def digraph(nodes):
+#     import DependencyTree
+#     x = DependencyTree.DependencyTree()
+#     x.transform(nodes)
+#     return x.digraph()
 
 
 if __name__ == "__main__":

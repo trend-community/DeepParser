@@ -108,7 +108,7 @@ def normalize(sentence):
     return phrase.strip()
 
 
-def LoadDictFromPickle(dictpath="../data/g1.words.P"):
+def LoadDictFromPickle(dictpath="../assets/g1.words.P"):
     global querydict
     import pickle
 

@@ -1269,7 +1269,7 @@ ailment: NN nc phenomena
 aim: N0 NN VB deverbal purposeW tWord thinking vc xiangV 
 aimless: A ac nt 
 aioli: NN artifact nc 
-air: NN VB demeanor natural nc vc 
+air: NN V0 demeanor natural n
 air-bladder: N count nc 
 air-conditioning: A NN chg nc 
 air-drop: VB moveDown vc 
@@ -15587,7 +15587,7 @@ famous-brand: A ac pt
 famouslies: A N ac curse nc 
 famously: RB ac famous ly reputation 
 famulus: NN nc per 
-fan: NN VB attrNot count emph nc passion vc 
+fan: NN attrNot count emph n
 fan-jet: NN nc tool 
 fan-shaped: N nc phy 
 fanatic: A NN count nc per 

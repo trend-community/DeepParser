@@ -40,7 +40,11 @@ def CheckPrefix(word):
     elif word[0] == "." and word[-1] == ".":
         word = word.strip(".")
         matchtype = "fuzzy"      # fuzzy checking: can be text/norm/atom, can be multiple nodes.
+    elif word[0] == "%" and word[-1] == "%":
+        word = word.strip("%")
+        matchtype = "pnorm"
 
+    word = word.replace("\\SPACE", " ")      # use \SPACE for space in word matching
     return prefix+word, matchtype
 
 
@@ -57,44 +61,47 @@ def GetNumberPointer(Pointer):
     return Pos
 
 
-def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, Pointer):
-    x = StrTokenList.head
-    StrPointerToken = ''
-    while x:
-        if x.TempPointer == Pointer:
-            StrPointerToken = x
-            break       # the TempPointer is already set (the reference is on right side of the rule)
-        x = x.next
+# called by Unification()
+def LocateStrTokenOfUnification(StrTokenList, StrPosition,RuleTokens, RulePosition, Pointer):
+    if Pointer == "^":  # means openning node
+        StrPointerToken = StrTokenList.get(StrPosition-RulePosition+1)
+    else:
+        x = StrTokenList.head
+        StrPointerToken = ''
+        while x:
+            if x.TempPointer == Pointer:
+                StrPointerToken = x
+                break       # the TempPointer is already set (the reference is on right side of the rule)
+            x = x.next
 
-    if not StrPointerToken:
-
-        RulePointerPos = GetNumberPointer(Pointer)
-        if RulePointerPos <= 0:
-            #logging.info("LocateStrTokenOfPointer: Searching along the rule tokens to find pointer {}".format(Pointer))
-            RulePointerPos = RulePosition
-            #logging.debug("Testing pointer" + Pointer)
-            while RulePointerPos >= 0:
-                if RuleTokens[RulePointerPos].pointer:
-                    if RuleTokens[RulePointerPos].pointer == Pointer:
-                        break   #found pointer!
-                RulePointerPos -= 1
-
-            if RulePointerPos < 0:
+        if not StrPointerToken:
+            RulePointerPos = GetNumberPointer(Pointer)
+            if RulePointerPos <= 0:
+                #logging.info("LocateStrTokenOfPointer: Searching along the rule tokens to find pointer {}".format(Pointer))
                 RulePointerPos = RulePosition
-                while RulePointerPos < len(RuleTokens):
+                #logging.debug("Testing pointer" + Pointer)
+                while RulePointerPos >= 0:
                     if RuleTokens[RulePointerPos].pointer:
                         if RuleTokens[RulePointerPos].pointer == Pointer:
-                            break  # found pointer!
-                    RulePointerPos += 1
-                if RulePointerPos >= len(RuleTokens):
-                    logging.error("LocateStrTokenOfPointer Can't find specified pointer " + Pointer + " in rule:")
-                    logging.error(jsonpickle.dumps(RuleTokens))
-                    raise RuntimeError("Can't find specified pointer in rule!")
-        # Now we have the pointer location in Rule
-        Offset = RulePointerPos - RulePosition  #might be positive, or negative
+                            break   #found pointer!
+                    RulePointerPos -= 1
 
-        StrPointerPos = StrPosition+Offset
-        StrPointerToken = StrTokenList.get(StrPointerPos)
+                if RulePointerPos < 0:
+                    RulePointerPos = RulePosition
+                    while RulePointerPos < len(RuleTokens):
+                        if RuleTokens[RulePointerPos].pointer:
+                            if RuleTokens[RulePointerPos].pointer == Pointer:
+                                break  # found pointer!
+                        RulePointerPos += 1
+                    if RulePointerPos >= len(RuleTokens):
+                        logging.error("LocateStrTokenOfPointer Can't find specified pointer " + Pointer + " in rule:")
+                        logging.error(jsonpickle.dumps(RuleTokens))
+                        raise RuntimeError("Can't find specified pointer in rule!")
+            # Now we have the pointer location in Rule
+            Offset = RulePointerPos - RulePosition  #might be positive, or negative
+
+            StrPointerPos = StrPosition+Offset
+            StrPointerToken = StrTokenList.get(StrPointerPos)
 
     return StrPointerToken
 
@@ -110,8 +117,7 @@ def LocateStrTokenOfPointer(StrTokenList, StrPosition,RuleTokens, RulePosition, 
 #           -^-N: '-味'          臭味  3   ^N--:  '香-'          香气   4
 #           ^-N-: '味-'          味道  5   -^N-:  '-香'          夜来香  6
 
-def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
-
+def Unification(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, matchtype='norm'):
     if re.match("-\^(.+)-", Pointer):
         P = "^"+Pointer[2:-1]
         PointerType = 6
@@ -134,7 +140,7 @@ def PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition, Pointer, m
         P = "^"+Pointer[1:] # should be ^N
         PointerType = 0
 
-    StrPointerToken = LocateStrTokenOfPointer(StrTokenList, StrPosition, RuleTokens, RulePosition, P)
+    StrPointerToken = LocateStrTokenOfUnification(StrTokenList, StrPosition, RuleTokens, RulePosition, P)
 
     strToken = StrTokenList.get(StrPosition)
 
@@ -182,13 +188,39 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Subtree
         pointer, relations = SubtreePointer.split(".", 1)
     else:
         pointer, relations = [SubtreePointer, ""]
+        #logging.warning("This SubtreePointer doesn't have relations:{} in {}".format(SubtreePointer, str(RuleTokens)))
 
-    pointer = "^" + pointer
+    #pointer = "^" + pointer
 
-    if pointer == "^~":     #THIS pointer
+    if pointer == "~":     #THIS pointer
+        logging.info("\tCurrent node ^~ , rule pointer is " + SubtreePointer)
         StrPointerRootToken = StrTokenList.get(StrPosition)
+    elif pointer == "Q":  # previous token
+        logging.info("\tprevious node ^Q , rule pointer is {}".format(StrPosition-1))
+        StrPointerRootToken = StrTokenList.get(StrPosition-1)
+    # elif pointer == "":  # open token, should be the string token points to the rule token 1.
+    #     # require the rule to mark ^, for example:  '150Grammar_18332_27 == ^[CL !vc:NP CL- finite-] [^.S=c5plus:^.M] [^.H=!XP|pred c1|c2:finite- N+]
+    #     logging.info("\tOpen node ^ , rule pointer is {}".format(StrPosition-RulePosition+1))
+    #     StrPointerRootToken = StrTokenList.get(StrPosition-RulePosition+1)
+    elif pointer.isdigit():
+        pointer_num = int(pointer)
+        try:
+            StrPointerRootToken = StrTokenList.get(pointer_num + StrPosition - RulePosition)
+        except AttributeError as e:  # AttributeError: 'RuleToken' object has no attribute 'MatchedNodeID'
+            logging.error(e)
+            logging.error(
+                "FindPointerNode: The rule is written error, because the reference token is not yet matched. Please rewrite!")
+            logging.info(RuleTokens)
+            return None
+        except IndexError as e:
+            logging.error(e)
+            logging.error(
+                "FindPointerNode: The rule is written error, failed to find pointer {} IndexError!".format(pointer_num))
+            logging.info(RuleTokens)
+            return None
     else:
     #rootPointer = "^" + tree[0]
+        pointer = "^" + pointer
         x = StrTokenList.head
         while x:
             if x.TempPointer == pointer:
@@ -206,6 +238,8 @@ def FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, Subtree
     if relations:
         return _FindSubtree(StrPointerRootToken, relations.split("."))
     else:
+        logging.info("This SubtreePointer doesn't have relations:{}. only to locate the pointer.".format(SubtreePointer, str(RuleTokens)))
+
         return StrPointerRootToken
 
 
@@ -229,7 +263,7 @@ def _FindSubtree(root, pointers):
 
 # = {}
 #hitcount = 0
-def LogicMatch_notpointer(StrToken, RuleToken, PrevText, PrevNorm, PrevAtom):
+def LogicMatch_notpointer(StrToken, RuleToken):
     # global hitcount
     # # AndFeatures, OrFeatureGroups, NotFeatures, AndText, NotTexts
     # if (StrToken.ID, RuleToken.ID) in LogicMatch_notpointer_Cache:
@@ -260,10 +294,8 @@ def LogicMatch_notpointer(StrToken, RuleToken, PrevText, PrevNorm, PrevAtom):
                 elif RuleToken.AndTextMatchtype == "atom":
                     if not LogicMatchText(RuleToken.AndText, StrToken.atom):
                         return False
-                elif RuleToken.AndTextMatchtype == "fuzzy":
-                    if not( PrevText.endswith(RuleToken.AndText)
-                            or PrevNorm.endswith(RuleToken.AndText)
-                            or PrevAtom.endswith(RuleToken.AndText)  ):
+                elif RuleToken.AndTextMatchtype == "pnorm":
+                    if not StrToken.pnorm == RuleToken.AndText:
                         return False
                 else:
                     logging.error("AndTextMatchtype is {} , please check the rule".format(RuleToken.AndTextMatchtype))
@@ -271,9 +303,11 @@ def LogicMatch_notpointer(StrToken, RuleToken, PrevText, PrevNorm, PrevAtom):
                     #return False
 
     for OrFeatureGroup in RuleToken.OrFeatureGroups:
-        CommonOrFeatures = OrFeatureGroup.intersection(StrToken.features)
-        if len(CommonOrFeatures) == 0:
-            return False  # we need at least one common features.
+        if OrFeatureGroup.isdisjoint(StrToken.features):
+            return False
+        # CommonOrFeatures = OrFeatureGroup.intersection(StrToken.features)
+        # if len(CommonOrFeatures) == 0:
+        #     return False  # we need at least one common features.
 
     for f in RuleToken.NotFeatures:
         if f in StrToken.features:
@@ -287,8 +321,10 @@ def LogicMatch_notpointer(StrToken, RuleToken, PrevText, PrevNorm, PrevAtom):
                 word = StrToken.text
             elif RuleToken.NotTextMatchtype == "norm":
                 word = StrToken.norm
-            elif RuleToken.AndTextMatchtype == "atom":
+            elif RuleToken.NotTextMatchtype == "atom":
                 word = StrToken.atom
+            elif RuleToken.NotTextMatchtype == "pnorm":
+                word = StrToken.pnorm
             else:
                 logging.debug("Not ready to use FUZZY comparison in NotText.")
                 word = StrToken.norm    #backward compatible only
@@ -320,6 +356,27 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
     else:
         strToken = StrTokenList.get(StrPosition)
 
+    if RuleTokens[RulePosition].PointerCondition:
+        logging.warning("need to do PointerCondition: {}".format(RuleTokens[RulePosition].PointerCondition))
+        for pointercondition in RuleTokens[RulePosition].PointerCondition.split("+"):
+            if ">>" in pointercondition:    #next condition. # Wi+Wj 要求词与词之间按照左右顺序紧挨着
+                _, p2 = pointercondition.split(">>")    #the left side must be current node strToken
+                #n1 = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, SubtreePointer=p1)
+                n2 = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, SubtreePointer=p2)
+                if strToken.ID != n2.ID+1:
+                    return False
+
+            elif ">" in pointercondition:    #sequence condition. Wi~~Wj 是顺序限制（list），要求Wj出现在Wj的右边，但不必紧挨着；
+                _, p2 = pointercondition.split(">")
+                # n1 = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, SubtreePointer=p1)
+                n2 = FindPointerNode(StrTokenList, StrPosition, RuleTokens, RulePosition, SubtreePointer=p2)
+                if strToken.ID <= n2.ID:
+                    return False
+            elif "." in pointercondition:   #require the pointer is also correct for current node.
+                logging.warning("     ToDo: PointerCondition:{}".format(pointercondition))
+            else:
+                logging.warning("    Unexpected PointerCondition:{}".format(pointercondition))
+
     # #strToken.signature = pickle.dumps({"w": strToken.text, "f": strToken.features})
     # if (strToken.signature, RuleToken.word) in Cache.LogicalMatchCache:
     #     # logging.warning("\t\thit the LogicalMatch_Cache!")
@@ -331,22 +388,14 @@ def LogicMatch(StrTokenList, StrPosition, RuleToken, RuleTokens, RulePosition):
         return False
 
     if RuleToken.AndText and "^" in RuleToken.AndText:
-            #This is a pointer! unification comparison.
-            if not PointerMatch(StrTokenList, StrPosition, RuleTokens, RulePosition,
+            #This is a pointer for unification comparison.
+            if not Unification(StrTokenList, StrPosition, RuleTokens, RulePosition,
                                 Pointer=RuleToken.AndText, matchtype=RuleToken.AndTextMatchtype):
                 return False
 
     RuleToken.MatchedNodeID = strToken.ID
 
-    if RuleToken.AndTextMatchtype == "fuzzy":
-        PrevText = "".join([StrTokenList.get(i).text.lower() for i in range(StrPosition)])
-        PrevNorm = "".join([StrTokenList.get(i).norm.lower() for i in range(StrPosition)])
-        PrevAtom = "".join([StrTokenList.get(i).atom.lower() for i in range(StrPosition)])
-    else:
-        PrevText = ''
-        PrevNorm = ''
-        PrevAtom = ''
-    return LogicMatch_notpointer(strToken, RuleToken, PrevText, PrevNorm, PrevAtom)
+    return LogicMatch_notpointer(strToken, RuleToken)
 
 
 @lru_cache(100000)
@@ -384,6 +433,7 @@ def SeparateOrBlocks(OrString):
     StartToken = False
     #Pairs = ['[]', '()', '""', '\'\'', '//']
     # Pairs is defined in utils.py
+    StartPosition = -1
     while i < len(OrString):
         if OrString[i] == "|":
             if StartToken:
