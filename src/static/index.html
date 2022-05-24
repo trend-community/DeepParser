@@ -1,0 +1,68 @@
+<html>
+<head><meta charSet="utf-8"/></head>
+<body>
+<a href="Readme.txt">Readme </a>&nbsp; &nbsp; &nbsp;
+<a href="FeatureOntology">Feature Ontology</a><br/><br/>
+
+Reload&nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp;<a href="Reload/Pipeline">Pipeline</a> &nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp;<a href="Reload/Lexicon">Lexicon</a>&nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp;<a href="Reload/Rule">Rule</a><br/>
+  <br/>
+<form action="DocumentAnalyze" method="POST">
+<input hidden="hidden" id="Key" name="Key" value="Lsdif238fj" />
+
+Choose a type:
+  <select  id="Type" name="Type">
+    <option >parsetree</option>    
+    <option >graphjson</option>
+    <option >json</option>
+    <option >simpleEx</option>
+	<option >graph</option>
+    <option >simpleggraph</option>
+	<option >segmentation</option>
+    <option >keyword</option>
+	<option >pnorm</option>
+  </select>
+&nbsp;&nbsp;&nbsp; Debug:<select id="Debug" name="Debug"><option> False</option> <option selected >True</option></select>
+    Schema:<select id="Schema" name="Schema"><option selected> full</option> <option >segonly</option> <option>shallowcomplete</option></select>
+  <!-- Action propogation:<select id="Action"><option selected></option><option>headdown</option></select>  for tree json output only -->
+  <br/><br/>
+
+ <label for="ResetGlobalValue">Reset Global Values</label> <input type="checkbox" id="ResetGlobalValue" value="Reset"><br/>
+Document Class:<input id="DocumentClass" name="DocumentClass"/> Paragraph Class:<input id="ParagraphClass" name="ParagraphClass"/>
+  Sentence Class:<input id="SentenceClass" name="SentenceClass"/><br/><br/>
+
+<input type="button" value="Analyze Sentence:" onclick="myFunction();" />  <br/>
+<textarea  id="Sentence"   nowrap="nowrap"  cols="80" rows="15" ></textarea> <br/>
+
+<br/>
+
+    <input type="submit" value="Analyze Document:"/> <br/>
+    <fieldset style="display:inline-block;"> <LEGEND>line break options:</LEGEND>line break: for example, "!" sign for shangfei project, "\n" for lingang project <input name="newline" /> <br/>
+        <input type="radio" name="transferlinebreak" value="transfer" checked="checked"><label>Transfer the linebreak to internal line-break and split into different sentences</label> <br/>
+        <input type="radio" name="transferlinebreak" value="asis" ><label>Keep the current line break as-is, not to convert to internal line-break. Not to split the sentence </label> <br/>
+        <input type="radio" name="transferlinebreak" value="rulebreak"><label>Convert the current line break into our rule linebreak "\linebreak". Not to split the sentence </label> <br/>
+        <label>"Soft line-breaks" will always be removed according to settings of isocrpage and ocrlinelength</label>
+    </fieldset> <br/>
+    <textarea name="Document" cols="100" rows="20"></textarea><br/>
+
+</form>
+<script>
+function myFunction() {
+// the tricky part is not to let the browser to do URIEncode on the sentence, to replace space with + plus sign.
+  var encordedUrl = "LexicalAnalyze"+"?"+"Key="+document.getElementById("Key").value;
+  encordedUrl += "&Debug="+document.getElementById("Debug").value;
+  encordedUrl += "&Type="+document.getElementById("Type").value;
+  encordedUrl += "&ResetGlobalValue="+document.getElementById("ResetGlobalValue").checked;
+  encordedUrl += "&DocumentClass="+document.getElementById("DocumentClass").value;
+  encordedUrl += "&ParagraphClass="+document.getElementById("ParagraphClass").value;
+  encordedUrl += "&SentenceClass="+document.getElementById("SentenceClass").value;
+  encordedUrl += "&Sentence="+ '"' + document.getElementById("Sentence").value + '"';
+
+    document.location.href = encordedUrl;
+}
+</script>
+
+</body>
+<html>
