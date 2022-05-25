@@ -16,9 +16,10 @@ System:
      python 3.
 Folder structure:
 	create an empty folder. For example "git".
-	
+
 	cd git
-	git clone https://gitlab.com/cycloneplatformengineeringsv/cyclonenlp1.git
+	git clone https://gitlab.com/BenLin0/deepparser
+	git clone https://github.com/BenLin0/fsa
 
 
 Environment:
@@ -53,17 +54,17 @@ cp parser.empty.db parser.db
 
 3, LexicalAnalyze without program:
 	In your browser visit  http://localhost:5001, it will give you a WebUI to input sentence to analyze.
-	
+
 3.1, Below is list of all Restful APIs:
 	/GetFeatureID/CL		# return the feature id of "CL"
 	/GetFeatureName/23		# return the feature name of id 23
-	/LexicalAnalyze: 
+	/LexicalAnalyze:
 		Key: Required. Authorization key. Please contact NLU team for this key.
-		
+
 		Sentence: Required. The sentence to process. Quoted in single quotes.
-		
+
 		type: [json (default), segmentation, simple, simpleEx, graph, graphjson, pnorm, simplegraph, parsetree]
-			json: current default output. 
+			json: current default output.
 			segmentation: segmentation format "中文/分词/方法"
                         keyword: segmentation format, only show words with "keyWord" feature.
 			simple/simpleEx: simple presentation of the json format.
@@ -72,20 +73,20 @@ cp parser.empty.db parser.db
 			simpleggraph: simple presentation of the graph format "M{分词->中文}; M{方法->分词}; "
 			parsetree: for web presentation only, not to use as API.
 			pnorm: only show the pnorm keywords.
-			
+
 		schema: [full (default), segonly, shallowcomplete]
 			full: default. Run the whole deep-parsing pipeline.
 			segonly: stop running pipeline after the lexical analysis.
 			shallowcomplete: stop running pipeline after shallow parsing.
-			
+
 		action: [none (default), headdown]
 			none: default. no extra action to apply.
 			headdown: Subj/Obj/Pred is propagated from upper node to head leaf node.
-			
+
 		Debug: when Type is parsetree and Debug is true, show some extra debug information.
 		ResetGlobalValue: if it is "true", then reset the Global Variables.
 		DocumentClass, ParagraphClass, SentenceClass: Apply the values for analysis if given.
-		
+
 	/DocumentAnalyze  Call method: post
 	    Key: Required. Authorization key. Please contact NLU team for this key.
 		type: [parsetree (default), pnorm, graphjson]
@@ -100,13 +101,13 @@ cp parser.empty.db parser.db
 		ResetGlobalValue: if it is "true", then reset the Global Variables.
 		DocumentClass, ParagraphClass, SentenceClass: Apply the values for analysis if given.
 		Document: The document to analyze.
-	
+
 
 4, Running the standalone LexicalAnalyze program
-4.1 Prepare the source file, such as "test.txt". 
+4.1 Prepare the source file, such as "test.txt".
 
 4.2 in current git/parser/src folder, execute:
-	python LexicalAnalyze_RestfulService.py  test.txt 
+	python LexicalAnalyze_RestfulService.py  test.txt
 Note: The error message and standard output are showing in the screen. If you want them to be in separate files, please execute:
     python LexicalAnalyze_RestfulService.py  test.txt  >../temp/output.txt 2>../temp/error.txt
 
