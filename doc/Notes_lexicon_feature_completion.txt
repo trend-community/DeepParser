@@ -1,0 +1,104 @@
+词典 features 补全说明
+
+1. semantic features
+	1.1, 任务描述
+	
+	LexX.txt has 118000 entries with features.(path is fsa/X/LexX.txt)
+	
+	其中三字以内的词汇是 8 万多条。属于普通词汇。
+	
+	sample below:
+		接踵: RB follow //接踵/
+		接车: meet perF vi vn vo //接车/
+		接轨: obey vi vn vo //接轨/
+		接转: V v //接转/
+	
+	如上例四个条目，前三个都有 semantic features：follow，meet，obey，但是第4条就缺失了。
+	
+	缺的是什么？我们可以对比一下“转”字：
+	
+		转: V cN freeM rotate submit
+	
+	rotate 与“接转”无关，但 submit 就是缺失的 feature。这时候我们可以想到另一个词“转送”：
+	
+		转送: VNPPPto give pv submit vt //转送/
+	
+	“转”是单字词，更多义，而“转送”与“接转”更近义，features 应该相同。
+	
+	所以一个简单的补全 features 的办法，是为 features 贫乏的词，想出一个合适的同义词（这是手工做 word embedding）。如果几秒钟能想出来，就标上，然后我们的词典维护程序，就自动拷贝相关 features 过来。
+	
+	1.2, 操作过程
+	1.2.1, 在 LexX.txt 中添加同义词。格式为 word: ... F /sync/
+	
+	以上面的例子作说明：
+	
+	在 LexX.txt 中，把
+	
+		接转: V v //接转/
+	
+	修改为
+	
+		接转: V v F /转送/
+	
+	注：
+	(1) 加 F 告诉系统存在同义词 sync；
+	(2) 把 //（本来是 comment）改成 /（/ ... / 存贮词的规范式）;
+	(3) 把“接转”替换成想到的同义词“转送”；
+	
+	1.2.2, 运行词典维护程序 OrgLex.py (path: parser/src/, run "python3 OrgLex.py")
+	如上修改之后，下次运行词典维护程序，“接转”的词条的信息就会丰富起来，跑完程序后的结果为：
+	
+		接转: F V VNPPPto give pv submit vt v /转送/
+	
+	
+	1.3.1, 范围 
+	单字词可以先忽略，只做 2 字词 和 3 字词。
+
+
+2. POS feature
+	(From @wei)
+	关于修补增强词典的 POS features，我说一下设计思想：
+	
+	由于中文 POS 蛮复杂，我们跳过了 POS 消歧这个环节，直接依靠词典的 POS 相关信息做 parsing，效果更好，也更灵活，但这就强调了维护完善feature词典的重要性。
+	
+	我们先关注名动形三大类POS features，这是最主要的。
+	
+	目前是这样：	
+
+	POS的词典信息分为逻辑词类 n v a 和语法词类 N V A	
+	
+	他们当中有很多 overlapping 也有不一致的时候。
+	
+	如果一个词，意义单纯，基本不夸类，我们就标注为 nc N ； vc V； ac A （c表示词），譬如
+	
+		桌子：N nc	
+		
+		研究：V vc
+		
+		漂亮：A ac	
+	
+	注意：从词典标注角度，“研究” 不是通常说的“名动跨类词”
+	      研究 的 V 在分析进行中 可能会变成 N，但逻辑类 vc 永远不变。
+	
+	那 vc 与 v （nc 与 n；ac 与 a）什么区别呢？
+	vc 是 v 的真子集。vc 针对没有 POS 歧义的词，而 v 可以标注到有歧义的词身上去。
+	
+	譬如，细心是 A a n
+	就是说它主要是形容词 （A）
+	
+	逻辑类 给了两个 一个是 a 与句法类同，一个是 n 是其来源（细心 是 细的心 本源是名词）。
+	这时候，就不宜给 ac 而只能给 a	
+	
+	第一步是 把没有歧义的大量的词搞定：V vc ， A ac， N nc： 有歧义的以后慢慢磨，譬如发现歧义了，把 nc 改回到 n
+
+	3.1, 具体操作
+	3.2.1, 补全 V 动、A 形、N 名 三类。
+	
+		譬如：
+			转道: goRound vi vn vo //转道/
+		缺少 V，应该是：
+			转道: V goRound vi vn vo //转道/
+		
+		因为 POS 都是大写字母，所以冒号后面没有大写的条目，都是缺失 POS 的。
+	
+	3.2.2, 补全 vc, ac, ac 	
