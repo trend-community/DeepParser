@@ -23,8 +23,15 @@ def ProcessFile(FileName):
                             UnitTest.append(columns[int(args.sentencecolumn) - 1].strip())
 
     for TestSentence in UnitTest:
-        nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence, schema=args.schema)
-        if not nodes:
+        if args.sentencetype == "sentence":
+            nodes, dag, _ = ProcessSentence.LexicalAnalyze(TestSentence, schema=args.schema)
+        else:
+            dag, _ = ProcessSentence.DocumentAnalyze(TestSentence, Schema=args.schema)
+            nodes = None
+            # Can I recreate nodes from dag? maybe not possible, because the dag can be unrelated nodes.
+            #nodes =
+            #
+        if not nodes or not dag:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
         if args.type == 'json':
@@ -54,15 +61,24 @@ if __name__ == "__main__":
     parser.add_argument("inputfile", help="input file")
     parser.add_argument("--debug", action='store_true')
     parser.add_argument("--winningrules", action='store_true')
-    parser.add_argument("--keeporigin",  action='store_true')
-    parser.add_argument("--type", help="json/simple/simpleEx/sentiment/graph/simplegraph/graphjson/pnorm",
+    parser.add_argument("--keeporigin",  action='store_true', help="keep the origin sentence in the output")
+    parser.add_argument("--type", help="output type, json/simple/simpleEx/sentiment/graph/simplegraph(default)/graphjson/pnorm",
                         default='simplegraph')
     parser.add_argument("--sentencecolumn", help="if the file has multiple columns, list the specific column to process (1-based)",
                         default=0)  #default 0 means the whole sentence.
     parser.add_argument("--delimiter", default="\t")
     parser.add_argument("--schema", help="full(default)/segonly/shallowcomplete",
                         default="full")
+    parser.add_argument("--sentencetype", help="sentence(default)/document",
+                        default="sentence")
     args = parser.parse_args()
+
+    if args.sentencetype != "sentence":
+        if args.type not in ["sentiment", "graph", "simplegraph", "graphjson", "pnorm"]:
+            print("""When the sentencetype is not sentence, the type (output type) must be one of:
+            ["sentiment", "graph", "simplegraph", "graphjson", "pnorm"]
+            """)
+        exit(1)
 
     DebugMode = False
     level = logging.WARNING
