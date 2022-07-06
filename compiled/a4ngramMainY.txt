@@ -1,0 +1,611 @@
+// ****Rules**** ../../fsa/Y/a4ngramMainY.txt
+// * size: 142 *
+//ID:247 Priority:0[Rule]
+a4ngramMainY_88_1_3_p5_p7_p9_ol1 == {[] <['http'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:248 Priority:0[Rule]
+a4ngramMainY_88_1_3_p5_p7_p9_ol1 == {[] <['https'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:189 Priority:0[Rule]
+a4ngramMainY_1_3_p4_p6_p8 == {[] <['web'] ['site'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:292 Priority:0[Rule]
+a4ngramMainY_88_3_3_p3_p5_p7_ol9 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] [alpha] [dot] ['com']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:293 Priority:0[Rule]
+a4ngramMainY_88_3_3_p3_p5_p7_ol9 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] [alpha] [dot] ['edu']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:294 Priority:0[Rule]
+a4ngramMainY_88_3_3_p3_p5_p7_ol9 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] [alpha] [dot] ['gov']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:295 Priority:0[Rule]
+a4ngramMainY_88_3_3_p3_p5_p7_ol9 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] [alpha] [dot] ['net']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:190 Priority:0[Rule]
+a4ngramMainY_88_2_3_p3_p5_p7 == {[] <['www'(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] [alpha] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:249 Priority:0[Rule]
+a4ngramMainY_88_1_2_p5_p7_ol1 == {[] <['http'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [!UH] [dot] [!UH] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:250 Priority:0[Rule]
+a4ngramMainY_88_1_2_p5_p7_ol1 == {[] <['https'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [!UH] [dot] [!UH] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:257 Priority:0[Rule]
+a4ngramMainY_88_0_1_3_p3_p5_p7_ol1 == {[] <['website'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:258 Priority:0[Rule]
+a4ngramMainY_88_0_1_3_p3_p5_p7_ol1 == {[] <['web'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:206 Priority:0[Rule]
+a4ngramMainY_0_3_p3_p5_p7 == {[] <['web'] ['site'(ACTION)H www H ^.H ] <[!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:157 Priority:0[Rule]
+a4ngramMainY_88_6_1_1 == {[] <["+"] [digit] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4 spaceHou(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:327 Priority:0[Rule]
+a4ngramMainY_88_0_0_3_p2_p4_p6_ol1 == {[] <['website'(ACTION)H www H ^.H ] <[!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:328 Priority:0[Rule]
+a4ngramMainY_88_0_0_3_p2_p4_p6_ol1 == {[] <['web'(ACTION)H www H ^.H ] <[!UH] [dot] [!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:210 Priority:0[Rule]
+a4ngramMainY_1_2_p4_p6 == {[] <['web'] ['site'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:156 Priority:0[Rule]
+a4ngramMainY_88_6_1_0 == {[] <["+"] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4 spaceHou(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:151 Priority:0[Rule]
+a4ngramMainY_88_6_0_1 == {[] <[digit] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4 spaceHou(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:253 Priority:0[Rule]
+a4ngramMainY_88_3_2_p3_p5_ol7 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] ['com']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:254 Priority:0[Rule]
+a4ngramMainY_88_3_2_p3_p5_ol7 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] ['edu']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:255 Priority:0[Rule]
+a4ngramMainY_88_3_2_p3_p5_ol7 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] ['gov']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:256 Priority:0[Rule]
+a4ngramMainY_88_3_2_p3_p5_ol7 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] ['net']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:208 Priority:0[Rule]
+a4ngramMainY_88_2_2_p3_p5 == {[] <['www'(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:239 Priority:0[Rule]
+a4ngramMainY_88_1_1_p5_ol1 == {[] <['http'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [!UH] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:240 Priority:0[Rule]
+a4ngramMainY_88_1_1_p5_ol1 == {[] <['https'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [!UH] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:298 Priority:0[Rule]
+a4ngramMainY_88_0_1_2_p3_p5_ol1 == {[] <['website'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:299 Priority:0[Rule]
+a4ngramMainY_88_0_1_2_p3_p5_ol1 == {[] <['web'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:203 Priority:0[Rule]
+a4ngramMainY_0_2_p3_p5 == {[] <['web'] ['site'(ACTION)H www H ^.H ] <[!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:150 Priority:0[Rule]
+a4ngramMainY_88_6_0_0 == {[] <[OPAR] [d3] [CPAR] [d3] [DDSH] [d4 spaceHou(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:316 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:317 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:318 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:319 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:333 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:334 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:335 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:336 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:341 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:342 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:343 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:344 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_1_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:251 Priority:0[Rule]
+a4ngramMainY_88_0_0_2_p2_p4_ol1 == {[] <['website'(ACTION)H www H ^.H ] <[!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:252 Priority:0[Rule]
+a4ngramMainY_88_0_0_2_p2_p4_ol1 == {[] <['web'(ACTION)H www H ^.H ] <[!UH] [dot] [!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:173 Priority:0[Rule]
+a4ngramMainY_1_1_p4 == {[] <['web'] ['site'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:267 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:268 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:269 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:270 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:271 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:272 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:273 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:274 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:304 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:305 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:306 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:307 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_1_0_ol2_ol4 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:324 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_0_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:325 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_0_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:326 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_0_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:308 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:309 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:310 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:311 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:312 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:313 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:314 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:315 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:329 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:330 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:331 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:332 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_1_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:320 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_1_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:321 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_1_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:322 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_1_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:323 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_1_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:337 Priority:0[Rule]
+a4ngramMainY_88_3_1_p3_ol5 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] ['com']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:338 Priority:0[Rule]
+a4ngramMainY_88_3_1_p3_ol5 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] ['edu']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:339 Priority:0[Rule]
+a4ngramMainY_88_3_1_p3_ol5 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] ['gov']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:340 Priority:0[Rule]
+a4ngramMainY_88_3_1_p3_ol5 == {[] <[alpha(ACTION)H www H ^.H ] [dot] [alpha] [dot] ['net']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:177 Priority:0[Rule]
+a4ngramMainY_88_2_1_p3 == {[] <['www'(ACTION)H www H ^.H ] [dot] [alpha] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:211 Priority:0[Rule]
+a4ngramMainY_88_1_0_ol1 == {[] <['http'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:212 Priority:0[Rule]
+a4ngramMainY_88_1_0_ol1 == {[] <['https'(ACTION)H www H ^.H ] [COLN] ["/"] ["/"] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:243 Priority:0[Rule]
+a4ngramMainY_88_0_1_1_p3_ol1 == {[] <['website'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:244 Priority:0[Rule]
+a4ngramMainY_88_0_1_1_p3_ol1 == {[] <['web'(ACTION)H www H ^.H ] [COLN|CM] <[!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:171 Priority:0[Rule]
+a4ngramMainY_0_1_p3 == {[] <['web'] ['site'(ACTION)H www H ^.H ] <[!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:296 Priority:0[Rule]
+a4ngramMainY_88_5_1_p2_1_ol1 == {[] <["©"(ACTION)H NEW SYM H ^.H ] [0] ["©"] [d4(ACTION)DE year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ /copyright/", "ChunkLevel": 1}]
+
+//ID:297 Priority:0[Rule]
+a4ngramMainY_88_5_1_p2_1_ol1 == {[] <["copyright"(ACTION)H NEW SYM H ^.H ] [0] ["©"] [d4(ACTION)DE year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ /copyright/", "ChunkLevel": 1}]
+
+//ID:233 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_0_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [dot] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:234 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_0_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [dot] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:235 Priority:0[Rule]
+a4ngramMainY_88_4_1_1_0_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [dot] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:259 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:260 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:261 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:262 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:263 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:264 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:265 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:266 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:300 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:301 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:302 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:303 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_1_0_ol2_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:283 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_0_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:284 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_0_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:285 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_0_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:223 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_0_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:224 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_0_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:225 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_0_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:226 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_1_0_ol3 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:141 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_0_1 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:279 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] [COLN] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:280 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] [CM] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:281 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["at"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:282 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_1_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["@"] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:241 Priority:0[Rule]
+a4ngramMainY_88_0_0_1_p2_ol1 == {[] <['website'(ACTION)H www H ^.H ] <[!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:242 Priority:0[Rule]
+a4ngramMainY_88_0_0_1_p2_ol1 == {[] <['web'(ACTION)H www H ^.H ] <[!UH] [dot] [alpha(ACTION)H www H ^.H ]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++ ^^.equivM", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:116 Priority:0[Rule]
+a4ngramMainY_1_0 == {[] <['web'] ['site'(ACTION)H www H ^.H ] [COLN|CM] <[alpha(ACTION)www +++ DE++ ^^.equivM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:245 Priority:0[Rule]
+a4ngramMainY_88_5_1_p2_0_ol1 == {[] <["©"(ACTION)H NEW SYM H ^.H ] ["©"] [d4(ACTION)DE year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ /copyright/", "ChunkLevel": 1}]
+
+//ID:246 Priority:0[Rule]
+a4ngramMainY_88_5_1_p2_0_ol1 == {[] <["copyright"(ACTION)H NEW SYM H ^.H ] ["©"] [d4(ACTION)DE year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ /copyright/", "ChunkLevel": 1}]
+
+//ID:227 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_0_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["international"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:228 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_0_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["domestic"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:229 Priority:0[Rule]
+a4ngramMainY_88_4_1_0_0_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["local"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:140 Priority:0[Rule]
+a4ngramMainY_88_4_0_1_0_0 == {[] <[contactC(ACTION)H contact H ^.H ] [dot] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:219 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] [COLN] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:220 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] [CM] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:221 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["at"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:222 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_1_0_ol2 == {[] <[contactC(ACTION)H contact H ^.H ] ["@"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:129 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_0_1 == {[] <[contactC(ACTION)H contact H ^.H ] ["+"] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:275 Priority:0[Rule]
+a4ngramMainY_88_3_0_ol3 == {[] <[alpha(ACTION)H www H ^.H ] [dot] ['com']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:276 Priority:0[Rule]
+a4ngramMainY_88_3_0_ol3 == {[] <[alpha(ACTION)H www H ^.H ] [dot] ['edu']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:277 Priority:0[Rule]
+a4ngramMainY_88_3_0_ol3 == {[] <[alpha(ACTION)H www H ^.H ] [dot] ['gov']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:278 Priority:0[Rule]
+a4ngramMainY_88_3_0_ol3 == {[] <[alpha(ACTION)H www H ^.H ] [dot] ['net']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:130 Priority:0[Rule]
+a4ngramMainY_88_2_0 == {[] <['www'(ACTION)H www H ^.H ] [dot] [alpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:217 Priority:0[Rule]
+a4ngramMainY_88_0_1_0_ol1 == {[] <['website'(ACTION)H www H ^.H ] [COLN|CM] <[alpha(ACTION)www +++ DE++ ^^.equivM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:218 Priority:0[Rule]
+a4ngramMainY_88_0_1_0_ol1 == {[] <['web'(ACTION)H www H ^.H ] [COLN|CM] <[alpha(ACTION)www +++ DE++ ^^.equivM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:108 Priority:0[Rule]
+a4ngramMainY_0_0 == {[] <['web'] ['site'(ACTION)H www H ^.H ] <[alpha(ACTION)www +++ DE++ ^^.equivM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:213 Priority:0[Rule]
+a4ngramMainY_88_5_0_ol1 == {[] <["©"(ACTION)H NEW SYM H ^.H ] [d4(ACTION)DE year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ /copyright/", "ChunkLevel": 1}]
+
+//ID:214 Priority:0[Rule]
+a4ngramMainY_88_5_0_ol1 == {[] <["copyright"(ACTION)H NEW SYM H ^.H ] [d4(ACTION)DE year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ /copyright/", "ChunkLevel": 1}]
+
+//ID:128 Priority:0[Rule]
+a4ngramMainY_88_4_0_0_0_0 == {[] <[contactC(ACTION)H contact H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:215 Priority:0[Rule]
+a4ngramMainY_88_0_0_0_ol1 == {[] <['website'(ACTION)H www H ^.H ] <[alpha(ACTION)www +++ DE++ ^^.equivM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+//ID:216 Priority:0[Rule]
+a4ngramMainY_88_0_0_0_ol1 == {[] <['web'(ACTION)H www H ^.H ] <[alpha(ACTION)www +++ DE++ ^^.equivM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 2}]
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

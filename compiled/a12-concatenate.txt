@@ -1,0 +1,451 @@
+// ****Rules**** ../../fsa/Y/a12-concatenate.txt
+// * size: 102 *
+//ID:13090 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_1_1_1_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 18, "StringChunkLength": 18, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13102 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_1_1_0_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13085 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_1_0_1_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13107 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_0_1_1_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13113 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_1_1_1_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13004 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_1_0_0_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13007 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_0_1_0_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13100 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_0_0_1_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13072 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_1_1_1_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13104 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_1_1_0_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13111 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_1_0_1_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13008 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_0_1_1_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13035 Priority:0[Rule]
+a12-concatenate_12685_0_1_5_0_0_0_p3_p5_p7_p9_p11 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13027 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_1_1_0_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13005 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_1_0_1_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13054 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_0_1_1_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13103 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_1_0_0_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12981 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_0_1_0_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13109 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_0_0_1_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13081 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_1_1_1_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13047 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_1_0_0_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12942 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_0_1_0_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13084 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_0_0_1_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13002 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_1_1_1_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12945 Priority:0[Rule]
+a12-concatenate_12685_0_0_5_0_0_0_p2_p4_p6_p8_p10 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13038 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_1_1_0_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13039 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_1_0_1_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13050 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_0_1_1_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12996 Priority:0[Rule]
+a12-concatenate_12685_0_1_4_0_0_0_p3_p5_p7_p9 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13034 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_1_1_0_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13114 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_1_0_1_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13115 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_0_1_1_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13053 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_1_0_0_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13087 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_0_1_0_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13055 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_0_0_1_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13066 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_1_1_1_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12941 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_1_0_0_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12940 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_0_1_0_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13000 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_0_0_1_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13062 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_1_1_1_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13080 Priority:0[Rule]
+a12-concatenate_12685_0_0_4_0_0_0_p2_p4_p6_p8 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12995 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_1_1_0_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13106 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_1_0_1_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13071 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_0_1_1_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13033 Priority:0[Rule]
+a12-concatenate_12685_0_1_3_0_0_0_p3_p5_p7 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12928 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_1_1_0_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12987 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_1_0_1_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13042 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_0_1_1_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13064 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_1_0_0_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12978 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_0_1_0_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13082 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_0_0_1_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13068 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_1_1_1_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12924 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_1_0_0_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12923 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_0_1_0_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13061 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_0_0_1_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12964 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_1_1_1_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12934 Priority:0[Rule]
+a12-concatenate_12685_0_0_3_0_0_0_p2_p4_p6 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13022 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_1_1_0_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13092 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_1_0_1_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13028 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_0_1_1_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12969 Priority:0[Rule]
+a12-concatenate_12685_0_1_2_0_0_0_p3_p5 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12909 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_1_1_0_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12957 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_1_0_1_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13015 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_0_1_1_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12970 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_1_0_0_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12917 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_0_1_0_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12982 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_0_0_1_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13018 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_1_1_1_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12896 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_1_0_0_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12893 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_0_1_0_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12953 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_0_0_1_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12812 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_1_1_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12916 Priority:0[Rule]
+a12-concatenate_12685_0_0_2_0_0_0_p2_p4 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12904 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_1_1_0_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13057 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_1_0_1_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12955 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_0_1_1_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12888 Priority:0[Rule]
+a12-concatenate_12685_0_1_1_0_0_0_p3 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12811 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_1_1_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12788 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_1_0_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12776 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_0_1_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12895 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_1_0_0_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12892 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_0_1_0_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:13013 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_0_0_1_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12770 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_1_1_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12787 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_1_0_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12775 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_0_1_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12754 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_0_0_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12887 Priority:0[Rule]
+a12-concatenate_12685_0_0_1_0_0_0_p2 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [digit|code|digitAlpha] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12769 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_1_1_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12742 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_1_0_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12832 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_0_1_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12875 Priority:0[Rule]
+a12-concatenate_1_p2 == {[] <[0 digit spaceQian] [0 alpha !spaceQ !spaceH] [0 digit !spaceQ !spaceH] [0 alpha !spaceQ !spaceH(ACTION)H NEW digitAlpha H ^.H ] [0 spaceHou digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12689 Priority:0[Rule]
+a12-concatenate_12685_3 == {[] <[CD] [SYM] ['pe'(ACTION)H H ^.H ] [SYM] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NG++", "ChunkLevel": 1}]
+
+//ID:12753 Priority:0[Rule]
+a12-concatenate_12685_0_1_0_0_0_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12741 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_1_0_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [CM|JM] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12831 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_0_1_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [code|digitAlpha] [CM|JM] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12714 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_0_0_1 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [code|digitAlpha] [digit|code|digitAlpha] [CM|JM] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12713 Priority:0[Rule]
+a12-concatenate_12685_0_0_0_0_0_0 == {[] <[digit|code|digitAlpha(ACTION)CD+ H hasCN string2 H ^.H ] [code|digitAlpha] [digit|code|digitAlpha] [digit|code|digitAlpha]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12690 Priority:0[Rule]
+a12-concatenate_12685_4 == {[] <['pe'(ACTION)H H ^.H ] [SYM] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NG++", "ChunkLevel": 1}]
+
+//ID:12688 Priority:0[Rule]
+a12-concatenate_12685_2 == {[] <[0 alpha] [0 DDSH !spaceQ !spaceH(ACTION)^.x] [0 alpha(ACTION)H hyphenated H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12687 Priority:0[Rule]
+a12-concatenate_12685_1 == {[BR] <[l1(ACTION)H code H ^.H ] [0 !spaceQ digit]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12691 Priority:0[Rule]
+a12-concatenate_0 == {[] <[0 digit spaceQian] [0 alpha !spaceQ !spaceH(ACTION)H NEW digitAlpha H ^.H ] [0 spaceHou digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

@@ -1,0 +1,217 @@
+// ****Rules**** ../../fsa/Y/a1preProcess.txt
+// * size: 45 *
+//ID:66 Priority:0[Rule]
+a1preProcess_24_11_1_p10 == {[] <[caseAB !spaceH(ACTION)H NEW H ^.H ] ["-" !spaceH] [digit] ["_" !spaceQ !spaceH] [] ["_" !spaceQ !spaceH] [] ["_" !spaceQ !spaceH] [] [SLASH] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:55 Priority:0[Rule]
+a1preProcess_24_11_0 == {[] <[caseAB !spaceH(ACTION)H NEW H ^.H ] ["-" !spaceH] [digit] ["_" !spaceQ !spaceH] [] ["_" !spaceQ !spaceH] [] ["_" !spaceQ !spaceH] []> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:54 Priority:0[Rule]
+a1preProcess_24_9_3 == {[] <['!'] ['!'] ['!'] ['!'] ['!'(ACTION)BR H NEW newFONT rStop string0 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ JS++", "ChunkLevel": 1}]
+
+//ID:62 Priority:0[Rule]
+a1preProcess_24_23_1 == {[!P] <[0 VB|Ving|N|A alpha !caseab !rStop] [N|VB|A !rStop] [string1Head !string1(ACTION)H string1 H ^.H ] ["-"] [string1Suf]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ NG++", "ChunkLevel": 1}]
+
+//ID:72 Priority:0[Rule]
+a1preProcess_24_21_p2_1_1 == {[] <['type'(ACTION)H NEW string1Suf H ^.H ] [d1 !spaceH] [l1 !spaceQ] ["-" !spaceQ !spaceH] [d1|l1 !spaceQ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:53 Priority:0[Rule]
+a1preProcess_24_9_2 == {[] <['!'] ['!'] ['!'] ['!'(ACTION)BR H NEW newFONT rStop string0 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ JS++", "ChunkLevel": 1}]
+
+//ID:85 Priority:0[Rule]
+a1preProcess_24_5_1_ol3 == {[] <['part'] [NEWL] ['no'(ACTION)H NEW acronym in12 H ^.H ] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:86 Priority:0[Rule]
+a1preProcess_24_5_1_ol3 == {[] <['part'] [NEWL] ['number'(ACTION)H NEW acronym in12 H ^.H ] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:61 Priority:0[Rule]
+a1preProcess_24_23_0 == {[!P] <[0 VB|Ving|N|A alpha !caseab !rStop] [string1Head !string1(ACTION)H string1 H ^.H ] ["-"] [string1Suf]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ NG++", "ChunkLevel": 1}]
+
+//ID:71 Priority:0[Rule]
+a1preProcess_24_21_p2_1_0 == {[] <['type'(ACTION)H NEW string1Suf H ^.H ] [d1 !spaceH] [l1 !spaceQ] [d1|l1 !spaceQ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:74 Priority:0[Rule]
+a1preProcess_24_21_p2_0_1 == {[] <['type'(ACTION)H NEW string1Suf H ^.H ] [d1 !spaceH] ["-" !spaceQ !spaceH] [d1|l1 !spaceQ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:52 Priority:0[Rule]
+a1preProcess_24_9_1 == {[] <['!'] ['!'] ['!'(ACTION)BR H NEW newFONT rStop string0 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ JS++", "ChunkLevel": 1}]
+
+//ID:33 Priority:0[Rule]
+a1preProcess_24_8 == {[] <["?"] ["?"(ACTION)BR H JS NEW newFONT rStop string0 H ^.H ] ["?"]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:79 Priority:0[Rule]
+a1preProcess_24_5_0_ol3 == {[] <['part'] [NEWL] ['no'(ACTION)H NEW acronym in12 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:80 Priority:0[Rule]
+a1preProcess_24_5_0_ol3 == {[] <['part'] [NEWL] ['number'(ACTION)H NEW acronym in12 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:50 Priority:0[Rule]
+a1preProcess_24_4_1 == {[] <['part'] ['no'(ACTION)H N NEW acronym in12 H ^.H ] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:28 Priority:0[Rule]
+a1preProcess_24_3 == {[] <['p'] ['/'] ['n'(ACTION)H NEW acronym in12 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:73 Priority:0[Rule]
+a1preProcess_24_21_p2_0_0 == {[] <['type'(ACTION)H NEW string1Suf H ^.H ] [d1 !spaceH] [d1|l1 !spaceQ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:65 Priority:0[Rule]
+a1preProcess_24_20_p2 == {[] <['type'(ACTION)H NEW string1Suf H ^.H ] [d1 !spaceH] [l1]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:44 Priority:0[Rule]
+a1preProcess_24_19 == {[] <['type'(ACTION)H NEW string1Suf H ^.H ] [d1]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:67 Priority:0[Rule]
+a1preProcess_24_18_1_p2 == {[] <[color(ACTION)H string1Suf H ^.H ] [SLASH|CM] [color]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:41 Priority:0[Rule]
+a1preProcess_24_16 == {[] <["and"(ACTION)H H ^.H ] ["/"] ["or"(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:40 Priority:0[Rule]
+a1preProcess_24_15 == {[] <[CD] [DDSH] [length unit(ACTION)H hyphenated modJJ H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:81 Priority:0[Rule]
+a1preProcess_24_14_1_ol3 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] [HYPHEN] ['st']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:82 Priority:0[Rule]
+a1preProcess_24_14_1_ol3 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] [HYPHEN] ['nd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:83 Priority:0[Rule]
+a1preProcess_24_14_1_ol3 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] [HYPHEN] ['rd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:84 Priority:0[Rule]
+a1preProcess_24_14_1_ol3 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] [HYPHEN] ['th']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:38 Priority:0[Rule]
+a1preProcess_24_13 == {[] <[title|acronym(ACTION)H N+ H ^.H ] [dot]> [!JM] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:37 Priority:0[Rule]
+a1preProcess_24_12 == {[] <["no"(ACTION)'number' H acronym H ^.H ] [dot !spaceQ]> [digit] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:51 Priority:0[Rule]
+a1preProcess_24_9_0 == {[] <['!'] ['!'(ACTION)BR H NEW newFONT rStop string0 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ JS++", "ChunkLevel": 1}]
+
+//ID:31 Priority:0[Rule]
+a1preProcess_24_6 == {[] <[!Punc(ACTION)spaceHou]> [Punc|JM|cQuot !DDSH] };
+
+//ID:49 Priority:0[Rule]
+a1preProcess_24_4_0 == {[] <['part'] ['no'(ACTION)H N NEW acronym in12 H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "'part_number' +++", "ChunkLevel": 1}]
+
+//ID:27 Priority:0[Rule]
+a1preProcess_24_2 == {[] <[POS] ["s" !spaceQ(ACTION)H NEW POS H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:42 Priority:0[Rule]
+a1preProcess_24_17 == {[CM] <[alpha] ["select"(ACTION)H NEW string1Suf H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:75 Priority:0[Rule]
+a1preProcess_24_14_0_ol2 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] ['st']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:76 Priority:0[Rule]
+a1preProcess_24_14_0_ol2 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] ['nd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:77 Priority:0[Rule]
+a1preProcess_24_14_0_ol2 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] ['rd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:78 Priority:0[Rule]
+a1preProcess_24_14_0_ol2 == {[] <[digit(ACTION)CD+ H NEW ordinal H ^.H ] ['th']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:26 Priority:0[Rule]
+a1preProcess_24_1 == {[PRP] <[POS] ["s" !spaceQ(ACTION)H NEW VBZ beC haveC H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "'is' +++", "ChunkLevel": 1}]
+
+//ID:25 Priority:0[Rule]
+a1preProcess_24_0 == {["there"] <[POS] ["s" !spaceQ(ACTION)H NEW VBZ beC H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "'is' +++", "ChunkLevel": 1}]
+
+//ID:32 Priority:0[Rule]
+a1preProcess_24_7 == {[JS|JM|OPAR|oQuot] <[!Punc(ACTION)spaceQian]> };
+
+//ID:59 Priority:0[Rule]
+a1preProcess_24_18_0 == {[] <[color(ACTION)string1Suf +++]> };
+
+//ID:35 Priority:0[Rule]
+a1preProcess_24_10 == {[] <["!" spaceQ spaceH(ACTION)BR NEW NEWL]> };
+
+//ID:47 Priority:0[Rule]
+a1preProcess_24_22 == {[HYPH !spaceQ !spaceH(ACTION)HYPHEN] };
+
+//ID:24 Priority:0[Rule]
+a1preProcess == {[!NC !VC !AC !xC !RB !VB !VBZ !VBG !VBD(ACTION) N] };
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

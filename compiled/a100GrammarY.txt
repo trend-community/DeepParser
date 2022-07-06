@@ -1,0 +1,155 @@
+// ****Rules**** ../../fsa/Y/a100GrammarY.txt
+// * size: 28 *
+//ID:17354 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['they'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17355 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['we'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17356 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['you'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17357 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['i'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17358 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['he'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17359 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['she'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17360 Priority:0[Rule]
+a100GrammarY_17331_3_ol2 == {[] <[NP(ACTION)H H ^.H ] <['it'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17351 Priority:0[Rule]
+a100GrammarY_17331_13_1 == {[] <[rCL hasxCL(ACTION)^.rCL] [CM] [CL|yVC(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17363 Priority:0[Rule]
+a100GrammarY_17331_12_ol3 == {[] <[NP !PRP !per(ACTION)H H ^.H ] <[CM] [CL hasSubj FULLSTRING 'which-'(ACTION) H ^.H ] [CM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 3, "Action": "^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17364 Priority:0[Rule]
+a100GrammarY_17331_12_ol3 == {[] <[NP !PRP !per(ACTION)H H ^.H ] <[CM] [CL hasSubj FULLSTRING 'that-'(ACTION) H ^.H ] [CM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 3, "Action": "^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17338 Priority:0[Rule]
+a100GrammarY_17331_6 == {[BR] <[Ving(ACTION)^.Subj] [yVC VC !hasSubj(ACTION)H Pred SV H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17336 Priority:0[Rule]
+a100GrammarY_17331_4 == {[] <[yVC(ACTION)H H ^.H ] [PP(ACTION)^.R]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17353 Priority:0[Rule]
+a100GrammarY_17331_1_1 == {[] <[NP(ACTION)^.synS NP] [sRB(ACTION)^.X] [Pred !hasSubj(ACTION)H SV H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17347 Priority:0[Rule]
+a100GrammarY_17331_15 == {win=7 [] <[V vt(ACTION)H H ^.H ] [N|NG|NP|NE(ACTION)^.O]> [BR|PP|RC|A|AP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17350 Priority:0[Rule]
+a100GrammarY_17331_13_0 == {[] <[rCL hasxCL(ACTION)^.rCL] [CL|yVC(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17361 Priority:0[Rule]
+a100GrammarY_17331_11_ol2 == {[] <[NP !PRP !per(ACTION)H H ^.H ] [CL hasSubj FULLSTRING 'which-'(ACTION)^.mCL]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17362 Priority:0[Rule]
+a100GrammarY_17331_11_ol2 == {[] <[NP !PRP !per(ACTION)H H ^.H ] [CL hasSubj FULLSTRING 'that-'(ACTION)^.mCL]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17342 Priority:0[Rule]
+a100GrammarY_17331_10 == {[BR] <[0 CC|EX|sRB(ACTION)^.Z] [yVC(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17349 Priority:0[Rule]
+a100GrammarY_17331_0_1 == {[BR] <[SC hasxCL(ACTION)^.rCL] [CM] [CL|finite(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17341 Priority:0[Rule]
+a100GrammarY_17331_9 == {[] <[CL hasObj(ACTION)H H ^.H ] [infinitive(ACTION)^.purposeR]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17340 Priority:0[Rule]
+a100GrammarY_17331_8 == {[] <[VTH|VSS !hasO !hasoCL(ACTION)H H ^.H ] [CL !rCL(ACTION)^.oCL]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17339 Priority:0[Rule]
+a100GrammarY_17331_7 == {[] <[CL(ACTION) H ^.H ] [SC hasxCL(ACTION)^.rCL]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:17337 Priority:0[Rule]
+a100GrammarY_17331_5 == {[] <[vVB(ACTION)H HC vVBSat H ^.H ] [VP infinitive(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17334 Priority:0[Rule]
+a100GrammarY_17331_2 == {[] <[vS !hasO !hasoCL(ACTION)H H ^.H ] [CL !rCL(ACTION)^.oCL]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17352 Priority:0[Rule]
+a100GrammarY_17331_1_0 == {[] <[NP(ACTION)^.synS NP] [Pred !hasSubj(ACTION)H SV H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17346 Priority:0[Rule]
+a100GrammarY_17331_14 == {[] <[idiomPP '-which'(ACTION)^.Z clR] [CL(ACTION)H mCL H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17348 Priority:0[Rule]
+a100GrammarY_17331_0_0 == {[BR] <[SC hasxCL(ACTION)^.rCL] [CL|finite(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17331 Priority:0[Rule]
+a100GrammarY == {[] <[CL(ACTION)H H ^.H ] [SC hascCL(ACTION)^.rCL]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

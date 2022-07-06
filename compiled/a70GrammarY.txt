@@ -1,0 +1,475 @@
+// ****Rules**** ../../fsa/Y/a70GrammarY.txt
+// * size: 108 *
+//ID:17110 Priority:0[Rule]
+a70GrammarY_16992_11_1_3_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 8, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17109 Priority:0[Rule]
+a70GrammarY_16992_11_1_3_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 8, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17094 Priority:0[Rule]
+a70GrammarY_16992_11_1_2_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 7, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17102 Priority:0[Rule]
+a70GrammarY_16992_11_0_3_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 7, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17108 Priority:0[Rule]
+a70GrammarY_16992_11_1_3_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 8, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17093 Priority:0[Rule]
+a70GrammarY_16992_11_1_2_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 7, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17106 Priority:0[Rule]
+a70GrammarY_16992_11_1_1_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 6, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17101 Priority:0[Rule]
+a70GrammarY_16992_11_0_3_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 7, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17072 Priority:0[Rule]
+a70GrammarY_16992_11_0_2_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 6, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17098 Priority:0[Rule]
+a70GrammarY_16992_5_3_3 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17107 Priority:0[Rule]
+a70GrammarY_16992_11_1_3_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17092 Priority:0[Rule]
+a70GrammarY_16992_11_1_2_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 7, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17105 Priority:0[Rule]
+a70GrammarY_16992_11_1_1_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 6, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17090 Priority:0[Rule]
+a70GrammarY_16992_11_1_0_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17100 Priority:0[Rule]
+a70GrammarY_16992_11_0_3_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 7, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17071 Priority:0[Rule]
+a70GrammarY_16992_11_0_2_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 6, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17086 Priority:0[Rule]
+a70GrammarY_16992_11_0_1_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17097 Priority:0[Rule]
+a70GrammarY_16992_5_3_2 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17060 Priority:0[Rule]
+a70GrammarY_16992_5_2_3 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17091 Priority:0[Rule]
+a70GrammarY_16992_11_1_2_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17104 Priority:0[Rule]
+a70GrammarY_16992_11_1_1_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 6, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17089 Priority:0[Rule]
+a70GrammarY_16992_11_1_0_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17099 Priority:0[Rule]
+a70GrammarY_16992_11_0_3_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17070 Priority:0[Rule]
+a70GrammarY_16992_11_0_2_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 6, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17085 Priority:0[Rule]
+a70GrammarY_16992_11_0_1_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17068 Priority:0[Rule]
+a70GrammarY_16992_11_0_0_3 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17096 Priority:0[Rule]
+a70GrammarY_16992_5_3_1 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17059 Priority:0[Rule]
+a70GrammarY_16992_5_2_2 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17078 Priority:0[Rule]
+a70GrammarY_16992_5_1_3 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17103 Priority:0[Rule]
+a70GrammarY_16992_11_1_1_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17088 Priority:0[Rule]
+a70GrammarY_16992_11_1_0_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17069 Priority:0[Rule]
+a70GrammarY_16992_11_0_2_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] [A|modJJ|enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17084 Priority:0[Rule]
+a70GrammarY_16992_11_0_1_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 5, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17067 Priority:0[Rule]
+a70GrammarY_16992_11_0_0_2 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] <[N|NG(ACTION)^.M] [N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17095 Priority:0[Rule]
+a70GrammarY_16992_5_3_0 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[0|NG N|NG|nc(ACTION)det0 NP++ H ^.H]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17058 Priority:0[Rule]
+a70GrammarY_16992_5_2_1 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17077 Priority:0[Rule]
+a70GrammarY_16992_5_1_2 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17056 Priority:0[Rule]
+a70GrammarY_16992_5_0_3 == {[] <[DT(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17087 Priority:0[Rule]
+a70GrammarY_16992_11_1_0_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17083 Priority:0[Rule]
+a70GrammarY_16992_11_0_1_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] [A|modJJ|enVG|ingVG(ACTION)^.M] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17066 Priority:0[Rule]
+a70GrammarY_16992_11_0_0_1 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] <[N|NG(ACTION)^.M] [NC(ACTION)H MN H ^.H ]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 4, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17057 Priority:0[Rule]
+a70GrammarY_16992_5_2_0 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[0|NG N|NG|nc(ACTION)det0 NP++ H ^.H]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17076 Priority:0[Rule]
+a70GrammarY_16992_5_1_1 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 3, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17055 Priority:0[Rule]
+a70GrammarY_16992_5_0_2 == {[] <[DT(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17065 Priority:0[Rule]
+a70GrammarY_16992_11_0_0_0 == {[BR|P|VC] <[NC(ACTION)^.possM] [POS(ACTION)^.X] ["s"(ACTION)^.X] <[NC(ACTION)MN NP++ H ^.H]>> [BR|RB|MD|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17075 Priority:0[Rule]
+a70GrammarY_16992_5_1_0 == {[] <[DT(ACTION)^.M] [AC|modJJ|ac|enVG|Ving(ACTION)^.M] <[0|NG N|NG|nc(ACTION)det0 NP++ H ^.H]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17054 Priority:0[Rule]
+a70GrammarY_16992_5_0_1 == {[] <[DT(ACTION)^.M] <[N|NG !VB !VBZ(ACTION)^.M] [0|NG N|NG|nc(ACTION)H det0 H ^.H ]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NP++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17052 Priority:0[Rule]
+a70GrammarY_16992_45_1 == {[] <[rCL hasxCL(ACTION)^.rCL] [CM] [CL|yVC(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17123 Priority:0[Rule]
+a70GrammarY_16992_44_ol3 == {[] <[NP !PRP !per(ACTION)H H ^.H ] <[CM] [CL hasSubj FULLSTRING 'which-'(ACTION) H ^.H ] [CM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 3, "Action": "^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17124 Priority:0[Rule]
+a70GrammarY_16992_44_ol3 == {[] <[NP !PRP !per(ACTION)H H ^.H ] <[CM] [CL hasSubj FULLSTRING 'that-'(ACTION) H ^.H ] [CM]>> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 3, "Action": "^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17074 Priority:0[Rule]
+a70GrammarY_16992_12_1 == {[] <[linkV !VO !HC(ACTION)H H ^.H ] [PP(ACTION)^.C] [RB(ACTION)^.R]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "HC++ VP++", "ChunkLevel": 1}]
+
+//ID:17111 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['they'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17112 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['we'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17113 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['you'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17114 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['i'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17115 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['he'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17116 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['she'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17117 Priority:0[Rule]
+a70GrammarY_16992_10_ol2 == {[] <[NP(ACTION)H H ^.H ] <['it'(ACTION)^.S] [Pred|VB|VG(ACTION)H SV H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:17000 Priority:0[Rule]
+a70GrammarY_16992_7 == {[] <[vS !hasoCL !hasO(ACTION)H H ^.H ] [CL !hasObj(ACTION)^.oCL]> [!SC !infinitive] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16999 Priority:0[Rule]
+a70GrammarY_16992_6 == {[BR|vS] <[nN !PP !VG !VP !AP !PP !CL !finite !yVC(ACTION)^.synS NP] [VC !nonPred !SV(ACTION)H SV VP H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17053 Priority:0[Rule]
+a70GrammarY_16992_5_0_0 == {[] <[DT(ACTION)^.M] <[0|NG N|NG|nc(ACTION)det0 NP++ H ^.H]>> [!N !NG] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:17051 Priority:0[Rule]
+a70GrammarY_16992_45_0 == {[] <[rCL hasxCL(ACTION)^.rCL] [CL|yVC(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17121 Priority:0[Rule]
+a70GrammarY_16992_43_ol2 == {[] <[NP !PRP !per(ACTION)H H ^.H ] [CL hasSubj FULLSTRING 'which-'(ACTION)^.mCL]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17122 Priority:0[Rule]
+a70GrammarY_16992_43_ol2 == {[] <[NP !PRP !per(ACTION)H H ^.H ] [CL hasSubj FULLSTRING 'that-'(ACTION)^.mCL]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17035 Priority:0[Rule]
+a70GrammarY_16992_42 == {[] <[beC !hasObj(ACTION)H H ^.H ] [PP(ACTION)^.C]> [BR|finite|MD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17034 Priority:0[Rule]
+a70GrammarY_16992_41 == {[BR|finite|Ved] <[N|NG|NP|NE !PRP(ACTION)H H ^.H ] [Ving !VG(ACTION)^.mVP]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17118 Priority:0[Rule]
+a70GrammarY_16992_40_ol0 == {[BR] <[NP !PRP !xC(ACTION)H H ^.H ] [PP(ACTION)^.M]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17119 Priority:0[Rule]
+a70GrammarY_16992_40_ol0 == {[vS] <[NP !PRP !xC(ACTION)H H ^.H ] [PP(ACTION)^.M]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17120 Priority:0[Rule]
+a70GrammarY_16992_40_ol0 == {['that'] <[NP !PRP !xC(ACTION)H H ^.H ] [PP(ACTION)^.M]> [BR|finite] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16997 Priority:0[Rule]
+a70GrammarY_16992_4 == {[] <[A|ac|modJJ(ACTION)^.M AP] [N|NG(ACTION)H MN H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NG++", "ChunkLevel": 1}]
+
+//ID:17040 Priority:0[Rule]
+a70GrammarY_16992_3_1 == {[] <[NP(ACTION)^.synS NP] [sRB(ACTION)^.X] [Pred !hasSubj(ACTION)H SV H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17032 Priority:0[Rule]
+a70GrammarY_16992_39 == {[] <[vtoV(ACTION)H H ^.H ] [infinitive vS(ACTION)^.oVP]> [!wh] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17030 Priority:0[Rule]
+a70GrammarY_16992_37 == {[BR] <[N|NG|NP|NE !vtoV(ACTION)H NP H ^.H ] [infinitive(ACTION)^.mCL]> [finite|MD|BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17029 Priority:0[Rule]
+a70GrammarY_16992_36 == {[] <[yVC VNPTO hasO(ACTION)H H ^.H ] [infinitive(ACTION)^.C]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17028 Priority:0[Rule]
+a70GrammarY_16992_35 == {[] <[SC !hasCL(ACTION)H rCL H ^.H ] [CL(ACTION)^.xCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17050 Priority:0[Rule]
+a70GrammarY_16992_33_1 == {[BR] <[PP|RC !CL !hasCL !SC(ACTION)^.clR] [CM] [CL(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17025 Priority:0[Rule]
+a70GrammarY_16992_32 == {[] <[NP !PRP(ACTION)H H ^.H ] [Ving|ingVG VP(ACTION)^.mCL]> [BR|VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17023 Priority:0[Rule]
+a70GrammarY_16992_30 == {[BR] <[Ving(ACTION)^.Subj] [yVC !nonPred !hasSubj(ACTION)H SV VP H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17021 Priority:0[Rule]
+a70GrammarY_16992_28 == {[] <[P(ACTION)^.Z] [NC(ACTION)H H ^.H ]> [BR|VC !wh] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "PP++", "ChunkLevel": 1}]
+
+//ID:17020 Priority:0[Rule]
+a70GrammarY_16992_27 == {[] <[vVB !saturated(ACTION)vVBSat H ^.H ] [infinitive(ACTION)^.oVP V+ VP]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17017 Priority:0[Rule]
+a70GrammarY_16992_24 == {[BR] <[nc plu(ACTION)^.S NP] [0 VB vc(ACTION)H SV H ^.H ]> [BR|PP|RB|P] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17016 Priority:0[Rule]
+a70GrammarY_16992_23 == {[BR] <[NP !advP !PP(ACTION)^.S NP] [0 ed(ACTION)H VP past H ^.H ]> [PP|BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ SV++", "ChunkLevel": 1}]
+
+//ID:17015 Priority:0[Rule]
+a70GrammarY_16992_22 == {[] <[yVC !vi !vS(ACTION)H VO H ^.H ] [nN !PP !VG !VP !AP !PP !CL !finite !yVC !DE !v2NN !whQ(ACTION)^.O]> [PP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17048 Priority:0[Rule]
+a70GrammarY_16992_20_1 == {[] <[inf|ingVG !vi !passive !hasO(ACTION)H VO H ^.H ] [RB(ACTION)^.R] [NP(ACTION)^.O]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17011 Priority:0[Rule]
+a70GrammarY_16992_18 == {[] <[linkV !HC !VP(ACTION)H HC H ^.H ] [A|AC|ac(ACTION)^.C]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17010 Priority:0[Rule]
+a70GrammarY_16992_17 == {[] <[yVC(ACTION)H H ^.H ] [PP(ACTION)^.R]> [BR|RB] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17008 Priority:0[Rule]
+a70GrammarY_16992_15 == {[] <[VP|CL(ACTION)H H ^.H ] [RB|RP !hasCL !SC !rightB(ACTION)^.R]> [!VC] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17007 Priority:0[Rule]
+a70GrammarY_16992_14 == {[] <[VP|CL(ACTION)H H ^.H ] [RB|RP !hasCL !rightB(ACTION)^.R]> [!VC !CL] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17006 Priority:0[Rule]
+a70GrammarY_16992_13 == {[BR] <[VC|v !vi !hasO !hasoVP(ACTION)H V+ H ^.H ] [NP !nom(ACTION)^.O]> [BR|RB|PP !wh] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VO++ VP++", "ChunkLevel": 1}]
+
+//ID:17073 Priority:0[Rule]
+a70GrammarY_16992_12_0 == {[] <[linkV !VO !HC(ACTION)H H ^.H ] [PP(ACTION)^.C]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "HC++ VP++", "ChunkLevel": 1}]
+
+//ID:16993 Priority:0[Rule]
+a70GrammarY_16992_0 == {[] <[NP(ACTION)^.synS] [finite !hasSubj(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:16992 Priority:0[Rule]
+a70GrammarY == {[] <[vNPVB(ACTION)H H ^.H ] [NP(ACTION)^.O] [VP(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17002 Priority:0[Rule]
+a70GrammarY_16992_9 == {[] <[linkV !hasObj !hasC(ACTION)H H ^.H ] [NP(ACTION)^.O]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17001 Priority:0[Rule]
+a70GrammarY_16992_8 == {[] <[vS !hasoCL !hasO(ACTION)H H ^.H ] [CL hasObj(ACTION)^.oCL]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17039 Priority:0[Rule]
+a70GrammarY_16992_3_0 == {[] <[NP(ACTION)^.synS NP] [Pred !hasSubj(ACTION)H SV H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:17031 Priority:0[Rule]
+a70GrammarY_16992_38 == {[] <[vtoV(ACTION)H H ^.H ] [infinitive !vS(ACTION)^.oVP]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17027 Priority:0[Rule]
+a70GrammarY_16992_34 == {[] <[yVC(ACTION)H V+ H ^.H ] [RC|PP !hasCL !SC(ACTION)^.R]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17049 Priority:0[Rule]
+a70GrammarY_16992_33_0 == {[BR] <[PP|RC !CL !hasCL !SC(ACTION)^.clR] [CL(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17024 Priority:0[Rule]
+a70GrammarY_16992_31 == {[] <[NP !timeUnit(ACTION)H H ^.H ] [PP(ACTION)^.M]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:17022 Priority:0[Rule]
+a70GrammarY_16992_29 == {[] <[VG|VP|CL|Ving|Ved|Ven(ACTION)H H ^.H ] [PP(ACTION)^.R]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VG++", "ChunkLevel": 1}]
+
+//ID:17019 Priority:0[Rule]
+a70GrammarY_16992_26 == {[] <[vVB !saturated(ACTION)vVBSat H ^.H ] [VP infinitive(ACTION)^.oVP V+]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17018 Priority:0[Rule]
+a70GrammarY_16992_25 == {[] <[MD(ACTION)^.Z] [VC|vc !Xs(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "VG++", "ChunkLevel": 1}]
+
+//ID:17014 Priority:0[Rule]
+a70GrammarY_16992_21 == {[] <[vVB(ACTION)H HC vVBSat H ^.H ] [VP infinitive(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17047 Priority:0[Rule]
+a70GrammarY_16992_20_0 == {[] <[inf|ingVG !vi !passive !hasO(ACTION)H VO H ^.H ] [NP(ACTION)^.O]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16995 Priority:0[Rule]
+a70GrammarY_16992_2 == {[] <[vVing(ACTION)H H ^.H ] [VP Ving(ACTION)^.oVP VP]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17012 Priority:0[Rule]
+a70GrammarY_16992_19 == {[] <[linkV !HC !VP(ACTION)H HC H ^.H ] [AP|ac(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:17009 Priority:0[Rule]
+a70GrammarY_16992_16 == {[] <[linkV(ACTION)H HC H ^.H ] [AP(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16994 Priority:0[Rule]
+a70GrammarY_16992_1 == {[] <[NP(ACTION)^.synS] [finite !hasSubj VP(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

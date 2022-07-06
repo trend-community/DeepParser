@@ -1,0 +1,1311 @@
+// ****Rules**** ../../fsa/Y/a10CDsY.txt
+// * size: 317 *
+//ID:12654 Priority:0[Rule]
+a10CDsY_12224_26_9_3_ol17 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 16, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12655 Priority:0[Rule]
+a10CDsY_12224_26_9_3_ol17 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 16, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12656 Priority:0[Rule]
+a10CDsY_12224_26_9_3_ol17 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 16, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12657 Priority:0[Rule]
+a10CDsY_12224_26_9_3_ol17 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 17, "StringChunkLength": 17, "HeadOffset": 16, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12539 Priority:0[Rule]
+a10CDsY_12224_26_9_2_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12540 Priority:0[Rule]
+a10CDsY_12224_26_9_2_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12541 Priority:0[Rule]
+a10CDsY_12224_26_9_2_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12542 Priority:0[Rule]
+a10CDsY_12224_26_9_2_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12596 Priority:0[Rule]
+a10CDsY_12224_26_8_3_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12597 Priority:0[Rule]
+a10CDsY_12224_26_8_3_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12598 Priority:0[Rule]
+a10CDsY_12224_26_8_3_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12599 Priority:0[Rule]
+a10CDsY_12224_26_8_3_ol16 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 16, "StringChunkLength": 16, "HeadOffset": 15, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12610 Priority:0[Rule]
+a10CDsY_12224_26_9_1_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12611 Priority:0[Rule]
+a10CDsY_12224_26_9_1_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12612 Priority:0[Rule]
+a10CDsY_12224_26_9_1_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12613 Priority:0[Rule]
+a10CDsY_12224_26_9_1_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12511 Priority:0[Rule]
+a10CDsY_12224_26_8_2_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12512 Priority:0[Rule]
+a10CDsY_12224_26_8_2_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12513 Priority:0[Rule]
+a10CDsY_12224_26_8_2_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12514 Priority:0[Rule]
+a10CDsY_12224_26_8_2_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12662 Priority:0[Rule]
+a10CDsY_12224_26_7_3_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12663 Priority:0[Rule]
+a10CDsY_12224_26_7_3_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12664 Priority:0[Rule]
+a10CDsY_12224_26_7_3_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12665 Priority:0[Rule]
+a10CDsY_12224_26_7_3_ol15 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 15, "StringChunkLength": 15, "HeadOffset": 14, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12535 Priority:0[Rule]
+a10CDsY_12224_26_9_0_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12536 Priority:0[Rule]
+a10CDsY_12224_26_9_0_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12537 Priority:0[Rule]
+a10CDsY_12224_26_9_0_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12538 Priority:0[Rule]
+a10CDsY_12224_26_9_0_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12646 Priority:0[Rule]
+a10CDsY_12224_26_8_1_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12647 Priority:0[Rule]
+a10CDsY_12224_26_8_1_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12648 Priority:0[Rule]
+a10CDsY_12224_26_8_1_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12649 Priority:0[Rule]
+a10CDsY_12224_26_8_1_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12563 Priority:0[Rule]
+a10CDsY_12224_26_7_2_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12564 Priority:0[Rule]
+a10CDsY_12224_26_7_2_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12565 Priority:0[Rule]
+a10CDsY_12224_26_7_2_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12566 Priority:0[Rule]
+a10CDsY_12224_26_7_2_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12592 Priority:0[Rule]
+a10CDsY_12224_26_6_3_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12593 Priority:0[Rule]
+a10CDsY_12224_26_6_3_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12594 Priority:0[Rule]
+a10CDsY_12224_26_6_3_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12595 Priority:0[Rule]
+a10CDsY_12224_26_6_3_ol14 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 14, "StringChunkLength": 14, "HeadOffset": 13, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12507 Priority:0[Rule]
+a10CDsY_12224_26_8_0_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12508 Priority:0[Rule]
+a10CDsY_12224_26_8_0_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12509 Priority:0[Rule]
+a10CDsY_12224_26_8_0_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12510 Priority:0[Rule]
+a10CDsY_12224_26_8_0_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12622 Priority:0[Rule]
+a10CDsY_12224_26_7_1_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12623 Priority:0[Rule]
+a10CDsY_12224_26_7_1_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12624 Priority:0[Rule]
+a10CDsY_12224_26_7_1_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12625 Priority:0[Rule]
+a10CDsY_12224_26_7_1_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12503 Priority:0[Rule]
+a10CDsY_12224_26_6_2_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12504 Priority:0[Rule]
+a10CDsY_12224_26_6_2_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12505 Priority:0[Rule]
+a10CDsY_12224_26_6_2_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12506 Priority:0[Rule]
+a10CDsY_12224_26_6_2_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12672 Priority:0[Rule]
+a10CDsY_12224_26_5_3_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12673 Priority:0[Rule]
+a10CDsY_12224_26_5_3_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12674 Priority:0[Rule]
+a10CDsY_12224_26_5_3_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12675 Priority:0[Rule]
+a10CDsY_12224_26_5_3_ol13 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 13, "StringChunkLength": 13, "HeadOffset": 12, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12559 Priority:0[Rule]
+a10CDsY_12224_26_7_0_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12560 Priority:0[Rule]
+a10CDsY_12224_26_7_0_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12561 Priority:0[Rule]
+a10CDsY_12224_26_7_0_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12562 Priority:0[Rule]
+a10CDsY_12224_26_7_0_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12678 Priority:0[Rule]
+a10CDsY_12224_26_6_1_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12679 Priority:0[Rule]
+a10CDsY_12224_26_6_1_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12680 Priority:0[Rule]
+a10CDsY_12224_26_6_1_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12681 Priority:0[Rule]
+a10CDsY_12224_26_6_1_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12531 Priority:0[Rule]
+a10CDsY_12224_26_5_2_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12532 Priority:0[Rule]
+a10CDsY_12224_26_5_2_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12533 Priority:0[Rule]
+a10CDsY_12224_26_5_2_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12534 Priority:0[Rule]
+a10CDsY_12224_26_5_2_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12588 Priority:0[Rule]
+a10CDsY_12224_26_4_3_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12589 Priority:0[Rule]
+a10CDsY_12224_26_4_3_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12590 Priority:0[Rule]
+a10CDsY_12224_26_4_3_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12591 Priority:0[Rule]
+a10CDsY_12224_26_4_3_ol12 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 12, "StringChunkLength": 12, "HeadOffset": 11, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12499 Priority:0[Rule]
+a10CDsY_12224_26_6_0_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12500 Priority:0[Rule]
+a10CDsY_12224_26_6_0_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12501 Priority:0[Rule]
+a10CDsY_12224_26_6_0_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12502 Priority:0[Rule]
+a10CDsY_12224_26_6_0_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12606 Priority:0[Rule]
+a10CDsY_12224_26_5_1_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12607 Priority:0[Rule]
+a10CDsY_12224_26_5_1_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12608 Priority:0[Rule]
+a10CDsY_12224_26_5_1_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12609 Priority:0[Rule]
+a10CDsY_12224_26_5_1_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12495 Priority:0[Rule]
+a10CDsY_12224_26_4_2_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12496 Priority:0[Rule]
+a10CDsY_12224_26_4_2_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12497 Priority:0[Rule]
+a10CDsY_12224_26_4_2_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12498 Priority:0[Rule]
+a10CDsY_12224_26_4_2_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12658 Priority:0[Rule]
+a10CDsY_12224_26_3_3_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12659 Priority:0[Rule]
+a10CDsY_12224_26_3_3_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12660 Priority:0[Rule]
+a10CDsY_12224_26_3_3_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12661 Priority:0[Rule]
+a10CDsY_12224_26_3_3_ol11 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 11, "StringChunkLength": 11, "HeadOffset": 10, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12310 Priority:0[Rule]
+a10CDsY_12224_15_6_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12527 Priority:0[Rule]
+a10CDsY_12224_26_5_0_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12528 Priority:0[Rule]
+a10CDsY_12224_26_5_0_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12529 Priority:0[Rule]
+a10CDsY_12224_26_5_0_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12530 Priority:0[Rule]
+a10CDsY_12224_26_5_0_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12642 Priority:0[Rule]
+a10CDsY_12224_26_4_1_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12643 Priority:0[Rule]
+a10CDsY_12224_26_4_1_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12644 Priority:0[Rule]
+a10CDsY_12224_26_4_1_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12645 Priority:0[Rule]
+a10CDsY_12224_26_4_1_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12551 Priority:0[Rule]
+a10CDsY_12224_26_3_2_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12552 Priority:0[Rule]
+a10CDsY_12224_26_3_2_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12553 Priority:0[Rule]
+a10CDsY_12224_26_3_2_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12554 Priority:0[Rule]
+a10CDsY_12224_26_3_2_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12584 Priority:0[Rule]
+a10CDsY_12224_26_2_3_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12585 Priority:0[Rule]
+a10CDsY_12224_26_2_3_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12586 Priority:0[Rule]
+a10CDsY_12224_26_2_3_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12587 Priority:0[Rule]
+a10CDsY_12224_26_2_3_ol10 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12405 Priority:0[Rule]
+a10CDsY_12224_21_3_3 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12395 Priority:0[Rule]
+a10CDsY_12224_16_6 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12309 Priority:0[Rule]
+a10CDsY_12224_15_6_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12354 Priority:0[Rule]
+a10CDsY_12224_15_5_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12362 Priority:0[Rule]
+a10CDsY_12224_27_5_1 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [CM] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12491 Priority:0[Rule]
+a10CDsY_12224_26_4_0_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12492 Priority:0[Rule]
+a10CDsY_12224_26_4_0_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12493 Priority:0[Rule]
+a10CDsY_12224_26_4_0_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12494 Priority:0[Rule]
+a10CDsY_12224_26_4_0_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12616 Priority:0[Rule]
+a10CDsY_12224_26_3_1_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12617 Priority:0[Rule]
+a10CDsY_12224_26_3_1_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12618 Priority:0[Rule]
+a10CDsY_12224_26_3_1_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12619 Priority:0[Rule]
+a10CDsY_12224_26_3_1_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12487 Priority:0[Rule]
+a10CDsY_12224_26_2_2_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12488 Priority:0[Rule]
+a10CDsY_12224_26_2_2_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12489 Priority:0[Rule]
+a10CDsY_12224_26_2_2_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12490 Priority:0[Rule]
+a10CDsY_12224_26_2_2_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12650 Priority:0[Rule]
+a10CDsY_12224_26_1_3_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12651 Priority:0[Rule]
+a10CDsY_12224_26_1_3_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12652 Priority:0[Rule]
+a10CDsY_12224_26_1_3_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12653 Priority:0[Rule]
+a10CDsY_12224_26_1_3_ol9 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12447 Priority:0[Rule]
+a10CDsY_12224_25_3_p2_p4_p6 == {[] <[CD(ACTION) H ^.H ] ["," !spaceH] [CD] ["," !spaceH] [CD] ["," !spaceH] [CD] ["," !spaceH] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12444 Priority:0[Rule]
+a10CDsY_12224_22_3_p3_p5_p7 == {[] <[CD spaceQian !spaceH] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD spaceHou !spaceQ(ACTION)DE digitDots H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12404 Priority:0[Rule]
+a10CDsY_12224_21_3_2 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12318 Priority:0[Rule]
+a10CDsY_12224_21_2_3 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12280 Priority:0[Rule]
+a10CDsY_12224_17_6 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12394 Priority:0[Rule]
+a10CDsY_12224_16_5 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12353 Priority:0[Rule]
+a10CDsY_12224_15_5_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12308 Priority:0[Rule]
+a10CDsY_12224_15_4_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12361 Priority:0[Rule]
+a10CDsY_12224_27_5_0 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12324 Priority:0[Rule]
+a10CDsY_12224_27_4_1 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [CM] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12547 Priority:0[Rule]
+a10CDsY_12224_26_3_0_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12548 Priority:0[Rule]
+a10CDsY_12224_26_3_0_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12549 Priority:0[Rule]
+a10CDsY_12224_26_3_0_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12550 Priority:0[Rule]
+a10CDsY_12224_26_3_0_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12666 Priority:0[Rule]
+a10CDsY_12224_26_2_1_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12667 Priority:0[Rule]
+a10CDsY_12224_26_2_1_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12668 Priority:0[Rule]
+a10CDsY_12224_26_2_1_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12669 Priority:0[Rule]
+a10CDsY_12224_26_2_1_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12523 Priority:0[Rule]
+a10CDsY_12224_26_1_2_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12524 Priority:0[Rule]
+a10CDsY_12224_26_1_2_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12525 Priority:0[Rule]
+a10CDsY_12224_26_1_2_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12526 Priority:0[Rule]
+a10CDsY_12224_26_1_2_ol8 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12580 Priority:0[Rule]
+a10CDsY_12224_26_0_3_ol8 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12581 Priority:0[Rule]
+a10CDsY_12224_26_0_3_ol8 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12582 Priority:0[Rule]
+a10CDsY_12224_26_0_3_ol8 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12583 Priority:0[Rule]
+a10CDsY_12224_26_0_3_ol8 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12403 Priority:0[Rule]
+a10CDsY_12224_21_3_1 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12317 Priority:0[Rule]
+a10CDsY_12224_21_2_2 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12358 Priority:0[Rule]
+a10CDsY_12224_21_1_3 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12279 Priority:0[Rule]
+a10CDsY_12224_17_5 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12393 Priority:0[Rule]
+a10CDsY_12224_16_4 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12307 Priority:0[Rule]
+a10CDsY_12224_15_4_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12401 Priority:0[Rule]
+a10CDsY_12224_15_3_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12676 Priority:0[Rule]
+a10CDsY_12224_5_3_1_1_ol6 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12677 Priority:0[Rule]
+a10CDsY_12224_5_3_1_1_ol6 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12323 Priority:0[Rule]
+a10CDsY_12224_27_4_0 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12407 Priority:0[Rule]
+a10CDsY_12224_27_3_1 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [CM] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12483 Priority:0[Rule]
+a10CDsY_12224_26_2_0_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12484 Priority:0[Rule]
+a10CDsY_12224_26_2_0_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12485 Priority:0[Rule]
+a10CDsY_12224_26_2_0_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12486 Priority:0[Rule]
+a10CDsY_12224_26_2_0_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12602 Priority:0[Rule]
+a10CDsY_12224_26_1_1_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12603 Priority:0[Rule]
+a10CDsY_12224_26_1_1_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12604 Priority:0[Rule]
+a10CDsY_12224_26_1_1_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12605 Priority:0[Rule]
+a10CDsY_12224_26_1_1_ol7 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12479 Priority:0[Rule]
+a10CDsY_12224_26_0_2_ol7 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12480 Priority:0[Rule]
+a10CDsY_12224_26_0_2_ol7 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12481 Priority:0[Rule]
+a10CDsY_12224_26_0_2_ol7 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12482 Priority:0[Rule]
+a10CDsY_12224_26_0_2_ol7 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12448 Priority:0[Rule]
+a10CDsY_12224_25_2_p2_p4 == {[] <[CD(ACTION) H ^.H ] ["," !spaceH] [CD] ["," !spaceH] [CD] ["," !spaceH] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12449 Priority:0[Rule]
+a10CDsY_12224_22_2_p3_p5 == {[] <[CD spaceQian !spaceH] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD spaceHou !spaceQ(ACTION)DE digitDots H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12402 Priority:0[Rule]
+a10CDsY_12224_21_3_0 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12316 Priority:0[Rule]
+a10CDsY_12224_21_2_1 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12357 Priority:0[Rule]
+a10CDsY_12224_21_1_2 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12314 Priority:0[Rule]
+a10CDsY_12224_21_0_3 == {[!dot] <[CD !spaceH] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12278 Priority:0[Rule]
+a10CDsY_12224_17_4 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12392 Priority:0[Rule]
+a10CDsY_12224_16_3 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12400 Priority:0[Rule]
+a10CDsY_12224_15_3_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12306 Priority:0[Rule]
+a10CDsY_12224_15_2_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12557 Priority:0[Rule]
+a10CDsY_12224_5_3_1_0_ol6 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12558 Priority:0[Rule]
+a10CDsY_12224_5_3_1_0_ol6 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12614 Priority:0[Rule]
+a10CDsY_12224_5_3_0_1_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12615 Priority:0[Rule]
+a10CDsY_12224_5_3_0_1_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12578 Priority:0[Rule]
+a10CDsY_12224_5_2_1_1_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12579 Priority:0[Rule]
+a10CDsY_12224_5_2_1_1_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12406 Priority:0[Rule]
+a10CDsY_12224_27_3_0 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12322 Priority:0[Rule]
+a10CDsY_12224_27_2_1 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [CM] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12519 Priority:0[Rule]
+a10CDsY_12224_26_1_0_ol6 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12520 Priority:0[Rule]
+a10CDsY_12224_26_1_0_ol6 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12521 Priority:0[Rule]
+a10CDsY_12224_26_1_0_ol6 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12522 Priority:0[Rule]
+a10CDsY_12224_26_1_0_ol6 == {[] <[alpha] ["."] [!spaceQ !spaceH] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12638 Priority:0[Rule]
+a10CDsY_12224_26_0_1_ol6 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12639 Priority:0[Rule]
+a10CDsY_12224_26_0_1_ol6 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12640 Priority:0[Rule]
+a10CDsY_12224_26_0_1_ol6 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12641 Priority:0[Rule]
+a10CDsY_12224_26_0_1_ol6 == {[] <[alpha] ["."] ["@"] [!spaceQ !spaceH] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12315 Priority:0[Rule]
+a10CDsY_12224_21_2_0 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12356 Priority:0[Rule]
+a10CDsY_12224_21_1_1 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12313 Priority:0[Rule]
+a10CDsY_12224_21_0_2 == {[!dot] <[CD !spaceH] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12277 Priority:0[Rule]
+a10CDsY_12224_17_3 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12391 Priority:0[Rule]
+a10CDsY_12224_16_2 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12305 Priority:0[Rule]
+a10CDsY_12224_15_2_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12352 Priority:0[Rule]
+a10CDsY_12224_15_1_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12350 Priority:0[Rule]
+a10CDsY_12224_7_1_1 == {[] <[DE road(ACTION)H H ^.H ] [CM|softJM] [NNP] [CM|softJM] [DE address(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12543 Priority:0[Rule]
+a10CDsY_12224_5_3_0_0_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12544 Priority:0[Rule]
+a10CDsY_12224_5_3_0_0_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12473 Priority:0[Rule]
+a10CDsY_12224_5_2_1_0_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12474 Priority:0[Rule]
+a10CDsY_12224_5_2_1_0_ol5 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12636 Priority:0[Rule]
+a10CDsY_12224_5_2_0_1_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12637 Priority:0[Rule]
+a10CDsY_12224_5_2_0_1_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12620 Priority:0[Rule]
+a10CDsY_12224_5_1_1_1_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12621 Priority:0[Rule]
+a10CDsY_12224_5_1_1_1_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12439 Priority:0[Rule]
+a10CDsY_12224_4_1_p2 == {[] <[0 alpha(ACTION)^.m] [0 DDSH !spaceQ !spaceH] [alpha(ACTION)^.m] [0 DDSH !spaceQ !spaceH] [N|NNS|nc(ACTION)H hyphenated H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ NG++", "ChunkLevel": 1}]
+
+//ID:12571 Priority:0[Rule]
+a10CDsY_12224_3_1_ol1 == {[] <["is"(ACTION)^.Z] ["going"] ["to"] [RB(ACTION)^.R] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12572 Priority:0[Rule]
+a10CDsY_12224_3_1_ol1 == {[] <["am"(ACTION)^.Z] ["going"] ["to"] [RB(ACTION)^.R] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12573 Priority:0[Rule]
+a10CDsY_12224_3_1_ol1 == {[] <["are"(ACTION)^.Z] ["going"] ["to"] [RB(ACTION)^.R] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12574 Priority:0[Rule]
+a10CDsY_12224_3_1_ol1 == {[] <["was"(ACTION)^.Z] ["going"] ["to"] [RB(ACTION)^.R] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12575 Priority:0[Rule]
+a10CDsY_12224_3_1_ol1 == {[] <["were"(ACTION)^.Z] ["going"] ["to"] [RB(ACTION)^.R] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12321 Priority:0[Rule]
+a10CDsY_12224_27_2_0 == {[!caseAb] <[caseAb] [caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12360 Priority:0[Rule]
+a10CDsY_12224_27_1_1 == {[!caseAb] <[caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [CM] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12475 Priority:0[Rule]
+a10CDsY_12224_26_0_0_ol5 == {[] <[alpha] ["."] ["@"] ["."] ["com"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12476 Priority:0[Rule]
+a10CDsY_12224_26_0_0_ol5 == {[] <[alpha] ["."] ["@"] ["."] ["edu"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12477 Priority:0[Rule]
+a10CDsY_12224_26_0_0_ol5 == {[] <[alpha] ["."] ["@"] ["."] ["gov"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12478 Priority:0[Rule]
+a10CDsY_12224_26_0_0_ol5 == {[] <[alpha] ["."] ["@"] ["."] ["net"(ACTION)H contact H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12437 Priority:0[Rule]
+a10CDsY_12224_25_1_p2 == {[] <[CD(ACTION) H ^.H ] ["," !spaceH] [CD] ["," !spaceH] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12440 Priority:0[Rule]
+a10CDsY_12224_22_1_p3 == {[] <[CD spaceQian !spaceH] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD spaceHou !spaceQ(ACTION)DE digitDots H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12355 Priority:0[Rule]
+a10CDsY_12224_21_1_0 == {[!dot] <[CD !spaceH] [CD !spaceH !spaceQ] [dot !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12312 Priority:0[Rule]
+a10CDsY_12224_21_0_1 == {[!dot] <[CD !spaceH] [dot !spaceH !spaceQ] [CD !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12276 Priority:0[Rule]
+a10CDsY_12224_17_2 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12390 Priority:0[Rule]
+a10CDsY_12224_16_1 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12351 Priority:0[Rule]
+a10CDsY_12224_15_1_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12304 Priority:0[Rule]
+a10CDsY_12224_15_0_1 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12436 Priority:0[Rule]
+a10CDsY_12224_13_1_p2 == {[] <[0 digit spaceQ(ACTION)^.X] [0 '-' !spaceQ !spaceH(ACTION)^.X] [0 digit !spaceQ] [0 '-' !spaceQ !spaceH(ACTION)^.X] [0 digit(ACTION)H hyphenated H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12349 Priority:0[Rule]
+a10CDsY_12224_7_1_0 == {[] <[DE road(ACTION)H H ^.H ] [CM|softJM] [NNP] [DE address(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12302 Priority:0[Rule]
+a10CDsY_12224_7_0_1 == {[] <[DE road(ACTION)H H ^.H ] [NNP] [CM|softJM] [DE address(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12469 Priority:0[Rule]
+a10CDsY_12224_5_2_0_0_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12470 Priority:0[Rule]
+a10CDsY_12224_5_2_0_0_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12555 Priority:0[Rule]
+a10CDsY_12224_5_1_1_0_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12556 Priority:0[Rule]
+a10CDsY_12224_5_1_1_0_ol4 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12670 Priority:0[Rule]
+a10CDsY_12224_5_1_0_1_ol3 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12671 Priority:0[Rule]
+a10CDsY_12224_5_1_0_1_ol3 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12682 Priority:0[Rule]
+a10CDsY_12224_5_0_1_1_ol3 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12683 Priority:0[Rule]
+a10CDsY_12224_5_0_1_1_ol3 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12458 Priority:0[Rule]
+a10CDsY_12224_3_0_ol1 == {[] <["is"(ACTION)^.Z] ["going"] ["to"] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12459 Priority:0[Rule]
+a10CDsY_12224_3_0_ol1 == {[] <["am"(ACTION)^.Z] ["going"] ["to"] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12460 Priority:0[Rule]
+a10CDsY_12224_3_0_ol1 == {[] <["are"(ACTION)^.Z] ["going"] ["to"] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12461 Priority:0[Rule]
+a10CDsY_12224_3_0_ol1 == {[] <["was"(ACTION)^.Z] ["going"] ["to"] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12462 Priority:0[Rule]
+a10CDsY_12224_3_0_ol1 == {[] <["were"(ACTION)^.Z] ["going"] ["to"] [VB|v(ACTION)H V+ modal H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ VG++", "ChunkLevel": 1}]
+
+//ID:12359 Priority:0[Rule]
+a10CDsY_12224_27_1_0 == {[!caseAb] <[caseAb] [caseAb] [caseAb(ACTION)H NEW com H ^.H ] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12320 Priority:0[Rule]
+a10CDsY_12224_27_0_1 == {[!caseAb] <[caseAb] [caseAb(ACTION)H NEW com H ^.H ] [CM] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12311 Priority:0[Rule]
+a10CDsY_12224_21_0_0 == {[!dot] <[CD !spaceH] [dot !spaceH !spaceQ] [CD !spaceQ(ACTION) H ^.H ]> [!dot] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 3, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12245 Priority:0[Rule]
+a10CDsY_12224_20 == {[] <[preNumC(ACTION)^.X RB] [CD(ACTION)^.X] ['-'(ACTION)^.X] [CD(ACTION)H quant H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12282 Priority:0[Rule]
+a10CDsY_12224_19_1 == {[] <[preNumC(ACTION)^.X RB] [CD(ACTION)^.X] ['~'(ACTION)^.X] [CD(ACTION)H quant H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12275 Priority:0[Rule]
+a10CDsY_12224_17_1 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12389 Priority:0[Rule]
+a10CDsY_12224_16_0 == {[] <[0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ] [postNumC(ACTION)^.X]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12303 Priority:0[Rule]
+a10CDsY_12224_15_0_0 == {[] <[preNumC(ACTION)^.X RB] [0 CD(ACTION)^.m] [0 CD !spaceQ(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12471 Priority:0[Rule]
+a10CDsY_12224_14_1_ol4 == {[] <<[d1|d2(ACTION)H time timeRB H ^.H ] [":"] [d2]> ['pm'(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:12472 Priority:0[Rule]
+a10CDsY_12224_14_1_ol4 == {[] <<[d1|d2(ACTION)H time timeRB H ^.H ] [":"] [d2]> ['am'(ACTION)^.C]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++ H ^.H ", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "", "ChunkLevel": 2}]
+
+//ID:12265 Priority:0[Rule]
+a10CDsY_12224_13_0 == {[] <[0 digit spaceQ(ACTION)^.X] [0 digit !spaceQ] [0 '-' !spaceQ !spaceH(ACTION)^.X] [0 digit(ACTION)H hyphenated H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12567 Priority:0[Rule]
+a10CDsY_ol1_ol3 == {[] <["\>"] [CD(ACTION)CD H money H ^.H ] ['b']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12568 Priority:0[Rule]
+a10CDsY_ol1_ol3 == {[] <["\>"] [CD(ACTION)CD H money H ^.H ] ['billion']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12626 Priority:0[Rule]
+a10CDsY_ol1_ol3 == {[] <["\<"] [CD(ACTION)CD H money H ^.H ] ['b']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12627 Priority:0[Rule]
+a10CDsY_ol1_ol3 == {[] <["\<"] [CD(ACTION)CD H money H ^.H ] ['billion']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12234 Priority:0[Rule]
+a10CDsY_12224_9 == {[] <[title|acronym(ACTION)H N+ H ^.H ] [dot]> [!JM] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12233 Priority:0[Rule]
+a10CDsY_12224_8 == {[] <["no"(ACTION)'number' H acronym H ^.H ] [dot !spaceQ]> [digit] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12301 Priority:0[Rule]
+a10CDsY_12224_7_0_0 == {[] <[DE road(ACTION)H H ^.H ] [NNP] [DE address(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12600 Priority:0[Rule]
+a10CDsY_12224_6_1_ol3 == {[] <[DE date(ACTION)H H ^.H ] [CM] [d4 '2-'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12601 Priority:0[Rule]
+a10CDsY_12224_6_1_ol3 == {[] <[DE date(ACTION)H H ^.H ] [CM] [d4 '1-'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12515 Priority:0[Rule]
+a10CDsY_12224_5_1_0_0_ol3 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12516 Priority:0[Rule]
+a10CDsY_12224_5_1_0_0_ol3 == {[BR] <[NNP|caseAb|caseAB] [NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12545 Priority:0[Rule]
+a10CDsY_12224_5_0_1_0_ol3 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12546 Priority:0[Rule]
+a10CDsY_12224_5_0_1_0_ol3 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] [CM] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12576 Priority:0[Rule]
+a10CDsY_12224_5_0_0_1_ol2 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12577 Priority:0[Rule]
+a10CDsY_12224_5_0_0_1_ol2 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12329 Priority:0[Rule]
+a10CDsY_12224_4_0 == {[] <[0 alpha(ACTION)^.m] [0 DDSH !spaceQ !spaceH] [N|NNS|nc(ACTION)H hyphenated H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ NG++", "ChunkLevel": 1}]
+
+//ID:12397 Priority:0[Rule]
+a10CDsY_12224_28_1 == {[] <['cage'(ACTION)DE H H ^.H ] [COLN|CM] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12319 Priority:0[Rule]
+a10CDsY_12224_27_0_0 == {[!caseAb] <[caseAb] [caseAb(ACTION)H NEW com H ^.H ] [0 comHN(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ NE++", "ChunkLevel": 1}]
+
+//ID:12287 Priority:0[Rule]
+a10CDsY_12224_25_0 == {[] <[CD(ACTION) H ^.H ] ["," !spaceH] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12333 Priority:0[Rule]
+a10CDsY_12224_22_0 == {[] <[CD spaceQian !spaceH] [dot !spaceH !spaceQ] [CD spaceHou !spaceQ(ACTION)DE digitDots H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 3, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12452 Priority:0[Rule]
+a10CDsY_12224_1_ol1 == {[] <["greater"] ['than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12453 Priority:0[Rule]
+a10CDsY_12224_1_ol1 == {[] <["smaller"] ['than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12454 Priority:0[Rule]
+a10CDsY_12224_1_ol1 == {[] <["less"] ['than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12455 Priority:0[Rule]
+a10CDsY_12224_1_ol1 == {[] <["more"] ['than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12281 Priority:0[Rule]
+a10CDsY_12224_19_0 == {[] <[CD(ACTION)^.X] ['~'(ACTION)^.X] [CD(ACTION)H quant H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12274 Priority:0[Rule]
+a10CDsY_12224_17_0 == {[] <[0 CD !digitAlpha(ACTION)^.m] [0 CD !spaceQ !digitAlpha(ACTION)H quant H ^.H ]> [!CD] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ CD++", "ChunkLevel": 1}]
+
+//ID:12331 Priority:0[Rule]
+a10CDsY_12224_14_0 == {[] <<[d1|d2(ACTION)H time timeRB H ^.H ] [":"] [d2]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12236 Priority:0[Rule]
+a10CDsY_12224_11 == {[] <[CD] [DDSH] [length unit(ACTION)H hyphenated modJJ H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:12632 Priority:0[Rule]
+a10CDsY_12224_10_1_ol3 == {[] <[digit(ACTION)H ordinal H ^.H ] [DDSH !spaceQ !spaceH] ['st']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12633 Priority:0[Rule]
+a10CDsY_12224_10_1_ol3 == {[] <[digit(ACTION)H ordinal H ^.H ] [DDSH !spaceQ !spaceH] ['nd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12634 Priority:0[Rule]
+a10CDsY_12224_10_1_ol3 == {[] <[digit(ACTION)H ordinal H ^.H ] [DDSH !spaceQ !spaceH] ['rd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12635 Priority:0[Rule]
+a10CDsY_12224_10_1_ol3 == {[] <[digit(ACTION)H ordinal H ^.H ] [DDSH !spaceQ !spaceH] ['th']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12517 Priority:0[Rule]
+a10CDsY_12224_6_0_ol2 == {[] <[DE date(ACTION)H H ^.H ] [d4 '2-'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12518 Priority:0[Rule]
+a10CDsY_12224_6_0_ol2 == {[] <[DE date(ACTION)H H ^.H ] [d4 '1-'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12467 Priority:0[Rule]
+a10CDsY_12224_5_0_0_0_ol2 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['inc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12468 Priority:0[Rule]
+a10CDsY_12224_5_0_0_0_ol2 == {[BR] <[NNP|caseAb|caseAB(ACTION)H NEW com H ^.H ] ['llc'(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:12628 Priority:0[Rule]
+a10CDsY_12224_2_ol1 == {[] <['greater_than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12629 Priority:0[Rule]
+a10CDsY_12224_2_ol1 == {[] <['less_than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12630 Priority:0[Rule]
+a10CDsY_12224_2_ol1 == {[] <['more_than'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12631 Priority:0[Rule]
+a10CDsY_12224_2_ol1 == {[] <['over'] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12254 Priority:0[Rule]
+a10CDsY_12224_29 == {[] <[NE|NNP] ['part_number'(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12396 Priority:0[Rule]
+a10CDsY_12224_28_0 == {[] <['cage'(ACTION)DE H H ^.H ] [CD]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12249 Priority:0[Rule]
+a10CDsY_12224_24 == {[] <[CD(ACTION)H percent H ^.H ] ["%"]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:12248 Priority:0[Rule]
+a10CDsY_12224_23 == {[] <[CD(ACTION)^.m] ["times"(ACTION)H RB freq nN- H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "RP++", "ChunkLevel": 1}]
+
+//ID:12456 Priority:0[Rule]
+a10CDsY_12224_18_ol2 == {[] <[preNumC(ACTION)^.X] ['n'(ACTION)quant H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 3, "Action": "CD++", "ChunkLevel": 1}]
+
+//ID:12457 Priority:0[Rule]
+a10CDsY_12224_18_ol2 == {[] <[preNumC(ACTION)^.X] ['m'(ACTION)quant H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 3, "Action": "CD++", "ChunkLevel": 1}]
+
+//ID:12237 Priority:0[Rule]
+a10CDsY_12224_12 == {[] <[0 alpha spaceQian !spaceH] [0 digit !spaceQ spaceHou(ACTION)H digitAlpha H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12463 Priority:0[Rule]
+a10CDsY_12224_10_0_ol2 == {[] <[digit(ACTION)H ordinal H ^.H ] ['st']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12464 Priority:0[Rule]
+a10CDsY_12224_10_0_ol2 == {[] <[digit(ACTION)H ordinal H ^.H ] ['nd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12465 Priority:0[Rule]
+a10CDsY_12224_10_0_ol2 == {[] <[digit(ACTION)H ordinal H ^.H ] ['rd']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12466 Priority:0[Rule]
+a10CDsY_12224_10_0_ol2 == {[] <[digit(ACTION)H ordinal H ^.H ] ['th']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:12569 Priority:0[Rule]
+a10CDsY_12224_0_ol1 == {[] <["\>"] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:12570 Priority:0[Rule]
+a10CDsY_12224_0_ol1 == {[] <["\<"] [CD(ACTION)CD H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

@@ -1,0 +1,127 @@
+// ****Rules**** ../../fsa/Y/project5.txt
+// * size: 28 *
+//ID:17459 Priority:0[Rule]
+project5_17449_9 == {[physiologicalProcess !xC !topN1(ACTION) %PhysiologicalProcess%] };
+
+//ID:17458 Priority:0[Rule]
+project5_17449_8 == {[populationGroup !xC !topN1(ACTION) %PopulationGroup%] };
+
+//ID:17457 Priority:0[Rule]
+project5_17449_7 == {[relBelief !xC !topN1(ACTION) %Belief%] };
+
+//ID:17456 Priority:0[Rule]
+project5_17449_6 == {[substance !xC !topN1(ACTION) %Substance%] };
+
+//ID:17455 Priority:0[Rule]
+project5_17449_5 == {[timeLength !xC !topN1(ACTION) %Duration%] };
+
+//ID:17454 Priority:0[Rule]
+project5_17449_4 == {[brand !xC !topN1(ACTION) %Brand%] };
+
+//ID:17453 Priority:0[Rule]
+project5_17449_3 == {[unitMeasure !xC !topN1(ACTION) %Measurement%] };
+
+//ID:17476 Priority:0[Rule]
+project5_17449_26 == {[activities !xC !topN1(ACTION) %Activity%] };
+
+//ID:17475 Priority:0[Rule]
+project5_17449_25 == {[behaviorTrend !xC !topN1(ACTION) %BehaviorTrend%] };
+
+//ID:17474 Priority:0[Rule]
+project5_17449_24 == {[clinicalAction !xC !topN1(ACTION) %ClinicalAction%] };
+
+//ID:17473 Priority:0[Rule]
+project5_17449_23 == {[clinicalSpecialty !xC !topN1(ACTION) %ClinicalSpecialty%] };
+
+//ID:17472 Priority:0[Rule]
+project5_17449_22 == {[device !xC !topN1(ACTION) %Device%] };
+
+//ID:17471 Priority:0[Rule]
+project5_17449_21 == {[diagnosticImaging !xC !topN1(ACTION) %DiagnosticImaging%] };
+
+//ID:17470 Priority:0[Rule]
+project5_17449_20 == {[evaluationProcedure !xC !topN1(ACTION) %EvaluationProcedure%] };
+
+//ID:17452 Priority:0[Rule]
+project5_17449_2 == {[unitTime !xC !topN1(ACTION) %Time%] };
+
+//ID:17469 Priority:0[Rule]
+project5_17449_19 == {[medicine !xC !topN1(ACTION) %Medicine%] };
+
+//ID:17468 Priority:0[Rule]
+project5_17449_18 == {[gene !xC !topN1(ACTION) %Gene%] };
+
+//ID:17467 Priority:0[Rule]
+project5_17449_17 == {[place !xC !topN1(ACTION) %PLace%] };
+
+//ID:17466 Priority:0[Rule]
+project5_17449_16 == {[labProcedure !xC !topN1(ACTION) %LabProcedure%] };
+
+//ID:17465 Priority:0[Rule]
+project5_17449_15 == {[medDevice !xC !topN1(ACTION) %MedDevice%] };
+
+//ID:17464 Priority:0[Rule]
+project5_17449_14 == {[mentalState !xC !topN1(ACTION) %MentalState%] };
+
+//ID:17463 Priority:0[Rule]
+project5_17449_13 == {[nutrient !xC !topN1(ACTION) %Nutrient%] };
+
+//ID:17462 Priority:0[Rule]
+project5_17449_12 == {[physicalForce !xC !topN1(ACTION) %PhysicalForce%] };
+
+//ID:17461 Priority:0[Rule]
+project5_17449_11 == {[physicalObject !xC !topN1(ACTION) %PhysicalObject%] };
+
+//ID:17460 Priority:0[Rule]
+project5_17449_10 == {[physiologicalAction !xC !topN1(ACTION) %PhysiologicalAction%] };
+
+//ID:17451 Priority:0[Rule]
+project5_17449_1 == {[bodyPart !xC !topN1(ACTION) %BodyPart%] };
+
+//ID:17450 Priority:0[Rule]
+project5_17449_0 == {[symptom !xC !topN1(ACTION) %Symptom%] };
+
+//ID:17449 Priority:0[Rule]
+project5 == {[disease !xC !topN1(ACTION) %Disease%] };
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

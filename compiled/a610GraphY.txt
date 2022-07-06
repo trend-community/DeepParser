@@ -1,0 +1,67 @@
+// ****Rules**** ../../fsa/Y/a610GraphY.txt
+// * size: 8 *
+//ID:17430 Priority:0[Rule]
+a610Graph_17426_3 == {[hasO] [^.O=NC|nc] [^.next="that"(ACTION)^.next-]^>>Q [^Q.xCL=(ACTION)^1.mCL ^Q.xCL-] };
+
+//ID:17433 Priority:0[Rule]
+a610Graph_17426_6 == {[Ving !hassS(ACTION)^1.attendantR] [^.next=CL(ACTION)^.next-] [^Q.S=(ACTION)^.S2] };
+
+//ID:17432 Priority:0[Rule]
+a610Graph_17426_5 == {[vS] [^.O="that"(ACTION)^.O-] [^Q.xCL=(ACTION)^Q.xCL- ^.oCL] };
+
+//ID:17429 Priority:0[Rule]
+a610Graph_17426_2 == {[NC(ACTION)^2.S2] [^.~S=VC]^>Q [^Q.purposeR=infinitive !hasSubj]^>Q };
+
+//ID:17428 Priority:0[Rule]
+a610Graph_17426_1 == {[beC] [^.Subj=per(ACTION)^2.corefL] [^.O=per !hascorefL] };
+
+//ID:17426 Priority:0[Rule]
+a610Graph == {[beC] [^.sS=nN(ACTION)^2.S2] [^.C=A !hasS2] };
+
+//ID:17431 Priority:0[Rule]
+a610Graph_17426_4 == {[CL|VP dative hasoCL !hastoC(ACTION)CL] [^.O=human|org(ACTION)^.O- ^.toC] };
+
+//ID:17427 Priority:0[Rule]
+a610Graph_17426_0 == {[Ving !hasSubj !passive(ACTION)^1.S2] [^.~mCL=nN] };
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

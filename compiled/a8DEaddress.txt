@@ -1,0 +1,518 @@
+// ****Rules**** ../../fsa/Y/a8DEaddress.txt
+// * size: 118 *
+//ID:2344 Priority:0[Rule]
+a8DEaddress_2189_13_1_1_1_p8 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [CM|JM] [l1] [dot] [l1] [dot] [d5] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2341 Priority:0[Rule]
+a8DEaddress_2189_13_1_0_1_p7 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [CM|JM] [l1] [dot] [l1] [d5] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2340 Priority:0[Rule]
+a8DEaddress_2189_13_0_1_1_p7 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [l1] [dot] [l1] [dot] [d5] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2392 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_1_p1_p5_1_ol8 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2393 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_1_p1_p5_1_ol8 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2394 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_1_p1_p5_1_ol8 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2264 Priority:0[Rule]
+a8DEaddress_2189_10_1_1_1 == {[] <[l2 !spaceH] [d5] [CM|NEWL] [d4plus] [alpha] [alpha(ACTION)H NEW address loc rStop H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2386 Priority:0[Rule]
+a8DEaddress_2189_9_1_1_1_p5_ol7 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2387 Priority:0[Rule]
+a8DEaddress_2189_9_1_1_1_p5_ol7 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2388 Priority:0[Rule]
+a8DEaddress_2189_9_1_1_1_p5_ol7 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2286 Priority:0[Rule]
+a8DEaddress_2189_7_1_3 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address rStop road H ^.H ] [alpha] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2334 Priority:0[Rule]
+a8DEaddress_2189_6_1_1_1_p6 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2319 Priority:0[Rule]
+a8DEaddress_2189_13_1_1_0 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [CM|JM] [l1] [dot] [l1] [dot] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2339 Priority:0[Rule]
+a8DEaddress_2189_13_0_0_1_p6 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [l1] [dot] [l1] [d5] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2407 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_1_p1_p5_0_ol7 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2408 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_1_p1_p5_0_ol7 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2409 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_1_p1_p5_0_ol7 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2404 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_0_p1_p5_1_ol7 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2405 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_0_p1_p5_1_ol7 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2406 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_0_p1_p5_1_ol7 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2263 Priority:0[Rule]
+a8DEaddress_2189_10_1_1_0 == {[] <[l2 !spaceH] [d5] [CM|NEWL] [d4plus] [alpha] [alpha(ACTION)H NEW address loc rStop H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2242 Priority:0[Rule]
+a8DEaddress_2189_10_1_0_1 == {[] <[l2 !spaceH] [d5] [CM|NEWL] [d4plus] [alpha(ACTION)H NEW address loc rStop H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2326 Priority:0[Rule]
+a8DEaddress_2189_10_0_1_1 == {[] <[l2 !spaceH] [d5] [d4plus] [alpha] [alpha(ACTION)H NEW address loc rStop H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2224 Priority:0[Rule]
+a8DEaddress_1_3 == {[] <[digit] [alpha] ["."] [alpha] [alpha] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2346 Priority:0[Rule]
+a8DEaddress_2189_9_1_1_0_p5 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2374 Priority:0[Rule]
+a8DEaddress_2189_9_0_1_1_p4_ol6 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2375 Priority:0[Rule]
+a8DEaddress_2189_9_0_1_1_p4_ol6 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2376 Priority:0[Rule]
+a8DEaddress_2189_9_0_1_1_p4_ol6 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2285 Priority:0[Rule]
+a8DEaddress_2189_7_1_2 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address rStop road H ^.H ] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2268 Priority:0[Rule]
+a8DEaddress_2189_7_0_3 == {[] <[digit] ["rue"(ACTION)H NEW address rStop road H ^.H ] [alpha] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2331 Priority:0[Rule]
+a8DEaddress_2189_6_1_0_1_p5 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [province] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2343 Priority:0[Rule]
+a8DEaddress_2189_6_0_1_1_p5 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2330 Priority:0[Rule]
+a8DEaddress_2189_4_1_1_p5 == {[] <[city(ACTION)H NEW address rStop H ^.H ] [CM] [l2] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2329 Priority:0[Rule]
+a8DEaddress_2189_2_1_1_p5 == {[] <[city|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province(ACTION)^.Z] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2238 Priority:0[Rule]
+a8DEaddress_2189_14_1_1 == {[] <["p"] [dot] ["o"] [dot] ["box"(ACTION)H NEW address rStop H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2309 Priority:0[Rule]
+a8DEaddress_2189_13_1_0_0 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [CM|JM] [l1] [dot] [l1] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2303 Priority:0[Rule]
+a8DEaddress_2189_13_0_1_0 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [l1] [dot] [l1] [dot] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2380 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_0_p1_p5_0_ol6 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2381 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_0_p1_p5_0_ol6 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2382 Priority:0[Rule]
+a8DEaddress_2189_12_1_1_0_p1_p5_0_ol6 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2389 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_1_p1_1_ol6 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2390 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_1_p1_1_ol6 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2391 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_1_p1_1_ol6 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2383 Priority:0[Rule]
+a8DEaddress_2189_12_0_1_1_p3_ol6 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2384 Priority:0[Rule]
+a8DEaddress_2189_12_0_1_1_p3_ol6 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2385 Priority:0[Rule]
+a8DEaddress_2189_12_0_1_1_p3_ol6 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] [NEWL] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2241 Priority:0[Rule]
+a8DEaddress_2189_10_1_0_0 == {[] <[l2 !spaceH] [d5] [CM|NEWL] [d4plus] [alpha(ACTION)H NEW address loc rStop H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2325 Priority:0[Rule]
+a8DEaddress_2189_10_0_1_0 == {[] <[l2 !spaceH] [d5] [d4plus] [alpha] [alpha(ACTION)H NEW address loc rStop H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2308 Priority:0[Rule]
+a8DEaddress_2189_10_0_0_1 == {[] <[l2 !spaceH] [d5] [d4plus] [alpha(ACTION)H NEW address loc rStop H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2191 Priority:0[Rule]
+a8DEaddress_2189_1 == {[] <[NNP|NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2223 Priority:0[Rule]
+a8DEaddress_1_2 == {[] <[digit] [alpha] ["."] [alpha] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2254 Priority:0[Rule]
+a8DEaddress_0_3 == {[] <[digit] [alpha] [alpha] [alpha] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2368 Priority:0[Rule]
+a8DEaddress_2189_9_1_0_1_ol5 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2369 Priority:0[Rule]
+a8DEaddress_2189_9_1_0_1_ol5 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2370 Priority:0[Rule]
+a8DEaddress_2189_9_1_0_1_ol5 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2355 Priority:0[Rule]
+a8DEaddress_2189_9_0_1_0_p4 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2232 Priority:0[Rule]
+a8DEaddress_2189_8_1_1 == {[] <[digit] [alpha|RB] [CD|ordinal] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2284 Priority:0[Rule]
+a8DEaddress_2189_7_1_1 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address rStop road H ^.H ] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2267 Priority:0[Rule]
+a8DEaddress_2189_7_0_2 == {[] <[digit] ["rue"(ACTION)H NEW address rStop road H ^.H ] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2261 Priority:0[Rule]
+a8DEaddress_2189_6_1_1_0 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2338 Priority:0[Rule]
+a8DEaddress_2189_6_0_0_1_p4 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [province] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2333 Priority:0[Rule]
+a8DEaddress_2189_4_0_1_p4 == {[] <[city(ACTION)H NEW address rStop H ^.H ] [l2] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2342 Priority:0[Rule]
+a8DEaddress_2189_2_0_1_p4 == {[] <[city|NNP(ACTION)H NEW address city rStop H ^.H ] [province(ACTION)^.Z] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2237 Priority:0[Rule]
+a8DEaddress_2189_14_1_0 == {[] <["p"] [dot] ["o"] ["box"(ACTION)H NEW address rStop H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2280 Priority:0[Rule]
+a8DEaddress_2189_14_0_1 == {[] <["p"] ["o"] [dot] ["box"(ACTION)H NEW address rStop H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2293 Priority:0[Rule]
+a8DEaddress_2189_13_0_0_0 == {[] <[NE city(ACTION)H NEW address rStop H ^.H ] [l1] [dot] [l1] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2401 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_1_p1_0_ol5 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2402 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_1_p1_0_ol5 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2403 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_1_p1_0_ol5 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2398 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_0_p1_1_ol5 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2399 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_0_p1_1_ol5 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2400 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_0_p1_1_ol5 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2371 Priority:0[Rule]
+a8DEaddress_2189_12_0_1_0_p3_ol5 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2372 Priority:0[Rule]
+a8DEaddress_2189_12_0_1_0_p3_ol5 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2373 Priority:0[Rule]
+a8DEaddress_2189_12_0_1_0_p3_ol5 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2300 Priority:0[Rule]
+a8DEaddress_2189_11_1_1 == {[] <[NNP(ACTION)H NEW address loc rStop H ^.H ] [CM] [province|l2 !NN] [CM] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2307 Priority:0[Rule]
+a8DEaddress_2189_10_0_0_0 == {[] <[l2 !spaceH] [d5] [d4plus] [alpha(ACTION)H NEW address loc rStop H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2222 Priority:0[Rule]
+a8DEaddress_1_1 == {[] <[digit] [alpha] ["."] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2253 Priority:0[Rule]
+a8DEaddress_0_2 == {[] <[digit] [alpha] [alpha] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2323 Priority:0[Rule]
+a8DEaddress_2189_9_1_0_0 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2365 Priority:0[Rule]
+a8DEaddress_2189_9_0_0_1_ol4 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2366 Priority:0[Rule]
+a8DEaddress_2189_9_0_0_1_ol4 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2367 Priority:0[Rule]
+a8DEaddress_2189_9_0_0_1_ol4 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2231 Priority:0[Rule]
+a8DEaddress_2189_8_1_0 == {[] <[digit] [alpha|RB] [CD|ordinal] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2258 Priority:0[Rule]
+a8DEaddress_2189_8_0_1 == {[] <[digit] [alpha|RB] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2283 Priority:0[Rule]
+a8DEaddress_2189_7_1_0 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address rStop road H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2266 Priority:0[Rule]
+a8DEaddress_2189_7_0_1 == {[] <[digit] ["rue"(ACTION)H NEW address rStop road H ^.H ] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2239 Priority:0[Rule]
+a8DEaddress_2189_6_1_0_0 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [province] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2315 Priority:0[Rule]
+a8DEaddress_2189_6_0_1_0 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2335 Priority:0[Rule]
+a8DEaddress_2189_5_1_p3 == {[] <[province(ACTION)H NEW address province rStop H ^.H ] [0 d5] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2227 Priority:0[Rule]
+a8DEaddress_2189_4_1_0 == {[] <[city(ACTION)H NEW address rStop H ^.H ] [CM] [l2] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2225 Priority:0[Rule]
+a8DEaddress_2189_2_1_0 == {[] <[city|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province(ACTION)^.Z] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2279 Priority:0[Rule]
+a8DEaddress_2189_14_0_0 == {[] <["p"] ["o"] ["box"(ACTION)H NEW address rStop H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2377 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_0_p1_0_ol4 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2378 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_0_p1_0_ol4 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2379 Priority:0[Rule]
+a8DEaddress_2189_12_1_0_0_p1_0_ol4 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2395 Priority:0[Rule]
+a8DEaddress_2189_12_0_0_1_ol4 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2396 Priority:0[Rule]
+a8DEaddress_2189_12_0_0_1_ol4 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2397 Priority:0[Rule]
+a8DEaddress_2189_12_0_0_1_ol4 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] [NEWL] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2299 Priority:0[Rule]
+a8DEaddress_2189_11_1_0 == {[] <[NNP(ACTION)H NEW address loc rStop H ^.H ] [CM] [province|l2 !NN] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2270 Priority:0[Rule]
+a8DEaddress_2189_11_0_1 == {[] <[NNP(ACTION)H NEW address loc rStop H ^.H ] [province|l2 !NN] [CM] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2190 Priority:0[Rule]
+a8DEaddress_2189_0 == {[] <[NNP|NE(ACTION)H NEW address city rStop H ^.H ] [CM] [l2] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2221 Priority:0[Rule]
+a8DEaddress_1_0 == {[] <[digit] [alpha] ["."] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2252 Priority:0[Rule]
+a8DEaddress_0_1 == {[] <[digit] [alpha] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2311 Priority:0[Rule]
+a8DEaddress_2189_9_0_0_0 == {[] <[city NE(ACTION)H NEW address city rStop H ^.H ] [l2] [d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2257 Priority:0[Rule]
+a8DEaddress_2189_8_0_0 == {[] <[digit] [alpha|RB] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2265 Priority:0[Rule]
+a8DEaddress_2189_7_0_0 == {[] <[digit] ["rue"(ACTION)H NEW address rStop road H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:2291 Priority:0[Rule]
+a8DEaddress_2189_6_0_0_0 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city rStop H ^.H ] [province] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2255 Priority:0[Rule]
+a8DEaddress_2189_4_0_0 == {[] <[city(ACTION)H NEW address rStop H ^.H ] [l2] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2246 Priority:0[Rule]
+a8DEaddress_2189_3_1 == {[] <[city|NNP(ACTION)H NEW address city rStop H ^.H ] [CM] [province(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2313 Priority:0[Rule]
+a8DEaddress_2189_2_0_0 == {[] <[city|NNP(ACTION)H NEW address city rStop H ^.H ] [province(ACTION)^.Z] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2362 Priority:0[Rule]
+a8DEaddress_2189_12_0_0_0_ol3 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2363 Priority:0[Rule]
+a8DEaddress_2189_12_0_0_0_ol3 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2364 Priority:0[Rule]
+a8DEaddress_2189_12_0_0_0_ol3 == {[] <[province|l2 !NN(ACTION)H NEW address province rStop H ^.H ] [d5] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2269 Priority:0[Rule]
+a8DEaddress_2189_11_0_0 == {[] <[NNP(ACTION)H NEW address loc rStop H ^.H ] [province|l2 !NN] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2251 Priority:0[Rule]
+a8DEaddress_0_0 == {[] <[digit] [alpha] [road(ACTION)H NEW address rStop road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2273 Priority:0[Rule]
+a8DEaddress_2189_5_0 == {[] <[province(ACTION)H NEW address province rStop H ^.H ] [0 d5]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:2245 Priority:0[Rule]
+a8DEaddress_2189_3_0 == {[] <[city|NNP(ACTION)H NEW address city rStop H ^.H ] [province(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 13 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+//ID:2188 Priority:0[Macro]
+@state == {(province|l2 !NN)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

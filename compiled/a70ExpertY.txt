@@ -1,0 +1,175 @@
+// ****Rules**** ../../fsa/Y/a70ExpertY.txt
+// * size: 33 *
+//ID:16956 Priority:0[Rule]
+a70ExpertY_16949_6 == {[] <['waiting'(ACTION)H H ^.H ] <[CM] [NNP|NE(ACTION)H sRB H ^.H  H ^.H ] [CM]> [PP FULLSTRING 'for-'(ACTION)^.C]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "^^.Z", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16986 Priority:0[Rule]
+a70ExpertY_16949_19_1_ol3 == {[] <[Ved|Ven !hasSubj(ACTION)^.CN] [CM] [0 "and"] [Ved|Ven !hasSubj(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16987 Priority:0[Rule]
+a70ExpertY_16949_19_1_ol3 == {[] <[Ved|Ven !hasSubj(ACTION)^.CN] [CM] [0 "or"] [Ved|Ven !hasSubj(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16963 Priority:0[Rule]
+a70ExpertY_16949_13 == {[] <[nN !PP !VG !VP !AP !PP !CL !finite(ACTION) H ^.H ] [CM(ACTION)^.X] [Ved !hassS(ACTION)^.mVP] [CM(ACTION)^.X]> [BR !"and" !"or"] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:16959 Priority:0[Rule]
+a70ExpertY_16949_9 == {[] <[N|NP|NG(ACTION)H H ^.H ] [0 "that"] [yVC CL(ACTION)^.mCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16958 Priority:0[Rule]
+a70ExpertY_16949_8 == {[] <[N|NP|NG(ACTION)H H ^.H ] [0 "that"] [yVC !CL(ACTION)^.M]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16988 Priority:0[Rule]
+a70ExpertY_16949_1_or4_ol2 == {[] <[NP(ACTION)H H ^.H ] <["who"(ACTION)^.synS] [V|VG|VP(ACTION)H H ^.H ]>> [V|VG|VP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16989 Priority:0[Rule]
+a70ExpertY_16949_1_or4_ol2 == {[] <[NP(ACTION)H H ^.H ] <["which"(ACTION)^.synS] [V|VG|VP(ACTION)H H ^.H ]>> [V|VG|VP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16990 Priority:0[Rule]
+a70ExpertY_16949_1_or4_ol2 == {[] <[NP(ACTION)H H ^.H ] <["that"(ACTION)^.synS] [V|VG|VP(ACTION)H H ^.H ]>> [V|VG|VP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16983 Priority:0[Rule]
+a70ExpertY_16949_1_ol4_ol2 == {[] <[NP(ACTION)H H ^.H ] <["who"(ACTION)^.synS] [V|VG|VP(ACTION)H H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16984 Priority:0[Rule]
+a70ExpertY_16949_1_ol4_ol2 == {[] <[NP(ACTION)H H ^.H ] <["which"(ACTION)^.synS] [V|VG|VP(ACTION)H H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16985 Priority:0[Rule]
+a70ExpertY_16949_1_ol4_ol2 == {[] <[NP(ACTION)H H ^.H ] <["that"(ACTION)^.synS] [V|VG|VP(ACTION)H H ^.H ]>> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 2, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++ ^^.mCL", "ChunkLevel": 1}, {"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 2}]
+
+//ID:16981 Priority:0[Rule]
+a70ExpertY_16949_19_0_ol2 == {[] <[Ved|Ven !hasSubj(ACTION)^.CN] [0 "and"] [Ved|Ven !hasSubj(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16982 Priority:0[Rule]
+a70ExpertY_16949_19_0_ol2 == {[] <[Ved|Ven !hasSubj(ACTION)^.CN] [0 "or"] [Ved|Ven !hasSubj(ACTION)H H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16979 Priority:0[Rule]
+a70ExpertY_16949_17_ol3 == {[BR] <[PP(ACTION)^.S] [0 beC(ACTION)CL H H ^.H ] ["where" hasxCL(ACTION)^.oCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16980 Priority:0[Rule]
+a70ExpertY_16949_17_ol3 == {[BR] <[PP(ACTION)^.S] [0 beC(ACTION)CL H H ^.H ] ["when" hasxCL(ACTION)^.oCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16962 Priority:0[Rule]
+a70ExpertY_16949_12 == {[] <[N|NG|NP|NE(ACTION) H ^.H ] ["of"(ACTION)^.X] [Ving !hassS(ACTION)^.mVP]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:16960 Priority:0[Rule]
+a70ExpertY_16949_10 == {[BR] <[0 wh(ACTION)^.R] [0 beC(ACTION)H H ^.H ] [CL(ACTION)^.xCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:16949 Priority:0[Rule]
+a70ExpertY == {[] <[wh NP(ACTION)^.O] [NP(ACTION)^.synS] [finite|VB !hasObj(ACTION)H wh H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:16957 Priority:0[Rule]
+a70ExpertY_16949_7 == {[] <['wait'(ACTION)H H ^.H ] [PP FULLSTRING 'for-'(ACTION)^.C]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16954 Priority:0[Rule]
+a70ExpertY_16949_4 == {[!BR] <["but" !hasCL(ACTION)H rCL H ^.H ] [CL(ACTION)^.xCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "CL++", "ChunkLevel": 1}]
+
+//ID:16952 Priority:0[Rule]
+a70ExpertY_16949_2 == {[] <["however"(ACTION)H concession H ^.H ] [CL hasSubj(ACTION)^.xCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "RP++", "ChunkLevel": 1}]
+
+//ID:16968 Priority:0[Rule]
+a70ExpertY_16949_18 == {[beC] <[NP(ACTION) H ^.H ] [infinitive !hassS(ACTION)^.Z]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:16966 Priority:0[Rule]
+a70ExpertY_16949_16 == {[] <[CL(ACTION) H ^.H ] [hasxCL !'if-'(ACTION)^.rCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:16965 Priority:0[Rule]
+a70ExpertY_16949_15 == {[] <[CL(ACTION) H ^.H ] [hasxCL 'if'(ACTION)^.ifR]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:16964 Priority:0[Rule]
+a70ExpertY_16949_14 == {[] <[time(ACTION) H ^.H ] ["when" hasxCL(ACTION)^.mCL]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 2, "Action": "", "ChunkLevel": 1}]
+
+//ID:16974 Priority:0[Rule]
+a70ExpertY_16949_0_ol1 == {[] <['help' !vVBSat(ACTION)vVBSat H ^.H ] [V|v|V0(ACTION)^.oVP V+ VP]> [BR|RB|PP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16975 Priority:0[Rule]
+a70ExpertY_16949_0_ol1 == {[] <['make' !vVBSat(ACTION)vVBSat H ^.H ] [V|v|V0(ACTION)^.oVP V+ VP]> [BR|RB|PP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16976 Priority:0[Rule]
+a70ExpertY_16949_0_ol1 == {[] <['let' !vVBSat(ACTION)vVBSat H ^.H ] [V|v|V0(ACTION)^.oVP V+ VP]> [BR|RB|PP] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 3, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16977 Priority:0[Rule]
+a70ExpertY_16949_5_ol1 == {[] <['ask'(ACTION)H H ^.H ] ['if' hasCL(ACTION)^.oCL 'whether']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16978 Priority:0[Rule]
+a70ExpertY_16949_5_ol1 == {[] <['question'(ACTION)H H ^.H ] ['if' hasCL(ACTION)^.oCL 'whether']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "VP++", "ChunkLevel": 1}]
+
+//ID:16953 Priority:0[Rule]
+a70ExpertY_16949_3 == {[VTH|VSS] <["that"(ACTION)^.Z] [CL(ACTION)H H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:16961 Priority:0[Rule]
+a70ExpertY_16949_11 == {[] <[NP loc(ACTION)H H ^.H ] ['where' hasxCL(ACTION)^.mCL]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 12 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros

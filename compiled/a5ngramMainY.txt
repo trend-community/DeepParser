@@ -1,0 +1,2242 @@
+// ****Rules**** ../../fsa/Y/a5ngramMainY.txt
+// * size: 549 *
+//ID:631 Priority:0[Rule]
+a5ngramMainY_1_p1_1_1 == {[] <[OPAR] ["1"] [DDSH|CPAR] [] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 10, "StringChunkLength": 10, "HeadOffset": 9, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:580 Priority:0[Rule]
+a5ngramMainY_347_26_1_1_1_p8 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [CM|JM] [l1] [dot] [l1] [dot] [d4plus] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:608 Priority:0[Rule]
+a5ngramMainY_347_0_1_1_p1_1_1 == {[] <[OPAR] ["1"] [DDSH|CPAR] [] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:630 Priority:0[Rule]
+a5ngramMainY_1_p1_1_0 == {[] <[OPAR] ["1"] [] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:625 Priority:0[Rule]
+a5ngramMainY_1_p1_0_1 == {[] <["1"] [DDSH|CPAR] [] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:606 Priority:0[Rule]
+a5ngramMainY_0_p1_1_1 == {[] <[OPAR] ["1"] [DDSH|CPAR] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 9, "StringChunkLength": 9, "HeadOffset": 8, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:594 Priority:0[Rule]
+a5ngramMainY_347_2_1_1_1_p1_1 == {[] <["+"] [digit] [OPAR] [d3] [CPAR] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:578 Priority:0[Rule]
+a5ngramMainY_347_26_1_0_1_p7 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [CM|JM] [l1] [dot] [l1] [d4plus] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:575 Priority:0[Rule]
+a5ngramMainY_347_26_0_1_1_p7 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [l1] [dot] [l1] [dot] [d4plus] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:799 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_1_p1_p5_1_ol8 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:800 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_1_p1_p5_1_ol8 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:801 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_1_p1_p5_1_ol8 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:530 Priority:0[Rule]
+a5ngramMainY_347_23_1_1_1 == {[] <[l2 !spaceH] [d4plus] [CM|JM] [d4plus] [alpha] [alpha(ACTION)H NEW address loc H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:384 Priority:0[Rule]
+a5ngramMainY_347_1_6 == {[] <[DE contact(ACTION)H H ^.H ] [digit|Punc] [digit|Punc] [digit|Punc] [digit|Punc] [digit|Punc] [digit|Punc] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:607 Priority:0[Rule]
+a5ngramMainY_347_0_1_1_p1_1_0 == {[] <[OPAR] ["1"] [] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:600 Priority:0[Rule]
+a5ngramMainY_347_0_1_1_p1_0_1 == {[] <["1"] [DDSH|CPAR] [] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:645 Priority:0[Rule]
+a5ngramMainY_347_0_1_0_p1_1_1 == {[] <[OPAR] ["1"] [DDSH|CPAR] [] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:637 Priority:0[Rule]
+a5ngramMainY_347_0_0_1_p1_1_1 == {[] <[OPAR] ["1"] [DDSH|CPAR] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:624 Priority:0[Rule]
+a5ngramMainY_1_p1_0_0 == {[] <["1"] [] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:605 Priority:0[Rule]
+a5ngramMainY_0_p1_1_0 == {[] <[OPAR] ["1"] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:596 Priority:0[Rule]
+a5ngramMainY_0_p1_0_1 == {[] <["1"] [DDSH|CPAR] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 8, "StringChunkLength": 8, "HeadOffset": 7, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:593 Priority:0[Rule]
+a5ngramMainY_347_2_1_1_1_p1_0 == {[] <[digit] [OPAR] [d3] [CPAR] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:623 Priority:0[Rule]
+a5ngramMainY_347_2_1_1_0_p1_1 == {[] <["+"] [digit] [OPAR] [d3] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:592 Priority:0[Rule]
+a5ngramMainY_347_2_1_0_1_p1_1 == {[] <["+"] [digit] [d3] [CPAR] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:555 Priority:0[Rule]
+a5ngramMainY_347_26_1_1_0 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [CM|JM] [l1] [dot] [l1] [dot] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:568 Priority:0[Rule]
+a5ngramMainY_347_26_0_0_1_p6 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [l1] [dot] [l1] [d4plus] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:707 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_1_p1_p5_0_ol7 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:708 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_1_p1_p5_0_ol7 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:709 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_1_p1_p5_0_ol7 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:793 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_0_p1_p5_1_ol7 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:794 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_0_p1_p5_1_ol7 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:795 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_0_p1_p5_1_ol7 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:529 Priority:0[Rule]
+a5ngramMainY_347_23_1_1_0 == {[] <[l2 !spaceH] [d4plus] [CM|JM] [d4plus] [alpha] [alpha(ACTION)H NEW address loc H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:480 Priority:0[Rule]
+a5ngramMainY_347_23_1_0_1 == {[] <[l2 !spaceH] [d4plus] [CM|JM] [d4plus] [alpha(ACTION)H NEW address loc H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:470 Priority:0[Rule]
+a5ngramMainY_347_23_0_1_1 == {[] <[l2 !spaceH] [d4plus] [d4plus] [alpha] [alpha(ACTION)H NEW address loc H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:710 Priority:0[Rule]
+a5ngramMainY_347_22_1_1_1_p5_ol7 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:711 Priority:0[Rule]
+a5ngramMainY_347_22_1_1_1_p5_ol7 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:712 Priority:0[Rule]
+a5ngramMainY_347_22_1_1_1_p5_ol7 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:538 Priority:0[Rule]
+a5ngramMainY_347_20_1_3 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address road H ^.H ] [alpha] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:383 Priority:0[Rule]
+a5ngramMainY_347_1_5 == {[] <[DE contact(ACTION)H H ^.H ] [digit|Punc] [digit|Punc] [digit|Punc] [digit|Punc] [digit|Punc] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:572 Priority:0[Rule]
+a5ngramMainY_347_19_1_1_1_p6 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [CM] [province] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:458 Priority:0[Rule]
+a5ngramMainY_347_15_1_3 == {[] <[digit] [alpha] ["."] [alpha] [alpha] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:599 Priority:0[Rule]
+a5ngramMainY_347_0_1_1_p1_0_0 == {[] <["1"] [] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:644 Priority:0[Rule]
+a5ngramMainY_347_0_1_0_p1_1_0 == {[] <[OPAR] ["1"] [] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:643 Priority:0[Rule]
+a5ngramMainY_347_0_1_0_p1_0_1 == {[] <["1"] [DDSH|CPAR] [] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:636 Priority:0[Rule]
+a5ngramMainY_347_0_0_1_p1_1_0 == {[] <[OPAR] ["1"] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:633 Priority:0[Rule]
+a5ngramMainY_347_0_0_1_p1_0_1 == {[] <["1"] [DDSH|CPAR] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:604 Priority:0[Rule]
+a5ngramMainY_347_0_0_0_p1_1_1 == {[] <[OPAR] ["1"] [DDSH|CPAR] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:595 Priority:0[Rule]
+a5ngramMainY_0_p1_0_0 == {[] <["1"] [OPAR] [d3] [CPAR] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 7, "StringChunkLength": 7, "HeadOffset": 6, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:622 Priority:0[Rule]
+a5ngramMainY_347_2_1_1_0_p1_0 == {[] <[digit] [OPAR] [d3] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:591 Priority:0[Rule]
+a5ngramMainY_347_2_1_0_1_p1_0 == {[] <[digit] [d3] [CPAR] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:629 Priority:0[Rule]
+a5ngramMainY_347_2_1_0_0_p1_1 == {[] <["+"] [digit] [d3] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:544 Priority:0[Rule]
+a5ngramMainY_347_2_0_1_1 == {[] <[OPAR] [d3] [CPAR] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:464 Priority:0[Rule]
+a5ngramMainY_347_27_1_1 == {[] <["p"] [dot] ["o"] [dot] ["box"(ACTION)H NEW address H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:547 Priority:0[Rule]
+a5ngramMainY_347_26_1_0_0 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [CM|JM] [l1] [dot] [l1] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:531 Priority:0[Rule]
+a5ngramMainY_347_26_0_1_0 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [l1] [dot] [l1] [dot] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:698 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_0_p1_p5_0_ol6 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:699 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_0_p1_p5_0_ol6 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:700 Priority:0[Rule]
+a5ngramMainY_347_25_1_1_0_p1_p5_0_ol6 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:796 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_1_p1_1_ol6 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:797 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_1_p1_1_ol6 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:798 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_1_p1_1_ol6 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:689 Priority:0[Rule]
+a5ngramMainY_347_25_0_1_1_p3_ol6 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:690 Priority:0[Rule]
+a5ngramMainY_347_25_0_1_1_p3_ol6 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:691 Priority:0[Rule]
+a5ngramMainY_347_25_0_1_1_p3_ol6 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] [JM] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:479 Priority:0[Rule]
+a5ngramMainY_347_23_1_0_0 == {[] <[l2 !spaceH] [d4plus] [CM|JM] [d4plus] [alpha(ACTION)H NEW address loc H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:469 Priority:0[Rule]
+a5ngramMainY_347_23_0_1_0 == {[] <[l2 !spaceH] [d4plus] [d4plus] [alpha] [alpha(ACTION)H NEW address loc H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:436 Priority:0[Rule]
+a5ngramMainY_347_23_0_0_1 == {[] <[l2 !spaceH] [d4plus] [d4plus] [alpha(ACTION)H NEW address loc H ^.H ] [CM|DDSH|JM] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:577 Priority:0[Rule]
+a5ngramMainY_347_22_1_1_0_p5 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:692 Priority:0[Rule]
+a5ngramMainY_347_22_0_1_1_p4_ol6 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:693 Priority:0[Rule]
+a5ngramMainY_347_22_0_1_1_p4_ol6 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:694 Priority:0[Rule]
+a5ngramMainY_347_22_0_1_1_p4_ol6 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:537 Priority:0[Rule]
+a5ngramMainY_347_20_1_2 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address road H ^.H ] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:514 Priority:0[Rule]
+a5ngramMainY_347_20_0_3 == {[] <[digit] ["rue"(ACTION)H NEW address road H ^.H ] [alpha] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:382 Priority:0[Rule]
+a5ngramMainY_347_1_4 == {[] <[DE contact(ACTION)H H ^.H ] [digit|Punc] [digit|Punc] [digit|Punc] [digit|Punc] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:567 Priority:0[Rule]
+a5ngramMainY_347_19_1_0_1_p5 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [province] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:565 Priority:0[Rule]
+a5ngramMainY_347_19_0_1_1_p5 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [CM] [province] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:569 Priority:0[Rule]
+a5ngramMainY_347_17_1_1_p5 == {[] <[city(ACTION)H NEW address city H ^.H ] [CM] [province(ACTION)^.Z] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:457 Priority:0[Rule]
+a5ngramMainY_347_15_1_2 == {[] <[digit] [alpha] ["."] [alpha] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:418 Priority:0[Rule]
+a5ngramMainY_347_15_0_3 == {[] <[digit] [alpha] [alpha] [alpha] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:922 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:923 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:924 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:925 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:926 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:927 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:996 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:997 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:998 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:999 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1057 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1058 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1059 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1060 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1061 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1062 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1097 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1098 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1128 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1129 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1130 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1131 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1149 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1150 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1151 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1152 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1163 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1164 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1165 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1166 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1186 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1187 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1197 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1198 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1207 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1208 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1217 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1218 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1219 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1220 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1255 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1256 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1269 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1270 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1292 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1293 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1296 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1297 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1298 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1299 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1304 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1305 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1310 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1311 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_1_ol3_ol4_ol5_ol6 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:642 Priority:0[Rule]
+a5ngramMainY_347_0_1_0_p1_0_0 == {[] <["1"] [] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:632 Priority:0[Rule]
+a5ngramMainY_347_0_0_1_p1_0_0 == {[] <["1"] [d3] [DDSH] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:603 Priority:0[Rule]
+a5ngramMainY_347_0_0_0_p1_1_0 == {[] <[OPAR] ["1"] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:598 Priority:0[Rule]
+a5ngramMainY_347_0_0_0_p1_0_1 == {[] <["1"] [DDSH|CPAR] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 6, "StringChunkLength": 6, "HeadOffset": 5, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:898 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:899 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:900 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:901 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:902 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:903 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:984 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:985 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:986 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:987 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1238 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1239 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1261 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1262 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1263 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1264 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1288 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1289 Priority:0[Rule]
+a5ngramMainY_347_9_1_1_ol1_ol4_ol5 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:837 Priority:0[Rule]
+a5ngramMainY_347_8_1_1_ol4_ol5 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] ["/"] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:838 Priority:0[Rule]
+a5ngramMainY_347_8_1_1_ol4_ol5 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] ["/"] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:839 Priority:0[Rule]
+a5ngramMainY_347_8_1_1_ol4_ol5 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] [","] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:840 Priority:0[Rule]
+a5ngramMainY_347_8_1_1_ol4_ol5 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] [","] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1072 Priority:0[Rule]
+a5ngramMainY_347_8_1_1_ol4_ol5 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] ["-"] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1073 Priority:0[Rule]
+a5ngramMainY_347_8_1_1_ol4_ol5 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] ["-"] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:758 Priority:0[Rule]
+a5ngramMainY_347_6_1_ol4 == {[] <[month] ["."] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4|d2(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:759 Priority:0[Rule]
+a5ngramMainY_347_6_1_ol4 == {[] <[month] ["."] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4|d2(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:760 Priority:0[Rule]
+a5ngramMainY_347_6_1_ol4 == {[] <[month] ["."] [d2|d1(ACTION)H date H ^.H ] [","] [d4|d2(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:452 Priority:0[Rule]
+a5ngramMainY_347_4_1_1 == {[BR|P|V] <[NNP] [NNP(ACTION)H com H ^.H ] [CM] ["inc"] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:628 Priority:0[Rule]
+a5ngramMainY_347_2_1_0_0_p1_0 == {[] <[digit] [d3] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:543 Priority:0[Rule]
+a5ngramMainY_347_2_0_1_0 == {[] <[OPAR] [d3] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:522 Priority:0[Rule]
+a5ngramMainY_347_2_0_0_1 == {[] <[d3] [CPAR] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:463 Priority:0[Rule]
+a5ngramMainY_347_27_1_0 == {[] <["p"] [dot] ["o"] ["box"(ACTION)H NEW address H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:430 Priority:0[Rule]
+a5ngramMainY_347_27_0_1 == {[] <["p"] ["o"] [dot] ["box"(ACTION)H NEW address H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:483 Priority:0[Rule]
+a5ngramMainY_347_26_0_0_0 == {[] <[NE city(ACTION)H NEW address city H ^.H ] [l1] [dot] [l1] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:704 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_1_p1_0_ol5 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:705 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_1_p1_0_ol5 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:706 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_1_p1_0_ol5 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:790 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_0_p1_1_ol5 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:791 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_0_p1_1_ol5 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:792 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_0_p1_1_ol5 == {[] <[NNP] [CM] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:701 Priority:0[Rule]
+a5ngramMainY_347_25_0_1_0_p3_ol5 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:702 Priority:0[Rule]
+a5ngramMainY_347_25_0_1_0_p3_ol5 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:703 Priority:0[Rule]
+a5ngramMainY_347_25_0_1_0_p3_ol5 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['-'] [d4] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:554 Priority:0[Rule]
+a5ngramMainY_347_24_1_1 == {[] <[NNP(ACTION)H NEW address loc H ^.H ] [CM] [province|l2 !NN] [CM] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:435 Priority:0[Rule]
+a5ngramMainY_347_23_0_0_0 == {[] <[l2 !spaceH] [d4plus] [d4plus] [alpha(ACTION)H NEW address loc H ^.H ] ['france']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:680 Priority:0[Rule]
+a5ngramMainY_347_22_1_0_1_ol5 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:681 Priority:0[Rule]
+a5ngramMainY_347_22_1_0_1_ol5 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:682 Priority:0[Rule]
+a5ngramMainY_347_22_1_0_1_ol5 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:612 Priority:0[Rule]
+a5ngramMainY_347_22_0_1_0_p4 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['-'] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:526 Priority:0[Rule]
+a5ngramMainY_347_21_1_1 == {[] <[digit] [alpha|RB] [CD|ordinal] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:536 Priority:0[Rule]
+a5ngramMainY_347_20_1_1 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address road H ^.H ] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:513 Priority:0[Rule]
+a5ngramMainY_347_20_0_2 == {[] <[digit] ["rue"(ACTION)H NEW address road H ^.H ] [alpha] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:381 Priority:0[Rule]
+a5ngramMainY_347_1_3 == {[] <[DE contact(ACTION)H H ^.H ] [digit|Punc] [digit|Punc] [digit|Punc] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:503 Priority:0[Rule]
+a5ngramMainY_347_19_1_1_0 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [CM] [province] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:563 Priority:0[Rule]
+a5ngramMainY_347_19_0_0_1_p4 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [province] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:562 Priority:0[Rule]
+a5ngramMainY_347_17_0_1_p4 == {[] <[city(ACTION)H NEW address city H ^.H ] [province(ACTION)^.Z] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:456 Priority:0[Rule]
+a5ngramMainY_347_15_1_1 == {[] <[digit] [alpha] ["."] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:417 Priority:0[Rule]
+a5ngramMainY_347_15_0_2 == {[] <[digit] [alpha] [alpha] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1049 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["/"] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1050 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["/"] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1124 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["/"] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1125 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["/"] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1153 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["-"] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1154 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["-"] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1199 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["-"] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1200 Priority:0[Rule]
+a5ngramMainY_347_13_1_ol2_ol4_ol5 == {[] <[d2|d1(ACTION)month] ["-"] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:928 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:929 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:930 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:931 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1000 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1001 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1002 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1003 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1045 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1046 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1047 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1048 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1063 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1064 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1065 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1066 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1120 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1121 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1122 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1123 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1132 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1133 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1134 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1135 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1159 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1160 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1161 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1162 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1167 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1168 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1169 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1170 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1203 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1204 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1205 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1206 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1221 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1222 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1223 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1224 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1231 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1232 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1233 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1234 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1246 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1247 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1248 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1249 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1275 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1276 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1277 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1278 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1282 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1283 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1284 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1285 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1300 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1301 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1302 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1303 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] ["-"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1306 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1307 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1308 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1309 Priority:0[Rule]
+a5ngramMainY_347_12_1_ol1_ol2_ol3_ol4_ol5 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] ["/"] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:748 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:749 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:750 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:751 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:824 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:825 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:868 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:869 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:870 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:871 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:971 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:972 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1010 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1011 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1012 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1013 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1101 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1102 Priority:0[Rule]
+a5ngramMainY_347_11_1_1_0_ol3_ol4_ol5 == {[] <[month] ["."] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:896 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:897 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:982 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:983 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1029 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1030 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1090 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1091 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1112 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1113 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1140 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1141 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1142 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1143 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1182 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1183 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1190 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1191 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_1_ol3_ol4_ol5 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:916 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:917 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:918 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:919 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:920 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:921 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:994 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:995 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1041 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1042 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1043 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1044 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1053 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1054 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1055 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1056 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1095 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1096 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1118 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1119 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1155 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1156 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1157 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1158 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1176 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1177 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1184 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1185 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1201 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1202 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1225 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1226 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1227 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1228 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1229 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1230 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1257 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1258 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1259 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1260 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1265 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1266 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1267 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1268 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1271 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1272 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1273 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1274 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1286 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1287 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1290 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1291 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1294 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1295 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_1_ol2_ol3_ol4_ol5 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:597 Priority:0[Rule]
+a5ngramMainY_347_0_0_0_p1_0_0 == {[] <["1"] [d3] [d3] [DDSH] [d4(ACTION)H NEW contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 5, "StringChunkLength": 5, "HeadOffset": 4, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:733 Priority:0[Rule]
+a5ngramMainY_347_9_1_0_ol1_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:734 Priority:0[Rule]
+a5ngramMainY_347_9_1_0_ol1_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [dot] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:735 Priority:0[Rule]
+a5ngramMainY_347_9_1_0_ol1_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:736 Priority:0[Rule]
+a5ngramMainY_347_9_1_0_ol1_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [dot] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:815 Priority:0[Rule]
+a5ngramMainY_347_9_1_0_ol1_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:816 Priority:0[Rule]
+a5ngramMainY_347_9_1_0_ol1_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [dot] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:890 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:891 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:892 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:893 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:894 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:895 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:980 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:981 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1025 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1026 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1027 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1028 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1088 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1089 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1110 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1111 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1174 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1175 Priority:0[Rule]
+a5ngramMainY_347_9_0_1_ol1_ol3_ol4 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:666 Priority:0[Rule]
+a5ngramMainY_347_8_1_0_ol4 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:667 Priority:0[Rule]
+a5ngramMainY_347_8_1_0_ol4 == {[] <[d2] [CM|DDSH] [month(ACTION)H date H ^.H ] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:828 Priority:0[Rule]
+a5ngramMainY_347_8_0_1_ol3_ol4 == {[] <[d2] [month(ACTION)H date H ^.H ] ["/"] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:829 Priority:0[Rule]
+a5ngramMainY_347_8_0_1_ol3_ol4 == {[] <[d2] [month(ACTION)H date H ^.H ] ["/"] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:830 Priority:0[Rule]
+a5ngramMainY_347_8_0_1_ol3_ol4 == {[] <[d2] [month(ACTION)H date H ^.H ] [","] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:831 Priority:0[Rule]
+a5ngramMainY_347_8_0_1_ol3_ol4 == {[] <[d2] [month(ACTION)H date H ^.H ] [","] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:950 Priority:0[Rule]
+a5ngramMainY_347_8_0_1_ol3_ol4 == {[] <[d2] [month(ACTION)H date H ^.H ] ["-"] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:951 Priority:0[Rule]
+a5ngramMainY_347_8_0_1_ol3_ol4 == {[] <[d2] [month(ACTION)H date H ^.H ] ["-"] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:649 Priority:0[Rule]
+a5ngramMainY_347_6_0_ol3 == {[] <[month] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4|d2(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:650 Priority:0[Rule]
+a5ngramMainY_347_6_0_ol3 == {[] <[month] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4|d2(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:651 Priority:0[Rule]
+a5ngramMainY_347_6_0_ol3 == {[] <[month] [d2|d1(ACTION)H date H ^.H ] [","] [d4|d2(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:451 Priority:0[Rule]
+a5ngramMainY_347_4_1_0 == {[BR|P|V] <[NNP] [NNP(ACTION)H com H ^.H ] [CM] ["inc"]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:410 Priority:0[Rule]
+a5ngramMainY_347_4_0_1 == {[BR|P|V] <[NNP(ACTION)H com H ^.H ] [CM] ["inc"] [dot]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:521 Priority:0[Rule]
+a5ngramMainY_347_2_0_0_0 == {[] <[d3] [d3] ['-'] [d4(ACTION)H contact phone H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:429 Priority:0[Rule]
+a5ngramMainY_347_27_0_0 == {[] <["p"] ["o"] ["box"(ACTION)H NEW address H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:695 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_0_p1_0_ol4 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:696 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_0_p1_0_ol4 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:697 Priority:0[Rule]
+a5ngramMainY_347_25_1_0_0_p1_0_ol4 == {[] <[NNP] [province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:767 Priority:0[Rule]
+a5ngramMainY_347_25_0_0_1_ol4 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:768 Priority:0[Rule]
+a5ngramMainY_347_25_0_0_1_ol4 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:769 Priority:0[Rule]
+a5ngramMainY_347_25_0_0_1_ol4 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] [JM] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:553 Priority:0[Rule]
+a5ngramMainY_347_24_1_0 == {[] <[NNP(ACTION)H NEW address loc H ^.H ] [CM] [province|l2 !NN] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:546 Priority:0[Rule]
+a5ngramMainY_347_24_0_1 == {[] <[NNP(ACTION)H NEW address loc H ^.H ] [province|l2 !NN] [CM] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:519 Priority:0[Rule]
+a5ngramMainY_347_22_1_0_0 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:671 Priority:0[Rule]
+a5ngramMainY_347_22_0_0_1_ol4 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:672 Priority:0[Rule]
+a5ngramMainY_347_22_0_0_1_ol4 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:673 Priority:0[Rule]
+a5ngramMainY_347_22_0_0_1_ol4 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:525 Priority:0[Rule]
+a5ngramMainY_347_21_1_0 == {[] <[digit] [alpha|RB] [CD|ordinal] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:424 Priority:0[Rule]
+a5ngramMainY_347_21_0_1 == {[] <[digit] [alpha|RB] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:535 Priority:0[Rule]
+a5ngramMainY_347_20_1_0 == {[] <[digit] [CM] ["rue"(ACTION)H NEW address road H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:512 Priority:0[Rule]
+a5ngramMainY_347_20_0_1 == {[] <[digit] ["rue"(ACTION)H NEW address road H ^.H ] [alpha]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:380 Priority:0[Rule]
+a5ngramMainY_347_1_2 == {[] <[DE contact(ACTION)H H ^.H ] [digit|Punc] [digit|Punc] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:477 Priority:0[Rule]
+a5ngramMainY_347_19_1_0_0 == {[BR] <[alpha OOV|NNP] [alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [province] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:467 Priority:0[Rule]
+a5ngramMainY_347_19_0_1_0 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [CM] [province] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:564 Priority:0[Rule]
+a5ngramMainY_347_18_1_p3 == {[] <[province(ACTION)H NEW address province H ^.H ] [0 d4plus] [DDSH] [d4]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:493 Priority:0[Rule]
+a5ngramMainY_347_17_1_0 == {[] <[city(ACTION)H NEW address city H ^.H ] [CM] [province(ACTION)^.Z] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:364 Priority:0[Rule]
+a5ngramMainY_347_16 == {[] <[NNP|NE(ACTION)H NEW address city H ^.H ] [CM] [l2] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 0, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:455 Priority:0[Rule]
+a5ngramMainY_347_15_1_0 == {[] <[digit] [alpha] ["."] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:416 Priority:0[Rule]
+a5ngramMainY_347_15_0_1 == {[] <[digit] [alpha] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:713 Priority:0[Rule]
+a5ngramMainY_347_13_0_ol3_ol4 == {[] <[d2|d1(ACTION)month] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:714 Priority:0[Rule]
+a5ngramMainY_347_13_0_ol3_ol4 == {[] <[d2|d1(ACTION)month] [d2|d1(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:802 Priority:0[Rule]
+a5ngramMainY_347_13_0_ol3_ol4 == {[] <[d2|d1(ACTION)month] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:803 Priority:0[Rule]
+a5ngramMainY_347_13_0_ol3_ol4 == {[] <[d2|d1(ACTION)month] [d2|d1(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:752 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:753 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:754 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:755 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:872 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:873 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:874 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:875 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:910 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:911 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:912 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:913 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '1-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:944 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:945 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:946 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:947 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:988 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:989 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:990 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:991 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["/"] [d2 '0-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1037 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1038 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1039 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1040 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '1-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1082 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1083 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1084 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1085 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '1-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1114 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '0-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1115 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '1-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1116 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '2-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1117 Priority:0[Rule]
+a5ngramMainY_347_12_0_ol1_ol2_ol3_ol4 == {[] <[d4 '2-'(ACTION)year] ["-"] [d2 '0-'(ACTION)month] [d2 '3-'(ACTION)H date H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 3, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:731 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_0_ol3_ol4 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:732 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_0_ol3_ol4 == {[] <[month] ["."] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:813 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_0_ol3_ol4 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:814 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_0_ol3_ol4 == {[] <[month] ["."] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:937 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_0_ol3_ol4 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:938 Priority:0[Rule]
+a5ngramMainY_347_11_1_0_0_ol3_ol4 == {[] <[month] ["."] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:742 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:743 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["/"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:744 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:745 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["/"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:746 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:747 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] [","] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:822 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:823 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] [","] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:864 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:865 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["-"] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:866 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:867 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["-"] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:942 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:943 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["/"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1067 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1068 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] [","] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1080 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1081 Priority:0[Rule]
+a5ngramMainY_347_11_0_1_0_ol2_ol3_ol4 == {[] <[month] ["-"] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:878 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:879 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:880 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:881 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:975 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:976 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1016 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1017 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1018 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1019 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1105 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1106 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1136 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1137 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["/"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1138 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1139 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] [","] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1188 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1189 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_1_ol2_ol3_ol4 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] ["-"] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 4, "StringChunkLength": 4, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:727 Priority:0[Rule]
+a5ngramMainY_347_9_0_0_ol1_ol3 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:728 Priority:0[Rule]
+a5ngramMainY_347_9_0_0_ol1_ol3 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:729 Priority:0[Rule]
+a5ngramMainY_347_9_0_0_ol1_ol3 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:730 Priority:0[Rule]
+a5ngramMainY_347_9_0_0_ol1_ol3 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:811 Priority:0[Rule]
+a5ngramMainY_347_9_0_0_ol1_ol3 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:812 Priority:0[Rule]
+a5ngramMainY_347_9_0_0_ol1_ol3 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:654 Priority:0[Rule]
+a5ngramMainY_347_8_0_0_ol3 == {[] <[d2] [month(ACTION)H date H ^.H ] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:655 Priority:0[Rule]
+a5ngramMainY_347_8_0_0_ol3 == {[] <[d2] [month(ACTION)H date H ^.H ] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1006 Priority:0[Rule]
+a5ngramMainY_347_7_1_ol2_ol3 == {[] <[month(ACTION)H date H ^.H ] ["/"] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1007 Priority:0[Rule]
+a5ngramMainY_347_7_1_ol2_ol3 == {[] <[month(ACTION)H date H ^.H ] ["/"] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1008 Priority:0[Rule]
+a5ngramMainY_347_7_1_ol2_ol3 == {[] <[month(ACTION)H date H ^.H ] [","] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1009 Priority:0[Rule]
+a5ngramMainY_347_7_1_ol2_ol3 == {[] <[month(ACTION)H date H ^.H ] [","] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1178 Priority:0[Rule]
+a5ngramMainY_347_7_1_ol2_ol3 == {[] <[month(ACTION)H date H ^.H ] ["-"] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:1179 Priority:0[Rule]
+a5ngramMainY_347_7_1_ol2_ol3 == {[] <[month(ACTION)H date H ^.H ] ["-"] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:353 Priority:0[Rule]
+a5ngramMainY_347_5 == {[] <["and"(ACTION)H H ^.H ] ["/"] ["or"(ACTION)^.Z]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:409 Priority:0[Rule]
+a5ngramMainY_347_4_0_0 == {[BR|P|V] <[NNP(ACTION)H com H ^.H ] [CM] ["inc"]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "NE++", "ChunkLevel": 1}]
+
+//ID:351 Priority:0[Rule]
+a5ngramMainY_347_3 == {[] <["n"(ACTION)H] ["/"] ["a"(ACTION)H NEW acronym cliche H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:659 Priority:0[Rule]
+a5ngramMainY_347_25_0_0_0_ol3 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['usa']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:660 Priority:0[Rule]
+a5ngramMainY_347_25_0_0_0_ol3 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['us']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:661 Priority:0[Rule]
+a5ngramMainY_347_25_0_0_0_ol3 == {[] <[province|l2 !NN(ACTION)H NEW address province H ^.H ] [d4plus] ['u.s.a.']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:545 Priority:0[Rule]
+a5ngramMainY_347_24_0_0 == {[] <[NNP(ACTION)H NEW address loc H ^.H ] [province|l2 !NN] [NE country]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:481 Priority:0[Rule]
+a5ngramMainY_347_22_0_0_0 == {[] <[city NE(ACTION)H NEW address city H ^.H ] [l2] [d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:423 Priority:0[Rule]
+a5ngramMainY_347_21_0_0 == {[] <[digit] [alpha|RB] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:511 Priority:0[Rule]
+a5ngramMainY_347_20_0_0 == {[] <[digit] ["rue"(ACTION)H NEW address road H ^.H ]> [BR] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 1, "HeadConfidence": 5, "Action": "DE++", "ChunkLevel": 1}]
+
+//ID:379 Priority:0[Rule]
+a5ngramMainY_347_1_1 == {[] <[DE contact(ACTION)H H ^.H ] [digit|Punc] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:433 Priority:0[Rule]
+a5ngramMainY_347_19_0_0_0 == {[BR] <[alpha OOV|NNP(ACTION)H NEW address city H ^.H ] [province] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:419 Priority:0[Rule]
+a5ngramMainY_347_17_0_0 == {[] <[city(ACTION)H NEW address city H ^.H ] [province(ACTION)^.Z] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:415 Priority:0[Rule]
+a5ngramMainY_347_15_0_0 == {[] <[digit] [alpha] [road(ACTION)H NEW address road H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:876 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '1-'(ACTION)year] ["/"] [d4 '1-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:877 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '1-'(ACTION)year] ["/"] [d4 '2-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:973 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '1-'(ACTION)year] ["-"] [d4 '1-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:974 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '1-'(ACTION)year] ["-"] [d4 '2-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:1014 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '2-'(ACTION)year] ["/"] [d4 '1-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:1015 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '2-'(ACTION)year] ["/"] [d4 '2-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:1103 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '2-'(ACTION)year] ["-"] [d4 '1-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:1104 Priority:0[Rule]
+a5ngramMainY_347_14_ol1_ol2_ol3 == {[] <[d4 '2-'(ACTION)year] ["-"] [d4 '2-'(ACTION)DE H date dur year H ^.H ]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 2, "HeadConfidence": 5, "Action": "", "ChunkLevel": 1}]
+
+//ID:715 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_0_ol2_ol3 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:716 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_0_ol2_ol3 == {[] <[month] [d2|ordinal '1-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:717 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_0_ol2_ol3 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:718 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_0_ol2_ol3 == {[] <[month] [d2|ordinal '3-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:804 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_0_ol2_ol3 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '1-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:805 Priority:0[Rule]
+a5ngramMainY_347_11_0_0_0_ol2_ol3 == {[] <[month] [d2|ordinal '2-'(ACTION)H date H ^.H ] [d4 '2-'(ACTION)year]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 3, "StringChunkLength": 3, "HeadOffset": 1, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:646 Priority:0[Rule]
+a5ngramMainY_347_10_ol1 == {[] <[d2|ordinal '1-'(ACTION)H date H ^.H ] [month]> [!d2] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:647 Priority:0[Rule]
+a5ngramMainY_347_10_ol1 == {[] <[d2|ordinal '2-'(ACTION)H date H ^.H ] [month]> [!d2] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:648 Priority:0[Rule]
+a5ngramMainY_347_10_ol1 == {[] <[d2|ordinal '3-'(ACTION)H date H ^.H ] [month]> [!d2] };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:662 Priority:0[Rule]
+a5ngramMainY_347_7_0_ol2 == {[] <[month(ACTION)H date H ^.H ] [d4 '1-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:663 Priority:0[Rule]
+a5ngramMainY_347_7_0_ol2 == {[] <[month(ACTION)H date H ^.H ] [d4 '2-']> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+//ID:378 Priority:0[Rule]
+a5ngramMainY_347_1_0 == {[] <[DE contact(ACTION)H H ^.H ] [digit]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++", "ChunkLevel": 1}]
+
+//ID:445 Priority:0[Rule]
+a5ngramMainY_347_18_0 == {[] <[province(ACTION)H NEW address province H ^.H ] [0 d4plus]> };
+//[{"py/object": "Rules.RuleChunk", "StartOffset": 1, "Length": 2, "StringChunkLength": 2, "HeadOffset": 0, "HeadConfidence": 5, "Action": "+++ DE++", "ChunkLevel": 1}]
+
+// ****Macros****
+// * size: 13 *
+//ID:1 Priority:0[Macro]
+@whoWhom == {(NC !Mod !Adjunct org|human|NNP)};
+
+//ID:2 Priority:0[Macro]
+@who == {(NC !Obj !Mod !Adjunct org|human|NNP)};
+
+//ID:3 Priority:0[Macro]
+@whom == {(NC !Subj !Mod org|human|NNP)};
+
+//ID:4 Priority:0[Macro]
+@why == {(VC|AC|NC !c1 !xC !Adjunct !Mod)};
+
+//ID:5 Priority:0[Macro]
+@aA == {(aA !PP|NP|NG|VG|VP|RP|CL)};
+
+//ID:6 Priority:0[Macro]
+@nN == {(nN !PP|VG|VP|AP|PP|CL|finite)};
+
+//ID:7 Priority:0[Macro]
+@vV == {(vV !NG|NP|AP|PP|RP)};
+
+//ID:8 Priority:0[Macro]
+@NC == {(N|NG|NP|NE)};
+
+//ID:9 Priority:0[Macro]
+@VC == {(V|VG|VP)};
+
+//ID:10 Priority:0[Macro]
+@AC == {(A|AP)};
+
+//ID:11 Priority:0[Macro]
+@noSA == {(!factNo|NegEmo|Pro|Con|PosEmo|Needed|Neutral|NEUTRAL)};
+
+//ID:12 Priority:0[Macro]
+@FeatureCore == {(country|loc|per|prod|org|container|job|brand|disease|symptom|bodyPart|unit|metal|animal|color|time|artifact|clothing|edible|food|beverage|flower|plant|meds|chem|material|service|event|timeUnit|relatives|taste|odor|behavior|daxingC|attributeC|move|chg|stateV|mental|aspir|CD|PRP|dur|length|money|price|area|speed|size|pro|con|passion|ntN0|ntV|ntN|attr|Key|curse|OOV|deverbal|measure|idiom|perF|animalF|animF)};
+
+//ID:346 Priority:0[Macro]
+@state == {(province|l2 !NN)};
+
+// ****Macro-Like lists****
+@@VC = TempVC_8074
+// End of Rules/Expert Lexicons/Macros
