@@ -1,0 +1,1 @@
+{"timestamp":1540313186492,"status":400,"error":"Bad Request","exception":"org.springframework.web.bind.MissingServletRequestParameterException","message":"Required String parameter 'topK' is not present","path":"/getGaoQAResponse"}
