@@ -31,7 +31,7 @@ def ProcessFile(FileName):
             # Can I recreate nodes from dag? maybe not possible, because the dag can be unrelated nodes.
             #nodes =
             #
-        if not nodes or not dag:
+        if not nodes and not dag:
             logging.warning("The result for this sentence is None! " + str(TestSentence))
             continue
         if args.type == 'json':
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             print("""When the sentencetype is not sentence, the type (output type) must be one of:
             ["sentiment", "graph", "simplegraph", "graphjson", "pnorm"]
             """)
-        exit(1)
+            exit(1)
 
     DebugMode = False
     level = logging.WARNING
